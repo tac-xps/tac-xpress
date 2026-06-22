@@ -1,0 +1,10 @@
+# gbrain ignore file — keeps build artifacts and minified bundles out of the brain index
+storybook-static/
+.next/
+node_modules/
+dist/
+build/
+drizzle/
+sentry_issues.json
+*.min.js
+*.bundle.js

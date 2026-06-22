@@ -1,0 +1,502 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Cargo API",
+    "version": "1.0.0",
+    "description": "Generated from mocks/cargo-data.ts",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.tac-xpress.com/v1"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/shipments": {
+      "get": {
+        "summary": "Get active shipments",
+        "operationId": "getShipments",
+        "responses": {
+          "200": {
+            "description": "A list of shipments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Shipment"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "Organization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "org_123"
+          },
+          "name": {
+            "type": "string",
+            "example": "Global Freight Forwarders Inc"
+          },
+          "slug": {
+            "type": "string",
+            "example": "global-freight"
+          },
+          "plan": {
+            "type": "string",
+            "example": "enterprise"
+          },
+          "settings": {
+            "type": "object",
+            "properties": {
+              "allowPublicTracking": {
+                "type": "boolean",
+                "example": true
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "user_456"
+          },
+          "email": {
+            "type": "string",
+            "example": "admin@globalfreight.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "Jane Smith"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "example": "https://example.com/avatar.jpg"
+          },
+          "orgId": {
+            "type": "string",
+            "example": "org_123"
+          },
+          "role": {
+            "type": "string",
+            "example": "admin"
+          },
+          "emailVerified": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          }
+        }
+      },
+      "Shipment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "SHP-2026-001"
+          },
+          "orgId": {
+            "type": "string",
+            "example": "org_123"
+          },
+          "origin": {
+            "type": "string",
+            "example": "Imphal, IN"
+          },
+          "destination": {
+            "type": "string",
+            "example": "New Delhi, IN"
+          },
+          "status": {
+            "type": "string",
+            "example": "draft"
+          },
+          "carrier": {
+            "type": "string",
+            "example": "Tac Xpress"
+          },
+          "containerId": {
+            "type": "string",
+            "example": "TAC1234567"
+          },
+          "estimatedArrival": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          },
+          "weight": {
+            "type": "number",
+            "example": 15000.5
+          },
+          "volume": {
+            "type": "number",
+            "example": 35.2
+          },
+          "value": {
+            "type": "number",
+            "example": 125000
+          },
+          "cargoItems": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "hsCode": {
+                  "type": "string",
+                  "example": "8471.30"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Laptops"
+                },
+                "quantity": {
+                  "type": "number",
+                  "example": 150
+                }
+              }
+            }
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "bol"
+                },
+                "url": {
+                  "type": "string",
+                  "example": "https://example.com/doc.pdf"
+                }
+              }
+            }
+          },
+          "trackingEvents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "string",
+                  "example": "booked"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "example": "2026-01-15T00:00:00.000Z"
+                }
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          }
+        }
+      },
+      "TrackingEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "evt_789"
+          },
+          "shipmentId": {
+            "type": "string",
+            "example": "SHP-2026-001"
+          },
+          "eventType": {
+            "type": "string",
+            "example": "departed"
+          },
+          "location": {
+            "type": "string",
+            "example": "Imphal Hub"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "vehicle": {
+                "type": "string",
+                "example": "Truck DL-1CA-5678"
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          }
+        }
+      },
+      "Warehouse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "wh_101"
+          },
+          "orgId": {
+            "type": "string",
+            "example": "org_123"
+          },
+          "name": {
+            "type": "string",
+            "example": "New Delhi Primary Facility"
+          },
+          "code": {
+            "type": "string",
+            "example": "DEL-01"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": "string",
+                "example": "123 Freight Way"
+              },
+              "city": {
+                "type": "string",
+                "example": "New Delhi"
+              },
+              "country": {
+                "type": "string",
+                "example": "IN"
+              }
+            }
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Asia/Kolkata"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          }
+        }
+      },
+      "Inventory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "inv_202"
+          },
+          "warehouseId": {
+            "type": "string",
+            "example": "wh_101"
+          },
+          "sku": {
+            "type": "string",
+            "example": "LAPTOP-PRO-15"
+          },
+          "batchLot": {
+            "type": "string",
+            "example": "BATCH-2026-A"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 500
+          },
+          "locationId": {
+            "type": "string",
+            "example": "loc_A1_B2"
+          },
+          "expiryDate": {
+            "type": "string",
+            "example": "2030-12-31"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          }
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "INV-2026-001"
+          },
+          "shipmentId": {
+            "type": "string",
+            "example": "SHP-2026-001"
+          },
+          "customerId": {
+            "type": "string",
+            "example": "user_456"
+          },
+          "amount": {
+            "type": "number",
+            "example": 25000
+          },
+          "status": {
+            "type": "string",
+            "example": "unpaid"
+          },
+          "dueDate": {
+            "type": "string",
+            "example": "2026-02-15T00:00:00.000Z"
+          },
+          "freightCharge": {
+            "type": "number",
+            "example": 20000
+          },
+          "pickupCharge": {
+            "type": "number",
+            "example": 1000
+          },
+          "packingCharge": {
+            "type": "number",
+            "example": 500
+          },
+          "insuranceCharge": {
+            "type": "number",
+            "example": 3500
+          },
+          "subtotal": {
+            "type": "number",
+            "example": 25000
+          },
+          "gstRate": {
+            "type": "number",
+            "example": 18
+          },
+          "cgst": {
+            "type": "number",
+            "example": 2250
+          },
+          "sgst": {
+            "type": "number",
+            "example": 2250
+          },
+          "igst": {
+            "type": "number",
+            "example": 0
+          },
+          "balanceDue": {
+            "type": "number",
+            "example": 25000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          }
+        }
+      },
+      "Manifest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "MAN-2026-001"
+          },
+          "referenceId": {
+            "type": "string",
+            "example": "REF-MAN-A1"
+          },
+          "createdBy": {
+            "type": "string",
+            "example": "user_456"
+          },
+          "originHubId": {
+            "type": "string",
+            "example": "wh_101"
+          },
+          "destinationHubId": {
+            "type": "string",
+            "example": "wh_102"
+          },
+          "status": {
+            "type": "string",
+            "example": "draft"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T00:00:00.000Z"
+          }
+        }
+      }
+    }
+  }
+}
