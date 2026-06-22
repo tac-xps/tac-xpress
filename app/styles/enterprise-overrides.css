@@ -1,0 +1,108 @@
+@layer base {
+  /* === BUTTONS: Accent border + theme-aware radius === */
+  [data-slot="button"] {
+    transition: all 0.15s ease;
+  }
+
+  [data-slot="button"][data-variant="default"] {
+    border-left: 3px solid var(--primary);
+  }
+
+  [data-slot="button"][data-variant="destructive"] {
+    border-left: 3px solid var(--destructive);
+  }
+
+  /* === INPUTS: Focus ring === */
+  [data-slot="input"],
+  [data-slot="textarea"],
+  [data-slot="select-trigger"] {
+    border: 1px solid var(--border);
+  }
+
+  [data-slot="input"]:focus,
+  [data-slot="textarea"]:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 1px var(--ring);
+  }
+
+  /* === CARDS: Subtle border, no shadow === */
+  [data-slot="card"] {
+    border: 1px solid var(--border);
+    box-shadow: none;
+  }
+
+  /* === TABLE: Dense === */
+  [data-slot="table"] {
+    border: 1px solid var(--border);
+  }
+
+  [data-slot="table-row"] {
+    border-bottom: 1px solid var(--border);
+  }
+
+  [data-slot="table-row"]:hover {
+    background: var(--muted);
+  }
+
+  /* === DIALOG: Heavy shadow === */
+  [data-slot="dialog-content"] {
+    box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+    border: 1px solid var(--border);
+  }
+
+  /* === BADGE: Left accent === */
+  [data-slot="badge"] {
+    border-left: 3px solid currentcolor;
+    padding-left: 8px;
+  }
+
+  /* === SIDEBAR === */
+  [data-slot="sidebar"] {
+    border-right: 1px solid var(--sidebar-border);
+  }
+
+  [data-slot="sidebar-menu-button"] {
+    margin: 0;
+    border-left: 3px solid transparent;
+  }
+
+  [data-slot="sidebar-menu-button"][data-active="true"] {
+    background: var(--sidebar-accent);
+    border-left-color: var(--sidebar-primary);
+  }
+
+  /* === TABS: Underline === */
+  [data-slot="tabs-list"] {
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+  }
+
+  [data-slot="tabs-trigger"] {
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+
+  [data-slot="tabs-trigger"][data-state="active"] {
+    border-bottom-color: var(--primary);
+    background: transparent;
+  }
+
+  /* === SCROLLBAR: Thin === */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: var(--radius);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--foreground);
+  }
+}

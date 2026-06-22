@@ -1,0 +1,22 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+if git diff --cached --name-only | grep -E '^components/.*\.tsx$' | grep -v '.stories.tsx' | grep -v '.test.tsx'; then
+  for file in $(git diff --cached --name-only | grep -E '^components/.*\.tsx$' | grep -v '.stories.tsx' | grep -v '.test.tsx'); do
+    story_file="${file%.tsx}.stories.tsx"
+    if [ ! -f "$story_file" ]; then
+      echo "❌ Missing story file: $story_file"
+      exit 1
+    fi
+    if ! grep -q "@state-contract" "$story_file"; then
+      echo "❌ Missing @state-contract in story file: $story_file"
+      exit 1
+    fi
+  done
+fi
+
+echo "Running lint-staged..."
+npx lint-staged
+
+echo "Running typecheck..."
+pnpm typecheck

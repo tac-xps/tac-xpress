@@ -1,0 +1,11 @@
+# Antigravity Browser Allowlist
+# Agents are restricted to browsing domains listed below.
+
+localhost
+127.0.0.1
+github.com
+leminai.com
+supabase.com
+ui.shadcn.com
+nextjs.org
+react.dev

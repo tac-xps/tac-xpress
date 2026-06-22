@@ -1,0 +1,31 @@
+packages: []
+
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
+  msw: false
+  '@sentry/cli': true
+  core-js: true
+  esbuild: true
+  protobufjs: true
+  puppeteer: true
+
+overrides:
+  valibot: "1.4.1"
+  "@storybook/addon-mcp>valibot": "1.4.1"
+  "@storybook/addon-mcp@0.6.0>valibot": "1.4.1"
+  "@storybook/mcp@0.7.0>valibot": "1.4.1"
+  "@tmcp/adapter-valibot@0.1.6>valibot": "1.4.1"
+  "@valibot/to-json-schema@1.7.0>valibot": "1.4.1"
+  esbuild: "0.28.1"
+  "terser-webpack-plugin@5.6.1>esbuild": "0.28.1"
+  postcss: "8.5.15"
+  "next@16.2.9>postcss": "8.5.15"
+  uuid: "11.1.1"
+  "typeid-js@1.2.0>uuid": "11.1.1"
+  protobufjs: "7.6.3"
+  "@opentelemetry/otlp-transformer@0.208.0>protobufjs": "7.6.3"
+
+peerDependencyRules:
+  allowedVersions:
+    valibot: "*"
