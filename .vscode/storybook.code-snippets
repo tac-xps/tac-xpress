@@ -1,0 +1,35 @@
+{
+  "Storybook State Contract Template": {
+    "prefix": "sb-story",
+    "body": [
+      "/**",
+      " * @state-contract",
+      " * @tier ${1|primitive,complex,domain|}",
+      " * @states default, hover, focus",
+      " * @skip disabled, loading, error",
+      " * @viewport [${2:1280}]",
+      " */",
+      "import type { Meta, StoryObj } from '@storybook/react';",
+      "import { ${3:ComponentName} } from './${4:component-name}';",
+      "",
+      "const meta: Meta<typeof ${3:ComponentName}> = {",
+      "  title: 'UI/${3:ComponentName}',",
+      "  component: ${3:ComponentName},",
+      "  tags: ['autodocs'],",
+      "  parameters: {",
+      "    chromatic: {",
+      "      viewports: [${2:1280}],",
+      "    },",
+      "  },",
+      "};",
+      "",
+      "export default meta;",
+      "type Story = StoryObj<typeof ${3:ComponentName}>;",
+      "",
+      "export const Default: Story = { args: {} };",
+      "export const Hover: Story = { args: {}, parameters: { pseudo: { hover: true } } };",
+      "export const Focus: Story = { args: {}, parameters: { pseudo: { focus: true } } };"
+    ],
+    "description": "Scaffold a contract-driven Storybook story"
+  }
+}
