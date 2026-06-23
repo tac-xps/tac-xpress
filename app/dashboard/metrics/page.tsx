@@ -5,7 +5,9 @@ import { FlawlessExecutionsChart } from "@/components/metrics/flawless-execution
 import { MetricsIcon } from "@/components/icons/sidebar-icons"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { supabaseAdmin } from "@/lib/supabase/clients"
+import { db } from "@/lib/db"
+import { tickets as ticketsSchema, shipments as shipmentsSchema } from "@/lib/db/schema"
+import { desc, gte } from "drizzle-orm"
 
 export const dynamic = "force-dynamic"
 
@@ -34,32 +36,52 @@ function hoursBetween(start: string, end: string) {
 
 export default async function MetricsPage() {
   const now = new Date()
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 86_400_000).toISOString()
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 86_400_000)
   const startOfToday = new Date(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
   ).toISOString()
 
-  const [ticketResult, shipmentResult] = await Promise.all([
-    supabaseAdmin
-      .from("tickets")
-      .select(
-        "id, subject, priority, status, created_at, resolved_at, sla_breached, sla_breach_type"
-      )
-      .gte("created_at", thirtyDaysAgo)
-      .order("created_at", { ascending: false }),
-    supabaseAdmin
-      .from("shipments")
-      .select("status, booking_date, edd, updated_at, sla_at_risk")
-      .order("booking_date", { ascending: false }),
+  const [ticketData, shipmentData] = await Promise.all([
+    db
+      .select({
+        id: ticketsSchema.id,
+        subject: ticketsSchema.subject,
+        priority: ticketsSchema.priority,
+        status: ticketsSchema.status,
+        created_at: ticketsSchema.createdAt,
+        resolved_at: ticketsSchema.resolvedAt,
+        sla_breached: ticketsSchema.slaBreached,
+        sla_breach_type: ticketsSchema.slaBreachType,
+      })
+      .from(ticketsSchema)
+      .where(gte(ticketsSchema.createdAt, thirtyDaysAgo))
+      .orderBy(desc(ticketsSchema.createdAt)),
+    db
+      .select({
+        status: shipmentsSchema.status,
+        booking_date: shipmentsSchema.bookingDate,
+        edd: shipmentsSchema.edd,
+        updated_at: shipmentsSchema.updatedAt,
+        sla_at_risk: shipmentsSchema.slaAtRisk,
+      })
+      .from(shipmentsSchema)
+      .orderBy(desc(shipmentsSchema.bookingDate)),
   ])
 
-  if (ticketResult.error)
-    console.error("Unable to load ticket metrics", ticketResult.error)
-  if (shipmentResult.error)
-    console.error("Unable to load shipment metrics", shipmentResult.error)
+  // Map Drizzle output to the expected properties
+  const tickets = ticketData.map((t) => ({
+    ...t,
+    created_at: t.created_at.toISOString(),
+    resolved_at: t.resolved_at?.toISOString() ?? null,
+  })) as TicketMetricRow[]
 
-  const tickets = (ticketResult.data || []) as TicketMetricRow[]
-  const shipments = (shipmentResult.data || []) as ShipmentMetricRow[]
+  const shipments = shipmentData.map((s) => ({
+    ...s,
+    booking_date: s.booking_date.toISOString(),
+    edd: s.edd?.toISOString() ?? null,
+    updated_at: s.updated_at.toISOString(),
+  })) as ShipmentMetricRow[]
+
   const priorities = ["critical", "high", "medium", "low"]
   const slaData = priorities
     .map((priority, index) => {

@@ -57,7 +57,7 @@ export async function POST(request: Request) {
           await processInboundMessage(
             message,
             change.value.contacts?.[0]
-          ).catch((error) =>
+          ).catch((error: unknown) =>
             console.error(
               "[WhatsApp Webhook] Failed to process inbound message:",
               error

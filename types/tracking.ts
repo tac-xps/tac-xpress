@@ -15,15 +15,15 @@ export type TrackingEventType =
 
 export interface TrackingEvent {
   id: string
-  awb_number: string
-  event_type: TrackingEventType
+  awb_number?: string
+  event_type?: TrackingEventType
   location: string
   location_code?: string
   description: string
   event_time: string
   created_at: string
   logged_by?: string
-  is_public: boolean
+  is_public?: boolean
   notes?: string
 }
 

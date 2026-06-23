@@ -8,6 +8,9 @@ export default [{
     ".agents/**",
     ".gemini/**",
     "playwright-report/**",
+    "storybook-static/**",
+    ".storybook/**",
+    "stories/**",
   ],
 }, {
   rules: {

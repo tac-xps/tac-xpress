@@ -3,7 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase/clients"
 import { TicketsClient } from "@/app/dashboard/messages/tickets-client"
 import { SupportIcon } from "@/components/icons/sidebar-icons"
 import { db } from "@/lib/db"
-import { messageOutbound } from "@/lib/db/schema"
+import { messageOutbound, tickets as ticketsTable } from "@/lib/db/schema"
 import { desc } from "drizzle-orm"
 import { OutboundMessageLog } from "./outbound-message-log"
 import {
@@ -21,12 +21,13 @@ export default async function MessagesPage({
 }) {
   const page = parsePage((await searchParams).page)
   const offset = (page - 1) * DEFAULT_PAGE_SIZE
-  const [{ data: ticketRows, error }, outboundRows] = await Promise.all([
-    supabaseAdmin
-      .from("tickets")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .range(offset, offset + DEFAULT_PAGE_SIZE),
+  const [drizzleTicketRows, outboundRows] = await Promise.all([
+    db
+      .select()
+      .from(ticketsTable)
+      .orderBy(desc(ticketsTable.createdAt))
+      .limit(DEFAULT_PAGE_SIZE + 1)
+      .offset(offset),
     db
       .select({
         id: messageOutbound.id,
@@ -42,14 +43,26 @@ export default async function MessagesPage({
       .offset(offset),
   ])
   const hasNext =
-    (ticketRows?.length ?? 0) > DEFAULT_PAGE_SIZE ||
+    (drizzleTicketRows?.length ?? 0) > DEFAULT_PAGE_SIZE ||
     outboundRows.length > DEFAULT_PAGE_SIZE
-  const tickets = ticketRows?.slice(0, DEFAULT_PAGE_SIZE) ?? []
-  const outboundMessages = outboundRows.slice(0, DEFAULT_PAGE_SIZE)
+  const rawTickets = drizzleTicketRows?.slice(0, DEFAULT_PAGE_SIZE) ?? []
+  
+  // Map to match TicketData schema expected by the client
+  const tickets = rawTickets.map((t) => ({
+    id: t.id,
+    customer_name: t.customerName,
+    customer_email: t.customerEmail,
+    customer_phone: t.customerPhone,
+    subject: t.subject,
+    message: t.message || "",
+    category: t.category || "General",
+    status: t.status,
+    priority: t.priority || "medium",
+    related_awb: t.relatedAwb,
+    created_at: t.createdAt.toISOString(),
+  }))
 
-  if (error) {
-    console.error("Error fetching tickets:", error)
-  }
+  const outboundMessages = outboundRows.slice(0, DEFAULT_PAGE_SIZE)
 
   return (
     <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 md:gap-8">

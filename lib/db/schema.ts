@@ -110,7 +110,6 @@ export const users = pgTable("users", {
   city: text("city"),
   state: text("state"),
   pinCode: text("pin_code"),
-  password: text("password"),
   role: roleEnum("role").notNull().default("customer"),
   isOnboarded: boolean("is_onboarded").default(false).notNull(),
   avatarUrl: text("avatar_url"),
@@ -192,6 +191,7 @@ export const shipments = pgTable(
   },
   (table) => [
     index("shipments_customer_id_idx").on(table.customerId),
+    index("shipments_status_idx").on(table.status),
     check("shipments_weight_kg_positive", sql`${table.weightKg} > 0`),
   ]
 )
@@ -218,9 +218,16 @@ export const tickets = pgTable(
     status: ticketStatusEnum("status").notNull().default("open"),
     priority: text("priority").default("medium"),
     assignedTo: text("assigned_to"),
+    assignedTeam: text("assigned_team"),
     relatedAwb: text("related_awb"),
     source: text("source"),
     resolvedAt: timestamp("resolved_at"),
+    slaDeadlineFirstResponse: timestamp("sla_deadline_first_response"),
+    slaDeadlineResolution: timestamp("sla_deadline_resolution"),
+    slaBreached: boolean("sla_breached").default(false),
+    slaBreachType: text("sla_breach_type"), // 'first_response' or 'resolution'
+    slaAtRisk: boolean("sla_at_risk").default(false),
+    firstReplyAt: timestamp("first_reply_at"),
     aiConfidence: real("ai_confidence").default(0),
     aiRouting: text("ai_routing"),
     aiAutoReplyEnabled: boolean("ai_auto_reply_enabled").default(true),
@@ -233,6 +240,7 @@ export const tickets = pgTable(
   (table) => [
     index("tickets_customer_id_idx").on(table.customerId),
     index("tickets_customer_email_idx").on(table.customerEmail),
+    index("tickets_status_idx").on(table.status),
   ]
 )
 
@@ -302,6 +310,7 @@ export const invoices = pgTable(
   (table) => [
     index("invoices_shipment_id_idx").on(table.shipmentId),
     index("invoices_customer_id_idx").on(table.customerId),
+    index("invoices_status_idx").on(table.status),
   ]
 )
 
@@ -429,7 +438,10 @@ export const trackingEvents = pgTable(
     notes: text("notes"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => [index("tracking_events_shipment_id_idx").on(table.shipmentId)]
+  (table) => [
+    index("tracking_events_shipment_id_idx").on(table.shipmentId),
+    index("tracking_events_awb_number_idx").on(table.awbNumber),
+  ]
 )
 
 export const whatsappSubscribers = pgTable(

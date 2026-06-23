@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const decision = await aj.protect(req)
+  const decision = await aj.protect(req, { requested: 1 })
   if (decision.isDenied()) {
     return NextResponse.json(
       { error: "Too many requests. Please try again shortly." },

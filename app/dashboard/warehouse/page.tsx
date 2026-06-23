@@ -9,11 +9,22 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { ScannerDialog } from "@/components/warehouse/scanner-dialog"
 import { SecureBoundary } from "@/components/security/secure-boundary"
 
-export default async function WarehousePage() {
+import {
+  DEFAULT_PAGE_SIZE,
+  PageNavigation,
+  parsePage,
+} from "@/components/ui/page-navigation"
+
+export default async function WarehousePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string | string[] }>
+}) {
   const session = await auth()
+  const page = parsePage((await searchParams).page)
 
   // For dock workers, show shipments pending or in-transit
-  const activeShipments = await db.query.shipments.findMany({
+  const shipmentRows = await db.query.shipments.findMany({
     where: (shipments, { inArray, isNull, and }) =>
       and(
         inArray(shipments.status, ["pending", "in-transit"]),
@@ -23,7 +34,12 @@ export default async function WarehousePage() {
       invoice: true,
     },
     orderBy: (shipments, { desc }) => [desc(shipments.createdAt)],
+    limit: DEFAULT_PAGE_SIZE + 1,
+    offset: (page - 1) * DEFAULT_PAGE_SIZE,
   })
+
+  const hasNext = shipmentRows.length > DEFAULT_PAGE_SIZE
+  const activeShipments = shipmentRows.slice(0, DEFAULT_PAGE_SIZE)
 
   return (
     <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 md:gap-8">
@@ -83,6 +99,11 @@ export default async function WarehousePage() {
           </div>
         </CardContent>
       </Card>
+      <PageNavigation
+        page={page}
+        hasNext={hasNext}
+        pathname="/dashboard/warehouse"
+      />
     </div>
   )
 }
