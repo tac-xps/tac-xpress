@@ -1,5 +1,5 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-import { jwtVerify, SignJWT } from "https://esm.sh/jose@5"
+import { createClient } from "@supabase/supabase-js"
+import { jwtVerify, SignJWT } from "jose"
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || ""
 const SUPABASE_SERVICE_ROLE_KEY =
@@ -34,7 +34,7 @@ async function evaluateCapabilities(userId: string) {
     .eq("created_by", userId)
 
   const ownershipCapabilities =
-    ownedShipments?.map((s: any) => `shipment:${s.id}:owner`) || []
+    ownedShipments?.map((s: { id: string }) => `shipment:${s.id}:owner`) || []
 
   return {
     capabilities: [...capabilities, ...ownershipCapabilities],
@@ -97,8 +97,9 @@ Deno.serve(async (req) => {
         },
       }
     )
-  } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error"
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 401,
       headers: {
         ...corsHeaders,
