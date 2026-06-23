@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /e2e-auth/
+Disallow: /api/test/

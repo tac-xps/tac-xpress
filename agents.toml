@@ -1,0 +1,41 @@
+version = 1
+
+[[skills]]
+name = "dotagents"
+source = "getsentry/dotagents"
+
+[[skills]]
+name = "*"
+source = "getsentry/sentry-for-ai"
+
+[[skills]]
+name = "*"
+source = "garrytan/gstack"
+
+[trust]
+sources = ["garrytan/gstack"]
+
+[[skills]]
+name = "drizzle-manager"
+source = "path:./.agents/skills/drizzle-manager"
+
+[[skills]]
+name = "git-commit-formatter"
+source = "path:./.agents/skills/git-commit-formatter"
+
+[[skills]]
+name = "shadcn"
+source = "path:./.agents/skills/shadcn"
+
+[[skills]]
+name = "tailwind-4-docs"
+source = "path:./.agents/skills/tailwind-4-docs"
+
+[[mcp]]
+name = "vercel"
+command = "npx"
+args = [ "-y", "mcp-remote", "https://mcp.vercel.com" ]
+
+[[skills]]
+name = "oklch-skill"
+source = "path:./.agents/skills/oklch-skill"

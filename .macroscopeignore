@@ -1,0 +1,6 @@
+public/images/**
+public/logo/**
+docs/old_docs/**
+drizzle/meta/**
+*.json
+*.md

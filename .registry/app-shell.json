@@ -1,0 +1,13 @@
+{
+  "name": "app-shell",
+  "type": "registry:block",
+  "dependencies": [],
+  "files": [
+    {
+      "path": "blocks/app-shell.tsx",
+      "type": "registry:block",
+      "target": "@components/app-shell.tsx",
+      "content": "import * as React from \"react\"\nimport { cn } from \"@/lib/utils\"\n\ninterface AppShellProps extends React.HTMLAttributes<HTMLDivElement> {\n  sidebar: React.ReactNode;\n  children: React.ReactNode;\n}\n\nexport function AppShell({ sidebar, children, className, ...props }: AppShellProps) {\n  return (\n    <div className={cn(\"flex h-screen w-full overflow-hidden bg-background\", className)} {...props}>\n      <div className=\"flex-none\">\n        {sidebar}\n      </div>\n      <main className=\"flex-1 overflow-y-auto\">\n        {children}\n      </main>\n    </div>\n  )\n}\n"
+    }
+  ]
+}
