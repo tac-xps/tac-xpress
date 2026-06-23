@@ -25,6 +25,6 @@ jobs:
         run: pnpm install
 
       - name: Run Chromatic
-        uses: chromaui/action@v11
+        uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
