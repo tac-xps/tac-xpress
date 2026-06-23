@@ -1,0 +1,85 @@
+# Tac-Xpress
+
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/tac-xps/tac-xpress?utm_source=oss&utm_medium=github&utm_campaign=tac-xps%2Ftac-xpress&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
+
+Tac-Xpress is a Next.js 16 operations platform for freight teams. It combines an internal operations dashboard, a customer portal, public shipment tracking, support-ticket triage, invoice delivery, and a WPBox/Lemin-backed WhatsApp relay.
+
+## Current Architecture
+
+- Internal dashboard and admin routes use NextAuth credentials at `/signin` and `/api/auth/*`.
+- Customer portal and public self-service flows use Supabase-generated email links plus the signed `portal_session` cookie.
+- `proxy.ts` is the perimeter for Next.js 16. It applies Arcjet, auth redirects, and production fail-closed checks.
+- Support, tracking, portal, and WhatsApp workflows persist through Supabase. Drizzle remains the typed query layer for operator-owned tables such as shipments, invoices, manifests, and users.
+
+## Quick Start
+
+```bash
+pnpm install
+cp .env.example .env.local
+pnpm dev
+```
+
+Open:
+
+- `http://localhost:3000/`
+- `http://localhost:3000/signin`
+- `http://localhost:3000/portal`
+- `http://localhost:3000/dashboard`
+
+## Required Environment
+
+Minimum local environment:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `AUTH_SECRET`
+- `PORTAL_SESSION_SECRET`
+
+WhatsApp relay:
+
+- `WHATSAPP_ENABLED`
+- `WPBOX_API_TOKEN`
+- `WPBOX_BASE_URL` (optional, defaults to `https://chat.leminai.com`)
+- `WHATSAPP_APP_SECRET`
+- `WHATSAPP_VERIFY_TOKEN`
+
+Email and support:
+
+- `RESEND_API_KEY`
+- `FROM_EMAIL`
+- `INVOICE_PDF_SIGNING_SECRET`
+
+## Verification Commands
+
+```bash
+pnpm typecheck
+pnpm lint
+pnpm stylelint
+pnpm test:unit
+pnpm build
+```
+
+If `pnpm build` reports another Next build is already running, stop the existing build process before retrying so the result is a clean production verification.
+
+## Production Smoke Checklist
+
+After a successful build, verify:
+
+1. `/` loads.
+2. `/signin` renders.
+3. `/portal` renders and can request a portal login.
+4. `/track` renders.
+5. `/dashboard` redirects unauthenticated users to `/signin`.
+6. `/api/webhooks/whatsapp` accepts a valid GET challenge and rejects invalid signatures on POST.
+
+## Docs
+
+- [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+- [Getting Started](./docs/02-getting-started.md)
+- [Auth and Authorization](./docs/04-authentication-and-authorization.md)
+- [API Reference](./docs/05-api-reference.md)
+- [Deployment](./docs/10-deployment.md)
+- [Security and Compliance](./docs/11-security-and-compliance.md)
+- [Monitoring and Observability](./docs/12-monitoring-and-observability.md)
+- [WhatsApp Implementation Guide](./docs/whatsapp_implementation_guide.md)
