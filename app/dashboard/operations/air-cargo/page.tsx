@@ -29,8 +29,11 @@ export default async function AirCargoPage({
     orderBy: (shipments, { desc }) => [desc(shipments.createdAt)],
   })
   
-  const hasNext = rows.length > DEFAULT_PAGE_SIZE
-  const paginatedShipments = rows.slice(0, DEFAULT_PAGE_SIZE)
+  const hasNext = rows.length > page * DEFAULT_PAGE_SIZE
+  const paginatedShipments = rows.slice(
+    (page - 1) * DEFAULT_PAGE_SIZE,
+    page * DEFAULT_PAGE_SIZE
+  )
 
   const totalVolume = rows.length
   const inTransit = rows.filter(s => s.status === "in-transit").length
