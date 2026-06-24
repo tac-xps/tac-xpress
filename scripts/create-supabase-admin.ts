@@ -64,14 +64,13 @@ async function syncToDatabase(id: string, email: string, plainPassword: string) 
   
   if (existing.length > 0) {
     await db.update(users)
-      .set({ id: id, password: passwordHash, role: "admin" })
+      .set({ id: id, role: "admin" })
       .where(eq(users.email, email));
     console.log("Updated public.users table.");
   } else {
     await db.insert(users).values({
       id: id,
       email: email,
-      password: passwordHash,
       role: "admin",
     });
     console.log("Inserted into public.users table.");

@@ -1,6 +1,6 @@
 "use server"
 
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { SignJWT, jwtVerify } from "jose"
 import { supabasePublic } from "@/lib/supabase/clients"
 import { redirect } from "next/navigation"
@@ -40,7 +40,7 @@ const aj = arcjet({
 })
 
 async function checkRateLimit(email: string) {
-  const req = new Request(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000", { headers: await cookies().then(() => headers()) })
+  const req = new Request(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000", { headers: await headers() })
   const decision = await aj.protect(req, { email: email.toLowerCase() })
   return { allowed: !decision.isDenied() }
 }
@@ -130,11 +130,21 @@ export async function authenticatePortalAccess(formData: FormData) {
   // to prevent email/AWB enumeration (CTO requirement).
   const { data: shipment, error } = await supabasePublic
     .from("shipments")
-    .select("id, awb_number, customer_email")
+    .select("id, awb_number, consignor_email, consignee_email")
     .eq("awb_number", awb.toUpperCase())
     .single()
 
-  if (error || !shipment || shipment.customer_email?.toLowerCase() !== email) {
+  if (error || !shipment) {
+    return {
+      error: "No shipment found matching that AWB and Email combination",
+    }
+  }
+
+  const isValidEmail = 
+    shipment.consignor_email?.toLowerCase() === email || 
+    shipment.consignee_email?.toLowerCase() === email;
+
+  if (!isValidEmail) {
     return {
       error: "No shipment found matching that AWB and Email combination",
     }

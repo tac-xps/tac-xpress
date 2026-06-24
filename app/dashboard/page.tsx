@@ -73,7 +73,7 @@ export default async function DashboardPage() {
           <EarningReportChart summary={overview.operationsSummary} />
         </div>
         <div className="col-span-12 transition-shadow duration-300 hover:shadow-md xl:col-span-8">
-          <ActiveDispatchTable data={activeShipments as any} />
+          <ActiveDispatchTable data={activeShipments} />
         </div>
         <div className="col-span-12 transition-shadow duration-300 hover:shadow-md xl:col-span-4">
           <HubVolumeWidget hubs={overview.hubsData} />

@@ -39,7 +39,7 @@ export const aj = arcjet({
     slidingWindow({
       mode: process.env.NODE_ENV === "development" ? "DRY_RUN" : "LIVE",
       interval: "1m",
-      max: 2000,
+      max: 100,
     }),
   ],
 })

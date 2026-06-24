@@ -20,7 +20,6 @@ async function main() {
     await db.insert(users).values({
       id: crypto.randomUUID(),
       email: adminEmail,
-      password: passwordHash,
       role: "admin",
     })
     console.log(`Seeded admin user: ${adminEmail}`)
@@ -37,7 +36,6 @@ async function main() {
     await db.insert(users).values({
       id: crypto.randomUUID(),
       email: staffEmail,
-      password: passwordHash,
       role: "staff",
     })
     console.log(`Seeded staff user: ${staffEmail}`)

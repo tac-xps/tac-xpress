@@ -15,7 +15,7 @@ async function createSuperAdmin() {
     if (existing.length > 0) {
       console.log(`User ${email} already exists. Updating password and role to admin...`);
       await db.update(users)
-        .set({ password: passwordHash, role: "admin" })
+        .set({ role: "admin" })
         .where(eq(users.email, email));
       console.log("Updated successfully.");
     } else {
@@ -23,7 +23,6 @@ async function createSuperAdmin() {
       await db.insert(users).values({
         id: crypto.randomUUID(),
         email: email,
-        password: passwordHash,
         role: "admin",
       });
       console.log("Created successfully.");

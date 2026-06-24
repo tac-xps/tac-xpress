@@ -52,7 +52,6 @@ async function seed() {
         .values({
           id: crypto.randomUUID(),
           email: adminEmail,
-          password: passwordHash,
           role: "admin",
         })
         .returning({ id: users.id })
@@ -74,7 +73,6 @@ async function seed() {
         .values({
           id: crypto.randomUUID(),
           email: staffEmail,
-          password: passwordHash,
           role: "staff",
         })
         .returning({ id: users.id })
