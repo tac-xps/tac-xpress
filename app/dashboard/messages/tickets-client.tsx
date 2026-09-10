@@ -1,91 +1,70 @@
-"use client" // force ts refresh
-
-import { useState, useEffect, useMemo } from "react"
-import { supabaseBrowser } from "@/lib/supabase/clients"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { TicketDetailsDialog } from "@/app/dashboard/messages/ticket-details-dialog"
-import { DataTable } from "./data-table"
+"use client"
+import { useEffect, useMemo, useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
+import { RefreshCw } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { DataTable } from "@/components/operations/data-table"
+import { TicketDetailsDialog } from "./ticket-details-dialog"
 import { getColumns, type TicketData } from "./columns"
-
 export function TicketsClient({
   initialTickets,
+  sort = "created_at",
+  order = "desc",
 }: {
   initialTickets: TicketData[]
+  sort?: string
+  order?: "asc" | "desc"
 }) {
-  const [tickets, setTickets] = useState<TicketData[]>(initialTickets)
-  const [selectedTicket, setSelectedTicket] = useState<TicketData | null>(null)
-
+  const [selected, setSelected] = useState<string | null>(null)
+  const [pending, startTransition] = useTransition()
+  const router = useRouter()
+  const columns = useMemo(
+    () => getColumns((ticket) => setSelected(ticket.id)),
+    []
+  )
+  const ticket = initialTickets.find((item) => item.id === selected) ?? null
   useEffect(() => {
-    setTickets(initialTickets)
-  }, [initialTickets])
-
-  useEffect(() => {
-    const supabase = supabaseBrowser()
-
-    // Subscribe to new tickets being inserted
-    const channel = supabase
-      .channel("realtime_tickets")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "tickets" },
-        (payload: any) => {
-          console.log("New ticket received in real-time!", payload.new)
-          setTickets((current) => [payload.new as TicketData, ...current])
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "tickets" },
-        (payload: any) => {
-          console.log("Ticket updated in real-time!", payload.new)
-          setTickets((current) =>
-            current.map((t) =>
-              t.id === payload.new.id ? (payload.new as TicketData) : t
-            )
-          )
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "tickets" },
-        (payload: any) => {
-          console.log("Ticket deleted in real-time!", payload.old)
-          setTickets((current) =>
-            current.filter((t) => t.id !== payload.old.id)
-          )
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
+    const refresh = () => {
+      if (!document.hidden) router.refresh()
     }
-  }, [])
-
-  const columns = useMemo(() => getColumns(setSelectedTicket), [])
-
+    window.addEventListener("focus", refresh)
+    return () => window.removeEventListener("focus", refresh)
+  }, [router])
   return (
     <>
-      <Card className="overflow-hidden delay-0">
-        <CardHeader className="flex flex-row items-center justify-between border-b border-border/50 bg-muted/20 p-4">
-          <CardTitle className="text-base font-semibold tracking-tight">
-            Recent Inquiries
-          </CardTitle>
-          <Badge variant="outline">
-            {tickets.filter((t) => t.status === "open").length} Open
-          </Badge>
-        </CardHeader>
-        <CardContent className="p-4">
-          <DataTable columns={columns} data={tickets} />
-        </CardContent>
-      </Card>
-
-      <TicketDetailsDialog
-        ticket={selectedTicket}
-        open={!!selectedTicket}
-        onOpenChange={(isOpen: boolean) => !isOpen && setSelectedTicket(null)}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4">
+        <p className="text-sm text-muted-foreground">
+          Refreshes when you return to this window.
+        </p>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={pending}
+          onClick={() => startTransition(() => router.refresh())}
+        >
+          <RefreshCw className={pending ? "animate-spin" : ""} />
+          {pending ? "Refreshing…" : "Refresh"}
+        </Button>
+      </div>
+      <DataTable
+        columns={columns}
+        data={initialTickets}
+        sort={sort}
+        order={order}
       />
+      {ticket && (
+        <TicketDetailsDialog
+          key={ticket.id}
+          ticket={ticket}
+          open
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelected(null)
+              router.refresh()
+            }
+          }}
+        />
+      )}
     </>
   )
 }

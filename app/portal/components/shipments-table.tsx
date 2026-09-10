@@ -63,7 +63,7 @@ function StatusBadgePill({ status }: { status: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize",
+        "inline-flex items-center rounded-none border px-2.5 py-0.5 text-xs font-medium capitalize",
         STATUS_BADGE[status] ?? "border-border bg-muted text-muted-foreground"
       )}
     >
@@ -120,7 +120,7 @@ export default function ShipmentsTable({
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-[180px]">
+          <SelectTrigger className="w-full sm:w-44">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>

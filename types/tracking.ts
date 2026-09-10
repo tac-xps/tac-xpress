@@ -33,7 +33,7 @@ export interface TrackingResult {
   destination: string
   status: ShipmentStatus | string
   service: string
-  weight: string
+  weight?: string
   created_at: string
   customer_name?: string
   events: TrackingEvent[]

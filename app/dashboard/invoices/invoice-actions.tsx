@@ -48,7 +48,7 @@ export function InvoiceActions({
 
     toast.promise(promise, {
       loading: "Sending invoice via WhatsApp...",
-      success: "WhatsApp message sent successfully!",
+      success: "Invoice accepted by WhatsApp provider.",
       error: (err) => err.message,
     })
   }
@@ -85,7 +85,7 @@ export function InvoiceActions({
         {isExecuting ? (
           <RefreshCwIcon className="mr-2 h-4 w-4 animate-spin" />
         ) : status === "sent" ? (
-          <CheckCircle2Icon className="mr-2 h-4 w-4 text-success" />
+          <CheckCircle2Icon className="text-success mr-2 h-4 w-4" />
         ) : status === "failed" ? (
           <AlertCircleIcon className="mr-2 h-4 w-4 text-destructive" />
         ) : (

@@ -1,0 +1,129 @@
+{
+  "auditDate": "2026-09-07",
+  "releaseDecision": "not_cleared_for_production",
+  "workspace": "C:/xpress/tac-xpress",
+  "startingWorktreeEntries": 520,
+  "sourceInventory": {
+    "files": 660,
+    "pageAndApiRoutes": 55,
+    "generatedEvidenceExcluded": true,
+    "review": "indexed surfaces with targeted risk review"
+  },
+  "checks": {
+    "typecheck": {
+      "command": "pnpm typecheck",
+      "status": "passed",
+      "includesNextRouteGeneration": true
+    },
+    "lint": {
+      "command": "pnpm lint",
+      "status": "passed_with_warnings",
+      "errors": 0,
+      "warnings": 253
+    },
+    "styles": {
+      "command": "pnpm stylelint",
+      "status": "passed"
+    },
+    "unit": {
+      "command": "pnpm test:unit",
+      "status": "passed",
+      "files": 10,
+      "tests": 53,
+      "finalFixtureRepair": "Preserved intentional class override order in the utility test by using separate arguments."
+    },
+    "productionBuild": {
+      "command": "pnpm build",
+      "status": "passed",
+      "nextVersion": "16.2.11"
+    },
+    "storybook": {
+      "command": "pnpm build-storybook",
+      "status": "passed",
+      "remoteChromaticApproval": false
+    },
+    "browser": {
+      "command": "pnpm test:e2e",
+      "status": "passed",
+      "tests": 30,
+      "browser": "Microsoft Edge using the Playwright chromium project",
+      "baseUrl": "http://localhost:3000",
+      "viewports": [
+        320,
+        768,
+        1440
+      ],
+      "homepageChecksRepeatedAfterComponentExtraction": 3,
+      "authenticatedWorkflowAcceptance": false,
+      "providerMessagesSent": false,
+      "hostedRecordsChanged": false,
+      "e2eSignInBypassEnabled": false,
+      "arcjet": "Local development placeholder; production perimeter not exercised"
+    },
+    "productionDependencies": {
+      "command": "pnpm audit --prod",
+      "status": "passed",
+      "knownAdvisories": 0,
+      "dependencyEntries": 881,
+      "evidence": "dependency-audit.json"
+    },
+    "secretPatterns": {
+      "status": "no_matches_in_limited_scan",
+      "scannedFiles": 709,
+      "evidence": "secret-pattern-scan.json",
+      "excludes": [
+        "environment files",
+        "binary files",
+        "git history"
+      ]
+    },
+    "productionEnvironment": {
+      "status": "expected_rejection_of_local_configuration",
+      "failures": [
+        "NEXT_PUBLIC_APP_URL is localhost",
+        "E2E_TEST_BYPASS_ENABLED is true in the local file",
+        "NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED is true in the local file"
+      ],
+      "localEnvironmentFilePreserved": true
+    },
+    "whitespace": {
+      "command": "git diff --check",
+      "status": "passed"
+    }
+  },
+  "hosted": {
+    "projectRef": "ujyellrhwhqjmfponhuz",
+    "mcpAuthentication": "verified",
+    "mcpProjectUrl": "https://ujyellrhwhqjmfponhuz.supabase.co",
+    "migrationsApplied": [
+      "20260907141835_harden_public_function_permissions",
+      "20260907143329_restrict_profile_access",
+      "20260907145618_index_operational_foreign_keys"
+    ],
+    "publicTablesWithRls": 20,
+    "publicTablesWithoutPolicies": 19,
+    "profilesAnonymousSelect": false,
+    "profilesAuthenticatedRoleUpdate": false,
+    "anonymousTriggerExecute": false,
+    "cargoDocumentsBucket": "private",
+    "advisorEvidence": "supabase-advisors.json",
+    "historicalMigrationBaselineReconciled": false
+  },
+  "deployment": {
+    "verified": false,
+    "publicWebsiteUrl": null,
+    "commitCreated": false,
+    "pushed": false,
+    "deployed": false,
+    "remoteCiRun": false
+  },
+  "openReleaseGates": [
+    "Deployed website identity and production configuration",
+    "Migration baseline, staging replay and backup restore",
+    "Authenticated staff and two-customer acceptance, PDF generation, deployed latency and load capacity",
+    "Email, WhatsApp, webhook, cron, Sentry and durable retry acceptance",
+    "Persistent fleet telemetry, driver assignment authorization and carrier integration or explicit release exclusions",
+    "Supabase leaked-password protection and staff recovery",
+    "Service/content/asset rights, support and release ownership"
+  ]
+}

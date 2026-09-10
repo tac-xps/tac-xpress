@@ -40,7 +40,7 @@ export function useEditVehicleDialog(
     startTransition(async () => {
       try {
         const result = await updateVehicleAction(values)
-        if (result?.success) {
+        if ((result?.data?.success)) {
           toast.success("Vehicle updated successfully")
           setOpen(false)
         } else {

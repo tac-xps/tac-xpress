@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-07",
+  "project": "tac-xpress",
+  "productionCleared": false,
+  "supabase": {
+    "projectRef": "ujyellrhwhqjmfponhuz",
+    "apiUrl": "https://ujyellrhwhqjmfponhuz.supabase.co",
+    "mcpAccessReverified": true,
+    "hostedWritesInRedesignPass": 0,
+    "productionWebsiteUrl": null
+  },
+  "scope": {
+    "pageAndApiFiles": 63,
+    "nextEntryFiles": 73,
+    "reachableRuntimeModules": 369,
+    "activeCompetingUiKitImports": 0,
+    "sourceInventory": "artifacts/route-source-audit.json",
+    "exhaustiveLineByLineCertification": false
+  },
+  "checks": {
+    "typecheck": {
+      "status": "passed",
+      "command": "pnpm typecheck"
+    },
+    "productionBuild": {
+      "status": "passed",
+      "command": "pnpm build",
+      "nextVersion": "16.2.11"
+    },
+    "unitTests": {
+      "status": "passed",
+      "command": "pnpm test:unit",
+      "files": 16,
+      "passed": 109,
+      "failed": 0,
+      "database": "Isolated embedded PostgreSQL/PGLite; no hosted database writes"
+    },
+    "lint": {
+      "status": "passed_with_warnings",
+      "command": "pnpm lint",
+      "errors": 0,
+      "warnings": 243,
+      "subsequentChangedFiles": "Focused ESLint checks passed; existing console warnings retained"
+    },
+    "stylelint": {
+      "status": "passed",
+      "command": "pnpm stylelint"
+    },
+    "storybook": {
+      "status": "passed",
+      "command": "pnpm build-storybook",
+      "remoteChromaticReview": "not performed"
+    },
+    "publicBrowser": {
+      "status": "passed",
+      "command": "pnpm exec playwright test tests/auth.spec.ts tests/accessibility.spec.ts --workers=2 --reporter=line",
+      "expectedTests": 53,
+      "viewports": [
+        320,
+        768,
+        1440
+      ],
+      "browser": "Installed Microsoft Edge",
+      "runtime": "Next.js development; both sign-in bypass flags disabled; explicit local Arcjet placeholder",
+      "productionPerimeterAcceptance": false,
+      "passed": 53,
+      "failed": 0,
+      "durationSeconds": 162
+    },
+    "workspaceBrowser": {
+      "status": "passed",
+      "command": "pnpm exec playwright test tests/workspace-design.spec.ts",
+      "passed": 4,
+      "failed": 0,
+      "fixture": "Isolated, clearly labelled simulated Storybook data; no live mutations"
+    },
+    "productionPerimeterSmoke": {
+      "status": "passed",
+      "passed": 3,
+      "failed": 0,
+      "runtime": "Final local production build without trusted deployment IP metadata",
+      "evidence": "production-perimeter-smoke.json",
+      "expectedBehavior": "Private API and dashboard fail closed with 503; public homepage remains 200"
+    },
+    "dependencyAudit": {
+      "status": "passed",
+      "command": "pnpm audit --prod --json",
+      "dependencies": 881,
+      "knownAdvisories": 0
+    },
+    "productionEnvironment": {
+      "status": "failed",
+      "exitCode": 1,
+      "command": "pnpm exec tsx --env-file=.env.local scripts/verify-production-env.ts",
+      "failures": [
+        "NEXT_PUBLIC_APP_URL is not a production HTTPS website origin",
+        "E2E_TEST_BYPASS_ENABLED is enabled in the local environment file",
+        "NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED is enabled in the local environment file"
+      ],
+      "environmentFileChanged": false
+    }
+  },
+  "releaseGates": [
+    "Actual deployment website identity and configuration",
+    "Explicit cargo leg completion and active assignment lifecycle",
+    "Reconciled hosted database baseline and restore-tested backup",
+    "Authenticated admin/staff workflow and document/scanner acceptance",
+    "Provider delivery, webhook/cron/alert acceptance and durable outbox",
+    "Persistent fleet telemetry and release scope for carrier/driver features",
+    "Operational, content, security and release ownership acceptance"
+  ],
+  "history": [
+    "Initial development browser run: 44 passed, 1 compilation timeout.",
+    "A production-build browser run passed 45 cases but exposed fail-open Arcjet error handling; that defect was repaired afterward.",
+    "A later development run passed 51 of 53 cases; two dynamic document routes returned framework 404 until the development server was restarted. Both then returned 401. No source route was missing; no authorization assertion was relaxed."
+  ],
+  "mutations": {
+    "committed": false,
+    "pushed": false,
+    "deployed": false,
+    "providerMessagesSent": false,
+    "unrelatedDirtyWorkPreserved": true
+  },
+  "verifiedAtUtc": "2026-09-07T17:46:10.215Z"
+}

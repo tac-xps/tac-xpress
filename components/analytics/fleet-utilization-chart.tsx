@@ -50,7 +50,7 @@ export function FleetUtilizationChart({
     React.useState<keyof typeof chartConfig>("managed")
 
   return (
-    <Card className="col-span-1 overflow-hidden border border-border/40 bg-background/50 shadow-sm backdrop-blur-3xl md:col-span-2">
+    <Card className="col-span-1 overflow-hidden border border-border bg-card shadow-card md:col-span-2">
       <CardHeader className="flex flex-col items-stretch border-b border-border/50 p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-5">
           <CardTitle className="text-base font-semibold tracking-tight">
@@ -97,7 +97,7 @@ export function FleetUtilizationChart({
       <CardContent className="px-2 pt-6 pb-2 sm:p-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[320px] w-full"
+          className="aspect-auto h-80 w-full"
         >
           <AreaChart
             accessibilityLayer
@@ -130,7 +130,7 @@ export function FleetUtilizationChart({
             />
             <ChartTooltip
               content={
-                <ChartTooltipContent className="w-[160px] rounded-xl border-border/50 bg-background/80 shadow-xl backdrop-blur-xl" />
+                <ChartTooltipContent className="w-40 rounded-none border-border bg-popover shadow-overlay" />
               }
             />
             <defs>

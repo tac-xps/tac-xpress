@@ -1,46 +1,8 @@
 "use client"
-
 import { useTheme } from "next-themes"
-import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { MoonIcon, SunIcon } from "@/components/icons/sidebar-icons"
-
+import { Moon, Sun } from "lucide-react"
 export function ThemeSwitcher() {
-  const { setTheme, theme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  const isDark = theme === "dark" || resolvedTheme === "dark"
-
-  const toggleTheme = React.useCallback(() => {
-    const nextTheme = isDark ? "light" : "dark"
-    setTheme(nextTheme)
-  }, [isDark, setTheme])
-
-  if (!mounted) {
-    return (
-      <Button className="text-muted-foreground" size="icon-sm" variant="ghost">
-        <div className="h-4 w-4" />
-      </Button>
-    )
-  }
-
-  return (
-    <Button
-      className="text-muted-foreground"
-      onClick={toggleTheme}
-      size="icon-sm"
-      variant="ghost"
-    >
-      {isDark ? (
-        <SunIcon className="h-5 w-5" />
-      ) : (
-        <MoonIcon className="h-5 w-5" />
-      )}
-      <span className="sr-only">Toggle theme</span>
-    </Button>
-  )
+  const { setTheme, resolvedTheme } = useTheme()
+  return <Button onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")} size="icon" variant="ghost" aria-label="Toggle color theme"><Sun className="hidden size-4 dark:block" /><Moon className="size-4 dark:hidden" /></Button>
 }

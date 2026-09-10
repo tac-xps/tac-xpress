@@ -3,7 +3,7 @@
 import * as Sentry from "@sentry/nextjs"
 import { eq } from "drizzle-orm"
 
-import { requireDashboardAction } from "@/lib/auth/guards"
+import { requireDashboardSession } from "@/lib/auth/guards"
 import { db } from "@/lib/db"
 import { manifests, users } from "@/lib/db/schema"
 import { sendWhatsAppTemplateMessage } from "@/lib/whatsapp/service"
@@ -12,8 +12,7 @@ export async function messageDriverAction(
   manifestId: string,
   driverId: string
 ) {
-  const authResult = await requireDashboardAction()
-  if (!authResult.ok) return authResult.response
+  await requireDashboardSession()
 
   try {
     const manifest = await db.query.manifests.findFirst({

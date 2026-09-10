@@ -162,7 +162,7 @@ export default function PortalTicketForm({
             <FormItem>
               <FormLabel>Message</FormLabel>
               <FormControl>
-                <Textarea className="min-h-[100px]" {...field} />
+                <Textarea className="min-h-24" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

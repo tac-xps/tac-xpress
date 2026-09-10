@@ -17,20 +17,22 @@ export function useInvoiceSuccessDialog({
   onOpenChange: (open: boolean) => void
 }) {
   const router = useRouter()
-  const [data, setData] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState<{ id: string; value: any } | null>(null)
+  const data = result?.id === shipmentId ? result.value : null
+  const loading = open && result?.id !== shipmentId
   const [isSending, startSend] = useTransition()
   const [whatsappSent, setWhatsappSent] = useState(false)
 
   useEffect(() => {
-    if (open && !data) {
-      setLoading(true)
-      getInvoiceDetails({ shipmentId }).then((res) => {
-        setData(res?.data ?? null)
-        setLoading(false)
-      })
-    }
-  }, [open, shipmentId, data])
+    if (!open) return
+    let current = true
+    getInvoiceDetails({ shipmentId }).then(res => {
+      if (current) setResult({ id: shipmentId, value: res?.data ?? null })
+    }).catch(() => {
+      if (current) { setResult({ id: shipmentId, value: null }); toast.error("Invoice details could not be loaded.") }
+    })
+    return () => { current = false }
+  }, [open, shipmentId])
 
   const handleClose = () => {
     onOpenChange(false)
@@ -64,7 +66,7 @@ export function useInvoiceSuccessDialog({
         loading: "Sending invoice via WhatsApp...",
         success: () => {
           setWhatsappSent(true)
-          return "Invoice sent via WhatsApp!"
+          return "Invoice accepted by WhatsApp provider."
         },
         error: (err) => err.message,
       })

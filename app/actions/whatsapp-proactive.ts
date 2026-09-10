@@ -1,4 +1,5 @@
-"use server"
+import "server-only"
+import { getAppUrl } from "@/lib/config/app-url"
 
 import { supabaseAdmin } from "@/lib/supabase/clients"
 import {
@@ -21,15 +22,15 @@ export async function notifyShipmentUpdate(
 ): Promise<void> {
   const { data } = await supabaseAdmin
     .from("shipments")
-    .select("consignee_phone, customer_phone")
+    .select("consignee_phone, consignor_phone")
     .eq("awb_number", awb)
     .single()
   const shipment = data as {
     consignee_phone?: string | null
-    customer_phone?: string | null
+    consignor_phone?: string | null
   } | null
 
-  const rawPhone = shipment?.customer_phone || shipment?.consignee_phone
+  const rawPhone = shipment?.consignor_phone || shipment?.consignee_phone
 
   if (!rawPhone) {
     console.warn(`[WhatsApp Proactive] No phone for AWB ${awb}`)
@@ -44,17 +45,17 @@ export async function notifyShipmentUpdate(
     .eq("phone", phone)
     .single()
 
-  if (subscriber?.opted_in === false) {
+  if (subscriber?.opted_in !== true) {
     console.log(`[WhatsApp Proactive] ${phone} is opted out; skipping`)
     return
   }
 
-  const trackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/portal/track`
+  const trackUrl = `${getAppUrl()}/track?awb=${encodeURIComponent(awb)}`
 
   if (isWithinWhatsAppConversationWindow(subscriber?.last_inbound_at)) {
     await sendWhatsAppTextMessage({
       to: phone,
-      text: `Update for ${awb}: your shipment is now ${newStatus}.\nTrack live: ${trackUrl}`,
+      text: `Update for ${awb}: your shipment is now ${newStatus}.\nShipment updates: ${trackUrl}`,
       relatedAwb: awb,
       context: "shipment_status_update_text",
     })
@@ -77,3 +78,4 @@ export async function notifyShipmentUpdate(
     ],
   })
 }
+

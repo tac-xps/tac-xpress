@@ -56,17 +56,17 @@ export function DailyDeliveryStatusChart({
   }, [data])
 
   return (
-    <Card className="flex h-full flex-col border-border/40 bg-background/50 shadow-sm backdrop-blur-3xl delay-75">
+    <Card className="flex h-full flex-col shadow-none">
       <CardHeader className="items-center pt-6 pb-0">
         <CardTitle className="text-base font-semibold tracking-tight">
-          Daily Delivery Status
+          Bookings today
         </CardTitle>
-        <CardDescription>Live tracking for today</CardDescription>
+        <CardDescription>Current status / booking day in UTC</CardDescription>
       </CardHeader>
       <CardContent className="mt-4 flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square max-h-64"
         >
           <PieChart>
             <ChartTooltip

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Check } from "@aliimam/icons"
+import { Check } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -51,8 +51,8 @@ export default function PricingSection() {
             setBillingPeriod(value as "monthly" | "annually")
           }
           className="w-auto"
-          tabListClassName="grid w-65 grid-cols-2 rounded-full"
-          tabTriggerClassName="rounded-full data-[state=active]:bg-background"
+          tabListClassName="grid w-65 grid-cols-2 rounded-none"
+          tabTriggerClassName="rounded-none data-[state=active]:bg-background"
           items={[
             { id: "annually", label: "Annually" },
             { id: "monthly", label: "Monthly" },
@@ -139,7 +139,7 @@ export default function PricingSection() {
                     <div className="relative flex h-4 w-4 items-center justify-center">
                       <Check />
                     </div>
-                    <div className="flex-1 text-[12.5px] font-normal">
+                    <div className="flex-1 text-xs font-normal">
                       {feature}
                     </div>
                   </div>
@@ -216,7 +216,7 @@ export default function PricingSection() {
                     <div className="relative flex h-4 w-4 items-center justify-center">
                       <Check className="text-background" />
                     </div>
-                    <div className="flex-1 text-[12.5px] leading-5 font-normal text-background">
+                    <div className="flex-1 text-xs leading-5 font-normal text-background">
                       {feature}
                     </div>
                   </div>
@@ -293,7 +293,7 @@ export default function PricingSection() {
                     <div className="relative flex h-4 w-4 items-center justify-center">
                       <Check />
                     </div>
-                    <div className="flex-1 text-[12.5px] font-normal">
+                    <div className="flex-1 text-xs font-normal">
                       {feature}
                     </div>
                   </div>
@@ -317,3 +317,4 @@ export default function PricingSection() {
     </div>
   )
 }
+

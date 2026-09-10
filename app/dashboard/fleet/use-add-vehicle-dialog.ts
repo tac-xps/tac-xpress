@@ -25,7 +25,7 @@ export function useAddVehicleDialog() {
     startTransition(async () => {
       try {
         const result = await createVehicleAction(values)
-        if (result?.success) {
+        if ((result?.data?.success)) {
           toast.success("Vehicle added successfully")
           form.reset()
           setOpen(false)

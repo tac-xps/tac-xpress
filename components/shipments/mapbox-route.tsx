@@ -23,11 +23,11 @@ export function MapboxRoute({
   )
 
   return (
-    <div className="relative h-[400px] w-full overflow-hidden rounded-lg border">
+    <div className="relative h-96 w-full overflow-hidden rounded-none border">
       <div ref={mapContainer} className="absolute inset-0" />
 
       {!hasToken && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-muted/80 backdrop-blur-sm">
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-muted/90">
           <p className="font-medium text-muted-foreground">
             Mapbox Token Missing in .env.local
           </p>

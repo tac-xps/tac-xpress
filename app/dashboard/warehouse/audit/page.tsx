@@ -29,7 +29,7 @@ export default function WarehouseAuditPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card className="col-span-1 border-2 border-dashed md:col-span-2 lg:col-span-3">
           <CardHeader className="pb-2 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-none bg-primary/10">
               <ScanBarcode className="h-8 w-8 text-primary" />
             </div>
             <CardTitle className="text-2xl font-black uppercase">

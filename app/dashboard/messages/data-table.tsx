@@ -85,7 +85,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="w-full">
       <div className="flex items-center justify-between gap-4 py-4">
-        <div className="relative w-full sm:w-[350px]">
+        <div className="relative w-full sm:w-80">
           <Search className="absolute top-2.5 left-2.5 size-4 text-muted-foreground" />
           <Input
             placeholder="Search tickets..."
@@ -124,7 +124,7 @@ export function DataTable<TData, TValue>({
         </DropdownMenu>
       </div>
 
-      <div className="rounded-md border bg-card">
+      <div className="rounded-none border bg-card">
         <Table>
           <TableHeader className="bg-muted/20">
             {table.getHeaderGroups().map((headerGroup) => (

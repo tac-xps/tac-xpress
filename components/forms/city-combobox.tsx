@@ -1,19 +1,5 @@
 "use client"
-
-import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
-import { cn } from "@/lib/utils"
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxGroup,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-  ComboboxTrigger,
-} from "@/components/kibo-ui/combobox"
-
+import { SearchSelect } from "./search-select"
 export type CityData = {
   city: string
   state: string
@@ -43,90 +29,32 @@ const STANDARD_CITIES: CityData[] = [
   { city: "Bhopal", state: "Madhya Pradesh", pinCode: "462001" },
 ]
 
-interface CityComboboxProps {
+export function CityCombobox({
+  value,
+  onSelect,
+  disabled,
+}: {
   value?: string
   onSelect: (data: CityData) => void
   disabled?: boolean
-}
-
-export function CityCombobox({ value, onSelect, disabled }: CityComboboxProps) {
-  const mappedData = React.useMemo(() => {
-    const defaultCities = [...PRIORITY_CITIES, ...STANDARD_CITIES]
-    const exists = defaultCities.some(
-      (c) => c.city.toLowerCase() === value?.toLowerCase()
-    )
-    const list = [...defaultCities]
-    if (value && !exists) {
-      list.push({ city: value, state: "", pinCode: "" })
-    }
-    return list.map((c) => ({ label: c.city, value: c.city }))
-  }, [value])
-
+}) {
+  const cities = [...PRIORITY_CITIES, ...STANDARD_CITIES]
+  if (value && !cities.some((item) => item.city === value))
+    cities.push({ city: value, state: "", pinCode: "" })
   return (
-    <Combobox
-      data={mappedData}
-      type="city"
+    <SearchSelect
       value={value}
-      onValueChange={(val) => {
-        const found =
-          PRIORITY_CITIES.find((c) => c.city === val) ||
-          STANDARD_CITIES.find((c) => c.city === val) ||
-          (val ? { city: val, state: "", pinCode: "" } : null)
-        if (found) onSelect(found)
+      label="Select a city"
+      disabled={disabled}
+      options={cities.map((item) => ({
+        value: item.city,
+        label: item.city,
+        detail: item.state,
+      }))}
+      onSelect={(city) => {
+        const item = cities.find((entry) => entry.city === city)
+        if (item) onSelect({ ...item, pinCode: "" })
       }}
-    >
-      <ComboboxTrigger className="w-full justify-between" disabled={disabled} />
-      <ComboboxContent>
-        <ComboboxInput placeholder="Search city..." />
-        <ComboboxList>
-          <ComboboxEmpty />
-          {!PRIORITY_CITIES.some(
-            (c) => c.city.toLowerCase() === value?.toLowerCase()
-          ) &&
-            !STANDARD_CITIES.some(
-              (c) => c.city.toLowerCase() === value?.toLowerCase()
-            ) &&
-            value && (
-              <ComboboxGroup heading="Resolved Location">
-                <ComboboxItem value={value}>
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      "opacity-100" // Always visible since it only renders when selected
-                    )}
-                  />
-                  {value}
-                </ComboboxItem>
-              </ComboboxGroup>
-            )}
-          <ComboboxGroup heading="Priority Hubs">
-            {PRIORITY_CITIES.map((cityData) => (
-              <ComboboxItem key={cityData.city} value={cityData.city}>
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === cityData.city ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {cityData.city}
-              </ComboboxItem>
-            ))}
-          </ComboboxGroup>
-          <ComboboxGroup heading="Standard Locations">
-            {STANDARD_CITIES.map((cityData) => (
-              <ComboboxItem key={cityData.city} value={cityData.city}>
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === cityData.city ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {cityData.city}
-              </ComboboxItem>
-            ))}
-          </ComboboxGroup>
-        </ComboboxList>
-      </ComboboxContent>
-    </Combobox>
+    />
   )
 }

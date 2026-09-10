@@ -1,34 +1,17 @@
-import React from "react"
+import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
-import { drivers, vehicles, shipments, manifests } from "@/lib/db/schema"
-import { eq, isNull, sql, and } from "drizzle-orm"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  Truck,
-  MapPin,
-  Clock,
-  Search,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { DispatchMap } from "@/components/dispatch/dispatch-map"
-import { CreateDispatchDialog } from "./create-dispatch-dialog"
-import { DispatchClientLayout } from "./dispatch-client-layout" // I will extract the client part
-import {
-  DEFAULT_PAGE_SIZE,
-  PageNavigation,
-  parsePage,
-} from "@/components/ui/page-navigation"
+import { DispatchClientLayout } from "./dispatch-client-layout"
+import { DEFAULT_PAGE_SIZE, parsePage } from "@/components/ui/page-navigation"
 
 export default async function DispatchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string | string[] }>
+  searchParams: Promise<{ page?: string | string[]; view?: string }>
 }) {
-  const page = parsePage((await searchParams).page)
+  await requireStaffPage()
+
+  const params = await searchParams
+  const page = parsePage(params.page)
   const dispatchRows = await db.query.manifests.findMany({
     where: (manifests, { or, ilike }) =>
       or(
@@ -38,6 +21,7 @@ export default async function DispatchPage({
     with: {
       driver: true,
       vehicle: true,
+      items: { with: { shipment: { columns: { status: true } } } },
     },
     orderBy: (manifests, { desc }) => [desc(manifests.createdAt)],
     limit: DEFAULT_PAGE_SIZE + 1,
@@ -52,6 +36,7 @@ export default async function DispatchPage({
     with: {
       manifestItems: true,
     },
+    orderBy: (table, { desc }) => [desc(table.createdAt), desc(table.id)],
     limit: 100,
   })
 
@@ -65,10 +50,11 @@ export default async function DispatchPage({
 
     return {
       id: s.awbNumber,
+      shipmentId: s.id,
       route: `${s.origin} → ${s.destination}`,
-      type: s.weightKg && s.weightKg > 500 ? "FTL" : "LTL",
+      type: s.serviceType === "express_air" ? "Air cargo" : "Surface cargo",
       status: s.status,
-      time: "Ready",
+      time: `Booked ${s.bookingDate.toLocaleDateString("en-IN")}`,
       column: columnId,
       name: s.awbNumber,
       isAssigned: s.manifestItems.length > 0,
@@ -81,11 +67,9 @@ export default async function DispatchPage({
         pendingShipments={unassignedPendingShipments}
         queueItems={queueItems}
         dispatchRuns={dbDispatchRuns}
-      />
-      <PageNavigation
         page={page}
         hasNext={hasNext}
-        pathname="/dashboard/dispatch"
+        view={params.view === "runs" ? "runs" : "board"}
       />
     </>
   )

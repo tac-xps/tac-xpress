@@ -45,7 +45,7 @@ export function MessageDriverButton({
       variant="ghost"
       onClick={handleMessage}
       disabled={isLoading || !manifestId}
-      className="flex h-auto w-full items-center justify-center gap-2 rounded-lg bg-primary/10 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
+      className="flex h-auto w-full items-center justify-center gap-2 rounded-none bg-primary/10 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
     >
       <Navigation className="size-4" />
       {isLoading ? "Sending..." : "Message Driver"}

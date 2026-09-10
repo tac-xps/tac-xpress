@@ -13,6 +13,7 @@ const optionalPhone = z
   .optional()
 
 export const invoiceWizardSchema = z.object({
+  requestId: z.string().uuid().optional(),
   serviceType: z.enum(["express_air", "standard_ocean", "road_freight"]),
   origin: z.string().min(1, "Origin is required"),
   destination: z.string().min(1, "Destination is required"),
@@ -48,11 +49,11 @@ export const invoiceWizardSchema = z.object({
   ]),
   itemCondition: z.enum(["new", "used", "refurbished"]),
   declaredValue: z.coerce.number().min(0, "Value must be positive"),
-  pieces: z.coerce.number().min(1, "Pieces must be at least 1"),
-  weightKg: z.coerce.number().min(0.1, "Weight must be positive"),
-  dimensionsL: z.coerce.number().optional().default(0),
-  dimensionsW: z.coerce.number().optional().default(0),
-  dimensionsH: z.coerce.number().optional().default(0),
+  pieces: z.coerce.number().int().min(1, "Pieces must be at least 1").max(10000),
+  weightKg: z.coerce.number().min(0.1, "Weight must be positive").max(100000),
+  dimensionsL: z.coerce.number().min(0).max(10000).optional().default(0),
+  dimensionsW: z.coerce.number().min(0).max(10000).optional().default(0),
+  dimensionsH: z.coerce.number().min(0).max(10000).optional().default(0),
   packagingType: z.enum([
     "none",
     "corrugated_box",
@@ -69,7 +70,7 @@ export const invoiceWizardSchema = z.object({
   docketCharge: z.coerce.number().min(0),
   insuranceCharge: z.coerce.number().min(0),
   otherCharges: z.coerce.number().min(0),
-  gstRate: z.coerce.number(),
+  gstRate: z.coerce.number().int().min(0).max(28),
   paymentMode: z.enum(["cash", "upi", "card", "wallet", "credit", "to_pay"]),
   advancePaid: z.coerce.number().min(0),
   remarks: z.string().optional(),

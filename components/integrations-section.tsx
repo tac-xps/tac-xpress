@@ -50,10 +50,12 @@ export default function IntegrationsSection() {
             <Button
               variant="default"
               size="lg"
-              className="h-12 px-8 font-mono font-bold tracking-wide"
+              className="h-9 px-4 font-mono font-bold tracking-wide"
               asChild
             >
-              <Link href="#">VIEW DEVELOPER DOCS</Link>
+              <Link href="mailto:hello@tacxpress.com">
+                CONTACT DEVELOPER TEAM
+              </Link>
             </Button>
           </div>
         </div>

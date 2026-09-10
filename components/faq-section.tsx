@@ -54,7 +54,7 @@ export default function FAQSection() {
           <div className="inline-flex w-fit items-center border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
             SUPPORT & INFO
           </div>
-          <h2 className="font-heading text-4xl tracking-tight text-foreground uppercase sm:text-5xl">
+          <h2 className="font-heading text-4xl tracking-tight text-foreground sm:text-5xl">
             Frequently Asked Questions
           </h2>
           <p className="text-lg text-muted-foreground">

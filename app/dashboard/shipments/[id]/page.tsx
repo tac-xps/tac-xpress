@@ -1,90 +1,28 @@
-import { auth } from "@/auth"
+import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { shipments, trackingEvents } from "@/lib/db/schema"
-import { eq, desc, and } from "drizzle-orm"
+import { eq, desc, and, isNull } from "drizzle-orm"
 import { notFound } from "next/navigation"
-import { SecureBoundary } from "@/components/security/secure-boundary"
+import { z } from "zod"
 import { ShipmentTimeline } from "@/components/shipments/realtime-tracker"
-import { DataLabel } from "@/components/typography/data-label"
-import { UpdateStatusButton } from "@/components/shipments/UpdateStatusButton"
-
-export default async function ShipmentDetailPage(props: {
-  params: Promise<{ id: string }>
-}) {
-  const params = await props.params
-  const session = await auth()
-  if (!session?.user?.id) return <div>Unauthorized</div>
-
-  const [shipment] = await db
-    .select()
-    .from(shipments)
-    .where(and(eq(shipments.id, params.id)))
-    .limit(1)
-
-  if (!shipment) return notFound()
-
-  // Fetch immutable event log
-  const events = await db
-    .select()
-    .from(trackingEvents)
-    .where(eq(trackingEvents.shipmentId, params.id))
-    .orderBy(desc(trackingEvents.createdAt))
-
-  return (
-    <div className="mx-auto max-w-4xl space-y-8 p-8">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-primary">
-            Shipment Details
-          </h1>
-          <p className="text-muted-foreground tabular-nums">
-            {shipment.awbNumber}
-          </p>
-        </div>
-        <SecureBoundary
-          table="shipments"
-          operation="update"
-          resourceId={shipment.id}
-          fallback="boundary"
-          upgradePath="/settings/roles"
-        >
-          <UpdateStatusButton
-            shipmentId={shipment.id}
-            currentStatus={shipment.status}
-          />
-        </SecureBoundary>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2 border bg-card p-6 shadow-sm">
-          <DataLabel className="block">Route</DataLabel>
-          <p className="font-semibold">
-            {shipment.origin} &rarr; {shipment.destination}
-          </p>
-          <DataLabel className="block pt-4">Service Type</DataLabel>
-          <p className="font-semibold">
-            {shipment.serviceType.replace("_", " ")}
-          </p>
-        </div>
-        <div className="space-y-2 border bg-card p-6 shadow-sm">
-          <DataLabel className="block">Cargo Details</DataLabel>
-          <p className="font-semibold tabular-nums">{shipment.weightKg} kg</p>
-          <DataLabel className="block pt-4">Status</DataLabel>
-          <p className="font-semibold capitalize tabular-nums">
-            {shipment.status}
-          </p>
-        </div>
-      </div>
-
-      <ShipmentTimeline
-        events={events.map((e) => ({
-          id: e.id,
-          type: e.status,
-          occurredAt: e.createdAt.toISOString(),
-          payload: { location: e.location, description: e.description },
-          eventHash: e.id,
-        }))}
-      />
-    </div>
-  )
+import { CargoDocuments } from "@/components/documents/cargo-documents"
+import { PageHeader } from "@/components/operations/page-header"
+import { StatusBadge } from "@/components/logistics/status-badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AddTrackingEventDialog } from "../add-tracking-event-dialog"
+export default async function ShipmentDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireStaffPage()
+  const { id } = await params
+  if (!z.string().uuid().safeParse(id).success) notFound()
+  const [shipment] = await db.select().from(shipments).where(and(eq(shipments.id, id), isNull(shipments.deletedAt))).limit(1)
+  if (!shipment) notFound()
+  const events = await db.select().from(trackingEvents).where(eq(trackingEvents.shipmentId, id)).orderBy(desc(trackingEvents.createdAt)).limit(200)
+  const facts = [["Route", `${shipment.origin} → ${shipment.destination}`], ["Service", shipment.serviceType === "express_air" ? "Air cargo" : "Surface cargo"], ["Actual weight", `${shipment.weightKg} kg`], ["Packages", String(shipment.pieces ?? 1)]]
+  return <div className="flex min-w-0 flex-col gap-6"><PageHeader title={shipment.awbNumber} description="Shipment details, recorded events and private supporting documents."><StatusBadge status={shipment.status} /><AddTrackingEventDialog shipmentId={shipment.id} awbNumber={shipment.awbNumber} /></PageHeader>
+    <dl className="grid gap-6 rounded-none border bg-card p-5 sm:grid-cols-2 lg:grid-cols-4">{facts.map(([label, value]) => <div key={label}><dt className="text-sm text-muted-foreground">{label}</dt><dd className="mt-3 font-medium">{value}</dd></div>)}</dl>
+    <div className="grid gap-5 sm:grid-cols-2">{[{ label: "Sender", name: shipment.consignorName, phone: shipment.consignorPhone, address: shipment.consignorAddress }, { label: "Recipient", name: shipment.consigneeName, phone: shipment.consigneePhone, address: shipment.consigneeAddress }].map((party) => <Card key={party.label}><CardHeader><CardTitle>{party.label}</CardTitle></CardHeader><CardContent className="flex flex-col gap-2"><p className="font-medium">{party.name || "Name not recorded"}</p><p className="text-sm text-muted-foreground">{party.phone || "Phone not recorded"}</p><p className="text-sm leading-relaxed text-muted-foreground">{party.address || "Address not recorded"}</p></CardContent></Card>)}</div>
+    <ShipmentTimeline events={events.map((event) => ({ id: event.id, type: event.status, occurredAt: event.createdAt.toISOString(), payload: { location: event.location, description: event.description }, eventHash: event.id, isPublic: event.isPublic }))} /><CargoDocuments entity="shipments" id={shipment.id} />
+  </div>
 }
+
+

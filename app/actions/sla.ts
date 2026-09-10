@@ -1,4 +1,4 @@
-"use server"
+import "server-only"
 
 import { logAudit } from "@/lib/audit"
 import { supabaseAdmin } from "@/lib/supabase/clients"
@@ -9,15 +9,17 @@ export async function applySLA(
   category?: string
 ) {
   // Find matching policy (exact category match first, then priority-only fallback)
-  const { data: policy } = await supabaseAdmin
+  const { data: policy, error: policyError } = await supabaseAdmin
     .from("sla_policies")
     .select("*")
     .eq("priority", priority)
     .eq("is_active", true)
     .or(`category.eq.${category},category.is.null`)
-    .order("category", { ascending: false }) // Non-null category first
+    .order("category", { ascending: false, nullsFirst: false })
     .limit(1)
-    .single()
+    .maybeSingle()
+
+  if (policyError) throw policyError
 
   if (!policy) {
     console.warn(
@@ -26,7 +28,15 @@ export async function applySLA(
     return
   }
 
-  const now = new Date()
+  const { data: ticket, error: ticketError } = await supabaseAdmin
+    .from("tickets")
+    .select("created_at")
+    .eq("id", ticketId)
+    .single()
+  if (ticketError || !ticket)
+    throw ticketError || new Error("Ticket unavailable.")
+  // Retrying triage must not postpone the customer's response deadline.
+  const now = new Date(ticket.created_at)
   const firstResponseMs = policy.first_response_minutes * 60000
   const resolutionMs = policy.resolution_minutes * 60000
 

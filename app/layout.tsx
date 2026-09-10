@@ -1,4 +1,4 @@
-import { DM_Sans, Lora, IBM_Plex_Mono } from "next/font/google"
+import { DM_Sans, IBM_Plex_Mono } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -17,12 +17,6 @@ const fontSans = DM_Sans({
   variable: "--font-dm-sans",
 })
 
-const fontSerif = Lora({
-  subsets: ["latin"],
-  variable: "--font-lora",
-  preload: false,
-})
-
 const fontMono = IBM_Plex_Mono({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
@@ -31,9 +25,9 @@ const fontMono = IBM_Plex_Mono({
 })
 
 export const metadata = {
-  title: "TAC-XPRESS | Tactical Air Cargo Express",
+  title: "TAC-XPRESS | Air and surface cargo",
   description:
-    "Enterprise-grade logistics and cargo operations across Northeast India and New Delhi.",
+    "Air and surface cargo between Northeast India and New Delhi. Explore services, prepare your shipment and track with your AWB.",
 }
 
 export default async function RootLayout({
@@ -42,8 +36,9 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const session = await auth()
-  
-  let bootstrappedFeatureFlags: Record<string, string | boolean> | undefined = undefined
+
+  let bootstrappedFeatureFlags: Record<string, string | boolean> | undefined =
+    undefined
 
   if (session?.user) {
     Sentry.setUser({
@@ -61,7 +56,6 @@ export default async function RootLayout({
     }
   }
 
-
   return (
     <html
       lang="en"
@@ -69,7 +63,6 @@ export default async function RootLayout({
       className={cn(
         "antialiased",
         fontSans.variable,
-        fontSerif.variable,
         fontMono.variable,
         "font-sans"
       )}
@@ -89,3 +82,4 @@ export default async function RootLayout({
     </html>
   )
 }
+

@@ -1,29 +1,19 @@
 "use server"
 
-import { actionClient } from "@/lib/safe-action"
+import { authActionClient } from "@/lib/safe-action"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { shipments, trackingEvents } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
-import { requireDashboardAction } from "@/lib/auth/guards"
 
 const scanShipmentSchema = z.object({
   awbNumber: z.string().min(1, "AWB Number is required"),
 })
 
-export const scanShipmentAction = actionClient
+export const scanShipmentAction = authActionClient
   .schema(scanShipmentSchema)
   .action(async ({ parsedInput: { awbNumber } }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) {
-      return {
-        success: false,
-        error: authResult.response.error,
-        shipment: undefined,
-      }
-    }
-
     // Find the shipment
     const shipment = await db.query.shipments.findFirst({
       where: eq(shipments.awbNumber, awbNumber),

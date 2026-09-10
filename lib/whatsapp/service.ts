@@ -1,4 +1,7 @@
+import "server-only"
 import * as Sentry from "@sentry/nextjs"
+import { db } from "@/lib/db"
+import { whatsappSubscribers } from "@/lib/db/schema"
 import { parsePhoneNumberFromString } from "libphonenumber-js"
 
 import { withRetry } from "@/lib/queue"
@@ -12,16 +15,23 @@ import {
 } from "@/lib/whatsapp/config"
 
 const OUTBOUND_PROVIDER = "wpbox"
-const GENERIC_PROVIDER_ERROR = "WhatsApp provider rejected the message."
+const GENERIC_PROVIDER_ERROR =
+  "Delivery was not confirmed. Check the provider history before retrying; the message may already have been accepted."
 const DISABLED_ERROR = "WhatsApp delivery is currently disabled."
 const MISCONFIGURED_ERROR = "WhatsApp delivery is not configured."
 
-type WhatsAppMessageStatus = "sent" | "delivered" | "read" | "failed"
+type WhatsAppMessageStatus =
+  | "pending"
+  | "sent"
+  | "delivered"
+  | "read"
+  | "failed"
 type WhatsAppMessageType = "text" | "template"
 
 type WhatsAppSendContext = {
   relatedTicketId?: string | null
   relatedAwb?: string | null
+  relatedInvoiceId?: string | null
   context?: string
 }
 
@@ -120,8 +130,10 @@ function hasSemanticFailure(
   rawBody: string
 ) {
   if (!parsedBody) {
-    return false
+    return true
   }
+  const ids = extractMessageIdentifiers(parsedBody)
+  if (!ids.providerMessageId && !ids.metaMessageId) return true
 
   const normalizedStatus =
     typeof parsedBody.status === "string"
@@ -216,43 +228,50 @@ export function isWithinWhatsAppConversationWindow(
   return now.getTime() - lastInbound.getTime() < 24 * 60 * 60 * 1000
 }
 
-async function insertOutboundLog(input: {
-  phone: string
-  body: string
-  messageType: WhatsAppMessageType
-  status: WhatsAppMessageStatus
-  templateName?: string | null
-  templateLanguage?: string | null
-  relatedTicketId?: string | null
-  relatedAwb?: string | null
-  providerMessageId?: string | null
-  metaMessageId?: string | null
-  providerPayload?: Record<string, any> | null
-  failureReason?: string | null
-}) {
-  const { data, error } = await supabaseAdmin
-    .from("message_outbound")
-    .insert({
-      phone: input.phone,
-      body: input.body,
-      whatsapp_message_id:
-        input.metaMessageId || input.providerMessageId || null,
-      provider_name: OUTBOUND_PROVIDER,
-      provider_message_id: input.providerMessageId || null,
-      meta_message_id: input.metaMessageId || null,
-      status: input.status,
-      template_name: input.templateName || null,
-      template_language: input.templateLanguage || null,
-      message_type: input.messageType,
-      related_ticket_id: input.relatedTicketId || null,
-      related_awb: input.relatedAwb || null,
-      failure_reason: input.failureReason || null,
-      provider_payload: input.providerPayload || null,
-      last_status_at: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-    } as any)
-    .select("id")
-    .single()
+async function insertOutboundLog(
+  input: {
+    phone: string
+    body: string
+    messageType: WhatsAppMessageType
+    status: WhatsAppMessageStatus
+    templateName?: string | null
+    templateLanguage?: string | null
+    relatedTicketId?: string | null
+    relatedAwb?: string | null
+    relatedInvoiceId?: string | null
+    providerMessageId?: string | null
+    metaMessageId?: string | null
+    providerPayload?: Record<string, any> | null
+    failureReason?: string | null
+  },
+  existingId?: string
+) {
+  const payload = {
+    phone: input.phone,
+    body: input.body,
+    whatsapp_message_id: input.metaMessageId || input.providerMessageId || null,
+    provider_name: OUTBOUND_PROVIDER,
+    provider_message_id: input.providerMessageId || null,
+    meta_message_id: input.metaMessageId || null,
+    status: input.status,
+    template_name: input.templateName || null,
+    template_language: input.templateLanguage || null,
+    message_type: input.messageType,
+    related_ticket_id: input.relatedTicketId || null,
+    related_awb: input.relatedAwb || null,
+    related_invoice_id: input.relatedInvoiceId || null,
+    failure_reason: input.failureReason || null,
+    provider_payload: input.providerPayload || null,
+    last_status_at: new Date().toISOString(),
+    ...(existingId ? {} : { created_at: new Date().toISOString() }),
+  }
+  const query = existingId
+    ? supabaseAdmin
+        .from("message_outbound")
+        .update(payload)
+        .eq("id", existingId)
+    : supabaseAdmin.from("message_outbound").insert(payload)
+  const { data, error } = await query.select("id").single()
 
   if (error) {
     Sentry.captureException(error, {
@@ -281,6 +300,7 @@ async function sendViaRelay(input: {
   actionName: string
   relatedTicketId?: string | null
   relatedAwb?: string | null
+  relatedInvoiceId?: string | null
   sentryContext?: string
 }) {
   const config = getWhatsAppConfig()
@@ -296,6 +316,7 @@ async function sendViaRelay(input: {
       templateLanguage: input.templateLanguage,
       relatedTicketId: input.relatedTicketId,
       relatedAwb: input.relatedAwb,
+      relatedInvoiceId: input.relatedInvoiceId,
       failureReason: DISABLED_ERROR,
     })
 
@@ -318,11 +339,32 @@ async function sendViaRelay(input: {
       templateLanguage: input.templateLanguage,
       relatedTicketId: input.relatedTicketId,
       relatedAwb: input.relatedAwb,
+      relatedInvoiceId: input.relatedInvoiceId,
       failureReason: MISCONFIGURED_ERROR,
     })
 
     return { success: false, error: MISCONFIGURED_ERROR }
   }
+
+  const logId = await insertOutboundLog({
+    phone: normalizedPhone,
+    body: input.bodyPreview,
+    messageType: input.messageType,
+    status: "pending",
+    templateName: input.templateName,
+    templateLanguage: input.templateLanguage,
+    relatedTicketId: input.relatedTicketId,
+    relatedAwb: input.relatedAwb,
+    relatedInvoiceId: input.relatedInvoiceId,
+    failureReason:
+      "Awaiting provider response. Review provider history before any retry.",
+  })
+  if (!logId)
+    return {
+      success: false,
+      error:
+        "Message was not sent because its delivery attempt could not be saved.",
+    }
 
   const relayResult = await withRetry<ProviderResult>(
     async () => {
@@ -330,11 +372,13 @@ async function sendViaRelay(input: {
         `${config.relayBaseUrl}/api/wpbox/${input.endpoint}`,
         {
           method: "POST",
+          signal: AbortSignal.timeout(15000),
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             token: config.relayToken,
+            ...(config.userId ? { uid: config.userId } : {}),
             phone: normalizedPhone,
             ...input.payload,
           }),
@@ -361,21 +405,26 @@ async function sendViaRelay(input: {
       templateName: input.templateName,
       relatedTicketId: input.relatedTicketId,
       relatedAwb: input.relatedAwb,
-    }
+    },
+    1 // A provider without idempotency support must not be retried after an ambiguous send.
   )
 
   if (!relayResult) {
-    await insertOutboundLog({
-      phone: normalizedPhone,
-      body: input.bodyPreview,
-      messageType: input.messageType,
-      status: "failed",
-      templateName: input.templateName,
-      templateLanguage: input.templateLanguage,
-      relatedTicketId: input.relatedTicketId,
-      relatedAwb: input.relatedAwb,
-      failureReason: GENERIC_PROVIDER_ERROR,
-    })
+    await insertOutboundLog(
+      {
+        phone: normalizedPhone,
+        body: input.bodyPreview,
+        messageType: input.messageType,
+        status: "failed",
+        templateName: input.templateName,
+        templateLanguage: input.templateLanguage,
+        relatedTicketId: input.relatedTicketId,
+        relatedAwb: input.relatedAwb,
+        relatedInvoiceId: input.relatedInvoiceId,
+        failureReason: GENERIC_PROVIDER_ERROR,
+      },
+      logId
+    )
 
     return {
       success: false,
@@ -384,22 +433,31 @@ async function sendViaRelay(input: {
   }
 
   const identifiers = extractMessageIdentifiers(relayResult.parsedBody)
-  const logId = await insertOutboundLog({
-    phone: normalizedPhone,
-    body: input.bodyPreview,
-    messageType: input.messageType,
-    status: "sent",
-    templateName: input.templateName,
-    templateLanguage: input.templateLanguage,
-    relatedTicketId: input.relatedTicketId,
-    relatedAwb: input.relatedAwb,
-    providerMessageId: identifiers.providerMessageId,
-    metaMessageId: identifiers.metaMessageId,
-    providerPayload: serializeProviderPayload(
-      relayResult.parsedBody,
-      relayResult.rawBody
-    ),
-  })
+  const updatedLogId = await insertOutboundLog(
+    {
+      phone: normalizedPhone,
+      body: input.bodyPreview,
+      messageType: input.messageType,
+      status: "sent",
+      templateName: input.templateName,
+      templateLanguage: input.templateLanguage,
+      relatedTicketId: input.relatedTicketId,
+      relatedAwb: input.relatedAwb,
+      relatedInvoiceId: input.relatedInvoiceId,
+      providerMessageId: identifiers.providerMessageId,
+      metaMessageId: identifiers.metaMessageId,
+      providerPayload: serializeProviderPayload(
+        relayResult.parsedBody,
+        relayResult.rawBody
+      ),
+    },
+    logId
+  )
+  if (!updatedLogId)
+    Sentry.captureMessage(
+      "Provider accepted a message but its receipt identifiers could not be saved",
+      { level: "error", extra: { logId, ...identifiers } }
+    )
 
   return {
     success: true,
@@ -473,6 +531,7 @@ export async function sendWhatsAppTemplateMessage(
       actionName: "whatsapp_send_template",
       relatedTicketId: input.relatedTicketId,
       relatedAwb: input.relatedAwb,
+      relatedInvoiceId: input.relatedInvoiceId,
       sentryContext: input.context,
     })
   } catch (error) {
@@ -500,88 +559,27 @@ export async function recordInboundWhatsAppActivity(input: {
   const normalizedPhone = normalizeWhatsAppPhone(input.phone)
   const occurredAt = input.timestamp || new Date().toISOString()
 
-  const { error } = await supabaseAdmin.from("whatsapp_subscribers").upsert(
-    {
-      phone: normalizedPhone,
-      name: input.name || null,
-      opted_in: input.optedIn ?? true,
-      last_inbound_at: occurredAt,
-      updated_at: occurredAt,
-    } as any,
-    { onConflict: "phone" }
-  )
-
-  if (error) {
-    throw error
+  const activity = {
+    name: input.name || null,
+    lastInboundAt: new Date(occurredAt),
+    updatedAt: new Date(occurredAt),
   }
+  await db
+    .insert(whatsappSubscribers)
+    .values({
+      phone: normalizedPhone,
+      ...activity,
+      optedIn: input.optedIn ?? true,
+    })
+    .onConflictDoUpdate({
+      target: whatsappSubscribers.phone,
+      set: {
+        ...activity,
+        ...(input.optedIn !== undefined ? { optedIn: input.optedIn } : {}),
+      },
+    })
 
   return normalizedPhone
 }
 
-export async function recordWhatsAppStatusUpdate(statusUpdate: any) {
-  const messageId = pickFirstString(statusUpdate?.id)
-  const status = pickFirstString(
-    statusUpdate?.status
-  ) as WhatsAppMessageStatus | null
-  const statusEpoch = Number(statusUpdate?.timestamp)
-  const statusTimestamp = Number.isFinite(statusEpoch)
-    ? new Date(statusEpoch * 1000).toISOString()
-    : new Date().toISOString()
-
-  if (!messageId || !status) {
-    return
-  }
-
-  const validStatuses: WhatsAppMessageStatus[] = [
-    "sent",
-    "delivered",
-    "read",
-    "failed",
-  ]
-
-  if (!validStatuses.includes(status)) {
-    return
-  }
-
-  const failureReason =
-    status === "failed"
-      ? extractProviderError(
-          statusUpdate?.errors?.[0]
-            ? { error: statusUpdate.errors[0].message }
-            : null,
-          ""
-        )
-      : null
-
-  const updatePayload = {
-    status,
-    meta_message_id: messageId,
-    whatsapp_message_id: messageId,
-    last_status_at: statusTimestamp,
-    failure_reason: failureReason,
-  } as any
-
-  const { data, error } = await supabaseAdmin
-    .from("message_outbound")
-    .update(updatePayload)
-    .or(`meta_message_id.eq.${messageId},whatsapp_message_id.eq.${messageId},provider_message_id.eq.${messageId}`)
-    .select("id")
-
-  if (error) {
-    Sentry.captureException(error, {
-      tags: { area: "whatsapp_status_update" },
-      extra: { messageId, status },
-    })
-    return
-  }
-
-  if (data && data.length > 0) {
-    return
-  }
-
-  Sentry.captureMessage("WhatsApp status update could not be correlated", {
-    level: "warning",
-    tags: { area: "whatsapp_status_update" },
-    extra: { messageId, status },
-  })
-}
+export { recordDeliveryReceipt as recordWhatsAppStatusUpdate } from "./delivery-status"

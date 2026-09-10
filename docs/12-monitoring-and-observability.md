@@ -1,62 +1,17 @@
-# Monitoring and Observability
+# Monitoring and observability
 
-## Sentry
+Sentry captures critical server-action, route, relay, and provider failures. Use meaningful area tags and safe metadata; never attach credentials or full personal records.
 
-Sentry is the primary exception capture layer for:
+## Health
 
-- auth route failures
-- public invoice PDF failures
-- portal action failures
-- AI triage and responder failures
-- WhatsApp relay and webhook correlation failures
+`/api/health` reports database reachability and configuration state for OpenRouter, WhatsApp, and Resend. It requires the cron bearer secret or an authorized dashboard session. Treat health output as operational information, not a public status API.
 
-## Health Endpoint
+## What to watch
 
-`GET /api/health` reports:
+- Authentication failures and authorization denials.
+- Carrier/WhatsApp webhook verification and processing failures.
+- Invoice PDF and Storage failures.
+- Delivery queue/dead-letter growth and message status lag.
+- Public tracking, support, and chat rate-limit denials.
 
-- database reachability
-- OpenRouter configuration
-- WhatsApp relay and webhook configuration
-
-Access:
-
-- dashboard-authenticated users
-- cron-style bearer access with `CRON_SECRET`
-
-## Support and Messaging Audit Surfaces
-
-Email:
-
-- `email_notifications` stores dispatch attempts and provider ids.
-
-WhatsApp:
-
-- `message_outbound` stores provider ids, Meta ids, message type, related ticket or AWB, status, failure reason, and status timestamps.
-- `whatsapp_subscribers.last_inbound_at` is the conversation-window reference point.
-
-AI and SLA:
-
-- `audit_log` captures automated ticket routing and responder activity.
-
-## Dead Letter Queue
-
-Failed external operations are written to `dead_letter_queue`.
-
-Use this for:
-
-- relay failures that exhausted retries
-- transient provider outages
-- replay and operational investigation
-
-Do not replace the DLQ with one-off resend code paths.
-
-## Release Observability Gates
-
-Before production release, confirm:
-
-1. `pnpm typecheck`
-2. `pnpm lint`
-3. `pnpm stylelint`
-4. `pnpm test:unit`
-5. `pnpm build`
-6. smoke verification of landing, portal, dashboard, and WhatsApp webhook challenge
+Use health checks with provider dashboards and Sentry release context during deployments.

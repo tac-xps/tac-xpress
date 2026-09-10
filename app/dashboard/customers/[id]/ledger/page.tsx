@@ -1,3 +1,4 @@
+import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { invoices, users, shipments } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
@@ -18,6 +19,8 @@ export const dynamic = "force-dynamic"
 export default async function CustomerLedgerPage(props: {
   params: Promise<{ id: string }>
 }) {
+  await requireStaffPage()
+
   const params = await props.params
   const customerId = params.id
 

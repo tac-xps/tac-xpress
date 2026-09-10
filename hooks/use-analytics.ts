@@ -1,10 +1,14 @@
-import { usePostHog } from 'posthog-js/react'
+import { usePostHog } from "posthog-js/react"
 
 export type LogisticsEvents = {
   shipment_created: { shipment_id: string; destination: string; weight: number }
   invoice_paid: { invoice_id: string; amount: number; currency: string }
-  driver_assigned: { driver_id: string; vehicle_id: string; manifest_id: string }
-  ticket_escalated: { ticket_id: string; priority: 'high' | 'critical' }
+  driver_assigned: {
+    driver_id: string
+    vehicle_id: string
+    manifest_id: string
+  }
+  ticket_escalated: { ticket_id: string; priority: "high" | "critical" }
 }
 
 export function useAnalytics() {

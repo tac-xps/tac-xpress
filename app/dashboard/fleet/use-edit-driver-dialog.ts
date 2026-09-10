@@ -40,7 +40,7 @@ export function useEditDriverDialog(
     startTransition(async () => {
       try {
         const result = await updateDriverAction(values)
-        if (result?.success) {
+        if ((result?.data?.success)) {
           toast.success("Driver updated successfully")
           setOpen(false)
         } else {

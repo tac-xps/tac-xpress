@@ -1,4 +1,4 @@
-"use server"
+import "server-only"
 
 import { OpenAI } from "openai"
 import { supabaseAdmin } from "@/lib/supabase/clients"
@@ -6,8 +6,11 @@ import * as Sentry from "@sentry/nextjs"
 import { z } from "zod"
 import { logAudit } from "@/lib/audit"
 import { safeParse } from "@/lib/validation/guard"
+import { getPublicShipmentContext } from "@/lib/support/public-shipment-context"
 
 const openai = new OpenAI({
+  timeout: 10000,
+  maxRetries: 0,
   apiKey: process.env.OPENROUTER_API,
   baseURL: "https://openrouter.ai/api/v1",
   defaultHeaders: {
@@ -31,7 +34,7 @@ const triageInputSchema = z.object({
     .max(5000, "Description too long"),
   awb: z
     .string()
-    .regex(/^(?:AWB|TAC|DEMO)-[A-Za-z0-9-]{6,24}$/i, "Invalid AWB format")
+    .regex(/^[A-Z0-9-]{5,40}$/i, "Invalid AWB format")
     .optional(),
 })
 
@@ -42,17 +45,6 @@ const triageResultSchema = z.object({
 })
 
 type TriageResult = z.infer<typeof triageResultSchema>
-
-type ShipmentContextRow = {
-  status: string | null
-  origin: string | null
-  destination: string | null
-  edd: string | null
-  tracking_events?: Array<{
-    status: string | null
-    event_time: string | null
-  }> | null
-}
 
 const CATEGORY_PROMPT = `You are a logistics support triage agent. Categorize the customer ticket into exactly one of: delay, damage, billing, general, lost.
 
@@ -75,7 +67,7 @@ async function createTimedTriageCompletion(input: {
     async (span) => {
       const result = await openai.chat.completions.create(
         {
-          model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+          model: process.env.OPENAI_MODEL || "openai/gpt-4o-mini",
           messages: [
             { role: "system", content: CATEGORY_PROMPT },
             {
@@ -88,7 +80,7 @@ async function createTimedTriageCompletion(input: {
           logprobs: true,
         },
         {
-          signal: AbortSignal.timeout(30_000),
+          signal: AbortSignal.timeout(10_000),
         }
       )
 
@@ -118,36 +110,10 @@ export async function triageTicket(
     description,
     awb,
   })
-  // Fetch shipment context if AWB provided
-  let shipmentContext = ""
-  if (input.awb) {
-    const { data } = await supabaseAdmin
-      .from("shipments")
-      .select(
-        `
-        status,
-        origin,
-        destination,
-        edd,
-        tracking_events (
-          status,
-          event_time
-        )
-      `
-      )
-      .eq("awb_number", input.awb)
-      .order("event_time", {
-        referencedTable: "tracking_events",
-        ascending: false,
-      })
-      .limit(1, { referencedTable: "tracking_events" })
-      .maybeSingle()
-    const shipment = data as ShipmentContextRow | null
-    if (shipment) {
-      const latestEvent = shipment.tracking_events?.[0]?.status || "none"
-      shipmentContext = `Shipment ${input.awb}: status=${shipment.status}, route=${shipment.origin}->${shipment.destination}, last_event=${latestEvent}, edd=${shipment.edd || "unknown"}`
-    }
-  }
+  const shipment = await getPublicShipmentContext(input.awb)
+  const shipmentContext = shipment
+    ? `Public shipment update: ${JSON.stringify(shipment)}`
+    : "No public shipment updates are available."
 
   const fallbackResult: TriageResult = {
     category: "general",
@@ -172,7 +138,8 @@ export async function triageTicket(
       subject: input.subject,
       description: input.description,
       awb: input.awb,
-    }
+    },
+    1
   )
 
   if (!completion) {
@@ -207,7 +174,7 @@ export async function triageTicket(
   })
 
   // Update ticket with AI classification
-  await supabaseAdmin
+  const { error: updateError } = await supabaseAdmin
     .from("tickets")
     .update({
       category: result.category,
@@ -218,18 +185,11 @@ export async function triageTicket(
       updated_at: new Date().toISOString(),
     })
     .eq("id", input.ticketId)
+  if (updateError) throw updateError
 
-  import("@/app/actions/sla").then(({ applySLA }) => {
-    withRetry(
-      () => applySLA(input.ticketId, result.priority, result.category),
-      "sla_apply",
-      {
-        ticketId: input.ticketId,
-        priority: result.priority,
-        category: result.category,
-      }
-    )
-  })
+  const { applySLA } = await import("@/app/actions/sla")
+  // The durable worker owns retries; a failed SLA write must not complete its job.
+  await applySLA(input.ticketId, result.priority, result.category)
 
   await logAudit({
     action: "ai_triage",
@@ -258,41 +218,12 @@ export async function triageTicket(
     result.priority !== "critical" &&
     result.priority !== "high"
   ) {
-    // Only fire auto-responder for lower priority to be safe
-    import("@/app/actions/ai-responder")
-      .then(({ generateAutoReply }) => {
-        // Re-fetch shipment if it exists to pass to auto-responder
-        if (input.awb) {
-          supabaseAdmin
-            .from("shipments")
-            .select("*")
-            .eq("awb_number", input.awb)
-            .single()
-            .then(({ data }) => {
-              withRetry(
-                () => generateAutoReply(input.ticketId, result.category, data),
-                "ai_auto_reply",
-                {
-                  ticketId: input.ticketId,
-                  category: result.category,
-                  awb: input.awb,
-                }
-              )
-            })
-        } else {
-          withRetry(
-            () => generateAutoReply(input.ticketId, result.category, null),
-            "ai_auto_reply",
-            { ticketId: input.ticketId, category: result.category }
-          )
-        }
-      })
-      .catch((e) => {
-        Sentry.captureException(e, {
-          extra: { context: "ai_auto_responder_import" },
-        })
-        console.error("Failed to import ai-responder:", e)
-      })
+    const { generateAutoReply } = await import("@/app/actions/ai-responder")
+    await withRetry(
+      () => generateAutoReply(input.ticketId, result.category, input.awb),
+      "ai_auto_reply",
+      { ticketId: input.ticketId, category: result.category, awb: input.awb }
+    )
   }
 
   return result

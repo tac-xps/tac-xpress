@@ -76,7 +76,7 @@ export function InvoiceSuccessDialog({
                     damping: 20,
                     delay: 0.1,
                   }}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-foreground"
+                  className="flex h-10 w-10 items-center justify-center rounded-none bg-muted text-foreground"
                 >
                   <Check className="h-5 w-5" strokeWidth={3} />
                 </motion.div>

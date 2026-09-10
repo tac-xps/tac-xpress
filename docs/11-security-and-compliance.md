@@ -1,45 +1,23 @@
-# Security and Compliance
+# Security and compliance
 
-## Perimeter
+## Perimeter and identity
 
-- `proxy.ts` is the only request perimeter for Next.js 16.
-- Production fails closed when `ARCJET_KEY` is unset or still a placeholder.
-- Server Actions bypass Arcjet body parsing only where required for Next.js action semantics.
+`proxy.ts` is the Next.js perimeter. It applies Arcjet, protects dashboard navigation, hides test-only paths, and fails closed in production when its key is absent. Server actions and route handlers still enforce their own role, ownership, or integration checks.
 
-## Secret Handling
+## Data protection
 
-- `AUTH_SECRET` is the canonical dashboard auth secret.
-- `PORTAL_SESSION_SECRET` signs customer portal cookies.
-- `INVOICE_PDF_SIGNING_SECRET` signs public invoice PDF access.
-- `WHATSAPP_APP_SECRET` verifies Meta webhook payloads.
-- `WHATSAPP_VERIFY_TOKEN` is used only for Meta GET challenge verification.
+- Service-role credentials remain server-only.
+- The earlier hosted audit verified RLS on all 20 public tables; 19 had no ordinary Data API policies. Profiles used owner-only policies with client role edits prohibited. Recheck these privileges before release; the current redesign pass did not rerun every advisor. Service-role/owner queries require application authorization independently of RLS.
+- Public tracking and documents return least-privilege projections or expiring signed URLs.
+- Webhooks verify HMAC signatures before processing bodies.
+- Logs and Sentry events must not include secrets, magic links, tokens, or unnecessary personal data.
 
-## Error Handling
+## Operational controls
 
-- Public and auth-facing routes must never return raw `message`, `stack`, or provider payloads.
-- Diagnostics belong in Sentry or server logs, not client JSON responses.
-- Portal-facing actions must return generic customer-safe errors.
+Use generic user-facing auth errors, current non-deleted staff roles and expiring document-purpose tokens, durable rate limiting for public abuse paths, audit records for material staff actions, and dependency review before release.
 
-## Ticket and Data Contracts
+See [the current production audit](nordic-lagom-audit-2026-09-07.md) for verified repairs and outstanding controls. The earlier hosted audit found leaked-password protection disabled; recheck it before release. The old hosted migration baseline remains unreconciled.
 
-- `tickets.category` is reserved for canonical triage categories.
-- `tickets.intake_category` preserves the original channel label.
-- Repeated WhatsApp customer messages append to an active ticket instead of creating unlimited duplicate threads.
 
-## Webhook Security
 
-- WhatsApp webhook POST requests require a valid `x-hub-signature-256` HMAC signature.
-- Invalid signatures return `403`.
-- Invalid or missing secrets return `401`.
 
-## Public Data Exposure Rules
-
-- Public tracking only returns rows flagged as publicly trackable.
-- Portal invoice downloads must verify the authenticated portal email matches the invoice owner.
-- Dashboard data must stay behind NextAuth and role-aware guards.
-
-## Operational Controls
-
-- Use `WHATSAPP_ENABLED` as the outbound kill switch.
-- Use Sentry for critical exception capture.
-- Keep the dead-letter queue enabled for failed external side effects.

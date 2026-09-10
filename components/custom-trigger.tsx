@@ -16,7 +16,7 @@ export function CustomTrigger({ place }: { place: Place }) {
         "transition-opacity duration-0 ease-out motion-reduce:transition-none",
         !sidebarOpen &&
           place === "navbar" &&
-          "0fill-mode-forwards delay-100 duration-300",
+          "fill-mode-forwards delay-100 duration-300",
         sidebarOpen && place === "navbar" && "pointer-events-none opacity-0",
         !sidebarOpen && place === "sidebar" && "pointer-events-none opacity-0"
       )}

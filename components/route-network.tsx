@@ -17,7 +17,7 @@ export function RouteNetworkSection() {
           <div className="inline-flex items-center border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
             NETWORK COVERAGE
           </div>
-          <h2 className="font-heading text-4xl tracking-tight text-foreground uppercase sm:text-5xl md:text-6xl">
+          <h2 className="font-heading text-4xl tracking-tight text-foreground sm:text-5xl md:text-6xl">
             Fleet & Logistics
           </h2>
           <p className="max-w-2xl text-lg text-muted-foreground">

@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs"
+import { sql, type SQL } from "drizzle-orm"
 
 import { supabaseAdmin } from "@/lib/supabase/clients"
 
@@ -20,18 +21,7 @@ type AuditInsertPayload = {
   created_at: string
 }
 
-export async function logAudit({
-  action,
-  entity,
-  entityId,
-  userId,
-  userEmail,
-  resourceId,
-  metadata,
-  before,
-  after,
-  createdAt,
-}: {
+type AuditInput = {
   action: AuditAction
   entity?: AuditEntity
   entityId?: string | null
@@ -42,11 +32,24 @@ export async function logAudit({
   before?: Record<string, unknown> | null
   after?: Record<string, unknown> | null
   createdAt?: string
-}) {
+}
+
+function auditPayload({
+  action,
+  entity,
+  entityId,
+  userId,
+  userEmail,
+  resourceId,
+  metadata,
+  before,
+  after,
+  createdAt,
+}: AuditInput): AuditInsertPayload {
   const effectiveEntityId = entityId ?? resourceId ?? null
   const effectiveResourceId = resourceId ?? entityId ?? null
-  const payload: AuditInsertPayload = {
-    user_email: userEmail ?? null,
+  return {
+    user_email: userEmail ?? "unknown",
     user_id: userId ?? null,
     action,
     entity: entity ?? null,
@@ -57,16 +60,37 @@ export async function logAudit({
     after: after ?? null,
     created_at: createdAt ?? new Date().toISOString(),
   }
+}
 
-  const { error } = await supabaseAdmin.from("audit_log").insert(payload)
+/** Insert with the caller's transaction so an audit failure rolls back the mutation. */
+export async function logAuditInTransaction(
+  tx: { execute: (query: SQL) => Promise<unknown> },
+  input: AuditInput
+) {
+  const payload = auditPayload(input)
+  await tx.execute(sql`
+    insert into public.audit_log
+      (user_email, user_id, action, entity, entity_id, resource_id, metadata, "before", "after", created_at)
+    values
+      (${payload.user_email}, ${payload.user_id}, ${payload.action}, ${payload.entity},
+       ${payload.entity_id}, ${payload.resource_id}, ${payload.metadata === null ? null : JSON.stringify(payload.metadata)}::jsonb,
+       ${payload.before === null ? null : JSON.stringify(payload.before)}::jsonb, ${payload.after === null ? null : JSON.stringify(payload.after)}::jsonb,
+       ${payload.created_at}::timestamptz)
+  `)
+}
+
+export async function logAudit(input: AuditInput) {
+  const { error } = await supabaseAdmin
+    .from("audit_log")
+    .insert(auditPayload(input))
 
   if (error) {
     Sentry.captureException(error, {
       tags: { area: "audit_log" },
       extra: {
-        action,
-        entity,
-        entityId: effectiveEntityId,
+        action: input.action,
+        entity: input.entity,
+        entityId: input.entityId ?? input.resourceId ?? null,
       },
     })
     throw error

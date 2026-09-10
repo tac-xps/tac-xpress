@@ -25,7 +25,7 @@ async function checkOpenRouter() {
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 3000)
     try {
-      const response = await fetch("https://openrouter.ai/api/v1/models", {
+      const response = await fetch("https://openrouter.ai/api/v1/key", {
         headers: {
           Authorization: `Bearer ${apiKey}`,
         },
@@ -97,6 +97,7 @@ export async function GET(request: NextRequest) {
   }
 
   const resendConfigured = Boolean(process.env.RESEND_API_KEY?.trim())
+  if (!resendConfigured) healthChecks.status = "degraded"
   healthChecks.services.resend = {
     status: resendConfigured ? "configured" : "unconfigured",
   }

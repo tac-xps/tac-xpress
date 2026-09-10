@@ -1,4 +1,5 @@
 "use client"
+import { useHydrated } from "@/hooks/use-hydrated"
 
 import React, { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
@@ -13,11 +14,7 @@ export function Portal({
   className?: string
   id?: string
 }) {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  const mounted = useHydrated()
 
   if (!mounted) return null
 

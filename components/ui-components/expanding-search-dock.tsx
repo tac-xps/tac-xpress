@@ -46,7 +46,7 @@ export function ExpandingSearchDock({
               opacity: 0,
             }}
             onClick={handleExpand}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card transition-colors hover:bg-muted"
+            className="flex h-9 w-9 items-center justify-center rounded-none border border-border bg-card transition-colors hover:bg-muted"
           >
             <Search className="h-5 w-5" />{" "}
           </motion.button>
@@ -69,7 +69,7 @@ export function ExpandingSearchDock({
                 backdropFilter: "blur(0px)",
               }}
               animate={{ backdropFilter: "blur(12px)" }}
-              className="relative flex items-center gap-2 overflow-hidden rounded-full border border-border bg-card/80 backdrop-blur-md"
+              className="relative flex items-center gap-2 overflow-hidden rounded-none border border-border bg-card/80 backdrop-blur-md"
             >
               <div className="ml-4">
                 <Search className="h-4 w-4 text-muted-foreground" />
@@ -80,7 +80,7 @@ export function ExpandingSearchDock({
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={placeholder}
                 autoFocus
-                className="h-12 flex-1 bg-transparent pr-4 text-sm outline-none placeholder:text-muted-foreground"
+                className="h-9 flex-1 bg-transparent pr-4 text-sm outline-none placeholder:text-muted-foreground"
               />{" "}
               <motion.button
                 type="button"
@@ -89,7 +89,7 @@ export function ExpandingSearchDock({
                 animate={{ scale: 1 }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="mr-2 flex h-8 w-8 items-center justify-center rounded-full hover:bg-muted"
+                className="mr-2 flex h-8 w-8 items-center justify-center rounded-none hover:bg-muted"
               >
                 <X className="h-4 w-4" />{" "}
               </motion.button>{" "}

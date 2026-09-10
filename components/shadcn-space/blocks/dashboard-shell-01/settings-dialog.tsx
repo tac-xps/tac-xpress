@@ -48,20 +48,26 @@ export function SettingsDialog({
   const [smsNotifs, setSmsNotifs] = useState(profile?.smsNotifications ?? false)
 
   const [teamMembers, setTeamMembers] = useState<any[]>([])
-  useEffect(() => {
+  const [previousProfile, setPreviousProfile] = useState(profile)
+  if (profile !== previousProfile) {
+    setPreviousProfile(profile)
     if (profile) {
       setFullName(profile.fullName || "")
       setEmailNotifs(profile.emailNotifications ?? true)
       setWhatsappNotifs(profile.whatsappNotifications ?? true)
       setSmsNotifs(profile.smsNotifications ?? false)
     }
-  }, [profile])
+  }
+
+  const [previousOpen, setPreviousOpen] = useState(open)
+  if (open !== previousOpen) {
+    setPreviousOpen(open)
+    if (open) { setActiveTab(defaultTab); setIsDataLoading(true) }
+  }
 
   useEffect(() => {
     if (open) {
-      setActiveTab(defaultTab)
       // Fetch dynamic data when modal opens
-      setIsDataLoading(true)
       getTeamMembers()
         .catch(() => [])
         .then((team) => {
@@ -155,7 +161,7 @@ export function SettingsDialog({
             {/* ACCOUNT TAB */}
             <TabsContent
               value="account"
-              className="m-0 flex h-full animate-in flex-col gap-6 border-none p-0 duration-300 fade-in-50 outline-none slide-in-from-right-4"
+              className="m-0 flex h-full flex-col gap-6 border-none p-0 duration-300 animate-in outline-none fade-in-50 slide-in-from-right-4"
             >
               <div>
                 <h3 className="text-xl font-medium tracking-tight">
@@ -174,7 +180,7 @@ export function SettingsDialog({
                     disabled
                     className="cursor-not-allowed bg-muted/50"
                   />
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-micro text-muted-foreground">
                     Contact support to change your email.
                   </p>
                 </div>
@@ -212,7 +218,7 @@ export function SettingsDialog({
             {/* TEAM TAB */}
             <TabsContent
               value="team"
-              className="m-0 flex h-full animate-in flex-col gap-6 border-none p-0 duration-300 fade-in-50 outline-none slide-in-from-right-4"
+              className="m-0 flex h-full flex-col gap-6 border-none p-0 duration-300 animate-in outline-none fade-in-50 slide-in-from-right-4"
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -249,7 +255,7 @@ export function SettingsDialog({
                       className="grid grid-cols-4 items-center border-b border-border/50 p-3 transition-colors last:border-0 hover:bg-muted/10"
                     >
                       <div className="col-span-2 flex items-center gap-3 pl-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-none bg-primary/10 text-xs font-bold text-primary">
                           {member.fullName.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex flex-col">
@@ -284,7 +290,7 @@ export function SettingsDialog({
             {/* API TAB */}
             <TabsContent
               value="api"
-              className="m-0 flex h-full animate-in flex-col gap-6 border-none p-0 duration-300 fade-in-50 outline-none slide-in-from-right-4"
+              className="m-0 flex h-full flex-col gap-6 border-none p-0 duration-300 animate-in outline-none fade-in-50 slide-in-from-right-4"
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -323,7 +329,7 @@ export function SettingsDialog({
             {/* NOTIFICATIONS TAB */}
             <TabsContent
               value="notifications"
-              className="m-0 flex h-full animate-in flex-col gap-6 border-none p-0 duration-300 fade-in-50 outline-none slide-in-from-right-4"
+              className="m-0 flex h-full flex-col gap-6 border-none p-0 duration-300 animate-in outline-none fade-in-50 slide-in-from-right-4"
             >
               <div>
                 <h3 className="text-xl font-medium tracking-tight">

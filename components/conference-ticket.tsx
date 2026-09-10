@@ -37,18 +37,18 @@ export function ConferenceTicket() {
           <div className="absolute top-0 right-0 bottom-0 hidden border-r-2 border-dashed border-border/50 md:block" />
 
           {/* Cutout Circles (Desktop) */}
-          <div className="absolute -top-3 -right-3 z-10 hidden h-6 w-6 rounded-full bg-background md:block" />
-          <div className="absolute -right-3 -bottom-3 z-10 hidden h-6 w-6 rounded-full bg-background md:block" />
+          <div className="absolute -top-3 -right-3 z-10 hidden h-6 w-6 rounded-none bg-background md:block" />
+          <div className="absolute -right-3 -bottom-3 z-10 hidden h-6 w-6 rounded-none bg-background md:block" />
 
           {/* Dashed Line (Bottom Border for Mobile) */}
           <div className="absolute right-0 bottom-0 left-0 block border-b-2 border-dashed border-border/50 md:hidden" />
 
           {/* Cutout Circles (Mobile) */}
-          <div className="absolute -bottom-3 -left-3 z-10 block h-6 w-6 rounded-full bg-background md:hidden" />
-          <div className="absolute -right-3 -bottom-3 z-10 block h-6 w-6 rounded-full bg-background md:hidden" />
+          <div className="absolute -bottom-3 -left-3 z-10 block h-6 w-6 rounded-none bg-background md:hidden" />
+          <div className="absolute -right-3 -bottom-3 z-10 block h-6 w-6 rounded-none bg-background md:hidden" />
           {/* Decorative Circles */}
-          <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-primary opacity-10 blur-3xl" />
-          <div className="absolute right-10 -bottom-16 h-40 w-40 rounded-full bg-accent opacity-10 blur-3xl" />
+          <div className="absolute -top-16 -left-16 h-40 w-40 rounded-none bg-primary opacity-10 blur-3xl" />
+          <div className="absolute right-10 -bottom-16 h-40 w-40 rounded-none bg-accent opacity-10 blur-3xl" />
 
           <div className="relative z-10 flex h-full flex-col justify-between space-y-8">
             {/* Header */}
@@ -146,7 +146,7 @@ export function ConferenceTicket() {
               </p>
             </div>
             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-              <div className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+              <div className="h-2 w-2 animate-pulse rounded-none bg-primary" />
               <span>Confirmed</span>
             </div>
           </div>

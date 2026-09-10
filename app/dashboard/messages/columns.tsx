@@ -27,6 +27,7 @@ export type TicketData = {
   status: string
   priority: string
   related_awb: string | null
+  assigned_to: string | null
   created_at: string
 }
 

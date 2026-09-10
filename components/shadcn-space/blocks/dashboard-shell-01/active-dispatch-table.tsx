@@ -107,7 +107,7 @@ export function ActiveDispatchTable({ data }: ActiveDispatchTableProps) {
                       ? `${item.driver.name} / ${item.vehicle?.registrationNumber || "Unassigned"}`
                       : "Unassigned"}
                   </TableCell>
-                  <TableCell className="w-[150px]">
+                  <TableCell className="w-36">
                     <div className="flex items-center gap-2">
                       <Progress
                         value={
@@ -133,10 +133,10 @@ export function ActiveDispatchTable({ data }: ActiveDispatchTableProps) {
                     <div className="flex items-center gap-2">
                       <div className="relative flex size-2 items-center justify-center">
                         {item.status === "in-transit" && (
-                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+                          <span className="absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-none bg-primary opacity-75"></span>
                         )}
                         <span
-                          className={`relative inline-flex size-2 rounded-full ${
+                          className={`relative inline-flex size-2 rounded-none ${
                             item.status === "finalized"
                               ? "bg-muted-foreground"
                               : item.status === "in-transit"

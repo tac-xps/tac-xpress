@@ -101,7 +101,7 @@ export function ScannerResultModal({
               </DialogDescription>
             </div>
 
-            <div className="flex min-w-[200px] flex-col gap-2">
+            <div className="flex min-w-48 flex-col gap-2">
               <Button
                 variant="outline"
                 className="w-full justify-start"
@@ -354,7 +354,7 @@ export function ScannerResultModal({
               </div>
 
               {shipmentData.contentDescription && (
-                <div className="rounded-md bg-muted/50 p-3 text-sm">
+                <div className="rounded-none bg-muted/50 p-3 text-sm">
                   <span className="mr-2 font-bold">Content Description:</span>
                   <span className="text-muted-foreground">
                     {shipmentData.contentDescription}

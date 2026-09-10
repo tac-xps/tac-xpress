@@ -14,7 +14,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { deleteTicketAction } from "./actions"
 import { toast } from "sonner"
+import { ConfirmRemoval } from "@/components/operations/confirm-removal"
 import type { TicketData } from "./columns"
+import { EditTicketDialog } from "./edit-ticket-dialog"
+import { Edit } from "lucide-react"
 
 interface TicketActionsProps {
   ticket: TicketData
@@ -24,28 +27,22 @@ interface TicketActionsProps {
 export function TicketActions({ ticket, onViewTicket }: TicketActionsProps) {
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
 
   async function handleDelete() {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this ticket? This action cannot be undone."
-      )
-    )
-      return
-
     setIsDeleting(true)
-    const result = await deleteTicketAction({ id: ticket.id })
-    if (result?.data?.success) {
-      toast.success("Ticket deleted successfully")
+    try {
+      const result = await deleteTicketAction({ id: ticket.id })
+      if (!result?.data?.success) throw new Error("Unable to remove this record")
+      toast.success("Record removed")
       router.refresh()
-    } else {
-      toast.error(result?.data?.error || "Failed to delete ticket")
-    }
-    setIsDeleting(false)
+    } finally { setIsDeleting(false) }
   }
 
   return (
     <div className="flex justify-end pr-4">
+      <ConfirmRemoval open={deleteOpen} onOpenChange={setDeleteOpen} title="Remove this support ticket?" description="This removes the record. Confirm that it was created in error or is no longer needed." onConfirm={handleDelete} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0" disabled={isDeleting}>
@@ -66,13 +63,26 @@ export function TicketActions({ ticket, onViewTicket }: TicketActionsProps) {
             <Eye className="mr-2 h-4 w-4" />
             View ticket details
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setEditOpen(true)}>
+            <Edit className="mr-2 h-4 w-4" />
+            Edit ticket
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive" onClick={handleDelete}>
+          <DropdownMenuItem variant="destructive" onClick={() => setDeleteOpen(true)}>
             <Trash className="mr-2 h-4 w-4" />
             {isDeleting ? "Deleting..." : "Delete ticket"}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      
+      {editOpen && (
+        <EditTicketDialog 
+          ticket={ticket} 
+          open={editOpen} 
+          onOpenChange={setEditOpen} 
+        />
+      )}
     </div>
   )
 }
+

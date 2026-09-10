@@ -1,84 +1,34 @@
 import Link from "next/link"
-import { and, isNull, ne } from "drizzle-orm"
-import { auth } from "@/auth"
+import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
-import { shipments, manifests } from "@/lib/db/schema"
+import { shipments, manifests, invoices, tickets } from "@/lib/db/schema"
+import { sql, isNull } from "drizzle-orm"
 import { getDashboardOverview } from "@/lib/dashboard-metrics"
-import { StatisticsBlock } from "@/components/shadcn-space/blocks/dashboard-shell-01/statistics"
-import { SalesOverviewChart } from "@/components/shadcn-space/blocks/dashboard-shell-01/sales-overview-chart"
-import { EarningReportChart } from "@/components/shadcn-space/blocks/dashboard-shell-01/earning-report-chart"
-import { ActiveDispatchTable } from "@/components/shadcn-space/blocks/dashboard-shell-01/active-dispatch-table"
-import { HubVolumeWidget } from "@/components/shadcn-space/blocks/dashboard-shell-01/hub-volume-widget"
+import { PageHeader } from "@/components/operations/page-header"
+import { OverviewMetrics } from "@/components/operations/overview-metrics"
+import { VolumeChart } from "@/components/operations/volume-chart"
+import { WorkQueue } from "@/components/operations/work-queue"
+import { OpenManifests, HubActivity } from "@/components/operations/overview-records"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
-import { DashboardIcon } from "@/components/icons/sidebar-icons"
-import { TypographyH2, TypographyMuted } from "@/components/ui/typography"
-
+import { getControlCenterSnapshot } from "@/lib/control-center"
+import { ControlCenterActions, ControlCenterPanels } from "@/components/operations/control-center"
 export default async function DashboardPage() {
-  const [session, overview, activeShipments] = await Promise.all([
-    auth(),
+  await requireStaffPage()
+  const [overview, drafts, [pending], [draftCount], [overdue], [support], control] = await Promise.all([
     getDashboardOverview(),
-    db.query.manifests.findMany({
-      where: (manifests, { and, ne }) => and(ne(manifests.status, "finalized")),
-      with: {
-        driver: true,
-        vehicle: true,
-        originHub: true,
-        destinationHub: true,
-      },
-      orderBy: (manifests, { desc }) => [desc(manifests.createdAt)],
-      limit: 10,
-    }),
+    db.query.manifests.findMany({ where: (table, { eq }) => eq(table.status, "draft"), with: { driver: true, vehicle: true, originHub: true, destinationHub: true }, orderBy: (table, { desc }) => [desc(table.createdAt)], limit: 10 }),
+    db.select({ count: sql<number>`count(*) filter (where ${shipments.status} = 'pending')` }).from(shipments).where(isNull(shipments.deletedAt)),
+    db.select({ count: sql<number>`count(*) filter (where ${manifests.status} = 'draft')` }).from(manifests),
+    db.select({ count: sql<number>`count(*) filter (where ${invoices.status} = 'unpaid' and ${invoices.dueDate} < now())` }).from(invoices),
+    db.select({ count: sql<number>`count(*) filter (where ${tickets.status} in ('open', 'in_progress'))` }).from(tickets),
+    getControlCenterSnapshot(),
   ])
-
-  const displayName = session?.user?.name || "there"
-
-  return (
-    <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 md:gap-8">
-      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-4">
-          <div className="shrink-0 rounded-lg bg-primary/15 p-3 shadow-sm ring-1 ring-primary/20">
-            <DashboardIcon className="size-8 text-primary" />
-          </div>
-          <div className="space-y-1">
-            <TypographyH2 className="mt-0 border-none pb-0 text-3xl">
-              Welcome back, {displayName}.
-            </TypographyH2>
-            <TypographyMuted>
-              Here is what&apos;s happening in your logistics network today.
-            </TypographyMuted>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            asChild
-            className="bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-shadow hover:shadow-primary/30"
-          >
-            <Link href="/dashboard/dispatch">
-              <Plus className="mr-2 size-4" />
-              New Dispatch
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-12 transition-shadow duration-300 hover:shadow-md">
-          <StatisticsBlock stats={overview.stats} />
-        </div>
-        <div className="col-span-12 transition-shadow duration-300 hover:shadow-md xl:col-span-8">
-          <SalesOverviewChart data={overview.salesData} />
-        </div>
-        <div className="col-span-12 transition-shadow duration-300 hover:shadow-md xl:col-span-4">
-          <EarningReportChart summary={overview.operationsSummary} />
-        </div>
-        <div className="col-span-12 transition-shadow duration-300 hover:shadow-md xl:col-span-8">
-          <ActiveDispatchTable data={activeShipments} />
-        </div>
-        <div className="col-span-12 transition-shadow duration-300 hover:shadow-md xl:col-span-4">
-          <HubVolumeWidget hubs={overview.hubsData} />
-        </div>
-      </div>
-    </div>
-  )
+  return <div className="flex min-w-0 flex-col gap-6">
+    <PageHeader title="Operations overview" description="A clear view of the cargo, work queues and records behind each delivery."><Button asChild variant="outline"><Link href="/dashboard/dispatch">Open dispatch</Link></Button><Button asChild><Link href="/dashboard/shipments">Manage shipments</Link></Button></PageHeader>
+    <ControlCenterActions />
+    <OverviewMetrics stats={overview.stats} />
+    <ControlCenterPanels snapshot={control} />
+    <div className="grid min-w-0 gap-6 xl:grid-cols-[1.6fr_1fr]"><VolumeChart data={overview.salesData} /><WorkQueue counts={{ pending: Number(pending.count), drafts: Number(draftCount.count), overdue: Number(overdue.count), support: Number(support.count) }} /></div><div className="grid min-w-0 gap-6 xl:grid-cols-[1.6fr_1fr]"><OpenManifests data={drafts} /><HubActivity hubs={overview.hubsData} /></div>
+  </div>
 }
+

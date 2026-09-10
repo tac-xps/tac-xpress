@@ -3,16 +3,16 @@ import { db } from "@/lib/db"
 import { trackingEvents } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 
-import { auth } from "@/auth"
+import { requireDashboardApi } from "@/lib/auth/guards"
+import * as Sentry from "@sentry/nextjs"
 import { shipments } from "@/lib/db/schema"
 
 export const dynamic = "force-dynamic"
 
 export async function GET(req: NextRequest) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return new Response("Unauthorized", { status: 401 })
-  }
+  const access = await requireDashboardApi()
+  if (!access.ok) return access.response
+  const session = access.session
   const allowMockEvents =
     process.env.NODE_ENV !== "production" &&
     process.env.E2E_TEST_BYPASS_ENABLED === "true"
@@ -30,7 +30,10 @@ export async function GET(req: NextRequest) {
     return new Response("Not found", { status: 404 })
   }
 
-  if (session.user.role === "customer" && shipment.customerId !== session.user.id) {
+  if (
+    session.user.role === "customer" &&
+    shipment.customerId !== session.user.id
+  ) {
     return new Response("Unauthorized", { status: 401 })
   }
 
@@ -90,18 +93,20 @@ export async function GET(req: NextRequest) {
             )
           }
         } catch (err) {
-          console.error("SSE Poll Error:", err)
+          Sentry.captureException(err, { tags: { area: "tracking_stream" } })
         }
       }, 5000)
 
       req.signal.addEventListener("abort", () => {
         clearInterval(pollInterval)
-        try { controller.close() } catch {}
+        try {
+          controller.close()
+        } catch {}
       })
     },
     cancel() {
       if (pollInterval) clearInterval(pollInterval)
-    }
+    },
   })
 
   return new Response(stream, {

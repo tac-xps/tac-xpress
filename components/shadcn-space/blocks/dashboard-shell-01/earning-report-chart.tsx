@@ -10,7 +10,7 @@ type EarningReportChartProps = {
 
 export function EarningReportChart({ summary }: EarningReportChartProps) {
   return (
-    <Card className="group relative flex h-full min-h-[350px] flex-col overflow-hidden delay-500">
+    <Card className="group relative flex h-full min-h-80 flex-col overflow-hidden delay-500">
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/dashboard/8a.png')] bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105 dark:bg-[url('/images/dashboard/8b.png')]" />
         <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/20 to-background/90" />
@@ -25,11 +25,11 @@ export function EarningReportChart({ summary }: EarningReportChartProps) {
           <div className="relative flex h-2 w-2">
             {summary.hasLiveData ? (
               <>
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-status-delivered opacity-75"></span>
-                <span className="relative inline-flex size-2 rounded-full bg-status-delivered"></span>
+                <span className="absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-none bg-status-delivered opacity-75"></span>
+                <span className="relative inline-flex size-2 rounded-none bg-status-delivered"></span>
               </>
             ) : (
-              <span className="relative inline-flex size-2 rounded-full bg-muted-foreground"></span>
+              <span className="relative inline-flex size-2 rounded-none bg-muted-foreground"></span>
             )}
           </div>
         </div>
@@ -41,7 +41,7 @@ export function EarningReportChart({ summary }: EarningReportChartProps) {
         </p>
       </CardHeader>
 
-      <CardContent className="relative z-10 min-h-[150px] flex-1 p-0" />
+      <CardContent className="relative z-10 min-h-36 flex-1 p-0" />
 
       <div className="relative z-10 p-4">
         <Button

@@ -45,7 +45,7 @@ export default function TestimonialsSection() {
           <div className="mb-4 inline-flex items-center border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
             SERVING COMMUNITIES
           </div>
-          <h2 className="font-heading text-4xl tracking-tight text-foreground uppercase sm:text-5xl md:text-6xl">
+          <h2 className="font-heading text-4xl tracking-tight text-foreground sm:text-5xl md:text-6xl">
             A Bridge Between Regions
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
@@ -75,7 +75,7 @@ export default function TestimonialsSection() {
                   </p>
                   <div className="mt-auto flex w-full gap-1 overflow-hidden border-t border-border">
                     <div className="flex w-3/4 items-center gap-4 px-5 py-4">
-                      <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">
+                      <div className="flex size-12 shrink-0 items-center justify-center rounded-none bg-primary/10 text-lg font-bold text-primary">
                         {testimonial.name.charAt(0)}
                       </div>
                       <div className="flex flex-1 flex-col items-start justify-start gap-1">

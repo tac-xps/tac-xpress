@@ -98,7 +98,26 @@ export function FloatingChatWidget() {
         body: JSON.stringify({ messages: currentMessages }),
       })
 
-      if (!res.ok) throw new Error("Network error")
+      if (!res.ok) {
+        // Parse the error body so we can show a user-friendly message
+        const errBody = await res.json().catch(() => ({}))
+        const errMsg =
+          errBody?.error ||
+          (res.status === 429
+            ? "You're sending messages too quickly. Please wait a moment."
+            : res.status === 503
+              ? "Our AI assistant is temporarily unavailable. Please try again later."
+              : "Something went wrong. Please try again.")
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now().toString() + "-err",
+            role: "assistant",
+            parts: [{ type: "text", text: errMsg }],
+          },
+        ])
+        return
+      }
 
       const reader = res.body?.getReader()
       if (!reader) throw new Error("No reader")
@@ -154,7 +173,20 @@ export function FloatingChatWidget() {
         }
       }
     } catch (error) {
-      console.error(error)
+      console.error("Chat error:", error)
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString() + "-err",
+          role: "assistant",
+          parts: [
+            {
+              type: "text",
+              text: "Sorry, I couldn't connect. Please check your connection and try again.",
+            },
+          ],
+        },
+      ])
     } finally {
       setIsLoading(false)
     }
@@ -190,7 +222,7 @@ export function FloatingChatWidget() {
                         <TrackingBoxIcon className="h-5 w-5" />
                       </div>
                     </Avatar>
-                    <span className="absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-background bg-primary" />
+                    <span className="absolute right-0 bottom-0 h-3 w-3 rounded-none border-2 border-background bg-primary" />
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold tracking-widest text-foreground uppercase">
@@ -206,7 +238,7 @@ export function FloatingChatWidget() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-full hover:bg-background/50"
+                  className="h-8 w-8 rounded-none hover:bg-background/50"
                   onClick={() => setIsOpen(false)}
                 >
                   <CloseCustomIcon className="h-4 w-4" />
@@ -214,7 +246,7 @@ export function FloatingChatWidget() {
               </div>
             </div>
 
-            <div className="flex h-[400px] flex-col gap-4 overflow-y-auto bg-gradient-to-b from-background/20 to-background/40 p-4">
+            <div className="flex h-96 flex-col gap-4 overflow-y-auto bg-gradient-to-b from-background/20 to-background/40 p-4">
               {messages.map((m: UIMessage, index: number) => {
                 const rawContent =
                   m.parts
@@ -262,7 +294,7 @@ export function FloatingChatWidget() {
                         m.role === "user" ? "items-end" : ""
                       )}
                     >
-                      <span className="text-[10px] font-medium tracking-widest text-muted-foreground uppercase">
+                      <span className="text-micro font-medium tracking-widest text-muted-foreground uppercase">
                         {m.role === "assistant" ? "Tac-Xpress" : "You"}
                       </span>
                       <div
@@ -313,10 +345,11 @@ export function FloatingChatWidget() {
                     </div>
                   </Avatar>
                   <div className="flex flex-col gap-1">
-                    <div className="flex w-16 items-center justify-center gap-1 rounded-none border border-border/20 bg-muted/50 px-4 py-3 shadow-sm backdrop-blur-sm">
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-foreground/40 [animation-delay:-0.3s]" />
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-foreground/40 [animation-delay:-0.15s]" />
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-foreground/40" />
+                    <div className="flex w-16 items-center justify-center gap-1 rounded-md border border-border bg-muted/50 px-4 py-3">
+                      <span className="size-1.5 rounded-none bg-foreground/40" />
+                      <span className="size-1.5 rounded-none bg-foreground/40" />
+                      <span className="size-1.5 rounded-none bg-foreground/40" />
+                      <span className="sr-only">Assistant is typing</span>
                     </div>
                   </div>
                 </motion.div>
@@ -339,7 +372,7 @@ export function FloatingChatWidget() {
                 <Button
                   type="submit"
                   size="icon"
-                  className="h-10 w-10 rounded-none bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 hover:shadow-primary/25"
+                      className="h-9 w-9 rounded-none bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 hover:shadow-primary/25"
                   disabled={isLoading || !input.trim()}
                 >
                   {isLoading ? (
@@ -359,13 +392,13 @@ export function FloatingChatWidget() {
         whileTap={{ scale: 0.95 }}
         onClick={toggleOpen}
         className={cn(
-          "group relative flex h-14 w-14 cursor-pointer items-center justify-center rounded-full shadow-2xl transition-all duration-300",
+          "group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-none shadow-2xl transition-all duration-300",
           isOpen
             ? "rotate-90 bg-destructive text-destructive-foreground"
             : "bg-primary text-primary-foreground hover:shadow-primary/25"
         )}
       >
-        <span className="absolute inset-0 -z-10 rounded-full bg-inherit opacity-20 blur-xl transition-opacity duration-300 group-hover:opacity-40" />
+        <span className="absolute inset-0 -z-10 rounded-none bg-inherit opacity-20 blur-xl transition-opacity duration-300 group-hover:opacity-40" />
         {isOpen ? (
           <CloseCustomIcon className="h-6 w-6 text-primary-foreground" />
         ) : (

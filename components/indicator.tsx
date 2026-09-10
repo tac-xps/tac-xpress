@@ -26,14 +26,14 @@ export function StatusIndicator({
       {status === "online" && (
         <span
           className={cn(
-            "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
+            "absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-none opacity-75",
             pingColors[status]
           )}
         />
       )}
       <span
         className={cn(
-          "relative inline-flex h-full w-full rounded-full",
+          "relative inline-flex h-full w-full rounded-none",
           statusColors[status]
         )}
       />

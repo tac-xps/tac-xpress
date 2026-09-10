@@ -17,11 +17,11 @@ export function BentoSection() {
           <div className="inline-flex items-center border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
             TACTICAL ADVANTAGE
           </div>
-          <h2 className="font-heading text-4xl tracking-tight text-foreground uppercase sm:text-5xl md:text-6xl">
+          <h2 className="font-heading text-4xl tracking-tight text-foreground sm:text-5xl md:text-6xl">
             Why TAC-XPRESS
           </h2>
           <p className="max-w-2xl text-lg text-muted-foreground">
-            We don't just move cargo. We see logistics as more than a service—it
+            We don&apos;t just move cargo. We see logistics as more than a service—it
             is a responsibility.
           </p>
         </div>
@@ -35,15 +35,15 @@ export function BentoSection() {
             transition={{ duration: 0.5 }}
             className="md:col-span-2 md:row-span-1"
           >
-            <Card className="flex h-full flex-col justify-between overflow-hidden rounded-none border border-border/50 bg-card/50 p-8 shadow-inner backdrop-blur-sm">
+            <Card className="flex h-full flex-col justify-between overflow-hidden rounded-none border border-border bg-card p-8">
               <div className="mb-8 flex items-center justify-between">
-                <MapMarkerIcon className="h-8 w-8 text-primary" />
+                <MapMarkerIcon className="h-8 w-8 text-muted-foreground" />
                 <span className="font-mono text-xs font-bold text-muted-foreground">
                   01 / REGION
                 </span>
               </div>
               <div>
-                <h3 className="mb-4 font-heading text-3xl text-foreground uppercase">
+                <h3 className="mb-4 font-heading text-3xl text-foreground">
                   Reliability Rooted in Experience
                 </h3>
                 <p className="text-muted-foreground">
@@ -63,15 +63,15 @@ export function BentoSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="md:col-span-1 md:row-span-1"
           >
-            <Card className="flex h-full flex-col justify-between overflow-hidden rounded-none border border-border/50 bg-card/50 p-8 shadow-inner backdrop-blur-sm">
+            <Card className="flex h-full flex-col justify-between overflow-hidden rounded-none border border-border bg-card p-8">
               <div className="mb-8 flex items-center justify-between">
-                <ZapLightningIcon className="h-8 w-8 text-warning" />
+                <ZapLightningIcon className="h-8 w-8 text-muted-foreground" />
                 <span className="font-mono text-xs font-bold text-muted-foreground">
                   02 / SPEED
                 </span>
               </div>
               <div>
-                <h3 className="mb-4 font-heading text-2xl text-foreground uppercase">
+                <h3 className="mb-4 font-heading text-2xl text-foreground">
                   Customer-Centered Approach
                 </h3>
                 <p className="text-sm text-muted-foreground">
@@ -90,15 +90,15 @@ export function BentoSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="md:col-span-1 md:row-span-1"
           >
-            <Card className="flex h-full flex-col justify-between overflow-hidden rounded-none border border-border/50 bg-card/50 p-8 shadow-inner backdrop-blur-sm">
+            <Card className="flex h-full flex-col justify-between overflow-hidden rounded-none border border-border bg-card p-8">
               <div className="mb-8 flex items-center justify-between">
-                <ActivityPulseIcon className="h-8 w-8 text-success" />
+                <ActivityPulseIcon className="h-8 w-8 text-muted-foreground" />
                 <span className="font-mono text-xs font-bold text-muted-foreground">
                   03 / TECH
                 </span>
               </div>
               <div>
-                <h3 className="mb-4 font-heading text-2xl text-foreground uppercase">
+                <h3 className="mb-4 font-heading text-2xl text-foreground">
                   Continuous Improvement
                 </h3>
                 <p className="text-sm text-muted-foreground">
@@ -117,7 +117,7 @@ export function BentoSection() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="md:col-span-2 md:row-span-1"
           >
-            <Card className="group relative flex h-full flex-col justify-between overflow-hidden rounded-none border border-border/50 bg-primary/90 p-8 shadow-inner backdrop-blur-sm">
+            <Card className="group relative flex h-full flex-col justify-between overflow-hidden rounded-none border border-primary/50 bg-primary p-8">
               <div className="relative z-10 mb-8 flex items-center justify-between">
                 <ShieldSecurityIcon className="h-8 w-8 text-primary-foreground" />
                 <span className="font-mono text-xs font-bold text-primary-foreground/80">
@@ -125,7 +125,7 @@ export function BentoSection() {
                 </span>
               </div>
               <div className="relative z-10">
-                <h3 className="mb-4 font-heading text-4xl text-primary-foreground uppercase">
+                <h3 className="mb-4 font-heading text-4xl text-primary-foreground">
                   Resilience in Operations
                 </h3>
                 <p className="text-primary-foreground/90">

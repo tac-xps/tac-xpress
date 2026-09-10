@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import * as Sentry from "@sentry/nextjs"
 import { useAction } from "next-safe-action/hooks"
+import { chargedWeight } from "@/lib/shipment-weight"
 
 import {
   invoiceWizardSchema,
@@ -36,8 +37,8 @@ export function useWizardForm() {
       if (data?.success && "invoiceId" in data && "shipmentId" in data) {
         toast.success("Consignment and Invoice created successfully!")
         setCreatedResult({
-          invoiceId: data.invoiceId,
-          shipmentId: data.shipmentId,
+          invoiceId: data.invoiceId as string,
+          shipmentId: data.shipmentId as string,
         })
       } else {
         const actionError = data && "error" in data ? data.error : undefined
@@ -62,6 +63,7 @@ export function useWizardForm() {
     // @ts-ignore - version mismatch between zod and react-hook-form resolvers
     resolver: zodResolver(invoiceWizardSchema),
     defaultValues: {
+      requestId: crypto.randomUUID(),
       serviceType: "express_air",
       origin: "",
       destination: "",
@@ -115,7 +117,6 @@ export function useWizardForm() {
   const consignorPhone = watch("consignorPhone") || ""
   const serviceType = watch("serviceType") || "express_air"
   const weightKg = Number(watch("weightKg")) || 1
-  const pieces = Number(watch("pieces")) || 1
   const dimL = Number(watch("dimensionsL")) || 0
   const dimW = Number(watch("dimensionsW")) || 0
   const dimH = Number(watch("dimensionsH")) || 0
@@ -131,26 +132,9 @@ export function useWizardForm() {
   // Rate estimation states removed
 
   // Volumetric and Chargeable calculations
-  let volumetricWeight = 0
-  const isOcean = serviceType === "standard_ocean"
-  const isRoad = serviceType === "road_freight"
-  const isAir = serviceType === "express_air"
-
-  const volumeCbm = ((dimL * dimW * dimH) / 1000000) * pieces
-
-  if (isAir) {
-    volumetricWeight = ((dimL * dimW * dimH) / 5000) * pieces
-  } else if (isRoad) {
-    volumetricWeight = ((dimL * dimW * dimH) / 4000) * pieces
-  }
-
-  let chargeableWeight = weightKg
-  if (isAir || isRoad) {
-    chargeableWeight = Math.max(weightKg, volumetricWeight)
-  } else if (isOcean) {
-    const tonnage = weightKg / 1000
-    chargeableWeight = Math.max(tonnage, volumeCbm) * 1000
-  }
+  const volumeCbm = (dimL * dimW * dimH) / 1000000
+  const volumetricWeight = serviceType === "express_air" ? Math.ceil(dimL * dimW * dimH / 5000) : 0
+  const chargeableWeight = chargedWeight({ weightKg, serviceType, dimensionsL: dimL, dimensionsW: dimW, dimensionsH: dimH })
 
   // Traffic & Demand Metrics removed
   // Pincode lookups

@@ -69,11 +69,11 @@ export function EditPricingRuleDialog({
     setIsSubmitting(true)
     const result = await updatePricingRuleAction(data)
 
-    if (result?.success) {
+    if ((result?.data?.success)) {
       toast.success("Pricing rule updated successfully")
       onOpenChange(false)
     } else {
-      toast.error(result?.error || "An error occurred")
+      toast.error((result?.data?.error ?? result?.serverError) || "An error occurred")
     }
     setIsSubmitting(false)
   }

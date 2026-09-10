@@ -27,7 +27,7 @@ export function LatestChange() {
     >
       <div className="relative flex size-full flex-col gap-1.5 overflow-hidden px-3 pt-4 pb-1">
         <p className="text-xs font-medium">{latestChange.title}</p>
-        <span className="text-[10px] text-muted-foreground">
+        <span className="text-micro text-muted-foreground">
           {latestChange.description}
         </span>
         <Button
@@ -39,7 +39,7 @@ export function LatestChange() {
           <a href={latestChange.url}>Read more</a>
         </Button>
         <Button
-          className="absolute top-2 right-2 z-10 size-6 rounded-full opacity-0 transition-opacity group-hover/latest-change:opacity-100"
+          className="absolute top-2 right-2 z-10 size-6 rounded-none opacity-0 transition-opacity group-hover/latest-change:opacity-100"
           onClick={() => setIsOpen(false)}
           size="icon-sm"
           variant="secondary"

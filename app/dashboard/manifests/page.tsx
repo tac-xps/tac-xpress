@@ -1,13 +1,18 @@
+import { PageHeader } from "@/components/operations/page-header"
+import { TableToolbar } from "@/components/operations/table-toolbar"
+import { containsPattern, parseRecordQuery, recordOrder, type RecordSearchParams } from "@/lib/table-query"
+import { requireStaffPage } from "@/lib/auth/page-access"
 import React from "react"
 import { db } from "@/lib/db"
 import {
   drivers,
   hubs,
   manifestItems,
+  manifests,
   shipments,
   vehicles,
 } from "@/lib/db/schema"
-import { and, eq, isNull, notExists } from "drizzle-orm"
+import { and, eq, isNull, notExists, ilike, or, inArray, desc } from "drizzle-orm"
 import { format } from "date-fns"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { FileText, Search, Download, Filter } from "lucide-react"
@@ -35,9 +40,16 @@ import {
 export default async function ManifestsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string | string[] }>
+  searchParams: Promise<RecordSearchParams>
 }) {
-  const page = parsePage((await searchParams).page)
+  await requireStaffPage()
+
+  const params = await searchParams
+  const page = parsePage(params.page)
+  const query = parseRecordQuery(params, ["referenceId", "createdAt", "status"])
+  if (!["draft", "finalized"].includes(query.status)) query.status = "all"
+  const pattern = containsPattern(query.q)
+  const sortColumns = { referenceId: manifests.referenceId, createdAt: manifests.createdAt, status: manifests.status }
   const [
     manifestRows,
     pendingShipments,
@@ -46,8 +58,11 @@ export default async function ManifestsPage({
     driverOptions,
   ] = await Promise.all([
     db.query.manifests.findMany({
-      orderBy: (manifests, { desc }) => [desc(manifests.createdAt)],
+      where: and(query.status !== "all" ? eq(manifests.status, query.status as "draft" | "finalized") : undefined, query.q ? or(ilike(manifests.referenceId, pattern), inArray(manifests.originHubId, db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern))), inArray(manifests.destinationHubId, db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern)))) : undefined),
+      orderBy: [recordOrder(sortColumns[query.sort as keyof typeof sortColumns], query.order), desc(manifests.id)],
       with: {
+        originHub: true,
+        destinationHub: true,
         driver: true,
         vehicle: true,
         items: {
@@ -96,51 +111,21 @@ export default async function ManifestsPage({
   const allManifests = manifestRows.slice(0, DEFAULT_PAGE_SIZE)
 
   return (
-    <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 md:gap-8">
-      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-4">
-          <div className="shrink-0 rounded-lg bg-primary/10 p-3">
-            <ManifestsIcon className="size-8 text-primary" />
-          </div>
-          <div className="space-y-1">
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-              Digital Manifests
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Manage assigned AWBs and line-haul ledgers.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" className="border-border/50 bg-background">
-            <Filter className="mr-2 size-4" />
-            Filter
-          </Button>
-          <ExportManifestButton />
-          <CreateManifestDialog
-            shipments={pendingShipments}
-            hubs={hubOptions}
-            vehicles={vehicleOptions}
-            drivers={driverOptions}
-          />
-        </div>
-      </div>
-
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 md:gap-8">
+      <PageHeader title="Manifests" description="Plan hub-to-hub loads, confirm assignments and finalize departure records."><ExportManifestButton /><CreateManifestDialog shipments={pendingShipments} hubs={hubOptions} vehicles={vehicleOptions} drivers={driverOptions} /></PageHeader>
       <Card className="relative overflow-hidden delay-0">
-        <CardHeader className="flex min-h-[69px] flex-row items-center justify-between border-b border-border/50 bg-muted/20 p-4">
-          <CardTitle className="text-base font-semibold tracking-tight">
-            Manifest Ledgers
-          </CardTitle>
-        </CardHeader>
+<TableToolbar pathname="/dashboard/manifests" query={query.q} status={query.status} sort={query.sort} order={query.order} statuses={[{ value: "draft", label: "Draft" }, { value: "finalized", label: "Finalized" }]} placeholder="Manifest reference or hub name" />
         <CardContent className="p-0">
-          <ManifestClientTable manifests={allManifests} />
+          <ManifestClientTable manifests={allManifests} sort={query.sort} order={query.order} />
           <PageNavigation
             page={page}
             hasNext={hasNext}
             pathname="/dashboard/manifests"
+            query={query}
           />
         </CardContent>
       </Card>
     </div>
   )
 }
+

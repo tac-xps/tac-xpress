@@ -17,10 +17,10 @@ export function SupportSection() {
             <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
               <SupportLifebuoyIcon className="h-5 w-5 text-primary" />
             </div>
-            <h2 className="font-heading text-4xl font-light tracking-tight text-foreground uppercase sm:text-5xl">
+            <h2 className="font-heading text-4xl font-light tracking-tight text-foreground sm:text-5xl">
               Need Assistance?
               <br />
-              <span className="text-primary italic">We're Here 24/7.</span>
+              <span className="text-primary italic">We&apos;re Here 24/7.</span>
             </h2>
             <p className="max-w-lg text-lg text-muted-foreground">
               Have a question about a shipment or need help with billing? Send
@@ -51,7 +51,7 @@ export function SupportSection() {
 
           {/* Right Form */}
           <div className="relative flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-lg border border-border/60 bg-card p-1 shadow-xl shadow-black/8 backdrop-blur-sm before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-card-accent/50 before:to-transparent">
+            <div className="before:via-card-accent/50 relative w-full max-w-lg border border-border/60 bg-card p-1 shadow-xl shadow-black/8 backdrop-blur-sm before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:to-transparent">
               <DecorIcon className="size-4" position="top-left" />
               <DecorIcon className="size-4" position="top-right" />
               <DecorIcon className="size-4" position="bottom-left" />

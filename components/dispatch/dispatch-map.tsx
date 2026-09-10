@@ -1,4 +1,5 @@
 "use client"
+import { useHydrated } from "@/hooks/use-hydrated"
 
 import React, { useState } from "react"
 import Map, {
@@ -59,16 +60,16 @@ const routeGeojson = {
 export function DispatchMap() {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE)
   const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
+  const mounted = useHydrated()
 
   if (!mounted) {
     return (
-      <div className="absolute inset-0 z-0 flex animate-pulse items-center justify-center bg-muted/20">
-        <MapPin className="size-8 animate-bounce text-muted-foreground/30" />
+      <div
+        className="absolute inset-0 z-0 flex items-center justify-center bg-muted/20"
+        aria-busy="true"
+      >
+        <MapPin className="size-8 text-muted-foreground/30" />
+        <span className="sr-only">Loading dispatch map</span>
       </div>
     )
   }
@@ -116,19 +117,19 @@ export function DispatchMap() {
           >
             {marker.type === "hub" ? (
               <div className="group flex cursor-pointer flex-col items-center">
-                <div className="rounded-full bg-primary/20 p-2 ring-2 ring-primary/50 backdrop-blur-md">
+                <div className="rounded-none bg-primary/20 p-2 ring-1 ring-primary">
                   <MapPin className="size-5 text-primary" />
                 </div>
-                <span className="mt-1 rounded-md bg-background/80 px-2 py-0.5 text-xs font-semibold text-foreground opacity-0 drop-shadow-md transition-opacity group-hover:opacity-100">
+                <span className="mt-1 rounded-none border border-border bg-background px-2 py-0.5 text-xs font-medium text-foreground opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
                   {marker.name}
                 </span>
               </div>
             ) : (
-              <div className="group flex animate-bounce cursor-pointer flex-col items-center">
-                <div className="rounded-full bg-primary/20 p-1.5 ring-2 ring-primary/50 backdrop-blur-md">
+              <div className="group flex cursor-pointer flex-col items-center">
+                <div className="rounded-none bg-primary/15 p-1.5 ring-1 ring-primary/40">
                   <Truck className="size-4 text-primary" />
                 </div>
-                <span className="mt-1 rounded-md bg-background/80 px-2 py-0.5 text-xs font-semibold text-primary opacity-0 drop-shadow-md transition-opacity group-hover:opacity-100">
+                <span className="mt-1 rounded-none border border-border bg-background px-2 py-0.5 text-xs font-medium text-primary opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
                   {marker.route}
                 </span>
               </div>

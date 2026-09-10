@@ -1,3 +1,4 @@
+import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { shipments, invoices } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
@@ -12,6 +13,8 @@ export default async function DriverShipmentPage({
 }: {
   params: Promise<{ id: string }>
 }) {
+  await requireStaffPage()
+
   const { id } = await params
 
   const shipmentData = await db

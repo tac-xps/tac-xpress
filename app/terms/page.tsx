@@ -14,7 +14,7 @@ import Link from "next/link"
 
 export default function TermsAndConditionsPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="cargo-public min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-10 w-full border-b border-border bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex h-16 max-w-4xl items-center justify-between px-4 md:px-8">
           <Link href="/" className="transition-opacity hover:opacity-80">
@@ -32,9 +32,7 @@ export default function TermsAndConditionsPage() {
 
       <main className="container mx-auto max-w-4xl px-4 py-12 md:px-8 lg:py-16">
         <div className="mb-12 max-w-2xl">
-          <h1 className="text-4xl font-black tracking-tight text-foreground md:text-5xl">
-            Terms & Conditions
-          </h1>
+          <h1 className="cargo-heading">Terms & Conditions</h1>
           <p className="mt-4 text-lg text-muted-foreground">
             Please read these terms carefully before booking your shipment. By
             using TAC-XPRESS services, you agree to the following policies.
@@ -86,10 +84,10 @@ export default function TermsAndConditionsPage() {
             </div>
             <h3 className="font-bold text-foreground">Liability & Insurance</h3>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Fragile and electronic items are shipped entirely at the owner's
-              risk unless booked under a special insurance program. For
-              uninsured shipments, the maximum compensation for loss, damage, or
-              misplacement is strictly limited to Rs. 150/kg.
+              Fragile and electronic items are shipped entirely at the
+              owner&apos;s risk unless booked under a special insurance program.
+              For uninsured shipments, the maximum compensation for loss,
+              damage, or misplacement is strictly limited to Rs. 150/kg.
             </p>
           </div>
 

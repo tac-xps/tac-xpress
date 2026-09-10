@@ -48,10 +48,14 @@ export function ScannerDialog({ manifestId }: { manifestId: string }) {
               awbNumber: decodedText,
             })
 
-            if (result?.success) {
+            if (result?.data?.success) {
               toast.success(`Added AWB: ${decodedText}`)
             } else {
-              toast.error(result?.error || "Failed to add shipment")
+              toast.error(
+                result?.data?.error ||
+                  result?.serverError ||
+                  "Failed to add shipment"
+              )
             }
 
             setIsScanning(false)
@@ -83,7 +87,7 @@ export function ScannerDialog({ manifestId }: { manifestId: string }) {
           Scan AWB
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Scan Barcode</DialogTitle>
           <DialogDescription>

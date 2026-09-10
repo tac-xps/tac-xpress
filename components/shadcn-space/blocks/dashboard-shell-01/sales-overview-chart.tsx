@@ -88,7 +88,7 @@ export function SalesOverviewChart({ data }: SalesOverviewChartProps) {
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>
           <SelectTrigger
-            className="w-[160px] rounded-none sm:ml-auto"
+            className="w-40 rounded-none sm:ml-auto"
             aria-label="Select a value"
           >
             <SelectValue placeholder="Last 3 months" />
@@ -110,7 +110,7 @@ export function SalesOverviewChart({ data }: SalesOverviewChartProps) {
         {hasData ? (
           <ChartContainer
             config={chartConfig}
-            className="aspect-auto h-[250px] w-full"
+            className="aspect-auto h-64 w-full"
           >
             <AreaChart data={filteredData}>
               <defs>
@@ -192,7 +192,7 @@ export function SalesOverviewChart({ data }: SalesOverviewChartProps) {
             </AreaChart>
           </ChartContainer>
         ) : (
-          <Empty className="min-h-[250px] border border-dashed border-border/60 bg-muted/10">
+          <Empty className="min-h-64 border border-dashed border-border/60 bg-muted/10">
             <EmptyContent>
               <EmptyMedia variant="icon">
                 <Package className="size-4" />

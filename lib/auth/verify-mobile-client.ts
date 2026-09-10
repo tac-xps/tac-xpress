@@ -1,23 +1,19 @@
+import { timingSafeEqual } from "node:crypto"
+
 export function verifyMobileClient(request: Request): Response | null {
-  const authHeader = request.headers.get("Authorization")
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return new Response(
-      JSON.stringify({
-        error: "Unauthorized: Missing or invalid token format",
-      }),
-      { status: 401, headers: { "Content-Type": "application/json" } }
+  const secret = process.env.MOBILE_API_SECRET?.trim()
+  const header = request.headers.get("authorization")
+  const supplied = header?.startsWith("Bearer ") ? header.slice(7) : ""
+  if (
+    !secret ||
+    !supplied ||
+    Buffer.byteLength(secret) !== Buffer.byteLength(supplied) ||
+    !timingSafeEqual(Buffer.from(secret), Buffer.from(supplied))
+  ) {
+    return Response.json(
+      { error: "Unauthorized" },
+      { status: 401, headers: { "Cache-Control": "no-store" } }
     )
   }
-
-  const token = authHeader.split(" ")[1]
-
-  if (token !== process.env.MOBILE_API_SECRET) {
-    return new Response(
-      JSON.stringify({ error: "Unauthorized: Invalid token" }),
-      { status: 401, headers: { "Content-Type": "application/json" } }
-    )
-  }
-
-  return null // Token is valid
+  return null
 }

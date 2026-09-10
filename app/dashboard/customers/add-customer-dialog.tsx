@@ -28,7 +28,7 @@ export function AddCustomerDialog() {
           Add Customer
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Add Customer</DialogTitle>
           <DialogDescription>

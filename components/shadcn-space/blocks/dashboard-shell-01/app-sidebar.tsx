@@ -41,8 +41,16 @@ const NAV_ITEMS: NavItem[] = [
       { title: "Fleet", url: "/dashboard/fleet", icon: FleetIcon },
       { title: "Warehouse", url: "/dashboard/warehouse", icon: Package as any },
       { title: "Tracking", url: "/dashboard/tracking", icon: TrackingIcon },
-      { title: "Air Cargo", url: "/dashboard/operations/air-cargo", icon: Plane },
-      { title: "Surface Cargo", url: "/dashboard/operations/surface-cargo", icon: Truck },
+      {
+        title: "Air Cargo",
+        url: "/dashboard/operations/air-cargo",
+        icon: Plane,
+      },
+      {
+        title: "Surface Cargo",
+        url: "/dashboard/operations/surface-cargo",
+        icon: Truck,
+      },
       {
         title: "Support Tickets",
         url: "/dashboard/messages",
@@ -86,7 +94,7 @@ export function AppSidebar({
     <Sidebar
       id="tour-sidebar"
       collapsible="icon"
-      className="border-r border-sidebar-border bg-sidebar/90 shadow-sm backdrop-blur-2xl"
+      className="sticky top-0 h-svh border-r border-sidebar-border bg-sidebar"
       {...props}
     >
       <SidebarHeader className="flex w-full items-center justify-center border-b border-sidebar-border/70 px-2 py-5">

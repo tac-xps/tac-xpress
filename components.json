@@ -22,9 +22,10 @@
     "hooks": "@/hooks"
   },
   "registries": {
+    "@tailark-oss": "https://oss.tailark.com/r/radix/{name}.json",
     "@aliimam": "https://aliimam.in/r/{name}.json",
     "@mapcn": "https://mapcn.dev/r/{name}.json",
-    "@efferd": "https://efferd.com/r/{name}.json",
+    "@efferd": "https://efferd.com/r/{style}/{name}.json",
     "@shadcnblocks": "https://www.shadcnblocks.com/r/{name}.json",
     "@shadcn-studio": "https://shadcnstudio.com/r/{name}.json",
     "@ss-components": "https://shadcnstudio.com/r/components/{name}.json",

@@ -83,7 +83,7 @@ export function TicketForm() {
       setResult(res)
 
       if (res.success) {
-        toast.success("Ticket submitted successfully!")
+        toast.success("Request received.")
         form.reset()
       } else if (res.error) {
         const formErrors =
@@ -107,8 +107,8 @@ export function TicketForm() {
 
   if (result?.success) {
     return (
-      <div className="flex h-full min-h-[400px] flex-col items-center justify-center space-y-6 p-12 text-center">
-        <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 ring-8 ring-primary/5">
+      <div className="flex h-full min-h-96 flex-col items-center justify-center space-y-6 p-12 text-center">
+        <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-none bg-primary/10 ring-8 ring-primary/5">
           <CheckCircleCustomIcon className="text-trend-positive h-8 w-8" />
         </div>
         <div className="space-y-2">
@@ -124,18 +124,18 @@ export function TicketForm() {
             ) : (
               ""
             )}{" "}
-            has been submitted. Our team will get back to you within 2 hours.
+            has been submitted. Our support team will review it and reply by email.
           </p>
         </div>
         <Button
           variant="outline"
-          className="mt-4 rounded-none border-border/50 hover:bg-muted"
+          className="mt-4 border-border/50 hover:bg-muted"
           onClick={() => {
             setResult(null)
             form.reset()
           }}
         >
-          Submit Another Ticket
+          Send another request
         </Button>
       </div>
     )
@@ -143,9 +143,9 @@ export function TicketForm() {
 
   return (
     <div className="p-6">
-      <h3 className="mb-1 text-lg font-bold">Contact Support</h3>
+      <h3 className="mb-1 text-lg font-bold">Contact our team</h3>
       <p className="mb-4 text-xs text-muted-foreground">
-        Submit a ticket and our team will respond within 2 hours
+        Tell us about your shipment, request or question. Include the route and cargo details when asking about a booking.
       </p>
 
       <Form {...form}>
@@ -169,18 +169,18 @@ export function TicketForm() {
             )}
           />
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="customer_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                  <FormLabel className="text-xs font-semibold text-muted-foreground">
                     Name *
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="w-full resize-none rounded-none border border-border/60 bg-muted/40 px-3 py-2 text-sm shadow-sm transition-colors outline-none focus:border-primary"
+                      className="w-full resize-none border border-border/60 bg-muted/40 px-3 py-2 text-sm transition-colors outline-none focus:border-primary"
                       placeholder="Your name"
                       {...field}
                     />
@@ -194,13 +194,13 @@ export function TicketForm() {
               name="customer_email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                  <FormLabel className="text-xs font-semibold text-muted-foreground">
                     Email *
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="email"
-                      className="w-full resize-none rounded-none border border-border/60 bg-muted/40 px-3 py-2 text-sm shadow-sm transition-colors outline-none focus:border-primary"
+                      className="w-full resize-none border border-border/60 bg-muted/40 px-3 py-2 text-sm transition-colors outline-none focus:border-primary"
                       placeholder="you@company.com"
                       {...field}
                     />
@@ -216,12 +216,12 @@ export function TicketForm() {
             name="customer_phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                <FormLabel className="text-xs font-semibold text-muted-foreground">
                   Phone (Optional)
                 </FormLabel>
                 <FormControl>
                   <Input
-                    className="w-full resize-none rounded-none border border-border/60 bg-muted/40 px-3 py-2 text-sm shadow-sm transition-colors outline-none focus:border-primary"
+                    className="w-full resize-none border border-border/60 bg-muted/40 px-3 py-2 text-sm transition-colors outline-none focus:border-primary"
                     placeholder="+91 99999 99999"
                     {...field}
                   />
@@ -236,7 +236,7 @@ export function TicketForm() {
             name="category"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                <FormLabel className="text-xs font-semibold text-muted-foreground">
                   Category *
                 </FormLabel>
                 <Select
@@ -244,7 +244,7 @@ export function TicketForm() {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="w-full resize-none rounded-none border border-border/60 bg-muted/40 px-3 py-2 text-sm shadow-sm transition-colors outline-none focus:border-primary">
+                    <SelectTrigger className="w-full resize-none border border-border/60 bg-muted/40 px-3 py-2 text-sm transition-colors outline-none focus:border-primary">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                   </FormControl>
@@ -266,12 +266,12 @@ export function TicketForm() {
             name="related_awb"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                <FormLabel className="text-xs font-semibold text-muted-foreground">
                   AWB Number (Optional)
                 </FormLabel>
                 <FormControl>
                   <Input
-                    className="w-full rounded-none border border-border/60 bg-muted/40 px-3 py-2 font-mono text-sm shadow-sm transition-colors outline-none focus:border-primary"
+                    className="w-full border border-border/60 bg-muted/40 px-3 py-2 font-mono text-sm transition-colors outline-none focus:border-primary"
                     placeholder="AWB-XXXXXXXXXX"
                     {...field}
                   />
@@ -286,12 +286,12 @@ export function TicketForm() {
             name="subject"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                <FormLabel className="text-xs font-semibold text-muted-foreground">
                   Subject *
                 </FormLabel>
                 <FormControl>
                   <Input
-                    className="w-full resize-none rounded-none border border-border/60 bg-muted/40 px-3 py-2 text-sm shadow-sm transition-colors outline-none focus:border-primary"
+                    className="w-full resize-none border border-border/60 bg-muted/40 px-3 py-2 text-sm transition-colors outline-none focus:border-primary"
                     placeholder="What's this about?"
                     {...field}
                   />
@@ -306,13 +306,13 @@ export function TicketForm() {
             name="message"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                <FormLabel className="text-xs font-semibold text-muted-foreground">
                   Message *
                 </FormLabel>
                 <FormControl>
                   <Textarea
                     rows={4}
-                    className="w-full resize-none rounded-none border border-border/60 bg-muted/40 px-3 py-2 text-sm shadow-sm transition-colors outline-none focus:border-primary"
+                    className="w-full resize-none border border-border/60 bg-muted/40 px-3 py-2 text-sm transition-colors outline-none focus:border-primary"
                     placeholder="Describe your issue in detail..."
                     {...field}
                   />
@@ -326,10 +326,10 @@ export function TicketForm() {
             type="submit"
             disabled={pending}
             className={cn(
-              "flex w-full items-center justify-center gap-2 rounded-none border-l-2 px-4 py-2.5 text-sm font-medium transition-colors",
+              "flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium",
               pending
-                ? "cursor-not-allowed border-l-muted bg-muted text-muted-foreground"
-                : "border-l-primary-foreground bg-primary text-primary-foreground hover:bg-primary/90"
+                ? "cursor-not-allowed bg-muted text-muted-foreground"
+                : "bg-primary text-primary-foreground hover:bg-primary/90"
             )}
           >
             {pending ? (
@@ -338,12 +338,12 @@ export function TicketForm() {
                 Submitting...
               </>
             ) : (
-              "Submit Ticket"
+              "Send request"
             )}
           </Button>
 
           {result?.error && (
-            <div className="space-y-1 border-l-2 border-l-destructive bg-destructive/10 p-3 text-xs text-destructive">
+            <div className="space-y-1 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
               {Array.isArray(result.error) ? (
                 result.error.map((e: string, i: number) => <p key={i}>{e}</p>)
               ) : typeof result.error === "string" ? (
@@ -360,3 +360,4 @@ export function TicketForm() {
     </div>
   )
 }
+

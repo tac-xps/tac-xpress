@@ -33,7 +33,7 @@ export function EditDriverDialog({
         <DialogHeader>
           <DialogTitle>Edit Driver</DialogTitle>
           <DialogDescription>
-            Update the driver's details below.
+            Update the driver&apos;s details below.
           </DialogDescription>
         </DialogHeader>
         <AddDriverForm

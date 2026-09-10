@@ -1,70 +1,44 @@
 "use client"
-
-import React, { useState, useMemo } from "react"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import type { ColumnDef } from "@tanstack/react-table"
+import type { hubs as hubsSchema } from "@/lib/db/schema"
+import { DataTable, type TableSort } from "@/components/operations/data-table"
+import { ColumnHeader } from "@/components/operations/column-header"
+import { Badge } from "@/components/ui/badge"
 import { HubActions } from "./hub-actions"
-import { DataTablePagination } from "@/components/ui/data-table-pagination"
-
-export function HubsClientTable({ hubs }: { hubs: any[] }) {
-  const [currentPage, setCurrentPage] = useState(1)
-  const pageSize = 25
-
-  const totalPages = Math.ceil(hubs.length / pageSize)
-  const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * pageSize
-    return hubs.slice(start, start + pageSize)
-  }, [hubs, currentPage, pageSize])
-
-  return (
-    <div className="flex w-full flex-col">
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedData.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
-                  No transit hubs found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              paginatedData.map((hub) => (
-                <TableRow key={hub.id}>
-                  <TableCell className="font-medium">{hub.name}</TableCell>
-                  <TableCell className="capitalize">
-                    {hub.type.replace("_", " ")}
-                  </TableCell>
-                  <TableCell>{hub.location}</TableCell>
-                  <TableCell>{hub.contact || "N/A"}</TableCell>
-                  <TableCell className="text-right">
-                    <HubActions hub={hub} />
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <DataTablePagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
-    </div>
-  )
+type Hub = typeof hubsSchema.$inferSelect
+const columns: ColumnDef<Hub>[] = [
+  {
+    accessorKey: "name",
+    header: ({ column }) => <ColumnHeader column={column} title="Hub" />,
+    cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+  },
+  {
+    accessorKey: "type",
+    header: "Type",
+    cell: ({ row }) => (
+      <Badge variant="outline" className="capitalize">
+        {row.original.type.replaceAll("_", " ")}
+      </Badge>
+    ),
+  },
+  {
+    accessorKey: "location",
+    header: ({ column }) => <ColumnHeader column={column} title="Location" />,
+  },
+  {
+    accessorKey: "contact",
+    header: "Contact",
+    cell: ({ row }) => row.original.contact || "Not provided",
+  },
+  {
+    id: "actions",
+    header: "",
+    cell: ({ row }) => <HubActions hub={row.original} />,
+  },
+]
+export function HubsClientTable({
+  hubs,
+  ...sorting
+}: { hubs: Hub[] } & TableSort) {
+  return <DataTable data={hubs} columns={columns} {...sorting} />
 }

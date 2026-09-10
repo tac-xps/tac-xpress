@@ -1,21 +1,23 @@
-import React from "react"
-import { motion } from "framer-motion"
-import { CheckCircle2, QrCode } from "lucide-react"
-import { QRCodeCanvas } from "qrcode.react"
+import React from 'react';
+import { motion } from 'framer-motion';
+import { CheckCircle2, QrCode } from 'lucide-react';
+import { QRCodeCanvas } from 'qrcode.react';
 
-import { cn } from "@/lib/utils" // Assuming you have a utility for classnames
+import { cn } from '@/lib/utils'; // Assuming you have a utility for classnames
 
 // Props interface for type safety and reusability
 export interface PackageTrackerCardProps {
-  status: string
-  packageNumber: string
-  destination: string
-  destinationFlag: React.ReactNode
-  date: string
-  description?: string
-  packageImage: React.ReactNode
-  onTrackClick?: () => void
-  className?: string
+  status: string;
+  packageNumber: string;
+  destination: string;
+  destinationFlag: React.ReactNode;
+  date: string;
+  description?: string;
+  qrCodeValue?: string;
+  packageImage: React.ReactNode;
+  onTrackClick?: () => void;
+  isExpanded?: boolean;
+  className?: string;
 }
 
 // A simple container for the package image with an animated background
@@ -24,11 +26,11 @@ const PackageImageContainer = ({ children }: { children: React.ReactNode }) => (
     {/* Animated background to simulate a conveyor belt */}
     <div
       className={cn(
-        "absolute inset-0 z-0 h-full w-full",
-        "bg-[hsl(var(--muted)/0.3)]",
-        "bg-[size:80px_80px]",
-        "bg-gradient-to-r from-transparent via-[hsl(var(--muted)/0.3)] to-transparent",
-        "animate-conveyor-belt" // This requires a custom animation
+        'absolute inset-0 z-0 h-full w-full',
+        'bg-[hsl(var(--muted)/0.3)]',
+        'bg-[size:80px_80px]',
+        'bg-gradient-to-r from-transparent via-[hsl(var(--muted)/0.3)] to-transparent',
+        'animate-conveyor-belt' // This requires a custom animation
       )}
       style={{
         backgroundImage: `
@@ -39,7 +41,7 @@ const PackageImageContainer = ({ children }: { children: React.ReactNode }) => (
     />
     <div className="z-10">{children}</div>
   </div>
-)
+);
 
 export const PackageTrackerCard = ({
   status,
@@ -48,8 +50,10 @@ export const PackageTrackerCard = ({
   destinationFlag,
   date,
   description,
+  qrCodeValue,
   packageImage,
   onTrackClick,
+  isExpanded,
   className,
 }: PackageTrackerCardProps) => {
   const cardVariants = {
@@ -58,18 +62,18 @@ export const PackageTrackerCard = ({
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring" as const,
+        type: 'spring' as const,
         stiffness: 100,
         damping: 15,
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
-  }
+  };
 
   return (
     <motion.div
@@ -77,7 +81,7 @@ export const PackageTrackerCard = ({
       initial="hidden"
       animate="visible"
       className={cn(
-        "w-full max-w-sm overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg",
+        'w-full max-w-sm overflow-hidden rounded-none border border-border bg-card text-card-foreground shadow-card',
         className
       )}
     >
@@ -86,9 +90,9 @@ export const PackageTrackerCard = ({
         <motion.button
           variants={itemVariants}
           onClick={onTrackClick}
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-muted/50 px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted"
+          className="flex w-full items-center justify-center gap-2 rounded-none border border-border bg-muted/50 px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted"
         >
-          <CheckCircle2 className="text-trend-positive h-4 w-4" />
+          <CheckCircle2 className="h-4 w-4 text-green-500" />
           Show full tracking
         </motion.button>
       </div>
@@ -102,37 +106,45 @@ export const PackageTrackerCard = ({
       <div className="p-6">
         <motion.div variants={itemVariants} className="flex items-center gap-2">
           {destinationFlag}
-          <span className="text-sm font-medium text-muted-foreground">
-            {destination}
-          </span>
+          <span className="text-sm font-medium text-muted-foreground">{destination}</span>
         </motion.div>
 
-        <motion.h2
-          variants={itemVariants}
-          className="mt-2 text-3xl font-bold tracking-tight"
-        >
+        <motion.h2 variants={itemVariants} className="mt-2 text-3xl font-bold tracking-tight capitalize">
           {status}
         </motion.h2>
 
-        <div className="mt-6 flex flex-col gap-4">
+        <div className="mt-6 flex items-end justify-between">
           <motion.div variants={itemVariants} className="space-y-1">
             <p className="text-xs text-muted-foreground">Package Number:</p>
             <p className="font-mono text-sm">{packageNumber}</p>
             <p className="text-xs text-muted-foreground">{date}</p>
           </motion.div>
 
-          {description && (
-            <motion.div
-              variants={itemVariants}
-              className="rounded-lg bg-muted/30 p-3 ring-1 ring-border/50"
-            >
-              <p className="text-sm leading-relaxed font-medium text-muted-foreground italic">
-                "{description.replace(/<\/?[^>]+(>|$)/g, "")}"
-              </p>
-            </motion.div>
-          )}
+          <motion.div
+            variants={itemVariants}
+            className="rounded-none border border-border p-1 bg-card"
+          >
+            {qrCodeValue ? (
+              <QRCodeCanvas value={qrCodeValue} size={64} bgColor="transparent" fgColor="#000" />
+            ) : (
+              <div className="flex h-16 w-16 items-center justify-center bg-muted">
+                <QrCode className="h-8 w-8 text-muted-foreground" />
+              </div>
+            )}
+          </motion.div>
         </div>
+
+        {description && (
+          <motion.div
+            variants={itemVariants}
+            className="mt-6 rounded-none bg-muted/30 p-3 ring-1 ring-border/50"
+          >
+            <p className="text-sm leading-relaxed font-medium text-muted-foreground italic">
+              &quot;{description.replace(/<\/?[^>]+(>|$)/g, "")}&quot;
+            </p>
+          </motion.div>
+        )}
       </div>
     </motion.div>
-  )
-}
+  );
+};

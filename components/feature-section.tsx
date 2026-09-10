@@ -59,15 +59,15 @@ export function FeatureSection() {
       <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-center gap-12 px-6 sm:px-12 md:px-24">
         {/* Section Header */}
         <div className="flex w-full flex-col items-center gap-4 text-center">
-          <div className="inline-flex items-center border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-            <span className="mr-2 h-2 w-2 animate-pulse rounded-full bg-primary" />
+          <div className="inline-flex items-center border border-muted bg-transparent px-3 py-1 text-sm font-medium text-muted-foreground">
+            <span className="mr-2 h-2 w-2 animate-pulse rounded-none bg-muted-foreground" />
             OUR DEDICATED SERVICES
           </div>
-          <h2 className="font-heading text-4xl tracking-tight text-foreground uppercase sm:text-5xl md:text-6xl">
+          <h2 className="font-heading text-4xl tracking-tight text-foreground sm:text-5xl md:text-6xl">
             What We Offer
           </h2>
           <p className="max-w-2xl text-lg text-muted-foreground">
-            Built for reliability. Whether it's urgent air freight or heavy
+            Built for reliability. Whether it&apos;s urgent air freight or heavy
             surface cargo, our dedicated team delivers your goods safely.
           </p>
         </div>
@@ -104,7 +104,7 @@ function FeatureCard({
   return (
     <div
       className={cn(
-        "group relative flex h-full flex-col items-center justify-start overflow-hidden rounded-none border border-border/40 bg-background/50 px-8 pt-12 pb-10 text-center shadow-inner backdrop-blur-sm",
+        "group relative flex h-full flex-col items-center justify-start overflow-hidden rounded-none border border-border bg-card px-8 pt-12 pb-10 text-center",
         className
       )}
     >

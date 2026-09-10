@@ -1,3 +1,4 @@
+import { requireStaffPage } from "@/lib/auth/page-access"
 import { FleetUtilizationChart } from "@/components/analytics/fleet-utilization-chart"
 import { AnalyticsIcon } from "@/components/icons/sidebar-icons"
 import { Card, CardContent } from "@/components/ui/card"
@@ -48,12 +49,14 @@ function formatPercent(value: number | null) {
 }
 
 export default async function AnalyticsPage() {
+  await requireStaffPage()
+
   const overview = await getAnalyticsOverview()
 
   return (
-    <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 md:gap-8">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 md:gap-8">
       <div className="flex items-center gap-4">
-        <div className="shrink-0 rounded-lg bg-primary/10 p-3">
+        <div className="shrink-0 rounded-none bg-primary/10 p-3">
           <AnalyticsIcon className="size-8 text-primary" />
         </div>
         <div className="flex flex-col gap-1">
@@ -67,7 +70,7 @@ export default async function AnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <Card className="group/stat relative flex h-[140px] flex-col justify-center overflow-hidden transition-all delay-0 duration-500 hover:-translate-y-1 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5">
+        <Card className="group/stat relative flex h-36 flex-col justify-center overflow-hidden transition-[transform,box-shadow,border-color] delay-0 duration-500 hover:-translate-y-1 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5">
           <div className="absolute inset-0 z-0 overflow-hidden">
             <div className="absolute inset-0 bg-[url('/images/dashboard/5a.png')] bg-contain bg-right bg-no-repeat transition-transform duration-700 ease-out group-hover/stat:scale-105 dark:bg-[url('/images/dashboard/5b.png')]" />
             <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/20" />
@@ -89,7 +92,7 @@ export default async function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card className="group/stat relative flex h-[140px] flex-col justify-center overflow-hidden transition-all delay-75 duration-500 hover:-translate-y-1 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5">
+        <Card className="group/stat relative flex h-36 flex-col justify-center overflow-hidden transition-[transform,box-shadow,border-color] delay-75 duration-500 hover:-translate-y-1 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5">
           <div className="absolute inset-0 z-0 overflow-hidden">
             <div className="absolute inset-0 bg-[url('/images/dashboard/6a.png')] bg-contain bg-right bg-no-repeat transition-transform duration-700 ease-out group-hover/stat:scale-105 dark:bg-[url('/images/dashboard/6b.png')]" />
             <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/20" />
@@ -111,7 +114,7 @@ export default async function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card className="group/stat relative flex h-[140px] flex-col justify-center overflow-hidden transition-all delay-150 duration-500 hover:-translate-y-1 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5">
+        <Card className="group/stat relative flex h-36 flex-col justify-center overflow-hidden transition-[transform,box-shadow,border-color] delay-150 duration-500 hover:-translate-y-1 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5">
           <div className="absolute inset-0 z-0 overflow-hidden">
             <div className="absolute inset-0 bg-[url('/images/dashboard/7a.png')] bg-contain bg-right bg-no-repeat transition-transform duration-700 ease-out group-hover/stat:scale-105 dark:bg-[url('/images/dashboard/7b.png')]" />
             <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/20" />

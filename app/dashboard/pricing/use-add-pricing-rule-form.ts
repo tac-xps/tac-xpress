@@ -34,12 +34,12 @@ export function useAddPricingRuleForm(onSuccess: () => void) {
     startTransition(async () => {
       try {
         const result = await createPricingRuleAction(values)
-        if (result?.success) {
+        if ((result?.data?.success)) {
           toast.success("Pricing rule added successfully")
           form.reset()
           onSuccess()
         } else {
-          toast.error(result?.error || "Failed to add pricing rule")
+          toast.error((result?.data?.error ?? result?.serverError) || "Failed to add pricing rule")
         }
       } catch (error) {
         Sentry.captureException(error)

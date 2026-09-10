@@ -37,3 +37,8 @@ This file provides the core guidelines and context for AI agents working in this
 
 ## 6. Architecture & Subsystems
 - **System Map:** See `docs/ARCHITECTURE.md` for a comprehensive breakdown of the WhatsApp Meta API integration, Supabase Auth (Magic Links), Resend Email notification pipeline, and the AI Triage + Auto-Responder engines. Always read this file before modifying support, routing, or messaging logic.
+
+## 7. Global Frontend Architecture Rules
+- **Senior Frontend Architect Skill:** The `senior-frontend-architect` skill (located at `.agents/skills/senior-frontend-architect/SKILL.md`) MUST be treated as an ALWAYS-ON core protocol for any frontend, UI, or planning tasks.
+- Always apply its "Purpose, Performance, Polish" filters, the strict component/hook decomposition rules, and follow its dual-mode execution (STANDARD vs ULTRATHINK).
+- Never ignore these strict constraints during execution or planning phases.

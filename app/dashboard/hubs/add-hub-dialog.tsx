@@ -20,7 +20,7 @@ export function AddHubDialog() {
       <DialogTrigger asChild>
         <Button>Add Hub</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Add Transit Hub</DialogTitle>
           <DialogDescription>

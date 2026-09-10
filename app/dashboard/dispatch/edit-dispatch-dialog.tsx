@@ -68,7 +68,7 @@ export function EditDispatchDialog({
       id: dispatchRun.id,
       driverId: driverId || undefined,
       vehicleId: vehicleId || undefined,
-      status,
+      status: "draft",
     })
   }
 
@@ -79,7 +79,7 @@ export function EditDispatchDialog({
           <DialogHeader>
             <DialogTitle>Edit Dispatch Run</DialogTitle>
             <DialogDescription>
-              Update driver, vehicle, and status for {dispatchRun.referenceId}.
+              Update driver and vehicle assignments for {dispatchRun.referenceId}.
             </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-1 gap-4 py-4 md:grid-cols-2">
@@ -100,7 +100,7 @@ export function EditDispatchDialog({
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select
-                value={status}
+                value="draft" disabled
                 onValueChange={(value: "draft" | "finalized") =>
                   setStatus(value)
                 }
@@ -110,7 +110,7 @@ export function EditDispatchDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="finalized">Finalized</SelectItem>
+                  
                 </SelectContent>
               </Select>
             </div>
@@ -133,3 +133,4 @@ export function EditDispatchDialog({
     </Dialog>
   )
 }
+

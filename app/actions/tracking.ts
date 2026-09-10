@@ -1,58 +1,60 @@
 "use server"
 
-import { supabaseAdmin, supabasePublic } from "@/lib/supabase/clients"
+import { publicTrackingQuery } from "@/lib/tracking/public-query"
+import arcjet, { slidingWindow, request } from "@arcjet/next"
 import { z } from "zod"
+import * as Sentry from "@sentry/nextjs"
+import { capturePostHogEvent } from "@/lib/posthog-server"
+const aj = arcjet({
+  key: process.env.ARCJET_KEY || "ajkey_placeholder",
+  rules: [
+    slidingWindow({
+      mode: process.env.NODE_ENV === "development" ? "DRY_RUN" : "LIVE",
+      interval: "1m",
+      max: 20,
+    }),
+  ],
+})
 
 const trackAwbSchema = z.object({
-  awb_number: z.string().min(8, "Invalid AWB number"),
+  awb_number: z.string().trim().toUpperCase().regex(/^[A-Z0-9-]{5,40}$/, "Invalid AWB number"),
 })
 
 export async function trackAwb(formData: FormData) {
-  const awb = formData.get("awb_number") as string
+  const rawAwb = formData.get("awb_number")
 
-  const parsed = trackAwbSchema.safeParse({ awb_number: awb })
+  const parsed = trackAwbSchema.safeParse({ awb_number: rawAwb })
   if (!parsed.success) {
     return { error: "Invalid AWB number format" }
   }
+  const awb = parsed.data.awb_number
 
-  // Get shipment details
-  const { data: shipment, error: shipmentError } = await supabasePublic
-    .from("shipments")
-    .select("awb_number, origin, destination, status, service_type, service, weight_kg, weight, created_at, customer_name, estimated_delivery")
-    .eq("awb_number", awb)
-    .eq("is_publicly_trackable", true)
-    .single()
+  try {
+    const req = await request()
+    const decision = await aj.protect(req)
+    if (decision.isDenied() || decision.isErrored()) {
+      await capturePostHogEvent("public_tracking_lookup", "public_tracker", { awb_number: awb, success: false, error_reason: "rate_limited" })
+      return { error: "Tracking is temporarily unavailable. Please try again shortly." }
+    }
+    const rows = await publicTrackingQuery(awb)
+    const shipment = rows[0]
+    if (!shipment) {
+      await capturePostHogEvent("public_tracking_lookup", "public_tracker", { awb_number: awb, success: false, error_reason: "not_found" })
+      return { error: "AWB not found or no public updates are available yet." }
+    }
+    const validEvents = rows.filter(r => r.event && r.event.id)
+    const displayStatus = validEvents.length > 0 ? validEvents[0].event!.status : "pending"
 
-  if (shipmentError || !shipment) {
-    return { error: "AWB not found or not trackable" }
-  }
-
-  // Get tracking events
-  const { data: events, error: eventsError } = await supabasePublic
-    .from("tracking_events")
-    .select("id, status, description, location, event_time, created_at")
-    .eq("awb_number", awb)
-    .eq("is_public", true)
-    .order("event_time", { ascending: false })
-
-  if (eventsError) {
-    return { error: "Failed to load tracking events" }
-  }
-
-  return {
-    success: true,
-    data: {
-      awb_number: shipment.awb_number,
-      origin: shipment.origin,
-      destination: shipment.destination,
-      status: shipment.status,
-      service: shipment.service_type || shipment.service,
-      weight: shipment.weight_kg ? `${shipment.weight_kg}kg` : shipment.weight,
-      created_at: shipment.created_at,
-      customer_name: shipment.customer_name,
-      events: events || [],
-      current_location: events?.[0]?.location,
-      estimated_delivery: shipment.estimated_delivery,
-    },
+    await capturePostHogEvent("public_tracking_lookup", "public_tracker", { awb_number: awb, success: true, status: displayStatus })
+    return { success: true, data: {
+      awb_number: shipment.awb_number, origin: shipment.origin, destination: shipment.destination,
+      status: displayStatus || "pending", service: shipment.service, created_at: shipment.created_at.toISOString(),
+      estimated_delivery: shipment.estimated_delivery?.toISOString(), current_location: validEvents.length > 0 ? validEvents[0].event!.location : shipment.origin,
+      events: validEvents.map(row => ({ ...row.event!, event_time: row.event!.event_time?.toISOString() || row.event!.created_at?.toISOString() || new Date().toISOString(), created_at: row.event!.created_at?.toISOString() || new Date().toISOString() })),
+    } }
+  } catch (error) {
+    Sentry.captureException(error, { tags: { area: "public_tracking" } })
+    await capturePostHogEvent("public_tracking_lookup", "public_tracker", { awb_number: awb, success: false, error_reason: "server_error" })
+    return { error: "Tracking is temporarily unavailable. Please try again later." }
   }
 }

@@ -1,0 +1,20 @@
+[
+  {
+    "route": "/api/hubs?query=test",
+    "expected": 503,
+    "actual": 503,
+    "passed": true
+  },
+  {
+    "route": "/dashboard",
+    "expected": 503,
+    "actual": 503,
+    "passed": true
+  },
+  {
+    "route": "/",
+    "expected": 200,
+    "actual": 200,
+    "passed": true
+  }
+]

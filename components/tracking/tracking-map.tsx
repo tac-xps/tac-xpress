@@ -1,4 +1,5 @@
 "use client"
+import { useHydrated } from "@/hooks/use-hydrated"
 
 import React, { useState } from "react"
 import Map, {
@@ -27,11 +28,7 @@ const ROUTE_COORDS = [
 export function TrackingMap() {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE)
   const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
+  const mounted = useHydrated()
 
   const isDark = resolvedTheme === "dark"
   const mapStyle =
@@ -79,7 +76,7 @@ export function TrackingMap() {
           latitude={ROUTE_COORDS[0][1]}
           anchor="bottom"
         >
-          <div className="rounded-full bg-background/80 p-1.5 ring-2 ring-border backdrop-blur-md">
+          <div className="rounded-none bg-background/80 p-1.5 ring-2 ring-border backdrop-blur-md">
             <MapPin className="size-4 text-muted-foreground" />
           </div>
         </Marker>
@@ -90,7 +87,7 @@ export function TrackingMap() {
           latitude={ROUTE_COORDS[2][1]}
           anchor="bottom"
         >
-          <div className="animate-pulse rounded-full bg-status-delivered/20 p-2 ring-2 ring-status-delivered/50 backdrop-blur-md">
+          <div className="animate-pulse rounded-none bg-status-delivered/20 p-2 ring-2 ring-status-delivered/50 backdrop-blur-md">
             <Package className="size-5 text-status-delivered" />
           </div>
         </Marker>

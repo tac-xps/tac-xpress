@@ -1,10 +1,6 @@
-
-
 export function AmbientBackground() {
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-
-
       {/* Layer 1: Slow-moving aurora blobs */}
       <div
         className="absolute -top-1/2 -left-1/2 h-[200%] w-[200%] opacity-30"
@@ -24,7 +20,7 @@ export function AmbientBackground() {
         }}
       />
       {/* Layer 3: Vignette for depth */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.1)_100%)] dark:bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
+      <div className="absolute inset-0 hidden dark:block dark:bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
     </div>
   )
 }

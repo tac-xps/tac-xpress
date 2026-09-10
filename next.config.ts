@@ -52,6 +52,7 @@ const nextConfig: NextConfig = {
   },
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
   outputFileTracingIncludes: {
+    "/api/documents/download": ["./node_modules/@sparticuz/chromium/bin/**/*", "./node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**/*"],
     "/api/public/invoice-pdf": [
       "./node_modules/@sparticuz/chromium/bin/**/*",
       "./node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**/*",
@@ -60,7 +61,7 @@ const nextConfig: NextConfig = {
 
   logging: {
     fetches: {
-      fullUrl: true,
+      fullUrl: false,
     },
   },
 
@@ -119,7 +120,7 @@ const nextConfig: NextConfig = {
           {
             key: "Permissions-Policy",
             value:
-              "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+              "camera=(self), microphone=(), geolocation=(self), interest-cohort=()",
           },
           {
             key: "Strict-Transport-Security",

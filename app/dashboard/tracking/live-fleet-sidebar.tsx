@@ -38,7 +38,7 @@ export function LiveFleetSidebar({
                   </span>
                   <Badge
                     variant="outline"
-                    className="border-primary/20 bg-primary/10 text-[10px] tracking-widest text-primary uppercase"
+                    className="border-primary/20 bg-primary/10 text-micro tracking-widest text-primary uppercase"
                   >
                     Live
                   </Badge>

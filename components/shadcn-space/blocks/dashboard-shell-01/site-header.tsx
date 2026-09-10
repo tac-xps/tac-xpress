@@ -10,16 +10,20 @@ import { ThemeSwitcher } from "@/components/theme-switcher"
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b border-border/70 bg-background/78 px-4 shadow-2xs backdrop-blur-2xl md:px-6">
+    <header className="sticky top-0 z-20 flex h-20 shrink-0 items-center gap-3 border-b bg-card px-4 md:px-6">
+      <a href="#tour-main-content" className="sr-only focus:not-sr-only">Skip to workspace</a>
       <SidebarTrigger className="-ml-2 md:h-10 md:w-10" />
       <div className="flex flex-1 items-center gap-4">
-        <form className="hidden w-full max-w-sm md:block" id="tour-search">
+        <form action="/dashboard/tracking" method="get" className="hidden w-full max-w-sm md:block" id="tour-search">
           <div className="relative">
             <Search className="absolute top-2.5 left-2.5 size-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search AWBs, Routes, or Dispatchers..."
-              className="w-full border-border/70 bg-card/75 pl-9 shadow-none md:w-[300px] lg:w-[400px]"
+              name="awb"
+              aria-label="Find a shipment by AWB"
+              placeholder="Find a shipment by AWB…"
+              maxLength={40}
+              className="w-full pl-9"
             />
           </div>
         </form>

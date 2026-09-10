@@ -148,9 +148,9 @@ function DefaultLoader() {
   return (
     <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-xs">
       <div className="flex gap-1">
-        <span className="size-1.5 animate-pulse rounded-full bg-muted-foreground/60" />
-        <span className="size-1.5 animate-pulse rounded-full bg-muted-foreground/60 [animation-delay:150ms]" />
-        <span className="size-1.5 animate-pulse rounded-full bg-muted-foreground/60 [animation-delay:300ms]" />
+        <span className="size-1.5 animate-pulse rounded-none bg-muted-foreground/60" />
+        <span className="size-1.5 animate-pulse rounded-none bg-muted-foreground/60 [animation-delay:150ms]" />
+        <span className="size-1.5 animate-pulse rounded-none bg-muted-foreground/60 [animation-delay:300ms]" />
       </div>
     </div>
   )
@@ -192,7 +192,7 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
   const isControlled = viewport !== undefined && onViewportChange !== undefined
 
   const onViewportChangeRef = useRef(onViewportChange)
-  onViewportChangeRef.current = onViewportChange
+  useEffect(() => { onViewportChangeRef.current = onViewportChange }, [onViewportChange])
 
   const mapStyles = useMemo(
     () => ({
@@ -393,14 +393,7 @@ function MapMarker({
     onDrag,
     onDragEnd,
   })
-  callbacksRef.current = {
-    onClick,
-    onMouseEnter,
-    onMouseLeave,
-    onDragStart,
-    onDrag,
-    onDragEnd,
-  }
+  useEffect(() => { callbacksRef.current = { onClick, onMouseEnter, onMouseLeave, onDragStart, onDrag, onDragEnd } }, [onClick, onMouseEnter, onMouseLeave, onDragStart, onDrag, onDragEnd])
 
   const marker = useMemo(() => {
     const markerInstance = new MapLibreGL.Marker({
@@ -409,41 +402,53 @@ function MapMarker({
       draggable,
     }).setLngLat([longitude, latitude])
 
+
+    return markerInstance
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
     const handleClick = (e: MouseEvent) => callbacksRef.current.onClick?.(e)
     const handleMouseEnter = (e: MouseEvent) =>
       callbacksRef.current.onMouseEnter?.(e)
     const handleMouseLeave = (e: MouseEvent) =>
       callbacksRef.current.onMouseLeave?.(e)
 
-    markerInstance.getElement()?.addEventListener("click", handleClick)
-    markerInstance
+    marker.getElement()?.addEventListener("click", handleClick)
+    marker
       .getElement()
       ?.addEventListener("mouseenter", handleMouseEnter)
-    markerInstance
+    marker
       .getElement()
       ?.addEventListener("mouseleave", handleMouseLeave)
 
     const handleDragStart = () => {
-      const lngLat = markerInstance.getLngLat()
+      const lngLat = marker.getLngLat()
       callbacksRef.current.onDragStart?.({ lng: lngLat.lng, lat: lngLat.lat })
     }
     const handleDrag = () => {
-      const lngLat = markerInstance.getLngLat()
+      const lngLat = marker.getLngLat()
       callbacksRef.current.onDrag?.({ lng: lngLat.lng, lat: lngLat.lat })
     }
     const handleDragEnd = () => {
-      const lngLat = markerInstance.getLngLat()
+      const lngLat = marker.getLngLat()
       callbacksRef.current.onDragEnd?.({ lng: lngLat.lng, lat: lngLat.lat })
     }
 
-    markerInstance.on("dragstart", handleDragStart)
-    markerInstance.on("drag", handleDrag)
-    markerInstance.on("dragend", handleDragEnd)
+    marker.on("dragstart", handleDragStart)
+    marker.on("drag", handleDrag)
+    marker.on("dragend", handleDragEnd)
 
-    return markerInstance
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    return () => {
+      marker.getElement().removeEventListener("click", handleClick)
+      marker.getElement().removeEventListener("mouseenter", handleMouseEnter)
+      marker.getElement().removeEventListener("mouseleave", handleMouseLeave)
+      marker.off("dragstart", handleDragStart)
+      marker.off("drag", handleDrag)
+      marker.off("dragend", handleDragEnd)
+    }
+  }, [marker])
 
   useEffect(() => {
     if (!map) return
@@ -457,6 +462,7 @@ function MapMarker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map])
 
+  useEffect(() => {
   if (
     marker.getLngLat().lng !== longitude ||
     marker.getLngLat().lat !== latitude
@@ -486,6 +492,8 @@ function MapMarker({
     marker.setPitchAlignment(markerOptions.pitchAlignment ?? "auto")
   }
 
+  }, [marker, longitude, latitude, draggable, markerOptions])
+
   return (
     <MarkerContext.Provider value={{ marker, map }}>
       {children}
@@ -513,7 +521,7 @@ function MarkerContent({ children, className }: MarkerContentProps) {
 
 function DefaultMarkerIcon() {
   return (
-    <div className="relative h-4 w-4 rounded-full border-2 border-white bg-primary shadow-lg" />
+    <div className="relative h-4 w-4 rounded-none border-2 border-white bg-primary shadow-lg" />
   )
 }
 
@@ -574,6 +582,7 @@ function MarkerPopup({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map])
 
+  useEffect(() => {
   if (popup.isOpen()) {
     const prev = prevPopupOptions.current
 
@@ -586,6 +595,8 @@ function MarkerPopup({
 
     prevPopupOptions.current = popupOptions
   }
+  }, [popup, popupOptions])
+
 
   const handleClose = () => popup.remove()
 
@@ -593,7 +604,7 @@ function MarkerPopup({
     <div
       className={cn(
         "relative max-w-62 rounded-none border bg-popover p-3 text-popover-foreground shadow-md",
-        "animate-in duration-200 ease-out fade-in-0 zoom-in-95",
+        "duration-200 ease-out animate-in fade-in-0 zoom-in-95",
         className
       )}
     >
@@ -653,6 +664,7 @@ function MarkerTooltip({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map])
 
+  useEffect(() => {
   if (tooltip.isOpen()) {
     const prev = prevTooltipOptions.current
 
@@ -665,12 +677,14 @@ function MarkerTooltip({
 
     prevTooltipOptions.current = popupOptions
   }
+  }, [tooltip, popupOptions])
+
 
   return createPortal(
     <div
       className={cn(
         "pointer-events-none rounded-none bg-foreground px-2 py-1 text-xs text-balance text-background shadow-md",
-        "animate-in duration-200 ease-out fade-in-0 zoom-in-95",
+        "duration-200 ease-out animate-in fade-in-0 zoom-in-95",
         className
       )}
     >
@@ -703,7 +717,7 @@ function MarkerLabel({
     <div
       className={cn(
         "absolute left-1/2 -translate-x-1/2 whitespace-nowrap",
-        "text-[10px] font-medium text-foreground",
+        "text-micro font-medium text-foreground",
         positionClasses[position],
         className
       )}
@@ -954,7 +968,7 @@ function MapPopup({
   const { map } = useMap()
   const popupOptionsRef = useRef(popupOptions)
   const onCloseRef = useRef(onClose)
-  onCloseRef.current = onClose
+  useEffect(() => { onCloseRef.current = onClose }, [onClose])
   const container = useMemo(() => document.createElement("div"), [])
 
   const popup = useMemo(() => {
@@ -989,6 +1003,7 @@ function MapPopup({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map])
 
+  useEffect(() => {
   if (popup.isOpen()) {
     const prev = popupOptionsRef.current
 
@@ -1007,6 +1022,8 @@ function MapPopup({
     }
     popupOptionsRef.current = popupOptions
   }
+  }, [popup, popupOptions, longitude, latitude])
+
 
   const handleClose = () => {
     popup.remove()
@@ -1016,7 +1033,7 @@ function MapPopup({
     <div
       className={cn(
         "relative max-w-62 rounded-none border bg-popover p-3 text-popover-foreground shadow-md",
-        "animate-in duration-200 ease-out fade-in-0 zoom-in-95",
+        "duration-200 ease-out animate-in fade-in-0 zoom-in-95",
         className
       )}
     >
@@ -1362,7 +1379,7 @@ function MapArc<T extends MapArcDatum = MapArcDatum>({
   )
 
   const latestRef = useRef({ data, onClick, onHover })
-  latestRef.current = { data, onClick, onHover }
+  useEffect(() => { latestRef.current = { data, onClick, onHover } }, [data, onClick, onHover])
 
   // Add source and layers on mount.
   useEffect(() => {

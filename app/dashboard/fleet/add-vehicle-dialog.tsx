@@ -26,7 +26,7 @@ export function AddVehicleDialog({
           <Plus className="mr-2 h-4 w-4" /> Add Vehicle
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Add New Vehicle</DialogTitle>
         </DialogHeader>

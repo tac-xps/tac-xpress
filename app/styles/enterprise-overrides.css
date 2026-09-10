@@ -1,7 +1,9 @@
 @layer base {
   /* === BUTTONS: Accent border + theme-aware radius === */
   [data-slot="button"] {
-    transition: all 0.15s ease;
+    transition-property: background-color, box-shadow, opacity, border-color;
+    transition-timing-function: ease;
+    transition-duration: 0.15s;
   }
 
   [data-slot="button"][data-variant="default"] {
@@ -44,9 +46,9 @@
     background: var(--muted);
   }
 
-  /* === DIALOG: Heavy shadow === */
+  /* === DIALOG: Heavy shadow — uses design token for dark mode support === */
   [data-slot="dialog-content"] {
-    box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+    box-shadow: var(--shadow-overlay);
     border: 1px solid var(--border);
   }
 

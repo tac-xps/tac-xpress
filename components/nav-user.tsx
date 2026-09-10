@@ -53,7 +53,7 @@ export function NavUser() {
   }, [])
 
   if (!user) {
-    return <Skeleton className="size-8 rounded-full" />
+    return <Skeleton className="size-8 rounded-none" />
   }
   return (
     <DropdownMenu>
@@ -61,7 +61,7 @@ export function NavUser() {
         <Button
           variant="ghost"
           size="icon"
-          className="rounded-full"
+          className="rounded-none"
           aria-label="User menu"
         >
           <Avatar className="size-8">

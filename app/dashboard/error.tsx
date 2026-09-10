@@ -16,7 +16,7 @@ export default function DashboardError({
   }, [error])
 
   return (
-    <div className="flex h-[400px] w-full flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border bg-muted/20 text-center">
+    <div className="flex h-96 w-full flex-col items-center justify-center gap-4 rounded-none border border-dashed border-border bg-muted/20 text-center">
       <div className="flex flex-col gap-1">
         <h2 className="text-lg font-semibold text-foreground">
           Something went wrong

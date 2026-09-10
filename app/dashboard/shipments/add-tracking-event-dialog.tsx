@@ -16,11 +16,13 @@ import { AddTrackingEventForm } from "./add-tracking-event-form"
 interface AddTrackingEventDialogProps {
   shipmentId: string
   awbNumber: string
+  onSuccess?: () => void
 }
 
 export function AddTrackingEventDialog({
   shipmentId,
   awbNumber,
+  onSuccess,
 }: AddTrackingEventDialogProps) {
   const [open, setOpen] = useState(false)
 
@@ -32,7 +34,7 @@ export function AddTrackingEventDialog({
           Log Event
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-h-[90svh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Log Tracking Event</DialogTitle>
           <DialogDescription>
@@ -41,7 +43,10 @@ export function AddTrackingEventDialog({
         </DialogHeader>
         <AddTrackingEventForm
           shipmentId={shipmentId}
-          onSuccess={() => setOpen(false)}
+          onSuccess={() => {
+            setOpen(false)
+            onSuccess?.()
+          }}
         />
       </DialogContent>
     </Dialog>

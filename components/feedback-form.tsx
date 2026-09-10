@@ -38,7 +38,7 @@ export function FeedbackForm() {
   const [error, setError] = useState("")
 
   const form = useForm({
-    resolver: zodResolver(formSchema as any),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -58,9 +58,9 @@ export function FeedbackForm() {
     if (values.phone) formData.append("phone", values.phone)
     formData.append("message", values.message)
 
+    try {
     const result = await submitFeedback(formData)
 
-    setIsSubmitting(false)
 
     if (result?.error) {
       setError(result.error)
@@ -68,15 +68,16 @@ export function FeedbackForm() {
       setSuccess(true)
       form.reset()
     }
+    } catch { setError("We couldn’t submit your message. Please try again.") } finally { setIsSubmitting(false) }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {error && <div className="font-medium text-destructive">{error}</div>}
+        {error && <div role="alert" className="font-medium text-destructive">{error}</div>}
         {success && (
-          <div className="rounded-md border border-success/20 bg-success/10 p-4 font-medium text-success">
-            Thank you for your feedback! We've received your message.
+          <div className="border-success/20 bg-success/10 text-success rounded-md border p-4 font-medium">
+            Thank you for your feedback! We&apos;ve received your message.
           </div>
         )}
 
@@ -131,7 +132,7 @@ export function FeedbackForm() {
               <FormControl>
                 <Textarea
                   placeholder="How can we improve Tac-Xpress?"
-                  className="min-h-[120px] resize-none"
+                  className="min-h-32 resize-none"
                   {...field}
                 />
               </FormControl>

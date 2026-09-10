@@ -1,51 +1,16 @@
-# Deployment
+# Deployment and release process
 
-## Target
+TAC-XPRESS deploys as a Next.js application with Supabase-backed services and external providers. Production must fail closed when `ARCJET_KEY` is missing or placeholder.
 
-Tac-Xpress is deployed to Vercel.
+## Required configuration
 
-## Required Production Environment
+Set production values for staff auth, Supabase/database access, Arcjet, cron/mobile secrets, invoice signing, Sentry, and enabled providers. NEXT_PUBLIC_APP_URL must be the HTTPS website origin, not the Supabase API or MCP URL. Disable E2E bypass flags. Custom portal signing is no longer used. Use `.env.example` for environment names and keep values in the deployment secret store.
 
-Core:
+`pnpm verify:production-env` loads `.env.local` when present; already supplied environment values take precedence. In deployment CI, run it with the platform's production variables and without a local development env file. A local pass is configuration validation only. Actual sender-domain, WhatsApp template/callback, PDF rendering and database restore acceptance remain separate.
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `AUTH_SECRET`
-- `PORTAL_SESSION_SECRET`
-- `NEXT_PUBLIC_APP_URL`
+The communications worker is scheduled every five minutes in `vercel.json`. This requires Vercel Pro/Enterprise or an external scheduler calling the authenticated cron endpoint; Hobby does not support that frequency. Monitor pending and failed jobs in the communications workspace and verify throughput before launch.
 
-Perimeter:
-
-- `ARCJET_KEY`
-
-Messaging and support:
-
-- `RESEND_API_KEY`
-- `FROM_EMAIL`
-- `INVOICE_PDF_SIGNING_SECRET`
-- `WHATSAPP_ENABLED`
-- `WPBOX_API_TOKEN`
-- `WPBOX_BASE_URL`
-- `WHATSAPP_APP_SECRET`
-- `WHATSAPP_VERIFY_TOKEN`
-
-AI and telemetry:
-
-- `OPENROUTER_API`
-- `OPENAI_MODEL` if overridden
-- `POSTHOG_KEY` and `POSTHOG_HOST` if analytics are enabled
-
-## Deployment Sequence
-
-1. Merge a green pull request.
-2. Confirm Supabase migrations are applied, including the ticket and WhatsApp hardening migrations.
-3. Confirm all required Vercel environment variables are set.
-4. Deploy to preview.
-5. Run the smoke procedure below.
-6. Promote to production only after the smoke gates pass.
-
-## Pre-Deploy Gates
+## Release gates
 
 ```bash
 pnpm typecheck
@@ -53,28 +18,14 @@ pnpm lint
 pnpm stylelint
 pnpm test:unit
 pnpm build
+pnpm test:e2e
+pnpm verify:production-env
 ```
 
-## Smoke Procedure
+For UI releases also build Storybook and review visual changes. Verify the landing page, sign-in redirect, public tracking, retired portal denial, and authenticated admin/staff dashboard flows against the actual production perimeter.
 
-Run from a clean process state:
+## Database changes
 
-1. Ensure no other `next build` process is running.
-2. Run `pnpm build`.
-3. Start the production server with `pnpm start`.
-4. Verify:
-   - `/`
-   - `/signin`
-   - `/portal`
-   - `/track`
-   - `/dashboard`
-   - `/dashboard/messages`
-   - `/dashboard/invoices`
-5. Verify `/api/webhooks/whatsapp` GET challenge handling.
-6. If relay credentials exist, verify one invoice WhatsApp send in a non-production-safe test context.
+Review migration order, RLS impact, and rollback compatibility before deploy. Apply migrations through the approved Supabase/Drizzle workflow; do not edit migration history after application.
 
-## Rollback Guidance
-
-- Disable outbound WhatsApp quickly with `WHATSAPP_ENABLED=false`.
-- If the perimeter breaks in production, treat missing `ARCJET_KEY` as a release blocker, not a feature regression.
-- Rotate `AUTH_SECRET`, `PORTAL_SESSION_SECRET`, and webhook secrets after any suspected exposure.
+The earlier September audit applied narrow security/index repairs. The control-center follow-up additionally applied durable communication tables, WhatsApp inbox indexes and private fleet telemetry. Older hosted migration history was absent; do not replay all historical migrations or run db:push/reset against the populated project. Reconcile in staging and demonstrate backup restoration first. [Current release gates](control-center-audit-2026-09-07.md).

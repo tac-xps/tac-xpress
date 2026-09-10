@@ -53,7 +53,7 @@ export function SecureBoundary({
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative rounded-lg border border-dashed border-status-pending/30 bg-status-pending/5 p-4"
+        className="relative rounded-none border border-dashed border-status-pending/30 bg-status-pending/5 p-4"
       >
         <div className="flex items-start gap-3">
           <ShieldAlert className="mt-0.5 h-5 w-5 text-status-pending" />

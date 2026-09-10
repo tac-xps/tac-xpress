@@ -6,7 +6,7 @@ export const createDispatchRunSchema = z.object({
   runType: z.enum(["pickup", "delivery"]),
   shipmentIds: z
     .array(z.string().uuid())
-    .min(1, "Select at least one shipment"),
+    .min(1, "Select at least one shipment").max(500).refine((ids) => new Set(ids).size === ids.length, "Select each shipment once"),
 })
 
 export type CreateDispatchRunValues = z.infer<typeof createDispatchRunSchema>

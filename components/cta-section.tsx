@@ -6,6 +6,7 @@ import {
 } from "@/components/icons/landing-icons"
 import { TextEffect } from "@/components/text-effect"
 import { ProgressiveBlur } from "@/components/progressive-blur"
+import Link from "next/link"
 
 export default function CTASection() {
   return (
@@ -18,7 +19,7 @@ export default function CTASection() {
         direction="top"
         blurIntensity={0.5}
       />
-      <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center justify-between gap-y-6 border-y border-border px-8 py-20 shadow-2xl z-20">
+      <div className="relative z-20 mx-auto flex w-full max-w-4xl flex-col items-center justify-between gap-y-6 border-y border-border px-8 py-20 shadow-2xl">
         <DecorIcon className="size-5" position="top-left" />
         <DecorIcon className="size-5" position="top-right" />
         <DecorIcon className="size-5" position="bottom-left" />
@@ -33,7 +34,7 @@ export default function CTASection() {
           as="h2"
           preset="blur"
           per="word"
-          className="text-center font-heading text-4xl tracking-tight text-foreground uppercase sm:text-5xl md:text-6xl"
+          className="text-center font-heading text-4xl tracking-tight text-foreground sm:text-5xl md:text-6xl"
         >
           Let Us Move Forward Together
         </TextEffect>
@@ -47,14 +48,19 @@ export default function CTASection() {
             variant="outline"
             size="lg"
             className="border-primary/20 px-6 font-mono hover:bg-primary/5"
+            asChild
           >
-            <PhoneCallCustomIcon className="mr-2 size-4 text-primary" />
-            <span className="mr-2 text-xs opacity-80">DISPATCH:</span>
-            +91 98765 43210
+            <Link href="tel:+919876543210">
+              <PhoneCallCustomIcon className="mr-2 size-4 text-primary" />
+              <span className="mr-2 text-xs opacity-80">DISPATCH:</span>
+              +91 98765 43210
+            </Link>
           </Button>
-          <Button size="lg" className="font-bold tracking-wide">
-            REQUEST A QUOTE
-            <CustomArrowRightIcon className="ml-2 size-4" />
+          <Button size="lg" className="font-bold tracking-wide" asChild>
+            <Link href="mailto:hello@tacxpress.com">
+              REQUEST A QUOTE
+              <CustomArrowRightIcon className="ml-2 size-4" />
+            </Link>
           </Button>
         </div>
       </div>

@@ -35,7 +35,7 @@ const itemVariants = {
 export function TrackingSection() {
   return (
     <section id="track" className="w-full py-16 sm:py-20">
-      <div className="mx-auto max-w-7xl px-6 sm:px-12 md:px-24 dark:[--color-border:color-mix(in_oklab,var(--color-white)_10%,transparent)]">
+      <div className="mx-auto max-w-7xl px-4 sm:px-12 md:px-24 dark:[--color-border:color-mix(in_oklab,var(--color-white)_10%,transparent)]">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -48,19 +48,19 @@ export function TrackingSection() {
             {/* Card 1: Hero */}
             <motion.div
               variants={itemVariants}
-              className="relative col-span-2 row-span-2 flex flex-col justify-between overflow-hidden border border-border/50 bg-background/50 p-8 shadow-inner backdrop-blur-sm md:col-span-4"
+              className="relative col-span-2 row-span-2 flex flex-col justify-between overflow-hidden border border-border bg-card p-8 md:col-span-4"
             >
               <div className="flex items-start justify-between">
-                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5">
+                <div className="inline-flex items-center gap-2 rounded-none border border-primary/20 bg-primary/10 px-4 py-1.5">
                   <CustomGlobeIcon className="h-3.5 w-3.5 text-primary" />
-                  <span className="text-[10px] tracking-widest text-foreground uppercase">
+                  <span className="text-micro tracking-widest text-foreground uppercase">
                     Serving the Community
                   </span>
                 </div>
               </div>
 
               <div>
-                <h2 className="font-heading text-4xl text-foreground uppercase sm:text-5xl md:text-6xl">
+                <h2 className="font-heading text-4xl text-foreground sm:text-5xl md:text-6xl">
                   Track Your
                   <br />
                   <span className="text-primary">Cargo</span>
@@ -77,18 +77,18 @@ export function TrackingSection() {
                       name="awb"
                       aria-label="AWB number"
                       placeholder="Enter AWB Number (e.g. AWB-12345)"
-                      className="flex h-12 w-full border border-border bg-background px-4 py-2 text-sm outline-none placeholder:text-muted-foreground/50 focus:border-primary"
+                      className="flex h-9 w-full border border-border bg-background px-4 py-2 text-sm outline-none placeholder:text-muted-foreground/50 focus:border-primary focus-visible:ring-2 focus-visible:ring-ring"
                       required
                     />
                     <Button
                       type="submit"
                       size="lg"
-                      className="h-12 rounded-none px-6 font-mono font-bold tracking-wider"
+                      className="h-9 rounded-none px-6 font-mono font-bold tracking-wider"
                     >
                       TRACK <CustomArrowRightIcon className="ml-2 h-4 w-4" />
                     </Button>
                   </form>
-                  <span className="text-[10px] tracking-widest text-muted-foreground uppercase">
+                  <span className="text-micro tracking-widest text-muted-foreground uppercase">
                     Stay connected to your shipment every step of the way
                   </span>
                 </div>
@@ -98,7 +98,7 @@ export function TrackingSection() {
             {/* Card 2: Metrics */}
             <motion.div
               variants={itemVariants}
-              className="col-span-2 row-span-2 flex flex-col items-center justify-center gap-8 border border-border/50 bg-background/50 p-6 shadow-inner backdrop-blur-sm md:col-span-2 md:flex-row md:justify-around lg:flex-col lg:justify-center"
+              className="col-span-2 row-span-2 flex flex-col items-center justify-center gap-8 border border-border bg-card p-6 md:col-span-2 md:flex-row md:justify-around lg:flex-col lg:justify-center"
             >
               {[
                 { num: "15+", label: "Years Experience" },
@@ -106,10 +106,10 @@ export function TrackingSection() {
                 { num: "100%", label: "Commitment" },
               ].map((s) => (
                 <div key={s.label} className="text-center">
-                  <p className="text-4xl font-light text-primary lg:text-5xl">
+                  <p className="text-4xl font-light text-foreground lg:text-5xl">
                     {s.num}
                   </p>
-                  <p className="mt-2 text-[10px] tracking-widest text-muted-foreground uppercase">
+                  <p className="mt-2 text-micro tracking-widest text-muted-foreground uppercase">
                     {s.label}
                   </p>
                 </div>
@@ -120,7 +120,7 @@ export function TrackingSection() {
           {/* Card 3: Dashboard Image (Strict 16:9) */}
           <motion.div
             variants={itemVariants}
-            className="relative aspect-video w-full overflow-hidden border border-border/50 bg-black shadow-inner"
+            className="relative aspect-video w-full overflow-hidden border border-border bg-black"
           >
             <BorderBeam
               duration={6}
@@ -142,9 +142,9 @@ export function TrackingSection() {
             {/* Card 4: Route */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-col justify-between border border-border/50 bg-background/50 p-6 shadow-inner backdrop-blur-sm"
+              className="flex flex-col justify-between border border-border bg-card p-6"
             >
-              <MapMarkerIcon className="h-6 w-6 text-primary" />
+              <MapMarkerIcon className="h-6 w-6 text-muted-foreground" />
               <div>
                 <p className="mt-4 mb-2 text-lg font-medium tracking-widest text-foreground uppercase">
                   New Delhi ↔ Imphal
@@ -159,11 +159,11 @@ export function TrackingSection() {
             {/* Card 5: Challenges */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-col justify-between border border-border/50 bg-background/50 p-6 shadow-inner backdrop-blur-sm"
+              className="flex flex-col justify-between border border-border bg-card p-6"
             >
-              <MountainResilienceIcon className="h-6 w-6 text-primary" />
+              <MountainResilienceIcon className="h-6 w-6 text-muted-foreground" />
               <div>
-                <p className="mt-4 mb-1 text-[10px] tracking-widest text-primary uppercase">
+                <p className="mt-4 mb-1 text-micro tracking-widest text-muted-foreground uppercase">
                   Resilience
                 </p>
                 <p className="mb-1 text-lg font-medium tracking-widest text-foreground uppercase">
@@ -179,11 +179,11 @@ export function TrackingSection() {
             {/* Card 6: Team */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-col justify-between border border-border/50 bg-background/50 p-6 shadow-inner backdrop-blur-sm"
+              className="flex flex-col justify-between border border-border bg-card p-6"
             >
-              <TeamUsersIcon className="h-6 w-6 text-primary" />
+              <TeamUsersIcon className="h-6 w-6 text-muted-foreground" />
               <div>
-                <p className="mt-4 mb-1 text-[10px] tracking-widest text-primary uppercase">
+                <p className="mt-4 mb-1 text-micro tracking-widest text-muted-foreground uppercase">
                   Experience
                 </p>
                 <p className="mb-1 text-lg font-medium tracking-widest text-foreground uppercase">
@@ -200,37 +200,37 @@ export function TrackingSection() {
           {/* Card 7: Analytics replacement -> Community connection */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col justify-between border border-border/50 bg-background/50 p-6 shadow-inner backdrop-blur-sm md:flex-row md:p-8"
+            className="flex flex-col justify-between border border-border bg-card p-6 md:flex-row md:p-8"
           >
             <div className="flex max-w-2xl flex-col justify-between">
               <div>
-                <HandshakeTrustIcon className="mb-4 h-6 w-6 text-primary" />
+                <HandshakeTrustIcon className="mb-4 h-6 w-6 text-muted-foreground" />
                 <p className="mb-2 text-2xl font-medium tracking-widest text-foreground uppercase">
                   Unwavering Dedication
                 </p>
                 <p className="text-sm leading-relaxed font-light text-muted-foreground italic md:text-base">
-                  We don't just move boxes; we connect families, businesses, and
+                  We don&apos;t just move boxes; we connect families, businesses, and
                   communities. Our commitment to the Northeast community in New
                   Delhi is built on trust and 15 years of hard work.
                 </p>
               </div>
             </div>
             <div className="mt-6 flex items-center justify-start md:mt-0 md:justify-end">
-              <div className="flex gap-4 border border-primary/20 bg-primary/5 p-5">
+              <div className="flex gap-4 border border-border bg-muted/50 p-5">
                 <div className="px-4 text-center">
-                  <p className="text-xl font-light text-primary md:text-2xl">
+                  <p className="text-xl font-light text-foreground md:text-2xl">
                     15+
                   </p>
-                  <p className="text-[10px] tracking-widest text-muted-foreground uppercase">
+                  <p className="text-micro tracking-widest text-muted-foreground uppercase">
                     Years
                   </p>
                 </div>
                 <div className="w-px bg-primary/20"></div>
                 <div className="px-4 text-center">
-                  <p className="text-xl font-light text-primary md:text-2xl">
+                  <p className="text-xl font-light text-foreground md:text-2xl">
                     100%
                   </p>
-                  <p className="text-[10px] tracking-widest text-muted-foreground uppercase">
+                  <p className="text-micro tracking-widest text-muted-foreground uppercase">
                     Effort
                   </p>
                 </div>

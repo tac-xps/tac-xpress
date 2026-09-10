@@ -1,78 +1,10 @@
 "use client"
-
-import React, { useState, useMemo } from "react"
+import type { Driver } from "@/lib/db/schema"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 import { DriverActions } from "./driver-actions"
-import { DataTablePagination } from "@/components/ui/data-table-pagination"
-
-export function DriversClientTable({ drivers }: { drivers: any[] }) {
-  const [currentPage, setCurrentPage] = useState(1)
-  const pageSize = 25
-
-  const totalPages = Math.ceil(drivers.length / pageSize)
-  const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * pageSize
-    return drivers.slice(start, start + pageSize)
-  }, [drivers, currentPage, pageSize])
-
-  return (
-    <div className="flex h-full flex-col space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Drivers Directory
-        </h2>
-      </div>
-      <div className="flex-1 rounded-md border bg-card">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-              <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">
-                Name
-              </th>
-              <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">
-                License
-              </th>
-              <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground">
-                Status
-              </th>
-              <th className="h-10 px-4 text-right align-middle font-medium text-muted-foreground">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedData.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="h-24 text-center">
-                  No drivers found.
-                </td>
-              </tr>
-            ) : (
-              paginatedData.map((driver) => (
-                <tr
-                  key={driver.id}
-                  className="border-b transition-colors hover:bg-muted/50"
-                >
-                  <td className="p-4 align-middle font-medium">
-                    {driver.name}
-                  </td>
-                  <td className="p-4 align-middle">{driver.licenseNumber}</td>
-                  <td className="p-4 align-middle capitalize">
-                    {driver.status.replace("_", " ")}
-                  </td>
-                  <td className="p-4 text-right align-middle">
-                    <DriverActions driver={driver} />
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-      <DataTablePagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
-    </div>
-  )
+export function DriversClientTable({ drivers }: { drivers: Driver[] }) {
+  return <Card className="shadow-none"><CardHeader><CardTitle>Drivers</CardTitle><CardDescription>{drivers.length} records on this page</CardDescription></CardHeader><CardContent className="px-0"><Table><TableHeader><TableRow><TableHead className="pl-5">Driver</TableHead><TableHead>Phone</TableHead><TableHead>Licence</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader><TableBody>{drivers.map((driver) => <TableRow key={driver.id}><TableCell className="pl-5 font-medium">{driver.name}</TableCell><TableCell>{driver.phone}</TableCell><TableCell className="font-mono text-xs">{driver.licenseNumber}</TableCell><TableCell><Badge variant="outline" className="capitalize">{driver.status.replaceAll("_", " ")}</Badge></TableCell><TableCell><DriverActions driver={driver} /></TableCell></TableRow>)}{!drivers.length && <TableRow><TableCell colSpan={5} className="h-24 text-center text-muted-foreground">No matching drivers.</TableCell></TableRow>}</TableBody></Table></CardContent></Card>
 }
+

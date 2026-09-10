@@ -5,28 +5,24 @@ import { hubs } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
-import { actionClient } from "@/lib/safe-action"
+import { authActionClient } from "@/lib/safe-action"
 import {
   createHubSchema,
   updateHubSchema,
   deleteHubSchema,
 } from "./validations"
 import * as Sentry from "@sentry/nextjs"
-import { requireDashboardAction } from "@/lib/auth/guards"
 import { logAudit } from "@/lib/audit"
 
-export const createHubAction = actionClient
+export const createHubAction = authActionClient
   .schema(createHubSchema)
-  .action(async ({ parsedInput }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) return authResult.response
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
       const [hub] = await db.insert(hubs).values(parsedInput).returning()
 
       await logAudit({
-        userId: authResult.session.user.id,
-        userEmail: authResult.session.user.email || "unknown",
+        userId: ctx.session.user.id,
+        userEmail: ctx.session.user.email || "unknown",
         action: "create",
         entity: "hubs",
         entityId: hub.id,
@@ -41,12 +37,9 @@ export const createHubAction = actionClient
     }
   })
 
-export const updateHubAction = actionClient
+export const updateHubAction = authActionClient
   .schema(updateHubSchema)
-  .action(async ({ parsedInput }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) return authResult.response
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
       const { id, ...data } = parsedInput
       const before = await db.query.hubs.findFirst({ where: eq(hubs.id, id) })
@@ -58,8 +51,8 @@ export const updateHubAction = actionClient
         .returning()
 
       await logAudit({
-        userId: authResult.session.user.id,
-        userEmail: authResult.session.user.email || "unknown",
+        userId: ctx.session.user.id,
+        userEmail: ctx.session.user.email || "unknown",
         action: "update",
         entity: "hubs",
         entityId: id,
@@ -75,12 +68,9 @@ export const updateHubAction = actionClient
     }
   })
 
-export const deleteHubAction = actionClient
+export const deleteHubAction = authActionClient
   .schema(deleteHubSchema)
-  .action(async ({ parsedInput }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) return authResult.response
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
       const before = await db.query.hubs.findFirst({
         where: eq(hubs.id, parsedInput.id),
@@ -92,8 +82,8 @@ export const deleteHubAction = actionClient
         .where(eq(hubs.id, parsedInput.id))
 
       await logAudit({
-        userId: authResult.session.user.id,
-        userEmail: authResult.session.user.email || "unknown",
+        userId: ctx.session.user.id,
+        userEmail: ctx.session.user.email || "unknown",
         action: "delete",
         entity: "hubs",
         entityId: parsedInput.id,

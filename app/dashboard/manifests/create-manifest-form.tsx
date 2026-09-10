@@ -15,11 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Loader2, PackagePlus, ScanBarcode, Package } from "lucide-react"
 import { useCreateManifestForm } from "./use-create-manifest-form"
 import { Card, CardContent } from "@/components/ui/card"
-import {
-  Dropzone,
-  DropzoneContent,
-  DropzoneEmptyState,
-} from "@/components/kibo-ui/dropzone"
+
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -131,21 +127,11 @@ export function CreateManifestForm({
                     Attachments
                   </h3>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Upload consolidated documentation (Airway bills, load
+                    Keep consolidated documentation (air waybills, load
                     sheets).
                   </p>
                 </div>
-                <Dropzone
-                  accept={{
-                    "application/pdf": [".pdf"],
-                    "image/*": [".png", ".jpg", ".jpeg"],
-                  }}
-                  maxFiles={3}
-                  onDrop={(files) => console.log(files)}
-                >
-                  <DropzoneEmptyState />
-                  <DropzoneContent />
-                </Dropzone>
+                <p className="text-sm leading-relaxed text-muted-foreground">Save this manifest first, then open its details to attach private load sheets and supporting documents.</p>
               </CardContent>
             </Card>
           </div>
@@ -189,7 +175,7 @@ export function CreateManifestForm({
                       <div className="flex min-h-0 flex-1 flex-col space-y-4">
                         <div className="custom-scrollbar flex-1 space-y-4 overflow-y-auto pr-2">
                           {paginatedShipments.length === 0 ? (
-                            <div className="flex h-full min-h-[120px] items-center justify-center border-2 border-dashed border-border text-sm text-muted-foreground">
+                            <div className="flex h-full min-h-32 items-center justify-center border-2 border-dashed border-border text-sm text-muted-foreground">
                               No pending shipments available.
                             </div>
                           ) : (
@@ -246,7 +232,7 @@ export function CreateManifestForm({
                                               {shipment.awbNumber}
                                             </FormLabel>
                                           </div>
-                                          <span className="font-mono text-[10px] text-muted-foreground uppercase">
+                                          <span className="font-mono text-micro text-muted-foreground uppercase">
                                             ID: {shipment.id.substring(0, 8)}
                                           </span>
                                         </div>
@@ -255,7 +241,7 @@ export function CreateManifestForm({
                                           variant={
                                             isChecked ? "default" : "secondary"
                                           }
-                                          className="bg-opacity-80 text-[10px] tracking-wider uppercase"
+                                          className="bg-opacity-80 text-micro tracking-wider uppercase"
                                         >
                                           {shipment.destination}
                                         </Badge>
@@ -371,3 +357,4 @@ function ManifestSelect({
     />
   )
 }
+

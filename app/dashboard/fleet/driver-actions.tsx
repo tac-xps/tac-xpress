@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation"
 import { EditDriverDialog } from "./edit-driver-dialog"
 import { deleteDriverAction } from "./actions"
 import { toast } from "sonner"
+import { ConfirmRemoval } from "@/components/operations/confirm-removal"
 
 interface DriverActionsProps {
   driver: any
@@ -23,24 +24,22 @@ interface DriverActionsProps {
 export function DriverActions({ driver }: DriverActionsProps) {
   const router = useRouter()
   const [editOpen, setEditOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
   async function handleDelete() {
-    if (!window.confirm("Are you sure you want to delete this driver?")) return
-
     setIsDeleting(true)
-    const result = await deleteDriverAction({ id: driver.id })
-    if (result?.success) {
-      toast.success("Driver deleted successfully")
+    try {
+      const result = await deleteDriverAction({ id: driver.id })
+      if (!result?.data?.success) throw new Error("Unable to remove this record")
+      toast.success("Record removed")
       router.refresh()
-    } else {
-      toast.error(result?.error || "Failed to delete driver")
-    }
-    setIsDeleting(false)
+    } finally { setIsDeleting(false) }
   }
 
   return (
     <>
+      <ConfirmRemoval open={deleteOpen} onOpenChange={setDeleteOpen} title="Remove this driver?" description="The record will be removed from active selection. Existing assignments must be reviewed before removal." onConfirm={handleDelete} />
       <EditDriverDialog driver={driver} open={editOpen} setOpen={setEditOpen} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -56,7 +55,7 @@ export function DriverActions({ driver }: DriverActionsProps) {
             Edit driver
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive" onClick={handleDelete}>
+          <DropdownMenuItem variant="destructive" onClick={() => setDeleteOpen(true)}>
             <Trash className="mr-2 h-4 w-4" />
             Delete driver
           </DropdownMenuItem>
@@ -65,3 +64,5 @@ export function DriverActions({ driver }: DriverActionsProps) {
     </>
   )
 }
+
+

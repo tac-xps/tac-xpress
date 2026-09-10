@@ -17,7 +17,7 @@ type HubVolumeWidgetProps = {
 function TrendLabel({ trend }: { trend: TrendValue }) {
   if (trend === null) {
     return (
-      <span className="text-[11px] font-medium text-muted-foreground">
+      <span className="text-mini font-medium text-muted-foreground">
         No prior month baseline
       </span>
     )
@@ -27,7 +27,7 @@ function TrendLabel({ trend }: { trend: TrendValue }) {
 
   return (
     <div
-      className={`flex items-center gap-1 text-[11px] font-medium ${
+      className={`flex items-center gap-1 text-mini font-medium ${
         isPositive ? "text-status-delivered" : "text-destructive"
       }`}
     >
@@ -53,7 +53,7 @@ export function HubVolumeWidget({ hubs }: HubVolumeWidgetProps) {
       </CardHeader>
       <CardContent className="flex flex-col gap-6 p-6">
         {hubs.length === 0 ? (
-          <Empty className="min-h-[240px] border border-dashed border-border/60 bg-muted/10">
+          <Empty className="min-h-60 border border-dashed border-border/60 bg-muted/10">
             <EmptyContent>
               <EmptyMedia variant="icon">
                 <Building2 className="size-4" />

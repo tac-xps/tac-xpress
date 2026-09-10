@@ -5,7 +5,7 @@ import { TrendingUp, TrendingDown, Minus, type LucideIcon } from "lucide-react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 const kpiVariants = cva(
-  "relative rounded-xl border bg-card/80 p-4 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md",
+  "relative rounded-none border border-border bg-card p-4 shadow-card transition-colors hover:border-border-strong",
   {
     variants: {
       variant: {
@@ -76,7 +76,7 @@ export function KpiMetric({
     <div className={cn(kpiVariants({ variant }), className)}>
       <div className="flex items-start justify-between">
         <div className="min-w-0 space-y-1.5">
-          <p className="truncate text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
+          <p className="truncate text-mini font-semibold tracking-widest text-muted-foreground uppercase">
             {title}
           </p>
           <div className="flex items-baseline gap-2">

@@ -1,11 +1,11 @@
-"use server"
+import "server-only"
+import { getAppUrl } from "@/lib/config/app-url"
 
 import { supabaseAdmin } from "@/lib/supabase/clients"
 import { sanitizeHtml } from "@/lib/sanitize"
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
 const FROM_EMAIL = process.env.FROM_EMAIL || "support@tac-xpress.app"
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
 
 export type NotificationType =
   | "ticket_created"
@@ -20,6 +20,7 @@ interface EmailPayload {
   subject: string
   type: NotificationType
   body?: string
+  idempotencyKey?: string
 }
 
 // ---------------------------------------------------------------------------
@@ -45,7 +46,7 @@ function buildEmailContent(
   body?: string,
   ticketId?: string
 ) {
-  const portalUrl = `${APP_URL}/portal/tickets`
+  const contactUrl = `${getAppUrl()}/contact`
   const ticketLabel = ticketId ? `#${ticketId.slice(0, 8).toUpperCase()}` : ""
   const supportEmail = FROM_EMAIL
   // Sanitize body and subject to prevent XSS via email in webmail clients
@@ -70,7 +71,7 @@ function buildEmailContent(
           ${content}
           <hr style="border:none;border-top:1px solid #f3f4f6;margin:24px 0;" />
           <p style="color:#9ca3af;font-size:11px;margin:0;">
-            If you have questions, reply to this email or visit <a href="${portalUrl}" style="color:#6366f1;">your ticket portal</a>.<br />
+            If you have questions, reply to this email or visit <a href="${contactUrl}" style="color:#6366f1;">our contact page</a>.<br />
             This is an automated message from TAC-XPRESS — ${supportEmail}
           </p>
         </td></tr>
@@ -88,47 +89,47 @@ function buildEmailContent(
       html: base(`
         <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 8px;">We've received your ticket ${ticketLabel}</h2>
         <p style="color:#374151;font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
-        <p style="color:#6b7280;font-size:14px;margin:0 0 16px;">Our AI is analyzing your request now and a support agent will follow up within 2 hours.</p>
-        ${btn(portalUrl, "View Ticket")}
+        <p style="color:#6b7280;font-size:14px;margin:0 0 16px;">Our support team will review your request and follow up by email.</p>
+        ${btn(contactUrl, "Contact Support")}
       `),
-      text: `TAC-XPRESS: We received your ticket ${ticketLabel}.\nSubject: ${subject}\nWe'll respond within 2 hours.\n\nView: ${portalUrl}`,
+      text: `TAC-XPRESS: We received your ticket ${ticketLabel}.\nSubject: ${subject}\nOur support team will review your request.\n\nView: ${contactUrl}`,
     },
     ai_replied: {
       html: base(`
         <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 8px;">Update on your ticket ${ticketLabel}</h2>
         <p style="color:#374151;font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
         <blockquote style="border-left:3px solid #6366f1;padding:12px 16px;background:#f5f3ff;color:#374151;font-size:14px;margin:0 0 16px;">${safeBody}</blockquote>
-        <p style="color:#6b7280;font-size:13px;margin:0 0 4px;">Need to add more info? Reply via the portal.</p>
-        ${btn(portalUrl, "Reply or View Thread")}
+        <p style="color:#6b7280;font-size:13px;margin:0 0 4px;">Need to add more information? Contact support and include your ticket number.</p>
+        ${btn(contactUrl, "Contact support")}
       `),
-      text: `Update on ${subject} ${ticketLabel}:\n\n${body || ""}\n\nReply: ${portalUrl}`,
+      text: `Update on ${subject} ${ticketLabel}:\n\n${body || ""}\n\nReply: ${contactUrl}`,
     },
     agent_replied: {
       html: base(`
         <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 8px;">A support agent responded to ${ticketLabel}</h2>
         <p style="color:#374151;font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
         <blockquote style="border-left:3px solid #10b981;padding:12px 16px;background:#f0fdf4;color:#374151;font-size:14px;margin:0 0 16px;">${safeBody}</blockquote>
-        ${btn(portalUrl, "Reply Here")}
+        ${btn(contactUrl, "Reply Here")}
       `),
-      text: `Agent response on ${subject} ${ticketLabel}:\n\n${body || ""}\n\nReply: ${portalUrl}`,
+      text: `Agent response on ${subject} ${ticketLabel}:\n\n${body || ""}\n\nReply: ${contactUrl}`,
     },
     sla_breach: {
       html: base(`
         <h2 style="font-size:18px;font-weight:700;color:#dc2626;margin:0 0 8px;">⚠️ Urgent: Your ticket has been escalated ${ticketLabel}</h2>
         <p style="color:#374151;font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
         <p style="color:#6b7280;font-size:14px;margin:0 0 16px;">We've escalated your ticket to our senior team due to SLA requirements. Expect an update very shortly.</p>
-        ${btn(portalUrl, "View Ticket")}
+        ${btn(contactUrl, "Contact Support")}
       `),
-      text: `URGENT: Your ticket ${subject} ${ticketLabel} has been escalated. We'll update you soon.\n\nView: ${portalUrl}`,
+      text: `URGENT: Your ticket ${subject} ${ticketLabel} has been escalated. We'll update you soon.\n\nView: ${contactUrl}`,
     },
     resolved: {
       html: base(`
         <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 8px;">Ticket Resolved ✓ ${ticketLabel}</h2>
         <p style="color:#374151;font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
         <p style="color:#6b7280;font-size:14px;margin:0 0 16px;">Your ticket has been marked as resolved. If you need further help, please open a new ticket.</p>
-        ${btn(portalUrl, "View History")}
+        ${btn(contactUrl, "Contact support")}
       `),
-      text: `Resolved: ${subject} ${ticketLabel}.\nView history: ${portalUrl}`,
+      text: `Resolved: ${subject} ${ticketLabel}.\nContact support: ${contactUrl}`,
     },
   }
 
@@ -145,8 +146,7 @@ export async function sendTicketNotification(payload: EmailPayload) {
     if (!RESEND_API_KEY) {
       console.warn(
         "[Email] RESEND_API_KEY not set — email skipped:",
-        payload.type,
-        payload.to
+        payload.type
       )
       return { skipped: true }
     }
@@ -157,9 +157,11 @@ export async function sendTicketNotification(payload: EmailPayload) {
 
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
+      signal: AbortSignal.timeout(15000),
       headers: {
         Authorization: `Bearer ${RESEND_API_KEY}`,
         "Content-Type": "application/json",
+        ...(payload.idempotencyKey ? { "Idempotency-Key": payload.idempotencyKey } : {}),
       },
       body: JSON.stringify({
         from: `TAC-XPRESS Support <${FROM_EMAIL}>`,
@@ -174,7 +176,7 @@ export async function sendTicketNotification(payload: EmailPayload) {
       const errorBody = await response.json().catch(() => ({}))
       console.error("[Email] Resend error:", errorBody)
       // Log failure to DB so we can retry
-      await supabaseAdmin.from("email_notifications").insert({
+      const { error: logError } = await supabaseAdmin.from("email_notifications").insert({
         ticket_id: ticketId,
         recipient_email: to,
         template_name: type,
@@ -184,6 +186,7 @@ export async function sendTicketNotification(payload: EmailPayload) {
         status: "failed",
         sent_at: new Date().toISOString(),
       })
+      if (logError) Sentry.captureException(logError, { tags: { area: "email_delivery_log" } })
       return {
         success: false,
         error: `Resend API error: ${JSON.stringify(errorBody)}`,
@@ -193,7 +196,7 @@ export async function sendTicketNotification(payload: EmailPayload) {
     const result = await response.json()
 
     // Log success
-    await supabaseAdmin.from("email_notifications").insert({
+    const { error: logError } = await supabaseAdmin.from("email_notifications").insert({
       ticket_id: ticketId,
       recipient_email: to,
       template_name: type,
@@ -205,9 +208,12 @@ export async function sendTicketNotification(payload: EmailPayload) {
       sent_at: new Date().toISOString(),
     })
 
+    if (logError) Sentry.captureException(logError, { tags: { area: "email_delivery_log" } })
     return { success: true, data: result }
   } catch (error: any) {
     Sentry.captureException(error)
     return { success: false, error: error.message || "Internal Server Error" }
   }
 }
+
+

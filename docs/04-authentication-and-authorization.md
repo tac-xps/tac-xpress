@@ -1,65 +1,25 @@
-# Authentication and Authorization
+# Authentication and authorization
 
-## Dual-Auth Model
+## Staff workspace
 
-Tac-Xpress deliberately uses two authentication flows:
+NextAuth credentials verify Supabase Auth identity and require a provisioned, non-deleted `users` record with the current `admin` or `staff` role. `AUTH_SECRET` signs sessions. Public identities are never automatically provisioned as staff. Password recovery and real account provisioning require deployment acceptance.
 
-- Internal dashboard users authenticate with NextAuth credentials at `/signin`.
-- Customer portal users authenticate with Supabase-generated email links and the signed `portal_session` cookie.
+Use `lib/auth/guards.ts` at every protected data/action boundary. The guard reads the current database role; stale JWT claims cannot retain permissions after role changes or deletion. Database failures deny access and reach Sentry. Admin-only actions explicitly restrict the allowed roles; the staff directory is admin-only.
 
-Do not merge these flows implicitly. They protect different surfaces and use different session material.
+## Public customers
 
-## Dashboard Auth
+Customers do not have accounts or a portal. They use published AWB tracking and public contact/support. Customer rows remain business records for bookings, billing and consignments; those records confer no sign-in rights.
 
-Entry points:
+Legacy `/portal` routes require staff authorization and redirect to the equivalent dashboard destination. Legacy registration and email-link actions cannot establish a session. The old callback clears portal cookies and offers staff sign-in recovery; it does not exchange an email token.
 
-- `/signin`
-- `/api/auth/*`
+## Documents and delivery
 
-Implementation:
+Printable invoices/labels require current staff authorization or a five-minute, invoice-specific render token. PDF jobs use a different signed purpose. Private cargo documents reauthorize the record and storage path. Staff avatars are private and scoped to their owner.
 
-- `auth.config.ts`
-- `auth.ts`
-- `app/api/auth/[...nextauth]/route.ts`
+Delivery pages are staff tools. A future driver identity needs assignment-level authorization before activation. Public tracking exposes only explicitly published events and excludes contact, financial and internal operational fields.
 
-Rules:
+## Request protection
 
-- `AUTH_SECRET` is the canonical secret in production.
-- `NEXTAUTH_SECRET` is only a compatibility alias.
-- Production now fails closed when neither is configured.
-- Credentials authenticate against Supabase Auth and then attach the app role from the `users` table.
+The Next.js proxy checks Arcjet decisions explicitly. Denials remain denials. Protection errors, including partial rule errors, return 503 for private routes and mutations; read-only public information stays available and the degradation is reported. Production placeholders are rejected. Client IP forwarding and provider acceptance must be verified on the actual deployment. Application role checks remain mandatory even when the perimeter permits a request.
 
-Authorization:
-
-- `proxy.ts` redirects unauthenticated dashboard requests to `/signin`.
-- `requireDashboardSession`, `requireDashboardAction`, and `requireDashboardApi` guard server components, actions, and routes.
-- Customer-role users are redirected away from dashboard routes.
-
-## Portal Auth
-
-Entry points:
-
-- `/portal`
-- `/auth/callback`
-- `app/actions/auth.ts`
-- `app/actions/portal-auth.ts`
-
-Rules:
-
-- `PORTAL_SESSION_SECRET` signs the `portal_session` cookie.
-- Portal sessions last 24 hours.
-- Portal access is verified against AWB plus customer email.
-- The login endpoint returns the same failure message for not-found and email-mismatch cases to reduce enumeration risk.
-
-## Public Auth-Adjacent Flows
-
-- Landing page ticket submission is anonymous but rate limited.
-- Public tracking is anonymous but constrained to rows marked publicly trackable.
-- Signed invoice PDF generation uses HMAC signatures and never returns raw server errors to clients.
-
-## Operational Guidance
-
-- Use NextAuth for staff and admin workflows only.
-- Use Supabase link-based flows for customer portal access.
-- Never expose raw provider, database, or stack errors from auth routes.
-- Keep auth secrets and portal secrets distinct.
+Keep credentials server-only, validate all input, use generic credential errors, and never treat editable user metadata as an authorization source.

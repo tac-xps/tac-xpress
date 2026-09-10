@@ -84,7 +84,7 @@ function FilledShell({
   return (
     <span
       className={cn(
-        "inline-flex size-3 shrink-0 items-center justify-center rounded-full",
+        "inline-flex size-3 shrink-0 items-center justify-center rounded-none",
         "[&_svg]:size-2! [&_svg]:shrink-0 [&_svg]:stroke-3! [&_svg]:text-background",
         value > 0 && "bg-primary",
         value < 0 && "bg-destructive",

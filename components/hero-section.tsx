@@ -10,6 +10,7 @@ import {
 } from "@/components/icons/landing-icons"
 import { motion } from "framer-motion"
 import Image from "next/image"
+import Link from "next/link"
 import { TextEffect } from "@/components/text-effect"
 
 export default function HeroSection() {
@@ -18,37 +19,62 @@ export default function HeroSection() {
       id="hero"
       className="relative flex min-h-[90vh] w-full flex-col items-center justify-center"
     >
-      <div className="relative flex flex-col items-center justify-center gap-5 px-4 py-12 md:px-4 md:py-24 lg:py-28">
+      <div className="relative flex flex-col items-center justify-center gap-6 px-4 pt-36 pb-16 md:px-6 md:pt-40 md:pb-20 lg:pt-44 lg:pb-24">
         <div aria-hidden="true" className="absolute inset-0 -z-1 size-full">
-          {/* Primary Brand Glow */}
+          {/* 2026 Hero Glow — Light: Ivory Cartridge / Dark: Nexent Void */}
+          {/* Primary atmospheric glow — centered, wide, foundational */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
+            transition={{ duration: 1.8, ease: "easeOut" }}
+            style={{
+              background:
+                "radial-gradient(ellipse at center, color-mix(in oklch, oklch(72% 0.14 65) 18%, transparent) 0%, transparent 70%)",
+            }}
             className={cn(
-              "absolute top-1/2 left-1/2 h-[400px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-[100%]",
-              "bg-blue-400/15 dark:bg-primary/20",
-              "blur-[80px]"
+              "absolute top-1/2 left-1/2 h-[420px] w-[900px] -translate-x-1/2 -translate-y-1/2",
+              "dark:[background:radial-gradient(ellipse_at_center,color-mix(in_oklch,oklch(38%_0.14_168)_28%,transparent)_0%,transparent_70%)]",
+              "blur-[90px] motion-reduce:animate-none"
             )}
           />
-          {/* Accent Glow */}
+          {/* Secondary accent glow — offset upper-right for visual tension */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
+            transition={{ duration: 1.8, delay: 0.25, ease: "easeOut" }}
+            style={{
+              background:
+                "radial-gradient(ellipse at center, color-mix(in oklch, oklch(64% 0.09 260) 14%, transparent) 0%, transparent 65%)",
+            }}
             className={cn(
-              "absolute top-1/2 left-1/2 h-[300px] w-[600px] -translate-x-1/4 -translate-y-1/3 rounded-[100%]",
-              "bg-sky-300/15 dark:bg-indigo-500/20",
-              "blur-[80px] dark:mix-blend-screen"
+              "absolute top-[30%] left-[60%] h-72 w-[580px] -translate-x-1/2 -translate-y-1/2",
+              "dark:[background:radial-gradient(ellipse_at_center,color-mix(in_oklch,oklch(82%_0.2_158)_12%,transparent)_0%,transparent_65%)]",
+              "blur-[70px] mix-blend-normal dark:mix-blend-screen motion-reduce:animate-none"
+            )}
+          />
+          {/* Tertiary micro-glow — lower-left counter-balance */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 2.2, delay: 0.5, ease: "easeOut" }}
+            style={{
+              background:
+                "radial-gradient(ellipse at center, color-mix(in oklch, oklch(78% 0.11 45) 10%, transparent) 0%, transparent 60%)",
+            }}
+            className={cn(
+              "absolute top-[65%] left-[25%] h-56 w-[380px] -translate-x-1/2 -translate-y-1/2",
+              "dark:[background:radial-gradient(ellipse_at_center,color-mix(in_oklch,oklch(55%_0.1_168)_15%,transparent)_0%,transparent_60%)]",
+              "blur-[60px] motion-reduce:animate-none"
             )}
           />
         </div>
         <a
           className={cn(
-            "group mx-auto flex w-fit items-center gap-3 rounded-none border bg-card p-1 shadow",
-            "animate-in transition-all delay-500 duration-500 ease-out fill-mode-backwards slide-in-from-bottom-10 fade-in"
+            "group mx-auto flex w-fit items-center gap-3 rounded-none border bg-card p-1 shadow outline-none",
+            "transition-all delay-500 duration-500 ease-out animate-in fade-in fill-mode-backwards slide-in-from-bottom-10",
+            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           )}
-          href="#link"
+          href="#services"
         >
           <div className="rounded-xs border bg-card px-1.5 py-0.5 shadow-sm">
             <p className="font-mono text-xs">NOW</p>
@@ -105,11 +131,19 @@ export default function HeroSection() {
           <Button
             variant="outline"
             className="transition-transform hover:scale-105 active:scale-95"
+            asChild
           >
-            <PhoneCallCustomIcon className="mr-2 size-4" /> Get a Quote
+            <Link href="#quote">
+              <PhoneCallCustomIcon className="mr-2 size-4" /> Get a Quote
+            </Link>
           </Button>
-          <Button className="shadow-lg shadow-primary/20 transition-transform hover:scale-105 active:scale-95">
-            Explore Services <CustomArrowRightIcon className="ml-2 size-4" />
+          <Button
+            className="shadow-lg shadow-primary/20 transition-transform hover:scale-105 active:scale-95"
+            asChild
+          >
+            <Link href="#services">
+              Explore Services <CustomArrowRightIcon className="ml-2 size-4" />
+            </Link>
           </Button>
         </motion.div>
       </div>

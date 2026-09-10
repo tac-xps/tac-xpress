@@ -124,20 +124,14 @@ export function InvoiceDetailDialog({ invoice }: InvoiceDetailDialogProps) {
   } = useInvoiceDetailDialog(invoice)
   const [editOpen, setEditOpen] = useState(false)
 
-  const documentHref = useMemo(() => {
-    if (!invoice.pdfUrl) return null
-    if (invoice.pdfUrl.startsWith("/")) return invoice.pdfUrl
-    return `/api/documents?path=${encodeURIComponent(invoice.pdfUrl)}`
-  }, [invoice.pdfUrl])
+  const documentHref = `/invoice/${invoice.id}?preview=true`
 
-  const downloadHref = invoice.shipmentId
-    ? `/api/documents/download?id=${invoice.shipmentId}`
-    : null
+  const downloadHref = `/api/documents/download?id=${invoice.id}`
 
   const whatsappIcon = isSending ? (
     <RefreshCwIcon className="mr-2 h-4 w-4 animate-spin" />
   ) : invoice.whatsappStatus === "sent" ? (
-    <CheckCircle2Icon className="mr-2 h-4 w-4 text-success" />
+    <CheckCircle2Icon className="text-success mr-2 h-4 w-4" />
   ) : invoice.whatsappStatus === "failed" ? (
     <AlertCircleIcon className="mr-2 h-4 w-4 text-destructive" />
   ) : (
@@ -414,11 +408,7 @@ export function InvoiceDetailDialog({ invoice }: InvoiceDetailDialogProps) {
             {documentHref ? (
               <iframe
                 className="h-full min-h-96 w-full border border-border bg-background"
-                src={
-                  invoice.pdfUrl?.startsWith("/")
-                    ? `${invoice.pdfUrl}?preview=true`
-                    : documentHref
-                }
+                src={documentHref}
                 title="Invoice PDF preview"
               />
             ) : (
@@ -444,3 +434,4 @@ export function InvoiceDetailDialog({ invoice }: InvoiceDetailDialogProps) {
     </Dialog>
   )
 }
+

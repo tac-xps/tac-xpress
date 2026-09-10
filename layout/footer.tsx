@@ -53,34 +53,22 @@ export function Footer() {
             </div>
             <div className="flex flex-col items-start justify-end gap-3 font-mono">
               <Link
-                href="/operations/air-cargo"
+                href="/#services"
                 className="text-sm text-muted-foreground transition-colors hover:text-primary"
               >
                 Air Cargo
               </Link>
               <Link
-                href="/operations/surface-cargo"
+                href="/#services"
                 className="text-sm text-muted-foreground transition-colors hover:text-primary"
               >
                 Surface Cargo
               </Link>
               <Link
-                href="/operations/live-tracking"
+                href="/track"
                 className="text-sm text-muted-foreground transition-colors hover:text-primary"
               >
                 Live Tracking
-              </Link>
-              <Link
-                href="/operations/network-map"
-                className="text-sm text-muted-foreground transition-colors hover:text-primary"
-              >
-                Network Map
-              </Link>
-              <Link
-                href="/operations/warehouse"
-                className="text-sm text-muted-foreground transition-colors hover:text-primary"
-              >
-                Warehouse
               </Link>
             </div>
           </div>
@@ -91,34 +79,22 @@ export function Footer() {
             </div>
             <div className="flex flex-col items-start justify-center gap-3 font-mono">
               <Link
-                href="/company/about"
+                href="/#hero"
                 className="text-sm text-muted-foreground transition-colors hover:text-primary"
               >
                 About Us
               </Link>
               <Link
-                href="/company/fleet"
-                className="text-sm text-muted-foreground transition-colors hover:text-primary"
-              >
-                Our Fleet
-              </Link>
-              <Link
-                href="/company/careers"
-                className="text-sm text-muted-foreground transition-colors hover:text-primary"
-              >
-                Careers
-              </Link>
-              <Link
-                href="/company/investors"
-                className="text-sm text-muted-foreground transition-colors hover:text-primary"
-              >
-                Investors
-              </Link>
-              <Link
-                href="/company/contact"
+                href="mailto:hello@tacxpress.com"
                 className="text-sm text-muted-foreground transition-colors hover:text-primary"
               >
                 Contact
+              </Link>
+              <Link
+                href="/#quote"
+                className="text-sm text-muted-foreground transition-colors hover:text-primary"
+              >
+                Get a Quote
               </Link>
             </div>
           </div>
@@ -132,31 +108,19 @@ export function Footer() {
                 href="/terms"
                 className="text-sm text-muted-foreground transition-colors hover:text-primary"
               >
-                Terms & Conditions
+                Terms &amp; Conditions
               </Link>
               <Link
-                href="/resources/api"
+                href="/portal"
                 className="text-sm text-muted-foreground transition-colors hover:text-primary"
               >
-                API Reference
+                Customer Portal
               </Link>
               <Link
-                href="/resources/docs"
+                href="/track"
                 className="text-sm text-muted-foreground transition-colors hover:text-primary"
               >
-                Documentation
-              </Link>
-              <Link
-                href="/resources/webhooks"
-                className="text-sm text-muted-foreground transition-colors hover:text-primary"
-              >
-                Webhooks
-              </Link>
-              <Link
-                href="/resources/support"
-                className="text-sm text-muted-foreground transition-colors hover:text-primary"
-              >
-                Support
+                Track Shipment
               </Link>
             </div>
           </div>

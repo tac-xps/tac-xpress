@@ -35,7 +35,7 @@ export function EditVehicleDialog({
         <DialogHeader>
           <DialogTitle>Edit Vehicle</DialogTitle>
           <DialogDescription>
-            Update the vehicle's details below.
+            Update the vehicle&apos;s details below.
           </DialogDescription>
         </DialogHeader>
         <AddVehicleForm

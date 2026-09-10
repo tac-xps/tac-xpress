@@ -3,11 +3,15 @@ import { manifests } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { NextResponse } from "next/server"
 import { format } from "date-fns"
-
+import { requireDashboardApi } from "@/lib/auth/guards"
+import { escapeHtml } from "@/lib/server/escape-html"
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const access = await requireDashboardApi()
+  if (!access.ok) return access.response
+
   const { id } = await params
 
   const manifest = await db.query.manifests.findFirst({
@@ -37,7 +41,7 @@ export async function GET(
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manifest ${manifest.referenceId}</title>
+  <title>Manifest ${escapeHtml(manifest.referenceId)}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12px; color: #111; background: #fff; padding: 24px; }
@@ -48,7 +52,7 @@ export async function GET(
     .meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; padding: 16px; background: #f8f8f8; border: 1px solid #e0e0e0; }
     .meta-item label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 4px; }
     .meta-item span { font-size: 13px; font-weight: 600; }
-    .status { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .status { display: inline-block; padding: 2px 8px; border-radius: 0; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
     .status-draft { background: #f0f0f0; color: #666; }
     .status-finalized { background: #d1fae5; color: #065f46; }
     table { width: 100%; border-collapse: collapse; margin-top: 16px; }
@@ -59,7 +63,7 @@ export async function GET(
     .awb { font-family: monospace; font-weight: 700; font-size: 12px; }
     .route { color: #555; }
     .weight { font-family: monospace; text-align: right; }
-    .status-pill { padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
+    .status-pill { padding: 2px 6px; border-radius: 0; font-size: 9px; font-weight: 700; text-transform: uppercase; }
     .pending { background: #fef3c7; color: #92400e; }
     .in_transit { background: #dbeafe; color: #1e40af; }
     .delivered { background: #d1fae5; color: #065f46; }
@@ -85,24 +89,24 @@ export async function GET(
       <div class="doc-title">Line-Haul Manifest</div>
     </div>
     <div style="text-align:right">
-      <div class="ref">${manifest.referenceId}</div>
+      <div class="ref">${escapeHtml(manifest.referenceId)}</div>
       <div style="color:#666;margin-top:4px">${format(new Date(manifest.createdAt), "dd MMM yyyy, HH:mm")}</div>
-      <div style="margin-top:6px"><span class="status status-${manifest.status}">${manifest.status}</span></div>
+      <div style="margin-top:6px"><span class="status status-${escapeHtml(manifest.status)}">${escapeHtml(manifest.status)}</span></div>
     </div>
   </div>
 
   <div class="meta-grid">
     <div class="meta-item">
       <label>Driver</label>
-      <span>${(manifest as any).driver?.name ?? "Unassigned"}</span>
+      <span>${escapeHtml((manifest as any).driver?.name ?? "Unassigned")}</span>
     </div>
     <div class="meta-item">
       <label>Driver Phone</label>
-      <span>${(manifest as any).driver?.phone ?? "—"}</span>
+      <span>${escapeHtml((manifest as any).driver?.phone ?? "—")}</span>
     </div>
     <div class="meta-item">
       <label>Vehicle</label>
-      <span>${(manifest as any).vehicle?.registrationNumber ?? "Unassigned"}</span>
+      <span>${escapeHtml((manifest as any).vehicle?.registrationNumber ?? "Unassigned")}</span>
     </div>
     <div class="meta-item">
       <label>Printed On</label>
@@ -127,11 +131,11 @@ export async function GET(
           (item: any, idx: number) => `
       <tr>
         <td>${idx + 1}</td>
-        <td class="awb">${item.shipment?.awbNumber ?? "—"}</td>
-        <td>${item.shipment?.consigneeName ?? "—"}</td>
-        <td class="route">${item.shipment ? `${item.shipment.origin} → ${item.shipment.destination}` : "—"}</td>
+        <td class="awb">${escapeHtml(item.shipment?.awbNumber ?? "—")}</td>
+        <td>${escapeHtml(item.shipment?.consigneeName ?? "—")}</td>
+        <td class="route">${item.shipment ? `${escapeHtml(item.shipment.origin)} → ${escapeHtml(item.shipment.destination)}` : "—"}</td>
         <td class="weight">${item.shipment?.weightKg != null ? item.shipment.weightKg.toFixed(1) : "—"}</td>
-        <td><span class="status-pill ${item.shipment?.status ?? ""}">${item.shipment?.status?.replace("_", " ") ?? "—"}</span></td>
+        <td><span class="status-pill ${escapeHtml(item.shipment?.status ?? "")}">${escapeHtml(item.shipment?.status?.replace("_", " ") ?? "—")}</span></td>
       </tr>
       `
         )
@@ -163,7 +167,7 @@ export async function GET(
 
   <div class="footer">
     <span>TAC Xpress — Dispatch Manifest System</span>
-    <span>Ref: ${manifest.referenceId} | Generated: ${format(new Date(), "dd/MM/yyyy HH:mm")}</span>
+    <span>Ref: ${escapeHtml(manifest.referenceId)} | Generated: ${format(new Date(), "dd/MM/yyyy HH:mm")}</span>
   </div>
 
   <script>window.onload = () => window.print();</script>
@@ -173,6 +177,7 @@ export async function GET(
   return new NextResponse(html, {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "private, no-store",
     },
   })
 }

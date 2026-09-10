@@ -65,7 +65,7 @@ export function AwbTracker({ initialData }: { initialData?: TrackingResult }) {
   }
 
   return (
-    <div className="relative max-w-2xl border border-border/60 bg-card p-6 shadow-xl shadow-black/8 backdrop-blur-sm before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-card-accent/50 before:to-transparent">
+    <div className="before:via-card-accent/50 relative max-w-2xl border border-border/60 bg-card p-6 shadow-xl shadow-black/8 backdrop-blur-sm before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:to-transparent">
       <h3 className="mb-1 text-lg font-bold">Track Your Shipment</h3>
       <p className="mb-4 text-xs text-muted-foreground">
         Enter your AWB number to see real-time status
@@ -101,10 +101,10 @@ export function AwbTracker({ initialData }: { initialData?: TrackingResult }) {
             type="submit"
             disabled={pending}
             className={cn(
-              "flex items-center gap-2 rounded-none border-l-2 px-4 py-2.5 text-sm font-medium transition-colors",
+              "flex items-center gap-2 px-4 py-2.5 text-sm font-medium",
               pending
                 ? "cursor-not-allowed bg-muted text-muted-foreground"
-                : "border-l-primary-foreground bg-primary text-primary-foreground hover:bg-primary/90"
+                : "bg-primary text-primary-foreground hover:bg-primary/90"
             )}
           >
             {pending ? "Tracking..." : "Track"}
@@ -113,7 +113,7 @@ export function AwbTracker({ initialData }: { initialData?: TrackingResult }) {
       </Form>
 
       {error && (
-        <div className="mb-4 border-l-2 border-l-destructive bg-destructive/10 p-3 text-xs text-destructive">
+        <div className="mb-4 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
           {error}
         </div>
       )}
@@ -175,7 +175,7 @@ export function AwbTracker({ initialData }: { initialData?: TrackingResult }) {
                     <span className="text-xs font-medium">
                       {event.description}
                     </span>
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-micro text-muted-foreground">
                       {new Date(event.event_time).toLocaleString("en-IN", {
                         day: "numeric",
                         month: "short",
@@ -186,7 +186,7 @@ export function AwbTracker({ initialData }: { initialData?: TrackingResult }) {
                   </div>
                   <div className="mt-0.5 flex items-center gap-1">
                     <MapMarkerIcon className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-mini text-muted-foreground">
                       {event.location}
                     </span>
                   </div>

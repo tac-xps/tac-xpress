@@ -21,7 +21,7 @@ export const authConfig = {
       // The user object is only present on the initial sign-in.
       // We encode the role and org_id into the token here.
       if (user) {
-        token.role = (user as any).role || "staff"
+        token.role = user.role || "customer"
         token.org_id = "default-org" // Legacy P5 compatibility
       }
       return token

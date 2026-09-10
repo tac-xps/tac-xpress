@@ -1,4 +1,5 @@
 "use client"
+import { useCarouselState } from "@/hooks/use-carousel-state"
 
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
@@ -233,7 +234,7 @@ const Carousel: React.FC<PropType> = (props) => {
                   onClick={() =>
                     onAutoplayButtonClick(() => onDotButtonClick(index))
                   }
-                  className={`h-3 w-3 rounded-full border-2 border-border transition-colors duration-200 ${
+                  className={`h-3 w-3 rounded-none border-2 border-border transition-colors duration-200 ${
                     index === selectedIndex
                       ? "bg-foreground"
                       : "bg-transparent hover:bg-muted"
@@ -455,8 +456,7 @@ type UseDotButtonType = {
 export const useDotButton = (
   emblaApi: EmblaCarouselType | undefined
 ): UseDotButtonType => {
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const [scrollSnaps, setScrollSnaps] = useState<number[]>([])
+  const { selectedIndex, scrollSnaps } = useCarouselState(emblaApi)
 
   const onDotButtonClick = useCallback(
     (index: number) => {
@@ -465,21 +465,6 @@ export const useDotButton = (
     },
     [emblaApi]
   )
-
-  const onInit = useCallback((emblaApi: EmblaCarouselType) => {
-    setScrollSnaps(emblaApi.scrollSnapList())
-  }, [])
-
-  const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
-    setSelectedIndex(emblaApi.selectedScrollSnap())
-  }, [])
-
-  useEffect(() => {
-    if (!emblaApi) return
-    onInit(emblaApi)
-    onSelect(emblaApi)
-    emblaApi.on("reInit", onInit).on("reInit", onSelect).on("select", onSelect)
-  }, [emblaApi, onInit, onSelect])
 
   return { selectedIndex, scrollSnaps, onDotButtonClick }
 }
@@ -514,13 +499,13 @@ export const useAutoplayProgress = <ProgressElement extends HTMLElement>(
       animationName.current = style.animationName
     }
 
-    node.style.animationName = "none"
-    node.style.transform = "translate3d(0,0,0)"
+    node.style.setProperty("animation-name", "none")
+    node.style.setProperty("transform", "translate3d(0,0,0)")
 
     rafId.current = window.requestAnimationFrame(() => {
       timeoutId.current = window.setTimeout(() => {
-        node.style.animationName = animationName.current
-        node.style.animationDuration = `${timeUntilNext}ms`
+        node.style.setProperty("animation-name", animationName.current)
+        node.style.setProperty("animation-duration", `${timeUntilNext}ms`)
       }, 0)
     })
 
@@ -554,7 +539,7 @@ type UseAutoplayType = {
 export const useAutoplay = (
   emblaApi: EmblaCarouselType | undefined
 ): UseAutoplayType => {
-  const [autoplayIsPlaying, setAutoplayIsPlaying] = useState(false)
+  const { autoplayIsPlaying } = useCarouselState(emblaApi)
 
   const onAutoplayButtonClick = useCallback(
     (callback: () => void) => {
@@ -577,16 +562,6 @@ export const useAutoplay = (
     playOrStop()
   }, [emblaApi])
 
-  useEffect(() => {
-    const autoplay = emblaApi?.plugins()?.autoplay
-    if (!autoplay) return
-    setAutoplayIsPlaying(autoplay.isPlaying())
-    emblaApi
-      .on("autoplay:play", () => setAutoplayIsPlaying(true))
-      .on("autoplay:stop", () => setAutoplayIsPlaying(false))
-      .on("reInit", () => setAutoplayIsPlaying(autoplay.isPlaying()))
-  }, [emblaApi])
-
   return { autoplayIsPlaying, toggleAutoplay, onAutoplayButtonClick }
 }
 
@@ -600,8 +575,9 @@ type UsePrevNextButtonsType = {
 export const usePrevNextButtons = (
   emblaApi: EmblaCarouselType | undefined
 ): UsePrevNextButtonsType => {
-  const [prevBtnDisabled, setPrevBtnDisabled] = useState(true)
-  const [nextBtnDisabled, setNextBtnDisabled] = useState(true)
+  const { canScrollPrev, canScrollNext } = useCarouselState(emblaApi)
+  const prevBtnDisabled = !canScrollPrev
+  const nextBtnDisabled = !canScrollNext
 
   const onPrevButtonClick = useCallback(() => {
     if (!emblaApi) return
@@ -612,17 +588,6 @@ export const usePrevNextButtons = (
     if (!emblaApi) return
     emblaApi.scrollNext()
   }, [emblaApi])
-
-  const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
-    setPrevBtnDisabled(!emblaApi.canScrollPrev())
-    setNextBtnDisabled(!emblaApi.canScrollNext())
-  }, [])
-
-  useEffect(() => {
-    if (!emblaApi) return
-    onSelect(emblaApi)
-    emblaApi.on("reInit", onSelect).on("select", onSelect)
-  }, [emblaApi, onSelect])
 
   return {
     prevBtnDisabled,

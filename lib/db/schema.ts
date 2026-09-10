@@ -475,6 +475,9 @@ export const messageOutbound = pgTable(
       onDelete: "set null",
     }),
     relatedAwb: text("related_awb"),
+    relatedInvoiceId: uuid("related_invoice_id").references(() => invoices.id, {
+      onDelete: "set null",
+    }),
     failureReason: text("failure_reason"),
     providerPayload: jsonb("provider_payload"),
     lastStatusAt: timestamp("last_status_at").defaultNow(),

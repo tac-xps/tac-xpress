@@ -38,6 +38,7 @@ export function getWhatsAppConfig() {
   return {
     enabled: process.env.WHATSAPP_ENABLED === "true",
     relayToken: process.env.WPBOX_API_TOKEN?.trim() || null,
+    userId: process.env.WPBOX_USER_ID?.trim() || null,
     relayBaseUrl: process.env.WPBOX_BASE_URL?.trim() || DEFAULT_WPBOX_BASE_URL,
     appSecret: process.env.WHATSAPP_APP_SECRET?.trim() || null,
     verifyToken: process.env.WHATSAPP_VERIFY_TOKEN?.trim() || null,

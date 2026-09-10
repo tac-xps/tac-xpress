@@ -1,29 +1,16 @@
 "use server"
+import { createTicket } from "@/app/actions/tickets"
 
-import { db } from "@/lib/db"
-import { feedback } from "@/lib/db/schema"
-import { revalidatePath } from "next/cache"
-
+// Feedback belongs in the staffed support queue and shares its validation/rate limit.
 export async function submitFeedback(formData: FormData) {
-  const name = formData.get("name") as string
-  const email = formData.get("email") as string
-  const message = formData.get("message") as string
-
-  if (!name || !email || !message) {
-    return { error: "All fields are required" }
+  const ticket = new FormData()
+  for (const [input, output] of [["name", "customer_name"], ["email", "customer_email"], ["phone", "customer_phone"], ["message", "message"]]) {
+    const value = formData.get(input)
+    if (value !== null) ticket.set(output, value)
   }
-
-  try {
-    await db.insert(feedback).values({
-      name,
-      email,
-      message,
-    })
-
-    revalidatePath("/feedback")
-    return { success: true }
-  } catch (error) {
-    console.error("Failed to submit feedback:", error)
-    return { error: "Failed to submit feedback. Please try again." }
-  }
+  ticket.set("category", "general")
+  ticket.set("subject", "Website feedback")
+  const result = await createTicket(ticket)
+  if (result.error) return { error: "We couldn’t submit your message. Check your details and try again shortly." }
+  return { success: true }
 }

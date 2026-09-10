@@ -177,6 +177,7 @@ export function EditInvoiceDialog({
     (watched.freightCharge || 0) +
     (watched.pickupCharge || 0) +
     (watched.packingCharge || 0) +
+    (watched.docketCharge || 0) +
     (watched.insuranceCharge || 0) +
     (watched.otherCharges || 0)
   const gstAmount = (subtotal * (watched.gstRate || 0)) / 100
@@ -202,7 +203,7 @@ export function EditInvoiceDialog({
     const gstPaise = toPaise(gstAmount)
     const totalPaise = toPaise(totalAmount)
     const balancePaise = toPaise(balanceDue)
-    const finalStatus = balancePaise <= 0 ? "paid" : values.status
+    const finalStatus = balancePaise <= 0 ? "paid" : "unpaid"
 
     await executeAsync({
       id: values.id,
@@ -278,10 +279,10 @@ export function EditInvoiceDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[90vh] w-[90vw] max-w-4xl flex-col gap-0 overflow-hidden p-0 sm:rounded-xl">
+      <DialogContent className="flex max-h-[90vh] w-[90vw] max-w-4xl flex-col gap-0 overflow-hidden p-0">
         <DialogHeader className="shrink-0 border-b border-border/50 bg-muted/20 p-6">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2">
+            <div className="rounded-none bg-primary/10 p-2">
               <ReceiptText className="size-5 text-primary" />
             </div>
             <div>
@@ -373,7 +374,7 @@ export function EditInvoiceDialog({
                       </div>
                     </div>
                   ) : (
-                    <div className="rounded-md bg-status-pending/10 p-4 text-sm text-status-pending">
+                    <div className="rounded-none bg-status-pending/10 p-4 text-sm text-status-pending">
                       No shipment associated with this invoice. Parties info
                       cannot be updated.
                     </div>
@@ -390,14 +391,14 @@ export function EditInvoiceDialog({
                       <FormField
                         control={form.control}
                         name="status"
-                        render={({ field }) => (
+                        render={() => (
                           <FormItem>
                             <FormLabel className="text-xs font-semibold text-muted-foreground">
-                              Status
+                              Status from balance
                             </FormLabel>
                             <Select
-                              onValueChange={field.onChange}
-                              value={field.value}
+                              disabled
+                              value={balanceDue <= 0 ? "paid" : "unpaid"}
                             >
                               <FormControl>
                                 <SelectTrigger>
@@ -543,7 +544,7 @@ export function EditInvoiceDialog({
                   </div>
 
                   {/* Live Summary */}
-                  <div className="mt-6 space-y-3 rounded-lg border border-border/50 bg-muted/30 p-5">
+                  <div className="mt-6 space-y-3 rounded-none border border-border/50 bg-muted/30 p-5">
                     <h3 className="mb-3 text-xs font-bold tracking-widest text-muted-foreground uppercase">
                       Live Summary
                     </h3>

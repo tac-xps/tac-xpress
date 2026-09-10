@@ -26,12 +26,12 @@ export function useAddCustomerForm(onSuccess?: () => void) {
     startTransition(async () => {
       try {
         const result = await createCustomerAction(values)
-        if (result?.success) {
+        if ((result?.data?.success)) {
           toast.success("Customer added successfully")
           form.reset()
           onSuccess?.()
         } else {
-          toast.error(result?.error || "Failed to add customer")
+          toast.error((result?.data?.error ?? result?.serverError) || "Failed to add customer")
         }
       } catch (error) {
         Sentry.captureException(error)

@@ -1,56 +1,87 @@
-import { LoginForm } from "@/components/login-form"
-import Image from "next/image"
-import { Logo } from "@/components/logo"
+// Official shadcn two-column sign-in composition with Tailark Veil content treatment.
 import Link from "next/link"
-import { ThemeToggleButton } from "@/components/theme-toggle-button"
-
-export default function SignInPage() {
+import { LoginForm } from "@/components/login-form"
+import { Logo } from "@/components/logo"
+import { ThemeSwitcher } from "@/components/theme-switcher"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { LockKeyhole } from "lucide-react"
+import { CargoImage } from "@/components/public/cargo-image"
+export const metadata = { title: "Staff sign in | TAC-XPRESS" }
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ reason?: string }>
+}) {
+  const { reason } = await searchParams
   return (
-    <div className="relative grid min-h-svh bg-background lg:grid-cols-2">
-      <div className="absolute top-4 right-4 z-50">
-        <ThemeToggleButton />
-      </div>
-      <div className="relative hidden overflow-hidden border-r border-white/10 bg-premium-mesh after:pointer-events-none after:absolute after:inset-0 after:bg-primary/5 lg:block">
-        <Image
-          src="/images/login-trans.png"
-          alt="Tactical Logistics"
-          fill
-          sizes="(max-width: 1024px) 100vw, 50vw"
-          className="object-contain p-8 lg:p-12"
-          priority
+    <main className="cargo-public grid min-h-svh bg-background text-foreground lg:grid-cols-2">
+      <section className="cargo-inverse relative isolate flex flex-col gap-12 overflow-hidden border-b bg-background p-6 sm:p-12 lg:justify-between lg:border-r lg:border-b-0 lg:p-16">
+        <CargoImage
+          asset="warehouse"
+          className="cargo-hero-media hidden lg:block"
+          sizes="50vw"
+          loading="eager"
         />
-
-        <div className="relative z-20 flex h-full flex-col justify-between p-10 text-foreground">
-          <Link href="/" className="transition-opacity hover:opacity-90">
-            <Logo className="h-10 text-foreground" />
-          </Link>
-
-          <div className="mt-auto">
-            <blockquote className="space-y-4">
-              <p className="font-inter text-3xl leading-snug font-light tracking-tight text-foreground/90">
-                "Revolutionized how we move cargo to the Northeast.
-                <br />
-                The most reliable partner we've worked with."
-              </p>
-              <footer className="font-inter text-sm font-medium tracking-widest text-foreground/60 uppercase">
-                &mdash; Tapan Hidangmayum, Founder
-              </footer>
-            </blockquote>
-          </div>
+        <div className="cargo-hero-shade" aria-hidden="true" />
+        <Link href="/" aria-label="TAC-XPRESS home">
+          <Logo className="h-7" />
+        </Link>
+        <div className="hidden max-w-lg flex-col gap-8 lg:flex">
+          <p className="text-sm text-muted-foreground">
+            TAC-XPRESS / Operations
+          </p>
+          <h2 className="text-5xl leading-tight font-medium tracking-tight">
+            The work behind
+            <br />
+            every delivery.
+          </h2>
+          <p className="max-w-md text-lg leading-relaxed text-muted-foreground">
+            A shared workspace for the team managing shipments, dispatch,
+            warehouse, billing and support.
+          </p>
+          <p className="border-t pt-6 text-sm text-muted-foreground">
+            For provisioned admins and staff.
+          </p>
         </div>
-      </div>
-
-      <div className="relative flex flex-col items-center justify-center bg-background p-6 md:p-10 lg:p-20">
-        <div className="w-full max-w-[400px] animate-in duration-700 zoom-in-95 fade-in">
-          <div className="mb-8 flex justify-center lg:hidden">
-            <Link href="/" className="transition-opacity hover:opacity-90">
-              <Logo className="h-10" />
-            </Link>
-          </div>
-
+        <p className="hidden text-sm text-muted-foreground lg:block">
+          New Delhi ↔ Northeast India
+        </p>
+      </section>
+      <section className="relative flex flex-col items-center justify-center p-6 py-16 sm:p-12">
+        <div className="absolute top-4 right-4">
+          <ThemeSwitcher />
+        </div>
+        <div className="flex w-full max-w-sm flex-col gap-8">
+          {reason === "staff-only" && (
+            <Alert>
+              <LockKeyhole />
+              <AlertTitle>Staff workspace only</AlertTitle>
+              <AlertDescription>
+                Customers can track shipments and contact the team without an
+                account. Sign in here only with provisioned staff access.
+              </AlertDescription>
+            </Alert>
+          )}
           <LoginForm />
+          <div className="border-t pt-6 text-center text-sm text-muted-foreground">
+            <p>Sending or receiving cargo? No sign-in needed.</p>
+            <p className="mt-3 flex flex-wrap justify-center gap-4">
+              <Link
+                href="/track"
+                className="font-medium text-foreground underline underline-offset-4"
+              >
+                Track a shipment
+              </Link>
+              <Link
+                href="/contact"
+                className="font-medium text-foreground underline underline-offset-4"
+              >
+                Contact our team
+              </Link>
+            </p>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   )
 }

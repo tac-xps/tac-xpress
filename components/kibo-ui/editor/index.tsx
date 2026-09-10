@@ -600,8 +600,8 @@ export const EditorProvider = ({
     Subscript,
     Slash.configure({
       suggestion: {
-        items: async ({ editor, query }) => {
-          const items = await defaultSlashSuggestions({ editor, query })
+        items: async ({ editor, query, signal }) => {
+          const items = await defaultSlashSuggestions({ editor, query, signal })
 
           if (!query) {
             return items
@@ -1466,7 +1466,7 @@ export const EditorTableGlobalMenu = ({
   return (
     <div
       className={cn(
-        "absolute flex -translate-x-1/2 translate-y-1/2 items-center rounded-full border bg-background shadow-xl",
+        "absolute flex -translate-x-1/2 translate-y-1/2 items-center rounded-none border bg-background shadow-xl",
         {
           hidden: !(left || top),
         }
@@ -1757,7 +1757,7 @@ export const EditorTableHeaderColumnToggle = () => {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          className="flex items-center gap-2 rounded-full"
+          className="flex items-center gap-2 rounded-none"
           onClick={handleClick}
           size="icon"
           variant="ghost"
@@ -1789,7 +1789,7 @@ export const EditorTableHeaderRowToggle = () => {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          className="flex items-center gap-2 rounded-full"
+          className="flex items-center gap-2 rounded-none"
           onClick={handleClick}
           size="icon"
           variant="ghost"
@@ -1821,7 +1821,7 @@ export const EditorTableDelete = () => {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          className="flex items-center gap-2 rounded-full"
+          className="flex items-center gap-2 rounded-none"
           onClick={handleClick}
           size="icon"
           variant="ghost"
@@ -1853,7 +1853,7 @@ export const EditorTableMergeCells = () => {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          className="flex items-center gap-2 rounded-full"
+          className="flex items-center gap-2 rounded-none"
           onClick={handleClick}
           size="icon"
           variant="ghost"
@@ -1885,7 +1885,7 @@ export const EditorTableSplitCell = () => {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          className="flex items-center gap-2 rounded-full"
+          className="flex items-center gap-2 rounded-none"
           onClick={handleClick}
           size="icon"
           variant="ghost"
@@ -1917,7 +1917,7 @@ export const EditorTableFix = () => {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          className="flex items-center gap-2 rounded-full"
+          className="flex items-center gap-2 rounded-none"
           onClick={handleClick}
           size="icon"
           variant="ghost"

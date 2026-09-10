@@ -1,50 +1,89 @@
+import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { hubs } from "@/lib/db/schema"
-import { desc, isNull } from "drizzle-orm"
+import { and, desc, ilike, isNull, or } from "drizzle-orm"
 import { AddHubDialog } from "./add-hub-dialog"
 import { HubsClientTable } from "./hubs-client-table"
+import { PageHeader } from "@/components/operations/page-header"
+import { TableToolbar } from "@/components/operations/table-toolbar"
 import {
   DEFAULT_PAGE_SIZE,
   PageNavigation,
   parsePage,
 } from "@/components/ui/page-navigation"
-
-export const dynamic = "force-dynamic"
-
+import {
+  containsPattern,
+  parseRecordQuery,
+  recordOrder,
+  type RecordSearchParams,
+} from "@/lib/table-query"
 export default async function HubsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string | string[] }>
+  searchParams: Promise<RecordSearchParams>
 }) {
-  const page = parsePage((await searchParams).page)
+  await requireStaffPage()
+  const params = await searchParams
+  const page = parsePage(params.page)
+  const query = parseRecordQuery(params, ["createdAt", "name", "location"])
+  const pattern = containsPattern(query.q)
+  const columns = {
+    createdAt: hubs.createdAt,
+    name: hubs.name,
+    location: hubs.location,
+  }
   const rows = await db
     .select()
     .from(hubs)
-    .where(isNull(hubs.deletedAt))
-    .orderBy(desc(hubs.createdAt))
+    .where(
+      and(
+        isNull(hubs.deletedAt),
+        query.q
+          ? or(
+              ilike(hubs.name, pattern),
+              ilike(hubs.location, pattern),
+              ilike(hubs.contact, pattern)
+            )
+          : undefined
+      )
+    )
+    .orderBy(
+      recordOrder(columns[query.sort as keyof typeof columns], query.order),
+      desc(hubs.id)
+    )
     .limit(DEFAULT_PAGE_SIZE + 1)
     .offset((page - 1) * DEFAULT_PAGE_SIZE)
-  const hasNext = rows.length > DEFAULT_PAGE_SIZE
-  const allHubs = rows.slice(0, DEFAULT_PAGE_SIZE)
-
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Transit Hubs</h1>
-          <p className="text-muted-foreground">
-            Manage your network of branches, warehouses, and transit centers.
-          </p>
-        </div>
+    <div className="flex min-w-0 flex-col gap-6">
+      <PageHeader
+        title="Hubs & branches"
+        description="Maintain the locations and contacts used for routing and manifest assignments."
+      >
         <AddHubDialog />
-      </div>
-
-      <HubsClientTable hubs={allHubs} />
-      <PageNavigation
-        page={page}
-        hasNext={hasNext}
-        pathname="/dashboard/hubs"
-      />
+      </PageHeader>
+      <section
+        aria-label="Network locations"
+        className="min-w-0 overflow-hidden rounded-none border bg-card"
+      >
+        <TableToolbar
+          pathname="/dashboard/hubs"
+          query={query.q}
+          sort={query.sort}
+          order={query.order}
+          placeholder="Hub, location or contact"
+        />
+        <HubsClientTable
+          hubs={rows.slice(0, DEFAULT_PAGE_SIZE)}
+          sort={query.sort}
+          order={query.order}
+        />
+        <PageNavigation
+          page={page}
+          hasNext={rows.length > DEFAULT_PAGE_SIZE}
+          pathname="/dashboard/hubs"
+          query={query}
+        />
+      </section>
     </div>
   )
 }

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useAction } from "next-safe-action/hooks"
 import { toast } from "sonner"
+import { ConfirmRemoval } from "@/components/operations/confirm-removal"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -26,6 +27,7 @@ export function DispatchActions({
   }
 }) {
   const [showEditDialog, setShowEditDialog] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
   const { executeAsync: executeDelete, isExecuting: isDeleting } = useAction(
     deleteDispatchRunAction,
@@ -44,13 +46,12 @@ export function DispatchActions({
   )
 
   const handleDelete = async () => {
-    if (confirm("Are you sure you want to delete this dispatch run?")) {
-      await executeDelete({ id: dispatchRun.id })
-    }
+    const result = await executeDelete({ id: dispatchRun.id }); if (!result?.data?.success) throw new Error("Unable to remove dispatch")
   }
 
   return (
     <>
+<ConfirmRemoval open={deleteOpen} onOpenChange={setDeleteOpen} title="Remove this draft run?" description="Only draft runs can be removed. Finalized movement is preserved." onConfirm={handleDelete} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="size-8">
@@ -64,7 +65,7 @@ export function DispatchActions({
             Edit Dispatch Run
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={handleDelete}
+            onClick={() => setDeleteOpen(true)}
             disabled={isDeleting}
             className="text-destructive focus:text-destructive"
           >
@@ -82,3 +83,4 @@ export function DispatchActions({
     </>
   )
 }
+

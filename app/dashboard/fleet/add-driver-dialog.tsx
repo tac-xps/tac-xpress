@@ -22,7 +22,7 @@ export function AddDriverDialog() {
           <Plus className="mr-2 h-4 w-4" /> Add Driver
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Add New Driver</DialogTitle>
         </DialogHeader>

@@ -72,7 +72,7 @@ export function TicketDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-background sm:max-w-[600px]">
+      <DialogContent className="max-h-[90svh] overflow-y-auto bg-background sm:max-w-xl">
         <DialogHeader className="border-b border-border/50 pb-4">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
@@ -97,9 +97,9 @@ export function TicketDetailsDialog({
         </DialogHeader>
 
         <div className="grid gap-6 py-4">
-          <div className="grid grid-cols-2 gap-4 rounded-lg border border-border/50 bg-muted/30 p-4 text-sm">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 rounded-none border border-border/50 bg-muted/30 p-4 text-sm">
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-2 break-words text-muted-foreground">
                 <Mail className="size-4" />
                 <span className="font-medium text-foreground">
                   {ticket.customer_name || "Unknown"}
@@ -108,17 +108,17 @@ export function TicketDetailsDialog({
                   ({ticket.customer_email || "No email"})
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-2 break-words text-muted-foreground">
                 <Phone className="size-4" />
                 <span>{ticket.customer_phone || "No phone provided"}</span>
               </div>
             </div>
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-2 break-words text-muted-foreground">
                 <Tag className="size-4" />
                 <span className="capitalize">{ticket.category}</span>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-2 break-words text-muted-foreground">
                 <Calendar className="size-4" />
                 <span>
                   {new Intl.DateTimeFormat("en-US", {
@@ -128,7 +128,7 @@ export function TicketDetailsDialog({
                 </span>
               </div>
               {ticket.related_awb && (
-                <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-2 break-words text-muted-foreground">
                   <Box className="size-4" />
                   <span className="font-mono">{ticket.related_awb}</span>
                 </div>
@@ -138,7 +138,7 @@ export function TicketDetailsDialog({
 
           <div className="space-y-2">
             <h4 className="text-sm font-semibold text-foreground">Message</h4>
-            <div className="max-h-[250px] min-h-[100px] overflow-y-auto rounded-lg border border-border/50 bg-muted/10 p-4 text-sm whitespace-pre-wrap text-foreground/90">
+            <div className="max-h-64 min-h-24 overflow-y-auto rounded-none border border-border/50 bg-muted/10 p-4 text-sm whitespace-pre-wrap text-foreground/90">
               {ticket.message}
             </div>
           </div>
@@ -150,7 +150,7 @@ export function TicketDetailsDialog({
               </h4>
               <Textarea
                 placeholder="Type your reply here... (This will be emailed to the customer)"
-                className="min-h-[120px] resize-none"
+                className="min-h-32 resize-none"
                 value={replyMessage}
                 onChange={(e) => setReplyMessage(e.target.value)}
               />
@@ -209,3 +209,4 @@ export function TicketDetailsDialog({
     </Dialog>
   )
 }
+

@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button"
 import { NativeSelect } from "@/components/ui/native-select"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 
 interface QuickStatusUpdateProps {
   shipmentId: string
@@ -32,6 +34,7 @@ export function QuickStatusUpdate({
   const [location, setLocation] = useState("")
   const [description, setDescription] = useState("")
   const [pending, setPending] = useState(false)
+  const [isPublic, setIsPublic] = useState(false)
 
   async function handleSubmit() {
     if (!eventType || !location || !description) return
@@ -43,6 +46,7 @@ export function QuickStatusUpdate({
         status: eventType as any,
         location,
         description,
+        isPublic,
       })
 
       if (result?.data?.success) {
@@ -72,17 +76,17 @@ export function QuickStatusUpdate({
 
       <div className="space-y-3">
         <div>
-          <label className="mb-1.5 block text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
-            Current Status
+          <label className="mb-1.5 block text-sm font-medium text-muted-foreground">
+            Current status
           </label>
           <StatusBadge status={currentStatus as any} />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
-            New Event *
+          <label className="mb-1.5 block text-sm font-medium text-muted-foreground">
+            New event *
           </label>
-          <NativeSelect
+          <NativeSelect aria-label="New event"
             value={eventType}
             onChange={(e) => setEventType(e.target.value)}
             className="w-full text-xs"
@@ -97,12 +101,12 @@ export function QuickStatusUpdate({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+          <label className="mb-1.5 block text-sm font-medium text-muted-foreground">
             Location *
           </label>
           <div className="relative">
             <MapPin className="absolute top-1/2 left-3 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-            <Input
+            <Input aria-label="Event location" maxLength={160}
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="e.g., Delhi Hub, Mumbai Airport"
@@ -112,16 +116,21 @@ export function QuickStatusUpdate({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+          <label className="mb-1.5 block text-sm font-medium text-muted-foreground">
             Description *
           </label>
-          <Textarea
+          <Textarea aria-label="Event description" maxLength={1000}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="What happened?"
             rows={2}
             className="w-full resize-none text-xs"
           />
+        </div>
+
+        <div className="flex items-start gap-3 rounded-none border p-3">
+          <Checkbox id="publish-tracking-event" checked={isPublic} onCheckedChange={value => setIsPublic(value === true)} />
+          <div className="space-y-1"><Label htmlFor="publish-tracking-event">Share on public tracking</Label><p className="text-xs text-muted-foreground">Anyone with this AWB can see the route, location and description. Keep personal details out of public updates.</p></div>
         </div>
 
         <Button

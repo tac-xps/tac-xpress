@@ -159,7 +159,7 @@ export function DeliveryDetails({
           </div>
 
           <Button
-            className="h-12 w-full text-lg"
+            className="h-9 w-full text-sm"
             onClick={handleComplete}
             disabled={isSubmitting || shipment.status === "delivered"}
           >

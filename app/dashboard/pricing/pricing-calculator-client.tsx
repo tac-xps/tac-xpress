@@ -56,7 +56,7 @@ export function PricingCalculatorClient() {
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-      <Card className="border border-border/60 bg-card/60 shadow-sm backdrop-blur-sm delay-0 lg:col-span-8">
+      <Card className="border border-border bg-card shadow-card lg:col-span-8">
         <CardHeader className="border-b border-border/50 p-6">
           <CardTitle className="flex items-center gap-2 text-lg font-semibold tracking-tight">
             <Calculator className="size-5 text-primary" />
@@ -78,7 +78,7 @@ export function PricingCalculatorClient() {
                   placeholder="e.g. DEL"
                   value={origin}
                   onChange={(e) => setOrigin(e.target.value)}
-                  className="h-11 border-border/50 bg-background pl-9 focus-visible:ring-1 focus-visible:ring-ring/50"
+                  className="h-9 border-border/50 bg-background pl-9 focus-visible:ring-1 focus-visible:ring-ring/50"
                 />
               </div>
             </div>
@@ -92,7 +92,7 @@ export function PricingCalculatorClient() {
                   placeholder="e.g. BOM"
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
-                  className="h-11 border-border/50 bg-background pl-9 focus-visible:ring-1 focus-visible:ring-ring/50"
+                  className="h-9 border-border/50 bg-background pl-9 focus-visible:ring-1 focus-visible:ring-ring/50"
                 />
               </div>
             </div>
@@ -104,7 +104,7 @@ export function PricingCalculatorClient() {
                 value={service}
                 onValueChange={(val) => setService(val as ServiceType)}
               >
-                <SelectTrigger className="h-11 border-border/50 bg-background focus:ring-1 focus:ring-ring/50">
+                <SelectTrigger className="h-9 border-border/50 bg-background focus:ring-1 focus:ring-ring/50">
                   <SelectValue placeholder="Select service level" />
                 </SelectTrigger>
                 <SelectContent className="border-border/50 bg-background">
@@ -127,7 +127,7 @@ export function PricingCalculatorClient() {
                   onChange={(e) =>
                     setWeight(e.target.value ? Number(e.target.value) : "")
                   }
-                  className="h-11 border-border/50 bg-background pl-9 tabular-nums focus-visible:ring-1 focus-visible:ring-ring/50"
+                  className="h-9 border-border/50 bg-background pl-9 tabular-nums focus-visible:ring-1 focus-visible:ring-ring/50"
                 />
               </div>
             </div>
@@ -136,7 +136,7 @@ export function PricingCalculatorClient() {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="h-12 w-full bg-primary text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/95"
+                className="h-9 w-full bg-primary text-sm font-semibold text-primary-foreground shadow-none hover:bg-primary/90"
               >
                 {isPending ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -148,8 +148,8 @@ export function PricingCalculatorClient() {
         </CardContent>
       </Card>
 
-      <Card className="flex flex-col border border-border/60 bg-card/60 shadow-sm backdrop-blur-sm delay-200 lg:col-span-4">
-        <CardHeader className="border-b border-border/50 bg-gradient-to-br from-primary/10 via-background/50 to-secondary/10 p-6">
+      <Card className="flex flex-col border border-border bg-card shadow-card lg:col-span-4">
+        <CardHeader className="border-b border-border/50 bg-muted/20 p-6">
           <CardTitle className="text-lg font-semibold tracking-tight">
             Estimated Quote
           </CardTitle>
@@ -161,7 +161,7 @@ export function PricingCalculatorClient() {
           <h2 className="text-5xl font-bold tracking-tight text-foreground tabular-nums">
             {total !== null ? `₹${total.toFixed(2)}` : "--"}
           </h2>
-          <p className="mt-4 max-w-[240px] text-xs text-muted-foreground">
+          <p className="mt-4 max-w-xs text-xs text-muted-foreground">
             Fill out the calculator details to generate a real-time quote based
             on current network capacity.
           </p>

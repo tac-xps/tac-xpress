@@ -6,6 +6,8 @@ import { eq } from "drizzle-orm"
 import { createClient } from "@supabase/supabase-js"
 import * as Sentry from "@sentry/nextjs"
 import { authConfig } from "./auth.config"
+import { isStaffRole } from "@/lib/auth/roles"
+import { allowCredentialAttempt } from "@/lib/auth/credential-rate-limit"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -18,16 +20,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
+      async authorize(credentials, request) {
+        if (
+          typeof credentials?.email !== "string" ||
+          typeof credentials?.password !== "string" ||
+          !credentials.email.trim() || !credentials.password ||
+          credentials.email.length > 254 || credentials.password.length > 1024
+        ) return null
 
-        const email = credentials.email as string
+        const email = credentials.email.trim().toLowerCase()
+        if (!(await allowCredentialAttempt(request, email))) return null
         const bypassPassword = process.env.E2E_TEST_USER_PASSWORD
 
         // 1. E2E Bypass Flow
         if (
           process.env.NODE_ENV !== "production" &&
           process.env.E2E_TEST_BYPASS_ENABLED === "true" &&
+          email.endsWith("@test.tacexpress.app") &&
           bypassPassword &&
           credentials.password === bypassPassword
         ) {
@@ -70,11 +79,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // 2. Real Supabase Auth Flow
         const supabase = createClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.SUPABASE_SERVICE_ROLE_KEY!
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
 
         const { data, error } = await supabase.auth.signInWithPassword({
-          email: credentials.email as string,
+          email,
           password: credentials.password as string,
         })
 
@@ -89,23 +98,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const id = data.user.id
         const userEmail = data.user.email as string
 
-        // Lookup or insert role
+        // Authentication proves identity; only a provisioned record grants staff access.
         const dbUsers = await db.select().from(users).where(eq(users.id, id))
-        let dbUser = dbUsers[0]
+        const dbUser = dbUsers[0]
 
-        if (!dbUser) {
-          await db.insert(users).values({
-            id,
-            email: userEmail,
-            role: "staff",
-          })
-          return { id, email: userEmail, role: "staff" }
-        }
+        if (!dbUser || dbUser.deletedAt || !isStaffRole(dbUser.role)) return null
 
         return {
           id,
           email: userEmail,
-          role: dbUser.role || "staff",
+          role: dbUser.role,
         }
       },
     }),

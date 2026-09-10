@@ -42,11 +42,11 @@ export function useEditCustomerDialog(
       id: customer.id,
     } as any)
 
-    if (result?.success) {
+    if ((result?.data?.success)) {
       toast.success("Customer updated successfully")
       onOpenChange(false)
     } else {
-      toast.error(result?.error || "An error occurred")
+      toast.error((result?.data?.error ?? result?.serverError) || "An error occurred")
     }
     setIsSubmitting(false)
   }

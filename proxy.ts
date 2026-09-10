@@ -1,9 +1,4 @@
-import arcjet, {
-  createMiddleware,
-  detectBot,
-  shield,
-  slidingWindow,
-} from "@arcjet/next"
+import arcjet, { detectBot, shield, slidingWindow } from "@arcjet/next"
 import {
   NextResponse,
   type NextFetchEvent,
@@ -12,6 +7,9 @@ import {
 } from "next/server"
 import NextAuth, { type Session } from "next-auth"
 import { authConfig } from "@/auth.config"
+import { isStaffRole } from "@/lib/auth/roles"
+import { verifyDocumentToken } from "@/lib/auth/document-token"
+import * as Sentry from "@sentry/nextjs"
 
 const { auth } = NextAuth(authConfig)
 
@@ -50,18 +48,20 @@ function handleAuthenticatedRequest(req: AuthenticatedRequest) {
   const userRole = req.auth?.user?.role || "customer"
   const pathname = req.nextUrl.pathname
 
-  const isDashboardRoute = pathname.startsWith("/dashboard")
-  const isCustomerRoute =
-    pathname.startsWith("/tracking") || pathname.startsWith("/contact")
+  const isDashboardRoute = ["/dashboard", "/driver", "/portal"].some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  )
 
   // 1. Unauthenticated Perimeter Protection
-  if (!isLoggedIn && (isDashboardRoute || isCustomerRoute)) {
+  if (!isLoggedIn && isDashboardRoute) {
     return NextResponse.redirect(new URL("/signin", req.nextUrl))
   }
 
   // 2. Authenticated Dashboard RBAC
-  if (isLoggedIn && isDashboardRoute && userRole === "customer") {
-    return NextResponse.redirect(new URL("/tracking", req.nextUrl))
+  if (isLoggedIn && isDashboardRoute && !isStaffRole(userRole)) {
+    return NextResponse.redirect(
+      new URL("/signin?reason=staff-only", req.nextUrl)
+    )
   }
 
   // 3. Post-Login Redirection & Auth Route Locking
@@ -78,7 +78,7 @@ function handleAuthenticatedRequest(req: AuthenticatedRequest) {
     if (userRole === "admin" || userRole === "staff") {
       return NextResponse.redirect(new URL("/dashboard", req.nextUrl))
     }
-    return NextResponse.redirect(new URL("/tracking", req.nextUrl))
+    // Non-staff sessions stay on sign-in, without a redirect loop.
   }
 
   const requestHeaders = new Headers(req.headers)
@@ -95,7 +95,67 @@ const authMiddleware = auth(
   handleAuthenticatedRequest
 ) as unknown as NextMiddleware
 
-const ajMiddleware = createMiddleware(aj, authMiddleware)
+// Multipart actions still need a rate limit even when Shield cannot parse a body.
+const actionLimiter = arcjet({
+  key: process.env.ARCJET_KEY || "ajkey_placeholder",
+  rules: [slidingWindow({ mode: "LIVE", interval: "1m", max: 100 })],
+})
+
+function isSensitiveRequest(request: NextRequest) {
+  return (
+    !["GET", "HEAD"].includes(request.method) ||
+    /^\/(?:api|dashboard|portal|driver|invoice)(?:\/|$)/.test(
+      request.nextUrl.pathname
+    )
+  )
+}
+
+function protectionUnavailable() {
+  return NextResponse.json(
+    { error: "Request protection is temporarily unavailable." },
+    {
+      status: 503,
+      headers: { "Cache-Control": "no-store", "Retry-After": "30" },
+    }
+  )
+}
+
+async function enforceRequestProtection(request: NextRequest) {
+  const actionRequest =
+    request.method === "POST" && request.headers.has("next-action")
+  try {
+    const decision = await (actionRequest ? actionLimiter : aj).protect(request)
+    if (decision.isDenied()) {
+      const rateLimited = decision.reason.isRateLimit()
+      return NextResponse.json(
+        { error: rateLimited ? "Too many requests." : "Request denied." },
+        {
+          status: rateLimited ? 429 : 403,
+          headers: {
+            "Cache-Control": "no-store",
+            ...(rateLimited ? { "Retry-After": "60" } : {}),
+          },
+        }
+      )
+    }
+    // The SDK considers ERROR allowed by default. Partial rule errors must not
+    // silently bypass protection for private records or mutations either.
+    if (
+      decision.isErrored() ||
+      decision.results.some((result) => result.conclusion === "ERROR")
+    ) {
+      Sentry.captureMessage("Request protection could not complete", {
+        level: "error",
+        tags: { area: "request_protection" },
+        extra: { decisionId: decision.id },
+      })
+      if (isSensitiveRequest(request)) return protectionUnavailable()
+    }
+  } catch (error) {
+    Sentry.captureException(error, { tags: { area: "request_protection" } })
+    if (isSensitiveRequest(request)) return protectionUnavailable()
+  }
+}
 
 export async function proxy(request: NextRequest, event: NextFetchEvent) {
   // Edge Block: Physically hide the test routes if bypass is not explicitly enabled
@@ -108,28 +168,25 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
     }
   }
 
-  // Only allow bypass when the signing secret is properly configured
+  // Verified worker tokens bypass bot detection; document pages validate them again.
+  const documentId = request.nextUrl.pathname.match(
+    /^\/invoice\/([^/]+)(?:\/label)?$/
+  )?.[1]
   if (
-    process.env.INVOICE_PDF_SIGNING_SECRET &&
-    request.nextUrl.pathname.startsWith("/invoice/")
-  ) {
-    const hashBuffer = await crypto.subtle.digest(
-      "SHA-256",
-      new TextEncoder().encode(process.env.INVOICE_PDF_SIGNING_SECRET)
+    documentId &&
+    verifyDocumentToken(
+      request.headers.get("x-internal-document-token"),
+      documentId,
+      "render"
     )
-    const expectedBypassToken = Array.from(new Uint8Array(hashBuffer))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("")
-
-    if (request.headers.get("x-puppeteer-bypass") === expectedBypassToken) {
-      return authMiddleware(request, event)
-    }
-  }
+  )
+    return authMiddleware(request, event)
 
   // Bypass Arcjet entirely in local development if no real key is provided
   if (
     process.env.NODE_ENV === "development" &&
-    (!process.env.ARCJET_KEY || process.env.ARCJET_KEY === "ajkey_placeholder")
+    (!process.env.ARCJET_KEY ||
+      /placeholder|dummy|example/i.test(process.env.ARCJET_KEY))
   ) {
     // Manually invoke the NextAuth wrapper when skipping Arcjet
     return authMiddleware(request, event)
@@ -137,7 +194,8 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
 
   if (
     process.env.NODE_ENV === "production" &&
-    (!process.env.ARCJET_KEY || process.env.ARCJET_KEY === "ajkey_placeholder")
+    (!process.env.ARCJET_KEY ||
+      /placeholder|dummy|example/i.test(process.env.ARCJET_KEY))
   ) {
     return NextResponse.json(
       { error: "Security perimeter is not configured." },
@@ -145,14 +203,8 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
     )
   }
 
-  // Next.js Server Actions pass a "Next-Action" header.
-  // Arcjet Shield in middleware may fail to parse large multipart/form-data bodies from Server Actions.
-  // We bypass the global Arcjet middleware for these to prevent ERRORs.
-  if (request.method === "POST" && request.headers.has("next-action")) {
-    return authMiddleware(request, event)
-  }
-
-  return ajMiddleware(request, event)
+  const protectionResponse = await enforceRequestProtection(request)
+  return protectionResponse ?? authMiddleware(request, event)
 }
 
 export const config = {

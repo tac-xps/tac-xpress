@@ -1,292 +1,172 @@
 "use server"
-
+import { randomUUID } from "node:crypto"
+import { z } from "zod"
 import { supabaseAdmin } from "@/lib/supabase/clients"
-import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
 import { requireDashboardSession } from "@/lib/auth/guards"
-import { logAudit } from "@/lib/audit"
+import { logAuditInTransaction } from "@/lib/audit"
 import { db } from "@/lib/db"
-import { users } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
+import { profiles, users } from "@/lib/db/schema"
+import { and, eq, inArray, isNull } from "drizzle-orm"
+import * as Sentry from "@sentry/nextjs"
 
-/**
- * Retrieves the profile of the currently authenticated user.
- *
- * This function uses the NextAuth session to identify the user. It attempts
- * to fetch the user's profile from the Supabase `profiles` table. If the profile
- * does not exist, it automatically creates a new profile row using the user's
- * session data as a fallback, ensuring the UI always has a valid profile object.
- *
- * @returns {Promise<Object|null>} An object containing the user's ID, email, full name, avatar URL, role, and notification preferences, or null if no session exists.
- * @throws {Error} If the database query or initialization fails.
- */
 export async function getUserProfile() {
-  const session = await auth()
-  if (!session?.user?.id) return null
-
-  if (session.user.id === "00000000-0000-0000-0000-000000000000") {
-    return {
-      id: session.user.id,
-      email: session.user.email,
-      fullName: "E2E Admin",
-      avatarUrl: "",
-      role: "Admin",
-      emailNotifications: true,
-      whatsappNotifications: true,
-      smsNotifications: false,
-    }
-  }
-
-  const { data, error } = await supabaseAdmin
-    .from("profiles")
-    .select("*")
-    .eq("id", session.user.id)
-    .maybeSingle()
-
-  let profileData = data
-
-  if (error) {
-    throw new Error("Failed to load profile")
-  }
-
-  if (!data) {
-    // Automatically create a profile row if it's missing (e.g. NextAuth login without trigger)
-    const defaultName =
-      session.user.name || session.user.email?.split("@")[0] || "User"
-    const newProfile = {
-      id: session.user.id,
-      full_name: defaultName,
-      avatar_url: "",
-      email_notifications: true,
-      whatsapp_notifications: true,
-      sms_notifications: false,
-    }
-
-    const { error: upsertError } = await supabaseAdmin
-      .from("profiles")
-      .upsert(newProfile)
-    if (upsertError) {
-      throw new Error("Failed to initialize profile")
-    }
-    profileData = newProfile
-  }
-
+  const session = await requireDashboardSession()
+  const [profile] = await db
+    .select()
+    .from(profiles)
+    .where(eq(profiles.id, session.user.id))
+    .limit(1)
   return {
-    id: profileData.id || session.user.id,
+    id: session.user.id,
     email: session.user.email,
-    fullName: profileData.full_name,
-    avatarUrl: profileData.avatar_url || "",
-    role: profileData.role || session.user.role || "Staff",
-    emailNotifications: profileData.email_notifications ?? true,
-    whatsappNotifications: profileData.whatsapp_notifications ?? true,
-    smsNotifications: profileData.sms_notifications ?? false,
+    fullName: profile?.fullName || session.user.name || "Staff",
+    avatarUrl: profile?.avatarUrl || "",
+    role: session.user.role,
+    emailNotifications: profile?.emailNotifications ?? true,
+    whatsappNotifications: profile?.whatsappNotifications ?? true,
+    smsNotifications: profile?.smsNotifications ?? false,
   }
 }
 
-/**
- * Uploads a new avatar image to Supabase Storage and updates the user's profile.
- *
- * Bypasses client-side RLS by executing as a Server Action using `supabaseAdmin`.
- * The function uploads the file, retrieves the public URL, and then upserts
- * the URL into the user's `profiles` row. If the database update fails, it
- * cleans up the orphaned file in Storage.
- *
- * @param {FormData} formData - The multipart form data containing the file to upload under the "file" key.
- * @returns {Promise<{publicUrl: string}>} An object containing the public URL of the uploaded avatar.
- * @throws {Error} If authentication fails, no file is provided, or the upload/upsert process encounters an error.
- */
 export async function uploadAvatarFile(formData: FormData) {
-  const session = await auth()
-  if (!session?.user?.id) throw new Error("Not authenticated")
-
-  if (session.user.id === "00000000-0000-0000-0000-000000000000") {
-    return { publicUrl: "https://example.com/avatar.png" }
+  const session = await requireDashboardSession()
+  const file = formData.get("file")
+  if (!(file instanceof File) || file.size === 0 || file.size > 2 * 1024 * 1024)
+    throw new Error("Choose an image under 2 MB.")
+  const bytes = new Uint8Array(await file.arrayBuffer())
+  const extensions: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
   }
-
-  const file = formData.get("file") as File
-  if (!file) throw new Error("No file provided")
-
-  const fileExt = file.name.split(".").pop() || "png"
-  const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
-  const filePath = `${session.user.id}/${fileName}`
-
-  const { error: uploadError } = await supabaseAdmin.storage
-    .from("avatars")
-    .upload(filePath, file)
-
-  if (uploadError) {
-    throw new Error("Failed to upload avatar to storage")
+  const extension = extensions[file.type]
+  const isImage =
+    extension === "jpg"
+      ? bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255
+      : extension === "png"
+        ? [137, 80, 78, 71, 13, 10, 26, 10].every(
+            (byte, index) => bytes[index] === byte
+          )
+        : extension === "webp"
+          ? new TextDecoder().decode(bytes.slice(0, 4)) === "RIFF" &&
+            new TextDecoder().decode(bytes.slice(8, 12)) === "WEBP"
+          : false
+  if (!isImage) throw new Error("Choose a JPEG, PNG or WebP image.")
+  const filename = `${randomUUID()}.${extension}`
+  const filePath = `staff-avatars/${session.user.id}/${filename}`
+  const { error } = await supabaseAdmin.storage
+    .from("cargo-documents")
+    .upload(filePath, bytes, { contentType: file.type, upsert: false })
+  if (error) {
+    Sentry.captureException(error, { tags: { area: "avatar_upload" } })
+    throw new Error("Unable to upload your photo.")
   }
-
-  const { data } = supabaseAdmin.storage.from("avatars").getPublicUrl(filePath)
-
-  // Upsert profile
-  const { error: profileError } = await supabaseAdmin
-    .from("profiles")
-    .upsert({ id: session.user.id, avatar_url: data.publicUrl })
-
-  if (profileError) {
-    await supabaseAdmin.storage.from("avatars").remove([filePath])
-    throw new Error("Failed to persist avatar")
+  const avatarUrl = `/api/staff-avatar/${session.user.id}?file=${filename}`
+  try {
+    await db.transaction(async (tx) => {
+      await tx
+        .insert(profiles)
+        .values({ id: session.user.id, avatarUrl })
+        .onConflictDoUpdate({ target: profiles.id, set: { avatarUrl } })
+      await tx
+        .update(users)
+        .set({ avatarUrl })
+        .where(eq(users.id, session.user.id))
+      await logAuditInTransaction(tx, {
+        action: "update_avatar",
+        entity: "profiles",
+        entityId: session.user.id,
+        userId: session.user.id,
+        userEmail: session.user.email,
+        after: { avatar_url: avatarUrl },
+      })
+    })
+  } catch (error) {
+    await supabaseAdmin.storage.from("cargo-documents").remove([filePath])
+    Sentry.captureException(error, { tags: { area: "avatar_profile" } })
+    throw new Error("Unable to save your photo.")
   }
-
-  await logAudit({
-    action: "update_avatar",
-    entity: "profiles",
-    entityId: session.user.id,
-    userId: session.user.id,
-    userEmail: session.user.email,
-    after: { avatar_url: data.publicUrl },
-  })
-
-  revalidatePath("/", "layout")
-  return { publicUrl: data.publicUrl }
+  revalidatePath("/dashboard", "layout")
+  return { publicUrl: avatarUrl }
 }
 
-/**
- * Updates the profile settings of the currently authenticated user.
- *
- * Modifies fields like full name and notification preferences. It uses
- * an upsert operation to ensure that even if a profile row does not yet
- * exist, the changes will be safely applied and the row will be created.
- *
- * @param {Object} data - The updated profile data.
- * @param {string} data.fullName - The user's full name.
- * @param {boolean} [data.emailNotifications] - Preference for receiving email notifications.
- * @param {boolean} [data.whatsappNotifications] - Preference for receiving WhatsApp notifications.
- * @param {boolean} [data.smsNotifications] - Preference for receiving SMS notifications.
- * @returns {Promise<{success: boolean}>} An object indicating success.
- * @throws {Error} If authentication fails or the database update encounters an error.
- */
-export async function updateProfile(data: {
-  fullName: string
-  emailNotifications?: boolean
-  whatsappNotifications?: boolean
-  smsNotifications?: boolean
-}) {
-  const session = await auth()
-  if (!session?.user?.id) throw new Error("Not authenticated")
-
-  if (session.user.id === "00000000-0000-0000-0000-000000000000") {
-    return { success: true }
-  }
-
-  const { data: before, error: lookupError } = await supabaseAdmin
-    .from("profiles")
-    .select(
-      "full_name, email_notifications, whatsapp_notifications, sms_notifications"
-    )
-    .eq("id", session.user.id)
-    .maybeSingle()
-  if (lookupError) throw new Error("Failed to load current profile")
-
-  const updates: {
-    id: string
-    full_name: string
-    email_notifications?: boolean
-    whatsapp_notifications?: boolean
-    sms_notifications?: boolean
-  } = { id: session.user.id, full_name: data.fullName }
-  if (data.emailNotifications !== undefined)
-    updates.email_notifications = data.emailNotifications
-  if (data.whatsappNotifications !== undefined)
-    updates.whatsapp_notifications = data.whatsappNotifications
-  if (data.smsNotifications !== undefined)
-    updates.sms_notifications = data.smsNotifications
-
-  const { error } = await supabaseAdmin.from("profiles").upsert(updates)
-
-  if (error) {
-    throw new Error("Failed to update profile")
-  }
-
-  await logAudit({
-    action: "update",
-    entity: "profiles",
-    entityId: session.user.id,
-    userId: session.user.id,
-    userEmail: session.user.email,
-    before,
-    after: updates,
+const profileSchema = z
+  .object({
+    fullName: z.string().trim().min(1).max(100),
+    emailNotifications: z.boolean().optional(),
+    whatsappNotifications: z.boolean().optional(),
+    smsNotifications: z.boolean().optional(),
   })
-
-  revalidatePath("/", "layout")
+  .strict()
+export async function updateProfile(data: z.infer<typeof profileSchema>) {
+  const session = await requireDashboardSession()
+  const parsed = profileSchema.parse(data)
+  const [before] = await db
+    .select()
+    .from(profiles)
+    .where(eq(profiles.id, session.user.id))
+    .limit(1)
+  try {
+    await db.transaction(async (tx) => {
+      await tx
+        .insert(profiles)
+        .values({ id: session.user.id, ...parsed })
+        .onConflictDoUpdate({ target: profiles.id, set: parsed })
+      await tx
+        .update(users)
+        .set({ name: parsed.fullName })
+        .where(eq(users.id, session.user.id))
+      await logAuditInTransaction(tx, {
+        action: "update",
+        entity: "profiles",
+        entityId: session.user.id,
+        userId: session.user.id,
+        userEmail: session.user.email,
+        before,
+        after: parsed,
+      })
+    })
+  } catch (error) {
+    Sentry.captureException(error, { tags: { area: "staff_profile" } })
+    throw new Error("Unable to save your profile.")
+  }
+  revalidatePath("/dashboard", "layout")
   return { success: true }
 }
-
-/**
- * Retrieves a list of team members registered in the organization.
- *
- * Fetches all users from the Supabase admin interface and formats them
- * into a structured list. It safely handles metadata fields to resolve
- * each user's full name and system role.
- *
- * @returns {Promise<Array<{id: string, fullName: string, email: string, role: string}>>} An array of team member objects.
- */
 export async function getTeamMembers() {
   await requireDashboardSession(["admin"])
-
-  const { data, error } = await supabaseAdmin.auth.admin.listUsers()
-  if (error || !data) return []
-
-  return data.users.map((u) => ({
-    id: u.id,
-    fullName: u.user_metadata?.full_name || "Guest User",
-    email: u.email,
-    role: u.user_metadata?.role || u.app_metadata?.role || "Staff",
-  }))
+  return db
+    .select({
+      id: users.id,
+      fullName: users.name,
+      email: users.email,
+      role: users.role,
+    })
+    .from(users)
+    .where(
+      and(inArray(users.role, ["admin", "staff"]), isNull(users.deletedAt))
+    )
+    .orderBy(users.name)
+    .limit(100)
 }
-
+async function setTourComplete(value: boolean) {
+  const session = await requireDashboardSession()
+  try {
+    await db
+      .update(users)
+      .set({ isOnboarded: value })
+      .where(eq(users.id, session.user.id))
+    revalidatePath("/dashboard", "layout")
+    return { success: true }
+  } catch (error) {
+    Sentry.captureException(error, { tags: { area: "staff_onboarding" } })
+    return { success: false, error: "Unable to update your tour preference." }
+  }
+}
 export async function completeTour() {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" }
-  }
-
-  try {
-    await db
-      .insert(users)
-      .values({
-        id: session.user.id,
-        email: session.user.email,
-        isOnboarded: true,
-      })
-      .onConflictDoUpdate({
-        target: users.id,
-        set: { isOnboarded: true },
-      })
-
-    revalidatePath("/", "layout")
-    return { success: true }
-  } catch (err: any) {
-    console.error("Error completing tour:", err)
-    return { success: false, error: err.message }
-  }
+  return setTourComplete(true)
 }
-
 export async function resetTour() {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" }
-  }
-
-  try {
-    await db
-      .insert(users)
-      .values({
-        id: session.user.id,
-        email: session.user.email,
-        isOnboarded: false,
-      })
-      .onConflictDoUpdate({
-        target: users.id,
-        set: { isOnboarded: false },
-      })
-
-    revalidatePath("/", "layout")
-    return { success: true }
-  } catch (err: any) {
-    console.error("Error resetting tour:", err)
-    return { success: false, error: err.message }
-  }
+  return setTourComplete(false)
 }

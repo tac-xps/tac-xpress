@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/cron/communications",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/sla-check",
       "schedule": "0 0 * * *"
     }

@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import * as Sentry from "@sentry/nextjs"
 import { z } from "zod"
-import { actionClient } from "@/lib/safe-action"
+import { authActionClient } from "@/lib/safe-action"
 import {
   createPricingRuleSchema,
   updatePricingRuleSchema,
@@ -14,35 +14,20 @@ import {
   calculateEstimatedRateSchema,
 } from "./validations"
 import { calculateEstimatedRate } from "@/lib/pricing"
-import { requireDashboardAction } from "@/lib/auth/guards"
 import { logAudit } from "@/lib/audit"
 
-export const getEstimatedRateAction = actionClient
+export const getEstimatedRateAction = authActionClient
   .schema(calculateEstimatedRateSchema)
-  .action(async ({ parsedInput }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) {
-      return {
-        success: false,
-        error: authResult.response.error,
-        rate: undefined,
-      }
-    }
-
+  .action(async ({ parsedInput, ctx }) => {
     const rate = await calculateEstimatedRate(parsedInput)
     return { success: true, rate, error: undefined }
   })
 
-export async function createPricingRuleAction(
-  data: z.infer<typeof createPricingRuleSchema>
-) {
-  const authResult = await requireDashboardAction()
-  if (!authResult.ok) return authResult.response
-
-  const parsed = createPricingRuleSchema.safeParse(data)
-  if (!parsed.success) return { success: false, error: "Invalid form data" }
-  const { serviceType, origin, destination, basePrice, pricePerKg } =
-    parsed.data
+export const createPricingRuleAction = authActionClient
+  .schema(createPricingRuleSchema)
+  .action(async ({ parsedInput: data, ctx }) => {
+    const session = ctx.session
+    const { serviceType, origin, destination, basePrice, pricePerKg } = data
 
   try {
     const basePriceInCents = Math.round(basePrice * 100)
@@ -60,8 +45,8 @@ export async function createPricingRuleAction(
       .returning()
 
     await logAudit({
-      userId: authResult.session.user.id,
-      userEmail: authResult.session.user.email || "unknown",
+      userId: session.user.id,
+      userEmail: session.user.email || "unknown",
       action: "create",
       entity: "pricing_rules",
       entityId: rule.id,
@@ -77,18 +62,13 @@ export async function createPricingRuleAction(
       error: error.message || "Failed to create pricing rule",
     }
   }
-}
+})
 
-export async function updatePricingRuleAction(
-  data: z.infer<typeof updatePricingRuleSchema>
-) {
-  const authResult = await requireDashboardAction()
-  if (!authResult.ok) return authResult.response
-
-  const parsed = updatePricingRuleSchema.safeParse(data)
-  if (!parsed.success) return { success: false, error: "Invalid form data" }
-  const { id, serviceType, origin, destination, basePrice, pricePerKg } =
-    parsed.data
+export const updatePricingRuleAction = authActionClient
+  .schema(updatePricingRuleSchema)
+  .action(async ({ parsedInput: data, ctx }) => {
+    const session = ctx.session
+    const { id, serviceType, origin, destination, basePrice, pricePerKg } = data
 
   try {
     const before = await db.query.pricingRules.findFirst({
@@ -110,13 +90,13 @@ export async function updatePricingRuleAction(
       .where(eq(pricingRules.id, id))
 
     await logAudit({
-      userId: authResult.session.user.id,
-      userEmail: authResult.session.user.email || "unknown",
+      userId: session.user.id,
+      userEmail: session.user.email || "unknown",
       action: "update",
       entity: "pricing_rules",
       entityId: id,
       before,
-      after: parsed.data,
+      after: data,
     })
 
     revalidatePath("/dashboard/pricing")
@@ -125,17 +105,13 @@ export async function updatePricingRuleAction(
     Sentry.captureException(error)
     return { success: false, error: "Failed to update pricing rule" }
   }
-}
+})
 
-export async function deletePricingRuleAction(
-  data: z.infer<typeof deletePricingRuleSchema>
-) {
-  const authResult = await requireDashboardAction()
-  if (!authResult.ok) return authResult.response
-
-  const parsed = deletePricingRuleSchema.safeParse(data)
-  if (!parsed.success) return { success: false, error: "Invalid form data" }
-  const { id } = parsed.data
+export const deletePricingRuleAction = authActionClient
+  .schema(deletePricingRuleSchema)
+  .action(async ({ parsedInput: data, ctx }) => {
+    const session = ctx.session
+    const { id } = data
 
   try {
     const before = await db.query.pricingRules.findFirst({
@@ -148,8 +124,8 @@ export async function deletePricingRuleAction(
       .where(eq(pricingRules.id, id))
 
     await logAudit({
-      userId: authResult.session.user.id,
-      userEmail: authResult.session.user.email || "unknown",
+      userId: session.user.id,
+      userEmail: session.user.email || "unknown",
       action: "delete",
       entity: "pricing_rules",
       entityId: id,
@@ -163,4 +139,4 @@ export async function deletePricingRuleAction(
     Sentry.captureException(error)
     return { success: false, error: "Failed to delete pricing rule" }
   }
-}
+})

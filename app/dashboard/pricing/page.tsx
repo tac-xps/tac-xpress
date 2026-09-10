@@ -1,3 +1,4 @@
+import { requireStaffPage } from "@/lib/auth/page-access"
 import * as Sentry from "@sentry/nextjs"
 import { Calculator } from "lucide-react"
 import { desc, isNull } from "drizzle-orm"
@@ -35,6 +36,8 @@ export default async function PricingPage({
 }: {
   searchParams: Promise<{ page?: string | string[] }>
 }) {
+  await requireStaffPage()
+
   const page = parsePage((await searchParams).page)
   let rules: (typeof pricingRules.$inferSelect)[] = []
 
@@ -54,10 +57,10 @@ export default async function PricingPage({
   rules = rules.slice(0, DEFAULT_PAGE_SIZE)
 
   return (
-    <div className="mx-auto flex w-full max-w-[1200px] animate-in flex-col gap-4 duration-500 fade-in md:gap-8">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 duration-500 animate-in fade-in md:gap-8">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-4">
-          <div className="shrink-0 rounded-lg bg-primary/10 p-3 shadow-inner">
+          <div className="shrink-0 rounded-none bg-primary/10 p-3">
             <PricingIcon className="size-8 text-primary" />
           </div>
           <div className="flex flex-col gap-1">
@@ -74,7 +77,7 @@ export default async function PricingPage({
 
       <PricingCalculatorClient />
 
-      <Card className="overflow-hidden border border-border/60 bg-card/60 shadow-sm backdrop-blur-sm">
+      <Card className="overflow-hidden border border-border bg-card shadow-card">
         <CardHeader className="flex flex-row items-center justify-between border-b border-border/50 bg-muted/10 p-6">
           <CardTitle className="flex items-center gap-2 text-lg font-semibold tracking-tight">
             <Calculator className="size-5 text-primary" />

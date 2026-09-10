@@ -67,7 +67,9 @@ export function UserDropdown() {
         const data = await getUserProfile()
         if (data) {
           setProfile({
-            ...data,
+            id: data.id,
+            fullName: data.fullName ?? undefined,
+            avatarUrl: data.avatarUrl ?? undefined,
             email: data.email || session?.user?.email || undefined,
             role: data.role || (session?.user as any)?.role || undefined,
           })
@@ -100,8 +102,6 @@ export function UserDropdown() {
 
     if (status === "authenticated") {
       loadUser()
-    } else if (status === "unauthenticated") {
-      setIsLoading(false)
     }
   }, [session, status])
 
@@ -148,7 +148,7 @@ export function UserDropdown() {
     return (
       <Button
         variant="ghost"
-        className="relative h-9 w-9 animate-pulse rounded-full bg-muted/50"
+        className="relative h-9 w-9 animate-pulse rounded-none bg-muted/50"
         disabled
       />
     )
@@ -177,7 +177,7 @@ export function UserDropdown() {
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="relative h-9 w-9 rounded-full ring-offset-background transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="relative h-9 w-9 rounded-none ring-offset-background transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
           >
             <Avatar className="h-9 w-9 border border-border/50 shadow-sm">
               <AvatarImage
@@ -199,7 +199,7 @@ export function UserDropdown() {
             <div className="flex items-center gap-3">
               <label
                 htmlFor="avatar-upload"
-                className="group relative cursor-pointer rounded-full"
+                className="group relative cursor-pointer rounded-none"
               >
                 <Avatar className="h-12 w-12 border border-border/50 shadow-sm transition-opacity group-hover:opacity-50">
                   <AvatarImage
@@ -226,7 +226,7 @@ export function UserDropdown() {
                   {profile?.email || "Not signed in"}
                 </p>
                 <div className="mt-1 flex">
-                  <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold tracking-wider text-primary uppercase">
+                  <span className="rounded bg-primary/10 px-1.5 py-0.5 text-micro font-semibold tracking-wider text-primary uppercase">
                     {profile?.role || "Viewer"}
                   </span>
                 </div>
@@ -307,7 +307,7 @@ export function UserDropdown() {
                 <span>Appearance</span>
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
-                <DropdownMenuSubContent className="min-w-[120px] rounded-none border-border/50 bg-background/80 p-1 shadow-xl backdrop-blur-2xl">
+                <DropdownMenuSubContent className="min-w-28 rounded-none border-border/50 bg-background/80 p-1 shadow-xl backdrop-blur-2xl">
                   <DropdownMenuItem
                     className="cursor-pointer rounded-none"
                     onClick={() => setTheme("light")}

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Eye, EyeOff } from "lucide-react"
 import { useState, useTransition } from "react"
+import Link from "next/link"
 import { loginAction } from "@/app/(auth)/signin/actions"
 import { z } from "zod"
 import { Logo } from "@/components/logo"
@@ -34,7 +35,7 @@ export function LoginForm({
   const [showPassword, setShowPassword] = useState(false)
 
   const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema as any),
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -57,11 +58,11 @@ export function LoginForm({
 
   return (
     <div className={cn("flex w-full flex-col gap-6", className)} {...props}>
-      <div className="relative overflow-hidden rounded-2xl border border-border/70 bg-card/92 p-8 text-card-foreground shadow-xl backdrop-blur-xl before:absolute before:inset-x-8 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-card-accent/60 before:to-transparent md:p-10">
-        <div className="mb-8 flex flex-col space-y-2 text-center">
-          <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
+      <div className="w-full text-foreground">
+        <div className="mb-8 flex flex-col gap-3">
+          <h1 className="text-3xl font-medium tracking-tight">Staff sign in</h1>
           <p className="text-sm text-muted-foreground">
-            Enter your credentials to access the operational dashboard
+            Use your work email and password to open the operations workspace.
           </p>
         </div>
 
@@ -79,9 +80,10 @@ export function LoginForm({
                     <FormControl>
                       <Input
                         type="email"
+                        autoComplete="username"
                         aria-label="Email address"
-                        placeholder="admin@tac-xpress.com"
-                        className="h-11 border-input bg-muted/40 shadow-sm transition-colors focus:border-primary"
+                        placeholder="Your work email"
+                        className="h-9 border-input bg-muted/40 shadow-sm transition-colors focus:border-primary"
                         {...field}
                       />
                     </FormControl>
@@ -102,15 +104,16 @@ export function LoginForm({
                       <div className="relative">
                         <Input
                           type={showPassword ? "text" : "password"}
+                          autoComplete="current-password"
                           aria-label="Password"
-                          className="h-11 border-input bg-muted/40 pr-10 shadow-sm transition-colors focus:border-primary"
+                          className="h-9 border-input bg-muted/40 pr-10 shadow-sm transition-colors focus:border-primary"
                           {...field}
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="absolute top-0 right-0 h-11 w-11 text-muted-foreground hover:bg-transparent hover:text-foreground"
+                          className="absolute top-0 right-0 h-9 w-9 text-muted-foreground hover:bg-transparent hover:text-foreground"
                           onClick={() => setShowPassword(!showPassword)}
                         >
                           {showPassword ? (
@@ -124,8 +127,8 @@ export function LoginForm({
                         </Button>
                       </div>
                     </FormControl>
-                    <p className="text-[0.8rem] text-muted-foreground">
-                      Password reset available through support
+                    <p className="text-xs text-muted-foreground">
+                      Contact your administrator if you need access or a password reset.
                     </p>
                     <FormMessage />
                   </FormItem>
@@ -133,26 +136,26 @@ export function LoginForm({
               />
 
               {error && (
-                <TypographyMuted className="rounded-md border border-destructive/20 bg-destructive/10 p-3 font-medium text-destructive">
+                <p role="alert" className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
                   {error}
-                </TypographyMuted>
+                </p>
               )}
 
               <Button
                 type="submit"
-                className="mt-2 h-11 w-full font-medium shadow-lg shadow-primary/20 transition-all hover:shadow-primary/30 active:scale-[0.98]"
+                className="mt-2 h-9 w-full"
                 disabled={isPending}
               >
-                {isPending ? "Authenticating..." : "Login Securely"}
+                {isPending ? "Signing in…" : "Sign in to workspace"}
               </Button>
 
               <div className="mt-4 text-center">
-                <a
+                <Link
                   href="/"
                   className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
                 >
                   &larr; Back to Home
-                </a>
+                </Link>
               </div>
             </div>
           </form>

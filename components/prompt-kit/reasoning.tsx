@@ -26,7 +26,7 @@ export function Reasoning({
         })}
       </div>
       {isOpen && (
-        <div className="animate-in duration-200 fade-in slide-in-from-top-2">
+        <div className="duration-200 animate-in fade-in slide-in-from-top-2">
           {React.Children.map(children, (child) => {
             if (
               React.isValidElement(child) &&

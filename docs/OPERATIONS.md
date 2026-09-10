@@ -1,37 +1,32 @@
-# TAC-XPRESS Operations Manual
+# Operations guide
 
-## 1. PII Scrubbing Policy
+## Dashboard operating model
 
-To comply with data privacy regulations and prevent PII leakage to third-party observability providers, all engineers must follow these policies when logging to Sentry or internal logs:
+Staff use the dashboard to create and manage shipments, manifests, dispatches, fleet records, invoices, customers, pricing, warehouse updates, and support tickets. Dashboard access requires an `admin` or `staff` session.
 
-### WhatsApp Webhook PII
-- **Raw Phone Numbers:** MUST NEVER be sent to Sentry or generic system logs. Phone numbers must be hashed using HMAC-SHA256 with the `PHONE_HASH_SECRET` environment variable.
-- **Normalization:** Before hashing, phone numbers must be normalized by stripping non-digit characters and leading zeros to ensure identical numbers produce identical hashes (e.g. `+91 98765 43210` -> `919876543210`).
-- **Short Numbers:** Normalized numbers under 7 digits will be hashed as `[INVALID]`.
-- **Message Content:** Customer message text is strictly excluded from Sentry contexts, as it may contain names, addresses, or AWB numbers.
+## Reliable operation
 
-### Other Entities
-Always scrub the following fields before capturing exceptions:
-- `email`
-- `awb_number`
-- `customer_name`
+- Confirm an AWB, route, customer, and current status before making an update.
+- Use manifests and dispatch flows to coordinate driver, vehicle, and shipment movement.
+- Treat support and WhatsApp failures as operational work: inspect the ticket or message record, then retry only through the supported workflow.
+- Use the audit history and outbound logs when resolving disputes or delivery exceptions.
 
-**Reference Implementation:** Check `captureWhatsAppError` in `app/actions/whatsapp-inbound.ts`.
+## Communications review
 
----
+Open Communications to review WhatsApp attempts, email notifications and the background-job counts. “Sent” means provider acceptance; “Delivered” and “Read” require provider receipts. A pending attempt or uncertain failure can already have reached the provider. Match the AWB/invoice, recipient and attempt time against provider history before manually sending again. A post-send warning does not mean the invoice should be resent.
 
-## 2. Sentry Alert Configuration
+Contact acknowledgment and triage jobs retry automatically with bounded backoff and leases. Investigate failed jobs and Sentry errors before recovery. Email jobs older than the provider idempotency window require manual reconciliation; do not reset or replay them blindly. There is no general-purpose manual queue replay control in the dashboard yet. Keep AI auto-reply disabled until its separate delivery acceptance is completed.
 
-To move from passive telemetry to proactive observability, the following metric alerts must be configured in Sentry under **Project Settings → Alerts → Create Alert Rule → Metric Alert**.
+## Invoice and label checks
 
-| Alert Rule | Trigger Condition | Action / Notification | Priority |
-| :--- | :--- | :--- | :--- |
-| **WhatsApp Webhook Failure Spike** | `whatsapp.phone_hash:* error.type:WhatsAppAPIError` <br/> > 5 errors in 10 min | Slack `#ops-whatsapp` | P1 |
-| **AI Triage Latency Degradation** | `ai.triage.llm` span <br/> avg > 3s over 15 min | Slack `#ops-ai` | P2 |
-| **AI Cost Anomaly** | `ai.cost.usd:>0.01` (Aggregate metrics) <br/> > $5 in 1 hour | Email CTO + Slack `#ops-billing` | P2 |
-| **SLA Breach Detector Down** | `sla-check` cron <br/> 0 successful runs in 15 min | Slack `#ops-sla` + PagerDuty | P1 |
-| **DLQ Growth** | `dead_letter_queue` rows <br/> > 10 in 1 hour | Slack `#ops-platform` | P2 |
+The booking wizard's dimensions describe the overall packed consignment. Enter actual piece count and actual aggregate weight; do not assume equal dimensions or weight for every piece. The server calculates chargeable weight and invoice totals. Financial edits and explicit payment recording are separate operations. A paid invoice requiring cancellation needs reconciliation rather than an ordinary void.
 
-### Notes
-- Ensure PagerDuty integration is active for the `SLA Breach Detector Down` alert.
-- The `AI Cost Anomaly` requires aggregating the `ai.cost.usd` span attribute over time.
+The invoice is A4; the shared shipping label is 4 × 6 inches. Preview sender, recipient, AWB, PIN code, piece count, weight, charges and balance before issuing. Confirm 100% scale on the physical label printer and test both QR and Code128 on the actual scanner. Storybook examples are simulated and must never be issued to customers.
+
+## Cargo arrival and fleet
+
+Finalized manifests stay locked. Do not remove or reassign their shipments to work around the missing leg-completion step. Destination receipt and reassignment acceptance remain an operational design decision. Fleet positions now persist, but a position older than fifteen minutes disappears from the live view; that means telemetry is stale, not that a vehicle has arrived. Mobile credentials must be provisioned securely, and individual device/driver isolation is still required before broader mobile access.
+
+## Release readiness
+
+Before release, validate current staff roles, retired portal denial, public tracking privacy, webhook verification, message configuration, and required health checks. The detailed technical gate is [deployment](./10-deployment.md).

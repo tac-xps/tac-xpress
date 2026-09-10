@@ -25,7 +25,7 @@ export function useAddDriverDialog() {
     startTransition(async () => {
       try {
         const result = await createDriverAction(values)
-        if (result?.success) {
+        if ((result?.data?.success)) {
           toast.success("Driver added successfully")
           form.reset()
           setOpen(false)

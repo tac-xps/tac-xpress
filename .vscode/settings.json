@@ -3,7 +3,6 @@
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
   "css.lint.unknownAtRules": "ignore",
-  "deno.path": "C:\\Users\\stack\\.deno\\bin\\deno.exe",
   "deno.enablePaths": ["supabase/functions"],
   "deno.lint": true,
   "deno.unstable": [

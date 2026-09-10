@@ -1,0 +1,16 @@
+{
+  "projectRef": "ujyellrhwhqjmfponhuz",
+  "security": {
+    "counts": {
+      "INFO:rls_enabled_no_policy": 19,
+      "WARN:auth_leaked_password_protection": 1
+    },
+    "observedAt": "2026-09-07T14:54:52.923Z"
+  },
+  "performance": {
+    "counts": {
+      "INFO:unused_index": 33
+    },
+    "observedAt": "2026-09-07T14:58:12.901Z"
+  }
+}

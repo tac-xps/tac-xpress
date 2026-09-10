@@ -116,9 +116,13 @@ function formatCompactNumber(value: number) {
 
 export async function getDashboardOverview() {
   const now = new Date()
-  const currentMonthStart = startOfMonth(now).toISOString()
-  const previousMonthStart = startOfMonth(subMonths(now, 1)).toISOString()
-  const chartStart = startOfDay(subDays(now, 89)).toISOString()
+  const currentMonthStart = startOfMonth(now)
+  const previousMonthStart = startOfMonth(subMonths(now, 1))
+  const chartStart = startOfDay(subDays(now, 89))
+
+  const currentMonthStartIso = currentMonthStart.toISOString()
+  const previousMonthStartIso = previousMonthStart.toISOString()
+  const chartStartIso = chartStart.toISOString()
 
   const bookingDay = sql<string>`to_char(${shipments.bookingDate}, 'YYYY-MM-DD')`
 
@@ -129,20 +133,20 @@ export async function getDashboardOverview() {
           total: sql<number>`count(*)`,
           airCargo: sql<number>`coalesce(sum(case when ${shipments.serviceType} = 'express_air' then 1 else 0 end), 0)`,
           surfaceCargo: sql<number>`coalesce(sum(case when ${shipments.serviceType} in ('standard_ocean', 'road_freight') then 1 else 0 end), 0)`,
-          currentTotal: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${currentMonthStart} then 1 else 0 end), 0)`,
-          previousTotal: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${previousMonthStart} and ${shipments.bookingDate} < ${currentMonthStart} then 1 else 0 end), 0)`,
-          currentAir: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${currentMonthStart} and ${shipments.serviceType} = 'express_air' then 1 else 0 end), 0)`,
-          previousAir: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${previousMonthStart} and ${shipments.bookingDate} < ${currentMonthStart} and ${shipments.serviceType} = 'express_air' then 1 else 0 end), 0)`,
-          currentSurface: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${currentMonthStart} and ${shipments.serviceType} in ('standard_ocean', 'road_freight') then 1 else 0 end), 0)`,
-          previousSurface: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${previousMonthStart} and ${shipments.bookingDate} < ${currentMonthStart} and ${shipments.serviceType} in ('standard_ocean', 'road_freight') then 1 else 0 end), 0)`,
+          currentTotal: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${currentMonthStartIso} then 1 else 0 end), 0)`,
+          previousTotal: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${previousMonthStartIso} and ${shipments.bookingDate} < ${currentMonthStartIso} then 1 else 0 end), 0)`,
+          currentAir: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${currentMonthStartIso} and ${shipments.serviceType} = 'express_air' then 1 else 0 end), 0)`,
+          previousAir: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${previousMonthStartIso} and ${shipments.bookingDate} < ${currentMonthStartIso} and ${shipments.serviceType} = 'express_air' then 1 else 0 end), 0)`,
+          currentSurface: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${currentMonthStartIso} and ${shipments.serviceType} in ('standard_ocean', 'road_freight') then 1 else 0 end), 0)`,
+          previousSurface: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${previousMonthStartIso} and ${shipments.bookingDate} < ${currentMonthStartIso} and ${shipments.serviceType} in ('standard_ocean', 'road_freight') then 1 else 0 end), 0)`,
         })
         .from(shipments)
         .where(isNull(shipments.deletedAt)),
       db
         .select({
           total: sql<number>`count(*)`,
-          currentTotal: sql<number>`coalesce(sum(case when ${manifests.createdAt} >= ${currentMonthStart} then 1 else 0 end), 0)`,
-          previousTotal: sql<number>`coalesce(sum(case when ${manifests.createdAt} >= ${previousMonthStart} and ${manifests.createdAt} < ${currentMonthStart} then 1 else 0 end), 0)`,
+          currentTotal: sql<number>`coalesce(sum(case when ${manifests.createdAt} >= ${currentMonthStartIso} then 1 else 0 end), 0)`,
+          previousTotal: sql<number>`coalesce(sum(case when ${manifests.createdAt} >= ${previousMonthStartIso} and ${manifests.createdAt} < ${currentMonthStartIso} then 1 else 0 end), 0)`,
         })
         .from(manifests)
         .where(
@@ -156,7 +160,7 @@ export async function getDashboardOverview() {
         })
         .from(shipments)
         .where(
-          sql`${shipments.deletedAt} is null and ${shipments.bookingDate} >= ${chartStart}`
+          sql`${shipments.deletedAt} is null and ${shipments.bookingDate} >= ${chartStartIso}`
         )
         .groupBy(bookingDay)
         .orderBy(bookingDay),
@@ -166,8 +170,8 @@ export async function getDashboardOverview() {
           name: hubs.name,
           location: hubs.location,
           totalShipments: sql<number>`count(${manifestItems.id})`,
-          currentShipments: sql<number>`coalesce(sum(case when ${manifests.createdAt} >= ${currentMonthStart} and ${manifestItems.id} is not null then 1 else 0 end), 0)`,
-          previousShipments: sql<number>`coalesce(sum(case when ${manifests.createdAt} >= ${previousMonthStart} and ${manifests.createdAt} < ${currentMonthStart} and ${manifestItems.id} is not null then 1 else 0 end), 0)`,
+          currentShipments: sql<number>`coalesce(sum(case when ${manifests.createdAt} >= ${currentMonthStartIso} and ${manifestItems.id} is not null then 1 else 0 end), 0)`,
+          previousShipments: sql<number>`coalesce(sum(case when ${manifests.createdAt} >= ${previousMonthStartIso} and ${manifests.createdAt} < ${currentMonthStartIso} and ${manifestItems.id} is not null then 1 else 0 end), 0)`,
         })
         .from(hubs)
         .leftJoin(manifests, sql`${manifests.originHubId} = ${hubs.id}`)
@@ -282,9 +286,13 @@ export async function getDashboardOverview() {
 
 export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
   const now = new Date()
-  const currentWindowStart = startOfDay(subDays(now, 29)).toISOString()
-  const previousWindowStart = startOfDay(subDays(now, 59)).toISOString()
-  const sixMonthsStart = startOfMonth(subMonths(now, 5)).toISOString()
+  const currentWindowStart = startOfDay(subDays(now, 29))
+  const previousWindowStart = startOfDay(subDays(now, 59))
+  const sixMonthsStart = startOfMonth(subMonths(now, 5))
+
+  const currentWindowStartIso = currentWindowStart.toISOString()
+  const previousWindowStartIso = previousWindowStart.toISOString()
+  const sixMonthsStartIso = sixMonthsStart.toISOString()
 
   const [
     shipmentSummaryRows,
@@ -298,12 +306,12 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
     db
       .select({
         networkVolume: sql<number>`count(*)`,
-        currentNetworkVolume: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${currentWindowStart} then 1 else 0 end), 0)`,
-        previousNetworkVolume: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${previousWindowStart} and ${shipments.bookingDate} < ${currentWindowStart} then 1 else 0 end), 0)`,
-        currentDelivered: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${shipments.updatedAt} >= ${currentWindowStart} then 1 else 0 end), 0)`,
-        previousDelivered: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${shipments.updatedAt} >= ${previousWindowStart} and ${shipments.updatedAt} < ${currentWindowStart} then 1 else 0 end), 0)`,
-        currentOnTime: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${shipments.updatedAt} >= ${currentWindowStart} and ${shipments.edd} is not null and ${shipments.updatedAt} <= ${shipments.edd} then 1 else 0 end), 0)`,
-        previousOnTime: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${shipments.updatedAt} >= ${previousWindowStart} and ${shipments.updatedAt} < ${currentWindowStart} and ${shipments.edd} is not null and ${shipments.updatedAt} <= ${shipments.edd} then 1 else 0 end), 0)`,
+        currentNetworkVolume: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${currentWindowStartIso} then 1 else 0 end), 0)`,
+        previousNetworkVolume: sql<number>`coalesce(sum(case when ${shipments.bookingDate} >= ${previousWindowStartIso} and ${shipments.bookingDate} < ${currentWindowStartIso} then 1 else 0 end), 0)`,
+        currentDelivered: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${shipments.updatedAt} >= ${currentWindowStartIso} then 1 else 0 end), 0)`,
+        previousDelivered: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${shipments.updatedAt} >= ${previousWindowStartIso} and ${shipments.updatedAt} < ${currentWindowStartIso} then 1 else 0 end), 0)`,
+        currentOnTime: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${shipments.updatedAt} >= ${currentWindowStartIso} and ${shipments.edd} is not null and ${shipments.updatedAt} <= ${shipments.edd} then 1 else 0 end), 0)`,
+        previousOnTime: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${shipments.updatedAt} >= ${previousWindowStartIso} and ${shipments.updatedAt} < ${currentWindowStartIso} and ${shipments.edd} is not null and ${shipments.updatedAt} <= ${shipments.edd} then 1 else 0 end), 0)`,
       })
       .from(shipments)
       .where(isNull(shipments.deletedAt)),
@@ -333,7 +341,7 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
       })
       .from(shipments)
       .where(
-        sql`${shipments.deletedAt} is null and ${shipments.bookingDate} >= ${sixMonthsStart}`
+        sql`${shipments.deletedAt} is null and ${shipments.bookingDate} >= ${sixMonthsStartIso}`
       )
       .groupBy(sql`date_trunc('month', ${shipments.bookingDate})`)
       .orderBy(sql`date_trunc('month', ${shipments.bookingDate})`),
@@ -343,7 +351,7 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
         amountPaise: sql<number>`coalesce(sum(${invoices.amount}), 0)`,
       })
       .from(invoices)
-      .where(sql`${invoices.createdAt} >= ${sixMonthsStart}`)
+      .where(sql`${invoices.createdAt} >= ${sixMonthsStartIso}`)
       .groupBy(sql`date_trunc('month', ${invoices.createdAt})`)
       .orderBy(sql`date_trunc('month', ${invoices.createdAt})`),
     db
@@ -353,7 +361,7 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
       })
       .from(users)
       .where(
-        sql`${users.role} = 'customer' and ${users.deletedAt} is null and ${users.createdAt} >= ${sixMonthsStart}`
+        sql`${users.role} = 'customer' and ${users.deletedAt} is null and ${users.createdAt} >= ${sixMonthsStartIso}`
       )
       .groupBy(sql`date_trunc('month', ${users.createdAt})`)
       .orderBy(sql`date_trunc('month', ${users.createdAt})`),

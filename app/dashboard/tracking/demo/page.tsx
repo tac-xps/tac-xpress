@@ -11,7 +11,7 @@ const PolandFlag = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 5 3"
-    className="h-4 w-6 rounded-sm"
+    className="h-4 w-6 rounded-none"
   >
     <rect width="5" height="3" fill="#fff" />
     <rect width="5" height="1.5" y="1.5" fill="#dc143c" />

@@ -16,7 +16,7 @@ export const Pill = ({
   ...props
 }: PillProps) => (
   <Badge
-    className={cn("gap-2 rounded-full px-3 py-1.5 font-normal", className)}
+    className={cn("gap-2 rounded-none px-3 py-1.5 font-normal", className)}
     variant={variant}
     {...props}
   />
@@ -42,7 +42,7 @@ export type PillButtonProps = ComponentProps<typeof Button>
 export const PillButton = ({ className, ...props }: PillButtonProps) => (
   <Button
     className={cn(
-      "-my-2 -mr-2 size-6 rounded-full p-0.5 hover:bg-foreground/5",
+      "-my-2 -mr-2 size-6 rounded-none p-0.5 hover:bg-foreground/5",
       className
     )}
     size="icon"
@@ -85,7 +85,7 @@ export const PillIndicator = ({
     {pulse && (
       <span
         className={cn(
-          "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
+          "absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-none opacity-75",
           variant === "success" && "bg-status-delivered",
           variant === "error" && "bg-status-failed",
           variant === "warning" && "bg-status-pending",
@@ -95,7 +95,7 @@ export const PillIndicator = ({
     )}
     <span
       className={cn(
-        "relative inline-flex size-2 rounded-full",
+        "relative inline-flex size-2 rounded-none",
         variant === "success" && "bg-status-delivered",
         variant === "error" && "bg-status-failed",
         variant === "warning" && "bg-status-pending",

@@ -1,62 +1,35 @@
 "use server"
 
-import crypto from "crypto"
+import { signDocumentToken } from "@/lib/auth/document-token"
+import { getAppUrl } from "@/lib/config/app-url"
 import { revalidatePath } from "next/cache"
 import * as Sentry from "@sentry/nextjs"
 import { z } from "zod"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { eq, or, and, sql } from "drizzle-orm"
 
-import { auth } from "@/auth"
+import { logAuditInTransaction } from "@/lib/audit"
+import { chargedWeight } from "@/lib/shipment-weight"
+import { calculateInvoice, toPaise } from "@/lib/invoices/calculations"
+import { createStoredInvoice, updateStoredInvoice, voidStoredInvoice } from "@/lib/invoices/persistence"
+import { requireDashboardSession } from "@/lib/auth/guards"
 import { cookies } from "next/headers"
 import { db } from "@/lib/db"
-import { invoices, shipments, users } from "@/lib/db/schema"
-import { actionClient } from "@/lib/safe-action"
+import { invoices, shipments, users, trackingEvents } from "@/lib/db/schema"
+import { authActionClient } from "@/lib/safe-action"
 import { invoiceWizardSchema } from "@/lib/schemas/invoice-wizard"
-import { sendWhatsAppTemplateMessage } from "@/lib/whatsapp/service"
-
+import { normalizeWhatsAppPhone, sendWhatsAppTemplateMessage } from "@/lib/whatsapp/service"
+import { capturePostHogEvent } from "@/lib/posthog-server"
 const GENERIC_INVOICE_ERROR =
   "We could not complete the invoice request. Please try again."
 const GENERIC_WIZARD_ERROR =
   "A critical error occurred while creating your shipment."
 
-async function verifyAuth() {
-  const session = await auth()
-  if (
-    session?.user?.id &&
-    (session.user.role === "admin" || session.user.role === "staff")
-  ) {
-    return {
-      userId: session.user.id,
-      email: session.user.email ?? null,
-    }
-  }
-
-  return null
-}
-
-function unauthorizedResult() {
-  return {
-    success: false,
-    error: "You must be signed in to perform this action.",
-  }
-}
-
-function toPaise(amount: number) {
-  return Math.round(amount * 100)
-}
-
 async function invokeInvoicePdfGeneration(
   invoiceId: string,
   sig: string
 ): Promise<boolean> {
-  // If NEXT_PUBLIC_APP_URL is accidentally left as localhost:3000 in Vercel env vars,
-  // we must ignore it and use VERCEL_URL instead to prevent fetch failures.
-  let appUrl =
-    process.env.NEXT_PUBLIC_APP_URL || "https://tac-xpress.vercel.app"
-  if (appUrl.includes("localhost") && process.env.NODE_ENV === "production") {
-    appUrl = "https://tac-xpress.vercel.app"
-  }
+  const appUrl = getAppUrl()
 
   const localUrl = `${appUrl}/api/public/invoice-pdf?id=${invoiceId}&sig=${sig}`
 
@@ -68,6 +41,7 @@ async function invokeInvoicePdfGeneration(
 
   const pdfRes = await fetch(localUrl, {
     method: "GET",
+    signal: AbortSignal.timeout(55000),
     headers: {
       "User-Agent": "Mozilla/5.0 (compatible; TacXpress-InternalPDFWorker/1.0)",
       "x-internal-call": "1",
@@ -86,60 +60,18 @@ async function invokeInvoicePdfGeneration(
   return true
 }
 
-async function capturePostHogEvent(
-  event: string,
-  distinctId: string,
-  properties: Record<string, unknown>
-) {
-  const apiKey = process.env.POSTHOG_KEY || process.env.NEXT_PUBLIC_POSTHOG_KEY
-  if (!apiKey) {
-    return
-  }
 
-  const host =
-    process.env.POSTHOG_HOST ||
-    process.env.NEXT_PUBLIC_POSTHOG_HOST ||
-    "https://us.i.posthog.com"
-
-  try {
-    const response = await fetch(`${host.replace(/\/$/, "")}/capture/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        api_key: apiKey,
-        event,
-        distinct_id: distinctId,
-        properties,
-      }),
-    })
-
-    if (!response.ok) {
-      Sentry.captureMessage("PostHog capture failed", {
-        level: "warning",
-        extra: { event, status: response.status },
-      })
-    }
-  } catch (error) {
-    Sentry.captureException(error, {
-      tags: { area: "posthog_capture", event },
-    })
-  }
-}
 
 const sendInvoiceViaWhatsAppSchema = z.object({
   invoiceId: z.string().uuid("Invalid invoice ID"),
-  phone: z.string().min(10, "Phone number is required"),
+  phone: z.string().min(10, "Phone number is required").max(30),
 })
 
-export const sendInvoiceViaWhatsApp = actionClient
+export const sendInvoiceViaWhatsApp = authActionClient
   .schema(sendInvoiceViaWhatsAppSchema)
-  .action(async ({ parsedInput }) => {
-    const actor = await verifyAuth()
-    if (!actor) {
-      return unauthorizedResult()
-    }
-
+  .action(async ({ parsedInput, ctx }) => {
     const { invoiceId, phone } = parsedInput
+    let providerAccepted = false
 
     try {
       if (process.env.WHATSAPP_ENABLED !== "true") {
@@ -151,10 +83,10 @@ export const sendInvoiceViaWhatsApp = actionClient
 
       const invoice = await db.query.invoices.findFirst({
         where: eq(invoices.id, invoiceId),
-        with: { shipment: true },
+        with: { shipment: true, customer: true },
       })
 
-      if (!invoice?.shipment) {
+      if (!invoice?.shipment || invoice.shipment.deletedAt || invoice.status === "void") {
         return {
           success: false,
           error: "Invoice does not have an associated shipment.",
@@ -177,6 +109,9 @@ export const sendInvoiceViaWhatsApp = actionClient
         }
       }
 
+      const recordedPhone = invoice.shipment.consignorPhone || invoice.customer?.phone
+      if (!recordedPhone || normalizeWhatsAppPhone(recordedPhone) !== normalizeWhatsAppPhone(phone)) return { success: false, error: "The recipient changed. Reload the invoice before sending." }
+
       const supabase = createSupabaseClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
         process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -197,27 +132,8 @@ export const sendInvoiceViaWhatsApp = actionClient
           throw new Error("Missing Supabase env vars")
         }
 
-        // Check if the file actually exists via list() — createSignedUrl always
-        // returns a URL even for non-existent files, so it cannot be used as an
-        // existence check.
-        const { data: listData } = await supabase.storage
-          .from("cargo-documents")
-          .list("", { search: fileName })
-
-        let fileExists = !!listData?.some((f) => f.name === fileName)
-
-        if (!fileExists) {
-          // File missing — trigger generation (which uploads it to Supabase)
-          const sig = crypto
-            .createHmac("sha256", process.env.INVOICE_PDF_SIGNING_SECRET)
-            .update(invoice.id)
-            .digest("hex")
-          const success = await invokeInvoicePdfGeneration(invoice.id, sig)
-
-          if (!success) {
-            throw new Error("Failed to generate PDF")
-          }
-        }
+        const sig = signDocumentToken(invoice.id, "pdf")
+        await invokeInvoicePdfGeneration(invoice.id, sig)
 
         // Always generate a fresh signed URL for WPBox
         const { data: signedUrlData, error: signError } = await supabase.storage
@@ -243,6 +159,7 @@ export const sendInvoiceViaWhatsApp = actionClient
         to: phone,
         template: "invoice",
         relatedAwb: invoice.shipment.awbNumber,
+        relatedInvoiceId: invoice.id,
         context: "invoice_send",
         bodyPreview: `[template:invoice:${invoice.id}]`,
         components: [
@@ -293,6 +210,7 @@ export const sendInvoiceViaWhatsApp = actionClient
         }
       }
 
+      providerAccepted = true
       await db
         .update(invoices)
         .set({ whatsappStatus: "sent", updatedAt: new Date() })
@@ -303,8 +221,9 @@ export const sendInvoiceViaWhatsApp = actionClient
     } catch (error) {
       Sentry.captureException(error, {
         tags: { area: "send_invoice_whatsapp" },
-        extra: { invoiceId, actorId: actor.userId },
+        extra: { invoiceId, actorId: ctx.session.user.id },
       })
+      if (providerAccepted) return { success: true, warning: "Provider accepted the message. Its local status needs reconciliation." }
 
       await db
         .update(invoices)
@@ -324,61 +243,21 @@ const createInvoiceSchema = z.object({
   amount: z.coerce.number().positive("Amount must be greater than 0"),
 })
 
-export const createInvoiceAction = actionClient
+export const createInvoiceAction = authActionClient
   .schema(createInvoiceSchema)
-  .action(async ({ parsedInput }) => {
-    const actor = await verifyAuth()
-    if (!actor) {
-      return unauthorizedResult()
-    }
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
-      const targetShipment = await db.query.shipments.findFirst({
-        where: eq(shipments.id, parsedInput.shipmentId),
-      })
-
-      if (!targetShipment) {
-        return {
-          success: false,
-          error: "Shipment not found.",
-        }
-      }
-
-      const invoiceAmountInCents = toPaise(parsedInput.amount)
-
-      const [newInvoice] = await db
-        .insert(invoices)
-        .values({
-          shipmentId: parsedInput.shipmentId,
-          customerId: targetShipment.customerId,
-          amount: invoiceAmountInCents,
-          status: "unpaid",
-          whatsappStatus: "pending",
-          pdfUrl: `/invoice/${parsedInput.shipmentId}`,
-        })
-        .returning()
-
-      if (!process.env.INVOICE_PDF_SIGNING_SECRET) {
-        throw new Error("Missing INVOICE_PDF_SIGNING_SECRET")
-      }
-
-      // Wait for background PDF generation
-      const sig = crypto
-        .createHmac("sha256", process.env.INVOICE_PDF_SIGNING_SECRET)
-        .update(newInvoice.id)
-        .digest("hex")
-      const success = await invokeInvoicePdfGeneration(newInvoice.id, sig)
-
-      if (!success) {
-        throw new Error("Failed to generate PDF")
-      }
+      const newInvoice = await createStoredInvoice(parsedInput.shipmentId, toPaise(parsedInput.amount), ctx.session.user)
 
       revalidatePath("/dashboard/invoices")
       return { success: true, invoiceId: newInvoice.id }
     } catch (error) {
       Sentry.captureException(error, {
         tags: { area: "create_invoice" },
-        extra: { actorId: actor.userId, shipmentId: parsedInput.shipmentId },
+        extra: {
+          actorId: ctx.session.user.id,
+          shipmentId: parsedInput.shipmentId,
+        },
       })
       return {
         success: false,
@@ -395,28 +274,20 @@ const updateInvoiceSchema = z.object({
   balanceDue: z.number().optional(),
 })
 
-export const updateInvoiceAction = actionClient
+export const updateInvoiceAction = authActionClient
   .schema(updateInvoiceSchema)
-  .action(async ({ parsedInput }) => {
-    const actor = await verifyAuth()
-    if (!actor) {
-      return unauthorizedResult()
-    }
-
-    const { id, status, amount, advancePaid, balanceDue } = parsedInput
+  .action(async ({ parsedInput, ctx }) => {
+    const { id, status, amount, advancePaid } = parsedInput
 
     try {
-      await db
-        .update(invoices)
-        .set({ status, amount, advancePaid, balanceDue, updatedAt: new Date() })
-        .where(eq(invoices.id, id))
+      await updateStoredInvoice(id, { status, amount, advancePaid }, ctx.session.user, { paymentOnly: true })
 
       revalidatePath("/dashboard/invoices")
       return { success: true }
     } catch (error) {
       Sentry.captureException(error, {
         tags: { area: "update_invoice" },
-        extra: { actorId: actor.userId, invoiceId: id },
+        extra: { actorId: ctx.session.user.id, invoiceId: id },
       })
       return { success: false, error: "Failed to update invoice." }
     }
@@ -452,12 +323,9 @@ const updateFullInvoiceSchema = z.object({
   consigneePhone: z.string().optional(),
 })
 
-export const updateFullInvoiceAction = actionClient
+export const updateFullInvoiceAction = authActionClient
   .schema(updateFullInvoiceSchema)
-  .action(async ({ parsedInput }) => {
-    const actor = await verifyAuth()
-    if (!actor) return unauthorizedResult()
-
+  .action(async ({ parsedInput, ctx }) => {
     const {
       id,
       shipmentId,
@@ -469,47 +337,14 @@ export const updateFullInvoiceAction = actionClient
     } = parsedInput
 
     try {
-      await db.transaction(async (tx) => {
-        const invoiceRow = await tx.query.invoices.findFirst({
-          where: eq(invoices.id, id),
-        })
-        const canonicalShipmentId = invoiceRow?.shipmentId
-
-        if (shipmentId && canonicalShipmentId !== shipmentId) {
-          throw new Error("Shipment ID mismatch")
-        }
-
-        await tx
-          .update(invoices)
-          .set({ ...fields, updatedAt: new Date() })
-          .where(eq(invoices.id, id))
-
-        if (canonicalShipmentId) {
-          const updateData: Partial<typeof shipments.$inferInsert> = {
-            updatedAt: new Date(),
-          }
-          if (consignorName !== undefined)
-            updateData.consignorName = consignorName
-          if (consignorPhone !== undefined)
-            updateData.consignorPhone = consignorPhone
-          if (consigneeName !== undefined)
-            updateData.consigneeName = consigneeName
-          if (consigneePhone !== undefined)
-            updateData.consigneePhone = consigneePhone
-
-          await tx
-            .update(shipments)
-            .set(updateData)
-            .where(eq(shipments.id, canonicalShipmentId))
-        }
-      })
+      await updateStoredInvoice(id, fields, ctx.session.user, { shipmentId, parties: { consignorName, consignorPhone, consigneeName, consigneePhone } })
 
       revalidatePath("/dashboard/invoices")
       return { success: true }
     } catch (error) {
       Sentry.captureException(error, {
         tags: { area: "update_full_invoice" },
-        extra: { actorId: actor.userId, invoiceId: id },
+        extra: { actorId: ctx.session.user.id, invoiceId: id },
       })
       return { success: false, error: "Failed to update invoice." }
     }
@@ -519,23 +354,19 @@ const deleteInvoiceSchema = z.object({
   id: z.string().uuid(),
 })
 
-export const deleteInvoiceAction = actionClient
+export const deleteInvoiceAction = authActionClient
   .schema(deleteInvoiceSchema)
-  .action(async ({ parsedInput }) => {
-    const actor = await verifyAuth()
-    if (!actor) {
-      return unauthorizedResult()
-    }
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
-      await db.delete(invoices).where(eq(invoices.id, parsedInput.id))
+      await requireDashboardSession(["admin"])
+      await voidStoredInvoice(parsedInput.id, ctx.session.user)
 
       revalidatePath("/dashboard/invoices")
       return { success: true }
     } catch (error) {
       Sentry.captureException(error, {
         tags: { area: "delete_invoice" },
-        extra: { actorId: actor.userId, invoiceId: parsedInput.id },
+        extra: { actorId: ctx.session.user.id, invoiceId: parsedInput.id },
       })
       return { success: false, error: "Failed to delete invoice." }
     }
@@ -671,18 +502,14 @@ async function upsertCustomerHelper(
   }
 }
 
-export const createWizardInvoiceAction = actionClient
+export const createWizardInvoiceAction = authActionClient
   .schema(invoiceWizardSchema)
-  .action(async ({ parsedInput }) => {
-    const actor = await verifyAuth()
-    if (!actor) {
-      return unauthorizedResult()
-    }
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
+      const invoiceId = parsedInput.requestId ?? crypto.randomUUID()
       const awbNumber = `AWB-${crypto.randomUUID().replace(/-/g, "").slice(0, 12).toUpperCase()}`
 
-      const { newInvoice, newShipment, totalAmount } = await Sentry.startSpan(
+      const { newInvoice, newShipment } = await Sentry.startSpan(
         {
           name: "create wizard invoice transaction",
           op: "db.transaction",
@@ -692,6 +519,9 @@ export const createWizardInvoiceAction = actionClient
         },
         async () =>
           db.transaction(async (tx) => {
+            await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended(${invoiceId}, 0))`)
+            const existing = await tx.query.invoices.findFirst({ where: eq(invoices.id, invoiceId), with: { shipment: true } })
+            if (existing?.shipment) return { newInvoice: existing, newShipment: existing.shipment }
             // Upsert consignor
             const consignorUser = await upsertCustomerHelper(
               tx,
@@ -749,15 +579,7 @@ export const createWizardInvoiceAction = actionClient
                 dimensionsL: parsedInput.dimensionsL,
                 dimensionsW: parsedInput.dimensionsW,
                 dimensionsH: parsedInput.dimensionsH,
-                chargedWeightKg: Math.max(
-                  parsedInput.weightKg,
-                  Math.round(
-                    (parsedInput.dimensionsL *
-                      parsedInput.dimensionsW *
-                      parsedInput.dimensionsH) /
-                      5000
-                  )
-                ),
+                chargedWeightKg: chargedWeight(parsedInput),
                 packagingType: parsedInput.packagingType,
                 isFragile: parsedInput.isFragile,
                 insuranceOptIn: parsedInput.insuranceOptIn,
@@ -771,95 +593,40 @@ export const createWizardInvoiceAction = actionClient
             const insuranceChargePaise = toPaise(parsedInput.insuranceCharge)
             const otherChargesPaise = toPaise(parsedInput.otherCharges)
 
-            const subtotalPaise =
-              freightChargePaise +
-              pickupChargePaise +
-              packingChargePaise +
-              docketChargePaise +
-              insuranceChargePaise +
-              otherChargesPaise
-
-            let cgstPaise = 0
-            let sgstPaise = 0
-            let igstPaise = 0
-
-            if (parsedInput.gstRate > 0) {
-              const totalGstPaise = Math.round(
-                (subtotalPaise * parsedInput.gstRate) / 100
-              )
-
-              const oState = (parsedInput.originState || "")
-                .toLowerCase()
-                .trim()
-              const dState = (parsedInput.destinationState || "")
-                .toLowerCase()
-                .trim()
-
-              if (oState && dState && oState !== dState) {
-                igstPaise = totalGstPaise
-              } else {
-                cgstPaise = Math.round(totalGstPaise / 2)
-                sgstPaise = totalGstPaise - cgstPaise
-              }
-            }
-
-            const totalAmountPaise =
-              subtotalPaise + cgstPaise + sgstPaise + igstPaise
-            const advancePaidPaise = toPaise(parsedInput.advancePaid)
-            const balanceDuePaise = totalAmountPaise - advancePaidPaise
+            const totals = calculateInvoice({ freightCharge: freightChargePaise, pickupCharge: pickupChargePaise, packingCharge: packingChargePaise, docketCharge: docketChargePaise, insuranceCharge: insuranceChargePaise, otherCharges: otherChargesPaise, gstRate: parsedInput.gstRate, interstate: !!parsedInput.originState && !!parsedInput.destinationState && parsedInput.originState.trim().toLowerCase() !== parsedInput.destinationState.trim().toLowerCase(), advancePaid: toPaise(parsedInput.advancePaid) })
 
             const [newInvoice] = await tx
               .insert(invoices)
               .values({
+                id: invoiceId,
                 shipmentId: newShipment.id,
                 customerId: consignorUser?.id || null,
-                amount: totalAmountPaise,
-                status: balanceDuePaise <= 0 ? "paid" : "unpaid",
+                ...totals,
                 freightCharge: freightChargePaise,
                 pickupCharge: pickupChargePaise,
                 packingCharge: packingChargePaise,
                 docketCharge: docketChargePaise,
                 insuranceCharge: insuranceChargePaise,
                 otherCharges: otherChargesPaise,
-                subtotal: subtotalPaise,
                 gstRate: parsedInput.gstRate,
-                cgst: cgstPaise,
-                sgst: sgstPaise,
-                igst: igstPaise,
                 paymentMode: parsedInput.paymentMode,
-                advancePaid: advancePaidPaise,
-                balanceDue: balanceDuePaise,
                 remarks: parsedInput.remarks,
                 termsAccepted: parsedInput.termsAccepted,
                 prohibitedAccepted: parsedInput.prohibitedAccepted,
-                pdfUrl: `/invoice/${newShipment.id}`,
+                pdfUrl: `/invoice/${invoiceId}`,
               })
               .returning()
 
-            const totalAmount = totalAmountPaise / 100
-            return { newInvoice, newShipment, totalAmount }
+            await tx.insert(trackingEvents).values({ shipmentId: newShipment.id, status: "pending", location: newShipment.origin, description: "Shipment booked", isPublic: true })
+            await logAuditInTransaction(tx, { action: "invoice.wizard_created", entity: "invoice", entityId: newInvoice.id, userId: ctx.session.user.id, userEmail: ctx.session.user.email, after: { shipmentId: newShipment.id, amount: totals.amount } })
+            return { newInvoice, newShipment }
           })
       )
 
-      if (!process.env.INVOICE_PDF_SIGNING_SECRET) {
-        throw new Error("Missing INVOICE_PDF_SIGNING_SECRET")
-      }
-
-      // Wait for background PDF generation
-      const sig = crypto
-        .createHmac("sha256", process.env.INVOICE_PDF_SIGNING_SECRET)
-        .update(newInvoice.id)
-        .digest("hex")
-      const pdfSuccess = await invokeInvoicePdfGeneration(newInvoice.id, sig)
-
-      if (!pdfSuccess) {
-        throw new Error("Failed to generate PDF")
-      }
-
-      await capturePostHogEvent("invoice_created", actor.userId, {
+      await capturePostHogEvent("invoice_created", ctx.session.user.id, {
         invoiceId: newInvoice.id,
         shipmentId: newShipment.id,
-        amountPaise: toPaise(totalAmount),
+        amountPaise: newInvoice.amount,
         source: "invoice_wizard",
       })
 
@@ -874,7 +641,7 @@ export const createWizardInvoiceAction = actionClient
     } catch (error) {
       Sentry.captureException(error, {
         tags: { area: "create_wizard_invoice" },
-        extra: { actorId: actor.userId },
+        extra: { actorId: ctx.session.user.id },
       })
       return {
         success: false,
@@ -887,14 +654,9 @@ const getInvoiceDetailsSchema = z.object({
   shipmentId: z.string().uuid("Invalid shipment ID"),
 })
 
-export const getInvoiceDetails = actionClient
+export const getInvoiceDetails = authActionClient
   .schema(getInvoiceDetailsSchema)
-  .action(async ({ parsedInput }) => {
-    const actor = await verifyAuth()
-    if (!actor) {
-      return null
-    }
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
       const targetInvoice = await db.query.invoices.findFirst({
         where: eq(invoices.shipmentId, parsedInput.shipmentId),
@@ -911,7 +673,10 @@ export const getInvoiceDetails = actionClient
     } catch (error) {
       Sentry.captureException(error, {
         tags: { area: "get_invoice_details" },
-        extra: { actorId: actor.userId, shipmentId: parsedInput.shipmentId },
+        extra: {
+          actorId: ctx.session.user.id,
+          shipmentId: parsedInput.shipmentId,
+        },
       })
       return null
     }
@@ -921,9 +686,9 @@ const lookupPincodeSchema = z.object({
   pincode: z.string().regex(/^\d{6}$/, "Must be a 6-digit Indian PIN code"),
 })
 
-export const lookupPincodeAction = actionClient
+export const lookupPincodeAction = authActionClient
   .schema(lookupPincodeSchema)
-  .action(async ({ parsedInput }) => {
+  .action(async ({ parsedInput, ctx }) => {
     const { pincode } = parsedInput
     try {
       const controller = new AbortController()

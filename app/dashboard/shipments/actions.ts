@@ -3,22 +3,23 @@
 import { db } from "@/lib/db"
 import {
   shipments,
+  users,
   trackingEvents,
-  type shipmentStatusEnum,
+  manifestItems,
 } from "@/lib/db/schema"
-import { desc, eq, like, sql } from "drizzle-orm"
+import { and, desc, eq, isNull, like, sql } from "drizzle-orm"
+import { chargedWeight } from "@/lib/shipment-weight"
 import { revalidatePath } from "next/cache"
-import { actionClient } from "@/lib/safe-action"
+import { authActionClient } from "@/lib/safe-action"
 import * as Sentry from "@sentry/nextjs"
+import { capturePostHogEvent } from "@/lib/posthog-server"
 import {
   createShipmentSchema,
   createTrackingEventSchema,
   updateShipmentSchema,
   deleteShipmentSchema,
 } from "./schemas"
-import { z } from "zod"
-import { requireDashboardAction } from "@/lib/auth/guards"
-import { logAudit } from "@/lib/audit"
+import { logAuditInTransaction } from "@/lib/audit"
 
 /**
  * Server action to create a new shipment record.
@@ -26,20 +27,19 @@ import { logAudit } from "@/lib/audit"
  * Validates the shipment details, allocates a daily sequential AWB number,
  * and sets the initial status to 'pending'. Handles database insertion and error capturing.
  */
-export const createShipmentAction = actionClient
+export const createShipmentAction = authActionClient
   .schema(createShipmentSchema)
-  .action(async ({ parsedInput }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) {
-      return {
-        success: false,
-        error: authResult.response.error,
-        shipment: undefined,
-      }
-    }
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
       const newShipment = await db.transaction(async (tx) => {
+        const customer = await tx.query.users.findFirst({
+          where: and(
+            eq(users.id, parsedInput.customerId),
+            eq(users.role, "customer"),
+            isNull(users.deletedAt)
+          ),
+        })
+        if (!customer) throw new Error("Select an available customer record")
         const datePart = new Date()
           .toISOString()
           .slice(0, 10)
@@ -51,7 +51,10 @@ export const createShipmentAction = actionClient
           .select({ awbNumber: shipments.awbNumber })
           .from(shipments)
           .where(like(shipments.awbNumber, `${prefix}%`))
-          .orderBy(desc(shipments.awbNumber))
+          .orderBy(
+            desc(sql`length(${shipments.awbNumber})`),
+            desc(shipments.awbNumber)
+          )
           .limit(1)
 
         const previousSequence = latest
@@ -63,6 +66,7 @@ export const createShipmentAction = actionClient
           .insert(shipments)
           .values({
             ...parsedInput,
+            chargedWeightKg: chargedWeight(parsedInput),
             awbNumber,
             status: "pending",
           })
@@ -73,19 +77,21 @@ export const createShipmentAction = actionClient
           shipmentId: shipment.id,
           status: "pending",
           location: parsedInput.origin,
-          description: `Shipment booked and picked up from ${parsedInput.consignorName || "sender"}.`,
+          description:
+            "Shipment booked. Handover and movement will be recorded separately.",
+          loggedBy: ctx.session.user.id,
+          isPublic: true,
         })
 
+        await logAuditInTransaction(tx, {
+          userId: ctx.session.user.id,
+          userEmail: ctx.session.user.email || "unknown",
+          action: "create",
+          entity: "shipments",
+          entityId: shipment.id,
+          after: shipment,
+        })
         return shipment
-      })
-
-      await logAudit({
-        userId: authResult.session.user.id,
-        userEmail: authResult.session.user.email || "unknown",
-        action: "create",
-        entity: "shipments",
-        entityId: newShipment.id,
-        after: newShipment,
       })
 
       revalidatePath("/dashboard/shipments")
@@ -96,21 +102,25 @@ export const createShipmentAction = actionClient
     }
   })
 
-export const createTrackingEventAction = actionClient
+export const createTrackingEventAction = authActionClient
   .schema(createTrackingEventSchema)
-  .action(async ({ parsedInput }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) return authResult.response
-
-    const { shipmentId, status, location, description } = parsedInput
+  .action(async ({ parsedInput, ctx }) => {
+    const {
+      shipmentId,
+      status,
+      location,
+      description,
+      isPublic = false,
+    } = parsedInput
 
     try {
-      const previousStatus = await db.transaction(async (tx) => {
+      await db.transaction(async (tx) => {
         const [currentShipment] = await tx
-          .select({ status: shipments.status })
+          .select({ status: shipments.status, awbNumber: shipments.awbNumber })
           .from(shipments)
-          .where(eq(shipments.id, shipmentId))
+          .where(and(eq(shipments.id, shipmentId), isNull(shipments.deletedAt)))
           .limit(1)
+          .for("update")
 
         if (!currentShipment) throw new Error("Shipment not found")
 
@@ -119,6 +129,9 @@ export const createTrackingEventAction = actionClient
         // 1. Insert the tracking event
         await tx.insert(trackingEvents).values({
           shipmentId,
+          awbNumber: currentShipment.awbNumber,
+          loggedBy: ctx.session.user.id,
+          isPublic,
           status,
           location,
           description,
@@ -130,17 +143,24 @@ export const createTrackingEventAction = actionClient
           .set({ status })
           .where(eq(shipments.id, shipmentId))
 
-        return currentShipment.status
-      })
+        await logAuditInTransaction(tx, {
+          userId: ctx.session.user.id,
+          userEmail: ctx.session.user.email || "unknown",
+          action: "status_transition",
+          entity: "shipments",
+          entityId: shipmentId,
+          before: { status: currentShipment.status },
+          after: { status, location, description, isPublic },
+        })
 
-      await logAudit({
-        userId: authResult.session.user.id,
-        userEmail: authResult.session.user.email || "unknown",
-        action: "status_transition",
-        entity: "shipments",
-        entityId: shipmentId,
-        before: { status: previousStatus },
-        after: { status, location, description },
+        await capturePostHogEvent("shipment_status_updated", ctx.session.user.id, {
+          shipment_id: shipmentId,
+          awb_number: currentShipment.awbNumber,
+          old_status: currentShipment.status,
+          new_status: status,
+          is_public: isPublic,
+          location,
+        })
       })
 
       revalidatePath("/dashboard/shipments")
@@ -152,28 +172,38 @@ export const createTrackingEventAction = actionClient
     }
   })
 
-export const updateShipmentAction = actionClient
+export const updateShipmentAction = authActionClient
   .schema(updateShipmentSchema)
-  .action(async ({ parsedInput }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) return authResult.response
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
       const { id, ...updateData } = parsedInput
-      const before = await db.query.shipments.findFirst({
-        where: eq(shipments.id, id),
-      })
-      if (!before) throw new Error("Shipment not found")
-      await db.update(shipments).set(updateData).where(eq(shipments.id, id))
+      await db.transaction(async (tx) => {
+        const [before] = await tx
+          .select()
+          .from(shipments)
+          .where(eq(shipments.id, id))
+          .for("update")
+        if (!before || before.deletedAt) throw new Error("Shipment not found")
+        // Optional fields omitted by the client keep their current locked values.
+        const supplied = Object.fromEntries(
+          Object.entries(updateData).filter(([, value]) => value !== undefined)
+        ) as typeof updateData
+        const updatedCargo = { ...before, ...supplied }
+        const [updated] = await tx
+          .update(shipments)
+          .set({ ...supplied, chargedWeightKg: chargedWeight(updatedCargo) })
+          .where(eq(shipments.id, id))
+          .returning()
 
-      await logAudit({
-        userId: authResult.session.user.id,
-        userEmail: authResult.session.user.email || "unknown",
-        action: "update",
-        entity: "shipments",
-        entityId: id,
-        before,
-        after: updateData,
+        await logAuditInTransaction(tx, {
+          userId: ctx.session.user.id,
+          userEmail: ctx.session.user.email || "unknown",
+          action: "update",
+          entity: "shipments",
+          entityId: id,
+          before,
+          after: updated,
+        })
       })
 
       revalidatePath("/dashboard/shipments")
@@ -184,32 +214,44 @@ export const updateShipmentAction = actionClient
     }
   })
 
-export const deleteShipmentAction = actionClient
+export const deleteShipmentAction = authActionClient
   .schema(deleteShipmentSchema)
-  .action(async ({ parsedInput }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) return authResult.response
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
-      const before = await db.query.shipments.findFirst({
-        where: eq(shipments.id, parsedInput.id),
-      })
-      if (!before) throw new Error("Shipment not found")
+      await db.transaction(async (tx) => {
+        // Allocation also locks the shipment before adding manifest_items.
+        const [before] = await tx
+          .select()
+          .from(shipments)
+          .where(eq(shipments.id, parsedInput.id))
+          .for("update")
+        if (!before || before.deletedAt) throw new Error("Shipment not found")
+        if (before.status !== "pending")
+          throw new Error("Only unassigned pending shipments can be removed")
+        const assignment = await tx.query.manifestItems.findFirst({
+          where: eq(manifestItems.shipmentId, before.id),
+        })
+        if (assignment)
+          throw new Error(
+            "Remove the draft load before removing this shipment; recorded movement must be preserved"
+          )
 
-      // Soft delete
-      await db
-        .update(shipments)
-        .set({ deletedAt: new Date() })
-        .where(eq(shipments.id, parsedInput.id))
+        // Soft delete
+        const deletedAt = new Date()
+        await tx
+          .update(shipments)
+          .set({ deletedAt })
+          .where(eq(shipments.id, parsedInput.id))
 
-      await logAudit({
-        userId: authResult.session.user.id,
-        userEmail: authResult.session.user.email || "unknown",
-        action: "delete",
-        entity: "shipments",
-        entityId: parsedInput.id,
-        before,
-        after: { deletedAt: new Date().toISOString() },
+        await logAuditInTransaction(tx, {
+          userId: ctx.session.user.id,
+          userEmail: ctx.session.user.email || "unknown",
+          action: "delete",
+          entity: "shipments",
+          entityId: parsedInput.id,
+          before,
+          after: { deletedAt: deletedAt.toISOString() },
+        })
       })
 
       revalidatePath("/dashboard/shipments")

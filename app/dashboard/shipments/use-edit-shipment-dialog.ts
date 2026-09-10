@@ -21,6 +21,7 @@ export function useEditShipmentDialog(
       destination: shipment.destination || "",
       serviceType: shipment.serviceType as any,
       weightKg: shipment.weightKg || 0,
+      edd: shipment.edd ? new Date(shipment.edd) : undefined,
       consignorName: shipment.consignorName || "",
       consignorPhone: shipment.consignorPhone || "",
       consignorAddress: shipment.consignorAddress || "",

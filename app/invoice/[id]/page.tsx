@@ -1,6 +1,8 @@
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import { InvoiceView } from "./invoice-view"
+import { requireDocumentPage } from "@/lib/auth/page-access"
+import { getAppUrl } from "@/lib/config/app-url"
 
 export default async function InvoicePrintPage({
   params,
@@ -10,6 +12,7 @@ export default async function InvoicePrintPage({
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { id: paramId } = await params
+  await requireDocumentPage(paramId)
   const resolvedSearchParams = searchParams ? await searchParams : {}
   const isPreview = resolvedSearchParams.preview === "true"
 
@@ -21,7 +24,7 @@ export default async function InvoicePrintPage({
     },
   })
 
-  if (!targetInvoice || !targetInvoice.shipment) {
+  if (!targetInvoice || !targetInvoice.shipment || targetInvoice.shipment.deletedAt) {
     return notFound()
   }
 
@@ -32,6 +35,7 @@ export default async function InvoicePrintPage({
       invoice={targetInvoice}
       shipment={shipment}
       isPreview={isPreview}
+      appOrigin={getAppUrl()}
     />
   )
 }

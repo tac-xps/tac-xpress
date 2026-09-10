@@ -31,12 +31,12 @@ export function MobileNav() {
         )}
       </Button>
       {open && (
-        <Portal className="top-14" id="mobile-menu">
+        <Portal className="top-16" id="mobile-menu">
           <PortalBackdrop onClick={() => setOpen(false)} />
           <div
             className={cn(
-              "ease-out data-[slot=open]:animate-in data-[slot=open]:zoom-in-97",
-              "size-full p-4"
+              "bg-background duration-200 ease-out fade-in-0 data-[slot=open]:animate-in",
+              "size-full border-t border-border p-4 shadow-md"
             )}
             data-slot={open ? "open" : "closed"}
           >
@@ -44,7 +44,7 @@ export function MobileNav() {
               {navLinks.map((link: { label: string; href: string }) => (
                 <Button
                   asChild
-                  className="justify-start"
+                  className="justify-start text-muted-foreground hover:text-foreground"
                   key={link.label}
                   variant="ghost"
                   onClick={() => setOpen(false)}
@@ -53,7 +53,7 @@ export function MobileNav() {
                 </Button>
               ))}
             </div>
-            <div className="mt-12 flex flex-col gap-2">
+            <div className="mt-8 flex flex-col gap-2 border-t border-border pt-4">
               <Button
                 className="w-full"
                 variant="outline"

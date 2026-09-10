@@ -94,11 +94,11 @@ export function useMapboxRoute(
         // Current Location Pulsing Marker
         const el = document.createElement("div")
         el.className =
-          "w-4 h-4 bg-primary/80 rounded-full border-2 border-white shadow-lg animate-ping"
+          "w-4 h-4 bg-primary/80 rounded-none border-2 border-white shadow-lg animate-ping"
 
         const staticEl = document.createElement("div")
         staticEl.className =
-          "w-4 h-4 bg-primary rounded-full border-2 border-white shadow-lg relative"
+          "w-4 h-4 bg-primary rounded-none border-2 border-white shadow-lg relative"
         staticEl.appendChild(el)
 
         new mapboxgl.Marker(staticEl).setLngLat(current).addTo(map.current)

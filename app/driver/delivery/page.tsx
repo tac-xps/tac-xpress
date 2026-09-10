@@ -1,3 +1,4 @@
+import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { manifests, manifestItems, shipments } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
@@ -9,6 +10,8 @@ import Link from "next/link"
 export const dynamic = "force-dynamic"
 
 export default async function DriverDeliveryPage() {
+  await requireStaffPage()
+
   // Demo: Fetching all active manifests (status: 'finalized' or 'draft' for now)
   const activeManifests = await db
     .select()
@@ -33,7 +36,8 @@ export default async function DriverDeliveryPage() {
 
   return (
     <div className="flex flex-col gap-4 pb-20">
-      <h1 className="text-2xl font-bold tracking-tight">Today's Route</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">Latest dispatch</h1>
+      <p className="text-sm text-muted-foreground">Staff delivery tools for the latest manifest. Confirm the assigned driver before completing a delivery.</p>
 
       {assignedShipments.length === 0 ? (
         <Card>

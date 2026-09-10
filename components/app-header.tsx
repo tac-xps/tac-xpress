@@ -101,7 +101,7 @@ export function AppHeader() {
             >
               <BellIcon />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] text-primary-foreground">
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-none bg-destructive text-micro text-primary-foreground">
                   {unreadCount > 99 ? "99+" : unreadCount}
                 </span>
               )}
@@ -111,7 +111,7 @@ export function AppHeader() {
             <div className="border-b px-4 py-3 text-sm font-semibold">
               Notifications
             </div>
-            <div className="max-h-[300px] overflow-y-auto">
+            <div className="max-h-72 overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="p-4 text-center text-sm text-muted-foreground">
                   No new notifications

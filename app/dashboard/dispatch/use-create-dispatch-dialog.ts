@@ -28,12 +28,12 @@ export function useCreateDispatchDialog() {
     startTransition(async () => {
       try {
         const result = await createDispatchRunAction(values)
-        if (result?.success) {
+        if ((result?.data?.success)) {
           toast.success("Dispatch run created successfully")
           form.reset()
           setOpen(false)
         } else {
-          toast.error(result?.error || "Failed to create dispatch run")
+          toast.error((result?.data?.error ?? result?.serverError) || "Failed to create dispatch run")
         }
       } catch (error) {
         toast.error("An unexpected error occurred.")

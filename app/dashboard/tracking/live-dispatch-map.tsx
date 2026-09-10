@@ -80,10 +80,10 @@ export function LiveDispatchMap({
             >
               <div className="relative flex h-8 w-8 cursor-pointer items-center justify-center">
                 <span
-                  className={`${selectedVehicleId === vehicle.id ? "bg-status-pending" : "bg-primary"} absolute inline-flex h-full w-full animate-ping rounded-full opacity-75`}
+                  className={`${selectedVehicleId === vehicle.id ? "bg-status-pending" : "bg-primary"} absolute inline-flex h-full w-full animate-ping rounded-none opacity-75`}
                 ></span>
                 <span
-                  className={`${selectedVehicleId === vehicle.id ? "bg-status-pending" : "bg-primary"} relative inline-flex h-4 w-4 rounded-full border-2 border-background shadow-sm`}
+                  className={`${selectedVehicleId === vehicle.id ? "bg-status-pending" : "bg-primary"} relative inline-flex h-4 w-4 rounded-none border-2 border-background shadow-sm`}
                 ></span>
               </div>
             </Marker>

@@ -5,15 +5,15 @@ import { shipments, invoices, trackingEvents } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
-import { actionClient } from "@/lib/safe-action"
+import { authActionClient } from "@/lib/safe-action"
 
 const completeDeliverySchema = z.object({
   shipmentId: z.string().uuid(),
-  signatureDataUrl: z.string(),
+  signatureDataUrl: z.string().max(250_000).regex(/^data:image\/png;base64,[A-Za-z0-9+/=]+$/, "A PNG signature is required"),
 })
 import * as Sentry from "@sentry/nextjs"
 
-export const completeDeliveryAction = actionClient
+export const completeDeliveryAction = authActionClient
   .schema(completeDeliverySchema)
   .action(async ({ parsedInput: { shipmentId, signatureDataUrl } }) => {
     try {

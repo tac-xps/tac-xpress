@@ -5,25 +5,19 @@ import { users } from "@/lib/db/schema"
 import { and, eq, ne, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
-import { actionClient } from "@/lib/safe-action"
+import { authActionClient } from "@/lib/safe-action"
 
 import * as Sentry from "@sentry/nextjs"
 
 import { addCustomerSchema, editCustomerSchema } from "./validations"
-import { requireDashboardAction } from "@/lib/auth/guards"
+import { requireDashboardSession } from "@/lib/auth/guards"
 import { logAudit } from "@/lib/audit"
 
-export async function createCustomerAction(
-  data: z.infer<typeof addCustomerSchema>
-) {
-  const authResult = await requireDashboardAction()
-  if (!authResult.ok) return authResult.response
-
-  const parsed = addCustomerSchema.safeParse(data)
-  if (!parsed.success) {
-    return { success: false, error: "Invalid form data" }
-  }
-  const { email, phone, name, address, city, state, pinCode } = parsed.data
+export const createCustomerAction = authActionClient
+  .schema(addCustomerSchema)
+  .action(async ({ parsedInput: data, ctx }) => {
+    const { email, phone, name, address, city, state, pinCode } = data
+    const session = ctx.session
 
   try {
     const existingUser = await db.query.users.findFirst({
@@ -52,8 +46,8 @@ export async function createCustomerAction(
           .where(eq(users.id, existingUser.id))
           .returning()
         await logAudit({
-          userId: authResult.session.user.id,
-          userEmail: authResult.session.user.email || "unknown",
+          userId: session.user.id,
+          userEmail: session.user.email || "unknown",
           action: "restore",
           entity: "customers",
           entityId: existingUser.id,
@@ -85,8 +79,8 @@ export async function createCustomerAction(
       .returning()
 
     await logAudit({
-      userId: authResult.session.user.id,
-      userEmail: authResult.session.user.email || "unknown",
+      userId: session.user.id,
+      userEmail: session.user.email || "unknown",
       action: "create",
       entity: "customers",
       entityId: customer.id,
@@ -138,22 +132,18 @@ export async function createCustomerAction(
       error: "Failed to create customer. Please try again.",
     }
   }
-}
+})
 
-export async function updateCustomerAction(
-  data: z.infer<typeof editCustomerSchema>
-) {
-  const authResult = await requireDashboardAction()
-  if (!authResult.ok) return authResult.response
-
-  const parsed = editCustomerSchema.safeParse(data)
-  if (!parsed.success) {
-    return { success: false, error: "Invalid form data" }
-  }
-  const { id, email, phone, name, address, city, state, pinCode } = parsed.data
+export const updateCustomerAction = authActionClient
+  .schema(editCustomerSchema)
+  .action(async ({ parsedInput: data, ctx }) => {
+    const { id, email, phone, name, address, city, state, pinCode } = data
+    const session = ctx.session
 
   try {
-    const before = await db.query.users.findFirst({ where: and(eq(users.id, id), eq(users.role, "customer")) })
+    const before = await db.query.users.findFirst({
+      where: and(eq(users.id, id), eq(users.role, "customer")),
+    })
     if (!before) return { success: false, error: "Customer not found." }
     const duplicate = await db.query.users.findFirst({
       where: and(
@@ -185,13 +175,13 @@ export async function updateCustomerAction(
       .where(eq(users.id, id))
 
     await logAudit({
-      userId: authResult.session.user.id,
-      userEmail: authResult.session.user.email || "unknown",
+      userId: session.user.id,
+      userEmail: session.user.email || "unknown",
       action: "update",
       entity: "customers",
       entityId: id,
       before,
-      after: parsed.data,
+      after: data,
     })
 
     revalidatePath("/dashboard/customers")
@@ -205,24 +195,22 @@ export async function updateCustomerAction(
     }
     return { success: false, error: "Failed to update customer." }
   }
-}
+})
 
 const deleteCustomerSchema = z.object({
   id: z.string().uuid(),
 })
 
-export async function deleteCustomerAction(data: { id: string }) {
-  const authResult = await requireDashboardAction()
-  if (!authResult.ok) return authResult.response
-
-  const parsed = deleteCustomerSchema.safeParse(data)
-  if (!parsed.success) {
-    return { success: false, error: "Invalid form data" }
-  }
-  const { id } = parsed.data
+export const deleteCustomerAction = authActionClient
+  .schema(deleteCustomerSchema)
+  .action(async ({ parsedInput: data, ctx }) => {
+    const { id } = data
+    const session = ctx.session
 
   try {
-    const before = await db.query.users.findFirst({ where: and(eq(users.id, id), eq(users.role, "customer")) })
+    const before = await db.query.users.findFirst({
+      where: and(eq(users.id, id), eq(users.role, "customer")),
+    })
     if (!before) return { success: false, error: "Customer not found." }
     // Soft delete
     await db
@@ -231,8 +219,8 @@ export async function deleteCustomerAction(data: { id: string }) {
       .where(eq(users.id, id))
 
     await logAudit({
-      userId: authResult.session.user.id,
-      userEmail: authResult.session.user.email || "unknown",
+      userId: session.user.id,
+      userEmail: session.user.email || "unknown",
       action: "delete",
       entity: "customers",
       entityId: id,
@@ -246,4 +234,4 @@ export async function deleteCustomerAction(data: { id: string }) {
     Sentry.captureException(error)
     return { success: false, error: "Failed to delete customer." }
   }
-}
+})

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { deletePricingRuleAction } from "./actions"
 import { toast } from "sonner"
+import { ConfirmRemoval } from "@/components/operations/confirm-removal"
 import { EditPricingRuleDialog } from "./edit-pricing-rule-dialog"
 import { useRouter } from "next/navigation"
 
@@ -30,33 +31,21 @@ export function PricingActions({
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this pricing rule?")) return
+  async function handleDelete() {
     setIsDeleting(true)
     try {
       const result = await deletePricingRuleAction({ id: rule.id })
-      if (result && "success" in result && result.success) {
-        toast.success("Pricing rule deleted successfully")
-        router.refresh()
-      } else {
-        const errorMsg =
-          result && "error" in result && result.error
-            ? result.error
-            : "Failed to delete pricing rule"
-        toast.error(errorMsg)
-        setIsDeleting(false)
-      }
-    } catch (err: any) {
-      Sentry.captureException(err)
-      console.error("Delete action error:", err)
-      toast.error(err.message || "An unexpected error occurred while deleting")
-      setIsDeleting(false)
-    }
+      if (!result?.data?.success) throw new Error("Unable to remove this record")
+      toast.success("Record removed")
+      router.refresh()
+    } finally { setIsDeleting(false) }
   }
 
   return (
     <>
+      <ConfirmRemoval open={deleteOpen} onOpenChange={setDeleteOpen} title="Remove this pricing rule?" description="This removes the record. Confirm that it was created in error or is no longer needed." onConfirm={handleDelete} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
@@ -73,7 +62,7 @@ export function PricingActions({
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleDelete} className="text-destructive">
+          <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive">
             <Trash className="mr-2 h-4 w-4" />
             Delete Rule
           </DropdownMenuItem>
@@ -90,3 +79,4 @@ export function PricingActions({
     </>
   )
 }
+

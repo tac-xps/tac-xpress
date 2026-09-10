@@ -12,7 +12,7 @@ export const createShipmentSchema = z.object({
   origin: z.string().min(1, "Origin is required"),
   destination: z.string().min(1, "Destination is required"),
   serviceType: z.enum(["express_air", "standard_ocean", "road_freight"]),
-  weightKg: z.number().int().positive("Weight must be greater than 0"),
+  weightKg: z.number().min(0.001, "Weight must be greater than 0").max(100000),
   consignorName: z.string().optional(),
   consignorPhone: optionalPhone,
   consignorAddress: z.string().optional(),
@@ -37,7 +37,7 @@ export const createShipmentSchema = z.object({
   dimensionsL: z.number().int().min(0).optional(),
   dimensionsW: z.number().int().min(0).optional(),
   dimensionsH: z.number().int().min(0).optional(),
-  chargedWeightKg: z.number().int().min(0).optional(),
+  chargedWeightKg: z.number().min(0).max(100000).optional(),
   isFragile: z.boolean().optional(),
   insuranceOptIn: z.boolean().optional(),
 })
@@ -45,8 +45,9 @@ export const createShipmentSchema = z.object({
 export const createTrackingEventSchema = z.object({
   shipmentId: z.string().uuid("Invalid shipment ID"),
   status: z.enum(["pending", "in-transit", "delivered"]),
-  location: z.string().min(2, "Location must be at least 2 characters"),
-  description: z.string().min(2, "Description must be at least 2 characters"),
+  location: z.string().min(2, "Location must be at least 2 characters").max(160),
+  description: z.string().min(2, "Description must be at least 2 characters").max(1000),
+  isPublic: z.boolean().optional(),
 })
 
 export const updateShipmentSchema = z.object({
@@ -54,7 +55,8 @@ export const updateShipmentSchema = z.object({
   origin: z.string().min(1, "Origin is required"),
   destination: z.string().min(1, "Destination is required"),
   serviceType: z.enum(["express_air", "standard_ocean", "road_freight"]),
-  weightKg: z.number().int().positive("Weight must be greater than 0"),
+  weightKg: z.number().min(0.001, "Weight must be greater than 0").max(100000),
+  edd: z.coerce.date().optional(),
   consignorName: z.string().optional(),
   consignorPhone: optionalPhone,
   consignorAddress: z.string().optional(),
@@ -79,7 +81,7 @@ export const updateShipmentSchema = z.object({
   dimensionsL: z.number().int().min(0).optional(),
   dimensionsW: z.number().int().min(0).optional(),
   dimensionsH: z.number().int().min(0).optional(),
-  chargedWeightKg: z.number().int().min(0).optional(),
+  chargedWeightKg: z.number().min(0).max(100000).optional(),
   isFragile: z.boolean().optional(),
   insuranceOptIn: z.boolean().optional(),
 })
@@ -87,3 +89,4 @@ export const updateShipmentSchema = z.object({
 export const deleteShipmentSchema = z.object({
   id: z.string().uuid(),
 })
+

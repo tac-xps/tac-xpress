@@ -23,7 +23,7 @@ export const StatusIndicator = ({
   <span className="relative flex h-2 w-2" {...props}>
     <span
       className={cn(
-        "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
+        "absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-none opacity-75",
         "group-[.online]:bg-status-delivered",
         "group-[.offline]:bg-status-failed",
         "group-[.maintenance]:bg-status-transit",
@@ -32,7 +32,7 @@ export const StatusIndicator = ({
     />
     <span
       className={cn(
-        "relative inline-flex h-2 w-2 rounded-full",
+        "relative inline-flex h-2 w-2 rounded-none",
         "group-[.online]:bg-status-delivered",
         "group-[.offline]:bg-status-failed",
         "group-[.maintenance]:bg-status-transit",

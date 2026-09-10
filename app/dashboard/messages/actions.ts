@@ -1,23 +1,95 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { actionClient } from "@/lib/safe-action"
+import { authActionClient } from "@/lib/safe-action"
 import * as Sentry from "@sentry/nextjs"
 import { z } from "zod"
-import { requireDashboardAction } from "@/lib/auth/guards"
 import { supabaseAdmin } from "@/lib/supabase/clients"
+import { db } from "@/lib/db"
+import { tickets } from "@/lib/db/schema"
+import { eq } from "drizzle-orm"
 import { logAudit } from "@/lib/audit"
 
-const deleteTicketSchema = z.object({
-  id: z.string().uuid(),
-})
+import {
+  createTicketSchema,
+  updateTicketSchema,
+  deleteTicketSchema,
+} from "./schema"
 
-export const deleteTicketAction = actionClient
+export const createTicketAction = authActionClient
+  .schema(createTicketSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    try {
+      const [ticket] = await db
+        .insert(tickets)
+        .values({
+          ...parsedInput,
+          source: "dashboard",
+          status: "open",
+        })
+        .returning()
+
+      await logAudit({
+        action: "create",
+        entity: "tickets",
+        entityId: ticket.id,
+        userId: ctx.session.user.id,
+        userEmail: ctx.session.user.email,
+        after: ticket,
+      })
+
+      revalidatePath("/dashboard/messages")
+      return { success: true, ticket, error: undefined }
+    } catch (error) {
+      Sentry.captureException(error)
+      return { success: false, error: "Failed to create ticket" }
+    }
+  })
+
+export const updateTicketAction = authActionClient
+  .schema(updateTicketSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    try {
+      const before = await db.query.tickets.findFirst({
+        where: eq(tickets.id, parsedInput.id),
+      })
+
+      if (!before) {
+        return { success: false, error: "Ticket not found" }
+      }
+
+      const [updatedTicket] = await db
+        .update(tickets)
+        .set({
+          status: parsedInput.status,
+          priority: parsedInput.priority,
+          assignedTo: parsedInput.assignedTo,
+          category: parsedInput.category,
+        })
+        .where(eq(tickets.id, parsedInput.id))
+        .returning()
+
+      await logAudit({
+        action: "update",
+        entity: "tickets",
+        entityId: parsedInput.id,
+        userId: ctx.session.user.id,
+        userEmail: ctx.session.user.email,
+        before,
+        after: updatedTicket,
+      })
+
+      revalidatePath("/dashboard/messages")
+      return { success: true, ticket: updatedTicket, error: undefined }
+    } catch (error) {
+      Sentry.captureException(error)
+      return { success: false, error: "Failed to update ticket" }
+    }
+  })
+
+export const deleteTicketAction = authActionClient
   .schema(deleteTicketSchema)
-  .action(async ({ parsedInput }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) return authResult.response
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
       const { data: ticket, error: lookupError } = await supabaseAdmin
         .from("tickets")
@@ -43,8 +115,8 @@ export const deleteTicketAction = actionClient
         action: "delete",
         entity: "tickets",
         entityId: parsedInput.id,
-        userId: authResult.session.user.id,
-        userEmail: authResult.session.user.email,
+        userId: ctx.session.user.id,
+        userEmail: ctx.session.user.email,
         before: ticket,
       })
 

@@ -1,49 +1,34 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import * as Sentry from "@sentry/nextjs"
 import { verifyMobileClient } from "@/lib/auth/verify-mobile-client"
 import { requireDashboardApi } from "@/lib/auth/guards"
 import { fleetTelemetryStore } from "@/lib/fleet-telemetry-store"
-
+import { readBoundedJson } from "@/lib/server/read-json"
 export const dynamic = "force-dynamic"
-
-export const telemetrySchema = z.object({
-  vehicleId: z.string(),
-  latitude: z.number(),
-  longitude: z.number(),
-  heading: z.number(),
-  speed: z.number(),
+const telemetrySchema = z.object({
+  vehicleId: z.string().trim().min(1).max(64),
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  heading: z.number().min(0).lt(360),
+  speed: z.number().min(0).max(400),
   timestamp: z.string().datetime(),
 })
-
-/**
- * Note on Telemetry Storage:
- * Currently, fleetTelemetryStore is an in-memory Map. In a Vercel serverless environment, 
- * this data will not persist across different container invocations or regions. 
- * For production reliability with continuous telemetry, this should be migrated to Upstash Redis 
- * or Supabase Realtime/Postgres.
- */
 export async function POST(request: Request) {
-  // 1. Security Check
-  const authErrorResponse = verifyMobileClient(request)
-  if (authErrorResponse) return authErrorResponse
-
+  const denied = verifyMobileClient(request)
+  if (denied) return denied
+  const parsed = telemetrySchema.safeParse(await readBoundedJson(request, 8000))
+  if (
+    !parsed.success ||
+    new Date(parsed.data.timestamp).getTime() > Date.now() + 5 * 60_000
+  )
+    return NextResponse.json(
+      { error: "Invalid telemetry coordinates or timestamp." },
+      { status: 400 }
+    )
   try {
-    // 2. Parse JSON Body
-    const body = await request.json()
-
-    // 3. Validate Payload
-    const result = telemetrySchema.safeParse(body)
-    if (!result.success) {
-      return NextResponse.json(
-        { error: "Bad Request", details: result.error.flatten().fieldErrors },
-        { status: 400 }
-      )
-    }
-
-    const data = result.data
-
-    // 4. Update Engine State
-    fleetTelemetryStore.updateVehicleState({
+    const data = parsed.data
+    const result = await fleetTelemetryStore.updateVehicleState({
       id: data.vehicleId,
       lat: data.latitude,
       lng: data.longitude,
@@ -51,26 +36,33 @@ export async function POST(request: Request) {
       speed: data.speed,
       timestamp: data.timestamp,
     })
-
-    // 5. Return Success
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error("Telemetry Endpoint Error:", error)
     return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
+      { success: true, ...result },
+      { headers: { "Cache-Control": "no-store" } }
+    )
+  } catch (error) {
+    Sentry.captureException(error, { tags: { area: "fleet_telemetry" } })
+    return NextResponse.json(
+      {
+        error: "Unable to record telemetry. Verify that the vehicle is active.",
+      },
+      { status: 503 }
     )
   }
 }
-
 export async function GET() {
-  const authResult = await requireDashboardApi()
-  if (!authResult.ok) {
-    return authResult.response
+  const auth = await requireDashboardApi()
+  if (!auth.ok) return auth.response
+  try {
+    return NextResponse.json(
+      { success: true, data: await fleetTelemetryStore.listVehicleStates() },
+      { headers: { "Cache-Control": "private, no-store" } }
+    )
+  } catch (error) {
+    Sentry.captureException(error, { tags: { area: "fleet_telemetry" } })
+    return NextResponse.json(
+      { error: "Fleet positions are temporarily unavailable." },
+      { status: 503 }
+    )
   }
-
-  return NextResponse.json({
-    success: true,
-    data: fleetTelemetryStore.listVehicleStates(),
-  })
 }

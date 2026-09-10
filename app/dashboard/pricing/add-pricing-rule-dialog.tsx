@@ -24,7 +24,7 @@ export function AddPricingRuleDialog() {
           Add Pricing Rule
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Add Pricing Rule</DialogTitle>
           <DialogDescription>

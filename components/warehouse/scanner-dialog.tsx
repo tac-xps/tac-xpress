@@ -71,9 +71,6 @@ export function ScannerDialog({ children }: ScannerDialogProps) {
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100)
-    } else {
-      setAwb("")
-      setLastScan(null)
     }
   }, [open])
 
@@ -84,7 +81,7 @@ export function ScannerDialog({ children }: ScannerDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(value) => { setOpen(value); if (!value) { setAwb(""); setLastScan(null) } }}>
       <DialogTrigger asChild>
         {children || (
           <Button variant="outline" className="border-border/50 bg-background">
@@ -120,7 +117,7 @@ export function ScannerDialog({ children }: ScannerDialogProps) {
 
           <Button
             type="submit"
-            className="h-12 w-full text-lg"
+            className="h-9 w-full text-sm"
             disabled={!awb.trim() || isExecuting}
           >
             {isExecuting ? (
@@ -136,7 +133,7 @@ export function ScannerDialog({ children }: ScannerDialogProps) {
         {lastScan && (
           <div
             className={cn(
-              "mt-2 flex animate-in items-start gap-3 rounded-lg p-4 fade-in slide-in-from-bottom-2",
+              "mt-2 flex items-start gap-3 rounded-none p-4 animate-in fade-in slide-in-from-bottom-2",
               lastScan.success
                 ? "text-trend-positive bg-primary/10"
                 : "bg-destructive/10 text-destructive"

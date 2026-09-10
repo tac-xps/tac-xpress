@@ -34,11 +34,11 @@ export function CustomerActions({ customer }: { customer: CustomerForEdit }) {
   const handleDelete = async () => {
     setIsDeleting(true)
     const result = await deleteCustomerAction({ id: customer.id })
-    if (result?.success) {
+    if ((result?.data?.success)) {
       toast.success("Customer deleted")
       router.refresh()
     } else {
-      toast.error(result?.error || "Failed to delete")
+      toast.error((result?.data?.error ?? result?.serverError) || "Failed to delete")
     }
     setIsDeleting(false)
     setShowDelete(false)

@@ -32,7 +32,7 @@ export function NotificationDropdown() {
         >
           <NotificationIcon className="h-5 w-5" />
           {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 size-2 animate-pulse rounded-full bg-destructive ring-2 ring-background" />
+            <span className="absolute top-1.5 right-1.5 size-2 animate-pulse rounded-none bg-destructive ring-2 ring-background" />
           )}
           <span className="sr-only">Notifications</span>
         </Button>
@@ -45,7 +45,7 @@ export function NotificationDropdown() {
           </span>
         </div>
         <DropdownMenuSeparator />
-        <div className="max-h-[400px] overflow-y-auto">
+        <div className="max-h-96 overflow-y-auto">
           {notifications.length === 0 ? (
             <div className="py-8 text-center text-sm text-muted-foreground">
               No new notifications
@@ -62,7 +62,7 @@ export function NotificationDropdown() {
                   className={`flex items-start gap-4 border-b border-border/50 px-4 py-3 last:border-0 ${notif.read ? "opacity-70" : "bg-muted/20"}`}
                   onClick={() => markAsRead(notif.id)}
                 >
-                  <div className="mt-0.5 shrink-0 rounded-full border border-border/50 bg-background p-1.5 shadow-sm">
+                  <div className="mt-0.5 shrink-0 rounded-none border border-border/50 bg-background p-1.5 shadow-sm">
                     {notif.type === "ticket" ? (
                       <Ticket className="text-trend-positive size-4" />
                     ) : notif.type === "invoice" ? (
@@ -78,7 +78,7 @@ export function NotificationDropdown() {
                     <span className="truncate text-xs text-muted-foreground">
                       {notif.description}
                     </span>
-                    <span className="mt-1 text-[10px] text-muted-foreground/70">
+                    <span className="mt-1 text-micro text-muted-foreground/70">
                       {formatDistanceToNow(new Date(notif.created_at), {
                         addSuffix: true,
                       })}

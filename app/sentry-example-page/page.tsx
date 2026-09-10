@@ -1,32 +1,32 @@
-"use client";
+"use client"
 
-import * as Sentry from "@sentry/nextjs";
-import { useEffect, useState } from "react";
-import { testSentryServerAction } from "./actions";
+import * as Sentry from "@sentry/nextjs"
+import { useEffect, useState } from "react"
+import { testSentryServerAction } from "./actions"
 
 class SentryExampleFrontendError extends Error {
   constructor(message: string | undefined) {
-    super(message);
-    this.name = "SentryExampleFrontendError";
+    super(message)
+    this.name = "SentryExampleFrontendError"
   }
 }
 
 export default function Page() {
-  const [isConnected, setIsConnected] = useState(true);
+  const [isConnected, setIsConnected] = useState(true)
 
   useEffect(() => {
     async function checkConnectivity() {
-      const result = await Sentry.diagnoseSdkConnectivity();
-      setIsConnected(result !== "sentry-unreachable");
+      const result = await Sentry.diagnoseSdkConnectivity()
+      setIsConnected(result !== "sentry-unreachable")
     }
-    checkConnectivity();
-  }, []);
+    checkConnectivity()
+  }, [])
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-gray-50 p-6 dark:bg-gray-950">
       <div className="w-full max-w-2xl rounded-2xl bg-white p-8 shadow-xl dark:bg-gray-900">
         <div className="mb-8 flex flex-col items-center gap-4 text-center">
-          <div className="rounded-full bg-violet-100 p-4 dark:bg-violet-900/30">
+          <div className="rounded-none bg-violet-100 p-4 dark:bg-violet-900/30">
             <svg
               height="40"
               width="40"
@@ -46,13 +46,16 @@ export default function Page() {
             Sentry Debug Dashboard
           </h1>
           <p className="text-lg text-gray-500 dark:text-gray-400">
-            Test the observability of your Next.js application across all boundaries.
+            Test the observability of your Next.js application across all
+            boundaries.
           </p>
         </div>
 
         {!isConnected && (
           <div className="mb-6 rounded-lg bg-red-50 p-4 text-center text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400">
-            <strong>Warning:</strong> Sentry network requests appear to be blocked (perhaps by an ad-blocker). Errors might not reach the dashboard.
+            <strong>Warning:</strong> Sentry network requests appear to be
+            blocked (perhaps by an ad-blocker). Errors might not reach the
+            dashboard.
           </div>
         )}
 
@@ -60,15 +63,21 @@ export default function Page() {
           {/* Client Error */}
           <button
             onClick={() => {
-              throw new SentryExampleFrontendError("This error is raised synchronously on the client.");
+              throw new SentryExampleFrontendError(
+                "This error is raised synchronously on the client."
+              )
             }}
             className="group relative flex w-full items-center justify-between overflow-hidden rounded-xl bg-violet-600 px-6 py-4 text-left font-semibold text-white shadow-md transition-all hover:bg-violet-700 active:scale-[0.98]"
           >
             <div>
               <div className="text-lg">Trigger Client Error</div>
-              <div className="text-sm font-normal text-violet-200">Throws a React rendering/click error</div>
+              <div className="text-sm font-normal text-violet-200">
+                Throws a React rendering/click error
+              </div>
             </div>
-            <div className="rounded-full bg-white/20 p-2 group-hover:bg-white/30">⚡</div>
+            <div className="rounded-none bg-white/20 p-2 group-hover:bg-white/30">
+              ⚡
+            </div>
           </button>
 
           {/* API Route Error */}
@@ -77,17 +86,21 @@ export default function Page() {
               await Sentry.startSpan(
                 { name: "Client fetching API Route", op: "http.client" },
                 async () => {
-                  await fetch("/api/sentry-example-api");
+                  await fetch("/api/sentry-example-api")
                 }
-              );
+              )
             }}
             className="group relative flex w-full items-center justify-between overflow-hidden rounded-xl bg-blue-600 px-6 py-4 text-left font-semibold text-white shadow-md transition-all hover:bg-blue-700 active:scale-[0.98]"
           >
             <div>
               <div className="text-lg">Trigger API Route Error</div>
-              <div className="text-sm font-normal text-blue-200">Calls a Route Handler that throws an error</div>
+              <div className="text-sm font-normal text-blue-200">
+                Calls a Route Handler that throws an error
+              </div>
             </div>
-            <div className="rounded-full bg-white/20 p-2 group-hover:bg-white/30">🌐</div>
+            <div className="rounded-none bg-white/20 p-2 group-hover:bg-white/30">
+              🌐
+            </div>
           </button>
 
           {/* Server Action Error */}
@@ -96,20 +109,24 @@ export default function Page() {
               await Sentry.startSpan(
                 { name: "Client invoking Server Action", op: "function" },
                 async () => {
-                  await testSentryServerAction();
+                  await testSentryServerAction()
                 }
-              );
+              )
             }}
             className="group relative flex w-full items-center justify-between overflow-hidden rounded-xl bg-emerald-600 px-6 py-4 text-left font-semibold text-white shadow-md transition-all hover:bg-emerald-700 active:scale-[0.98]"
           >
             <div>
               <div className="text-lg">Trigger Server Action Error</div>
-              <div className="text-sm font-normal text-emerald-200">Calls a Next.js Server Action that throws an error</div>
+              <div className="text-sm font-normal text-emerald-200">
+                Calls a Next.js Server Action that throws an error
+              </div>
             </div>
-            <div className="rounded-full bg-white/20 p-2 group-hover:bg-white/30">⚙️</div>
+            <div className="rounded-none bg-white/20 p-2 group-hover:bg-white/30">
+              ⚙️
+            </div>
           </button>
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -12,27 +12,22 @@ import {
 } from "@/lib/db/schema"
 import { revalidatePath } from "next/cache"
 import * as Sentry from "@sentry/nextjs"
-import { actionClient } from "@/lib/safe-action"
-import { requireDashboardAction } from "@/lib/auth/guards"
+import { authActionClient } from "@/lib/safe-action"
 import {
   createManifestSchema,
   scanShipmentSchema,
   updateManifestSchema,
   deleteManifestSchema,
 } from "./schemas"
-import { z } from "zod"
 import { and, desc, eq, inArray, isNull, like, sql } from "drizzle-orm"
-import { logAudit } from "@/lib/audit"
+import { logAuditInTransaction } from "@/lib/audit"
 
-export const createManifestAction = actionClient
+export const createManifestAction = authActionClient
   .schema(createManifestSchema)
-  .action(async ({ parsedInput }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) return authResult.response
-
+  .action(async ({ parsedInput, ctx }) => {
     const { shipmentIds, originHubId, destinationHubId, vehicleId, driverId } =
       parsedInput
-    const createdBy = authResult.session.user.id
+    const createdBy = ctx.session.user.id
 
     try {
       const createdManifest = await db.transaction(async (tx) => {
@@ -44,10 +39,18 @@ export const createManifestAction = actionClient
             where: and(eq(hubs.id, destinationHubId), isNull(hubs.deletedAt)),
           }),
           tx.query.vehicles.findFirst({
-            where: and(eq(vehicles.id, vehicleId), isNull(vehicles.deletedAt)),
+            where: and(
+              eq(vehicles.id, vehicleId),
+              isNull(vehicles.deletedAt),
+              eq(vehicles.status, "active")
+            ),
           }),
           tx.query.drivers.findFirst({
-            where: and(eq(drivers.id, driverId), isNull(drivers.deletedAt)),
+            where: and(
+              eq(drivers.id, driverId),
+              isNull(drivers.deletedAt),
+              eq(drivers.status, "active")
+            ),
           }),
         ])
 
@@ -70,6 +73,8 @@ export const createManifestAction = actionClient
               isNull(shipments.deletedAt)
             )
           )
+          .orderBy(shipments.id)
+          .for("update")
 
         if (eligibleShipments.length !== shipmentIds.length) {
           throw new Error("One or more shipments are no longer pending")
@@ -96,7 +101,10 @@ export const createManifestAction = actionClient
           .select({ referenceId: manifests.referenceId })
           .from(manifests)
           .where(like(manifests.referenceId, `${prefix}%`))
-          .orderBy(desc(manifests.referenceId))
+          .orderBy(
+            desc(sql`length(${manifests.referenceId})`),
+            desc(manifests.referenceId)
+          )
           .limit(1)
 
         const previousSequence = latest
@@ -126,16 +134,15 @@ export const createManifestAction = actionClient
 
         await tx.insert(manifestItems).values(itemsToInsert)
 
+        await logAuditInTransaction(tx, {
+          userId: createdBy,
+          userEmail: ctx.session.user.email || "unknown",
+          action: "create",
+          entity: "manifests",
+          entityId: newManifest.id,
+          after: { ...parsedInput, referenceId },
+        })
         return { id: newManifest.id, referenceId }
-      })
-
-      await logAudit({
-        userId: createdBy,
-        userEmail: authResult.session.user.email || "unknown",
-        action: "create",
-        entity: "manifests",
-        entityId: createdManifest.id,
-        after: { ...parsedInput, referenceId: createdManifest.referenceId },
       })
 
       revalidatePath("/dashboard/manifests")
@@ -154,99 +161,138 @@ export const createManifestAction = actionClient
     }
   })
 
-export async function scanShipmentAction(
-  data: z.infer<typeof scanShipmentSchema>
-) {
-  const authResult = await requireDashboardAction()
-  if (!authResult.ok) return authResult.response
-
-  const parsed = scanShipmentSchema.safeParse(data)
-  if (!parsed.success) return { success: false, error: "Invalid form data" }
-
-  const { manifestId, awbNumber } = parsed.data
-
-  try {
-    // Find the shipment by AWB
-    const shipment = await db.query.shipments.findFirst({
-      where: (shipments, { eq }) => eq(shipments.awbNumber, awbNumber),
-    })
-
-    if (!shipment) {
-      return { success: false, error: "Shipment not found" }
-    }
-    if (shipment.status !== "pending" || shipment.deletedAt) {
+export const scanShipmentAction = authActionClient
+  .schema(scanShipmentSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    const { manifestId, awbNumber } = parsedInput
+    try {
+      await db.transaction(async (tx) => {
+        const [manifest] = await tx
+          .select()
+          .from(manifests)
+          .where(eq(manifests.id, manifestId))
+          .for("update")
+        if (!manifest || manifest.status !== "draft")
+          throw new Error("Only a draft manifest can accept shipments")
+        const [record] = await tx
+          .select()
+          .from(shipments)
+          .where(
+            and(eq(shipments.awbNumber, awbNumber), isNull(shipments.deletedAt))
+          )
+          .for("update")
+        if (!record || record.status !== "pending")
+          throw new Error("Select a pending shipment")
+        const existing = await tx.query.manifestItems.findFirst({
+          where: eq(manifestItems.shipmentId, record.id),
+        })
+        if (existing)
+          throw new Error("Shipment is already assigned to a manifest")
+        const [{ total }] = await tx
+          .select({ total: sql<number>`count(*)::integer` })
+          .from(manifestItems)
+          .where(eq(manifestItems.manifestId, manifestId))
+        if (total >= 500)
+          throw new Error("A manifest can contain up to 500 shipments")
+        await tx
+          .insert(manifestItems)
+          .values({ manifestId, shipmentId: record.id })
+        await logAuditInTransaction(tx, {
+          userId: ctx.session.user.id,
+          userEmail: ctx.session.user.email || "unknown",
+          action: "add_shipment",
+          entity: "manifests",
+          entityId: manifestId,
+          after: { shipmentId: record.id, awbNumber: record.awbNumber },
+        })
+      })
+      revalidatePath("/dashboard/manifests")
+      return { success: true, error: undefined }
+    } catch (error) {
+      Sentry.captureException(error)
       return {
         success: false,
-        error: "Only pending shipments can be manifested",
+        error:
+          error instanceof Error ? error.message : "Failed to add shipment",
       }
     }
-
-    // Check if it's already in the manifest
-    const existing = await db.query.manifestItems.findFirst({
-      where: (manifestItems, { eq }) =>
-        eq(manifestItems.shipmentId, shipment.id),
-    })
-
-    if (existing) {
-      return {
-        success: false,
-        error: "Shipment is already assigned to a manifest",
-      }
-    }
-
-    // Add to manifest
-    await db.insert(manifestItems).values({
-      manifestId,
-      shipmentId: shipment.id,
-    })
-    await logAudit({
-      userId: authResult.session.user.id,
-      userEmail: authResult.session.user.email || "unknown",
-      action: "add_shipment",
-      entity: "manifests",
-      entityId: manifestId,
-      after: { shipmentId: shipment.id, awbNumber: shipment.awbNumber },
-    })
-
-    revalidatePath("/dashboard/manifests")
-    return { success: true, error: undefined }
-  } catch (error: unknown) {
-    Sentry.captureException(error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to add shipment",
-    }
-  }
-}
-
-export const updateManifestAction = actionClient
+  })
+export const updateManifestAction = authActionClient
   .schema(updateManifestSchema)
-  .action(async ({ parsedInput }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) return authResult.response
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
       const { id, ...updateData } = parsedInput
       const manifest = await db.transaction(async (tx) => {
+        // Serialize edits, scans, finalization and deletion of this load.
+        await tx
+          .select({ id: manifests.id })
+          .from(manifests)
+          .where(eq(manifests.id, id))
+          .for("update")
         const current = await tx.query.manifests.findFirst({
           where: eq(manifests.id, id),
           with: { items: { with: { shipment: true } }, originHub: true },
         })
 
         if (!current) throw new Error("Manifest not found")
-        if (current.status === "finalized" && updateData.status === "draft") {
-          throw new Error("A finalized manifest cannot return to draft")
-        }
-
         if (
-          updateData.status === "finalized" &&
-          current.status !== "finalized"
-        ) {
+          updateData.referenceId &&
+          updateData.referenceId !== current.referenceId
+        )
+          throw new Error("Manifest references cannot be changed")
+        if (current.status === "finalized") {
+          throw new Error("A finalized manifest cannot be changed")
+        }
+        const assignments = { ...current, ...updateData }
+        const [origin, destination, vehicle, driver] = await Promise.all([
+          assignments.originHubId
+            ? tx.query.hubs.findFirst({
+                where: and(
+                  eq(hubs.id, assignments.originHubId),
+                  isNull(hubs.deletedAt)
+                ),
+              })
+            : null,
+          assignments.destinationHubId
+            ? tx.query.hubs.findFirst({
+                where: and(
+                  eq(hubs.id, assignments.destinationHubId),
+                  isNull(hubs.deletedAt)
+                ),
+              })
+            : null,
+          assignments.vehicleId
+            ? tx.query.vehicles.findFirst({
+                where: and(
+                  eq(vehicles.id, assignments.vehicleId),
+                  isNull(vehicles.deletedAt),
+                  eq(vehicles.status, "active")
+                ),
+              })
+            : null,
+          assignments.driverId
+            ? tx.query.drivers.findFirst({
+                where: and(
+                  eq(drivers.id, assignments.driverId),
+                  isNull(drivers.deletedAt),
+                  eq(drivers.status, "active")
+                ),
+              })
+            : null,
+        ])
+        if (!origin || !destination || !vehicle || !driver)
+          throw new Error(
+            "Choose available hubs and an active driver and vehicle"
+          )
+        if (origin.id === destination.id)
+          throw new Error("Origin and destination hubs must be different")
+
+        if (updateData.status === "finalized") {
           if (
-            !current.originHubId ||
-            !current.destinationHubId ||
-            !current.vehicleId ||
-            !current.driverId
+            !assignments.originHubId ||
+            !assignments.destinationHubId ||
+            !assignments.vehicleId ||
+            !assignments.driverId
           ) {
             throw new Error("Complete all assignments before finalizing")
           }
@@ -255,10 +301,22 @@ export const updateManifestAction = actionClient
           }
 
           const shipmentIds = current.items.map((item) => item.shipmentId)
-          const invalidShipment = current.items.some(
-            (item) => item.shipment?.status !== "pending"
-          )
-          if (invalidShipment) {
+          const lockedShipments = await tx
+            .select({
+              id: shipments.id,
+              status: shipments.status,
+              deletedAt: shipments.deletedAt,
+            })
+            .from(shipments)
+            .where(inArray(shipments.id, shipmentIds))
+            .orderBy(shipments.id)
+            .for("update")
+          if (
+            lockedShipments.length !== shipmentIds.length ||
+            lockedShipments.some(
+              (item) => item.status !== "pending" || item.deletedAt
+            )
+          ) {
             throw new Error("All manifest shipments must be pending")
           }
 
@@ -270,9 +328,9 @@ export const updateManifestAction = actionClient
             shipmentIds.map((shipmentId) => ({
               shipmentId,
               status: "in-transit" as const,
-              location: current.originHub?.name || "Origin hub",
+              location: origin.name,
               description: `Manifest ${current.referenceId} finalized for line-haul dispatch.`,
-              loggedBy: authResult.session.user.id,
+              loggedBy: ctx.session.user.id,
               isPublic: true,
             }))
           )
@@ -283,21 +341,20 @@ export const updateManifestAction = actionClient
           .set(updateData)
           .where(eq(manifests.id, id))
           .returning()
-        return { before: current, updated }
-      })
-
-      await logAudit({
-        userId: authResult.session.user.id,
-        userEmail: authResult.session.user.email || "unknown",
-        action: updateData.status === "finalized" ? "finalize" : "update",
-        entity: "manifests",
-        entityId: id,
-        before: manifest.before,
-        after: manifest.updated,
+        await logAuditInTransaction(tx, {
+          userId: ctx.session.user.id,
+          userEmail: ctx.session.user.email || "unknown",
+          action: updateData.status === "finalized" ? "finalize" : "update",
+          entity: "manifests",
+          entityId: id,
+          before: current,
+          after: updated,
+        })
+        return updated
       })
 
       revalidatePath("/dashboard/manifests")
-      return { success: true, manifest: manifest.updated, error: undefined }
+      return { success: true, manifest, error: undefined }
     } catch (error) {
       Sentry.captureException(error)
       return {
@@ -308,32 +365,27 @@ export const updateManifestAction = actionClient
     }
   })
 
-export const deleteManifestAction = actionClient
+export const deleteManifestAction = authActionClient
   .schema(deleteManifestSchema)
-  .action(async ({ parsedInput }) => {
-    const authResult = await requireDashboardAction()
-    if (!authResult.ok) return authResult.response
-
+  .action(async ({ parsedInput, ctx }) => {
     try {
-      const existing = await db.query.manifests.findFirst({
-        where: eq(manifests.id, parsedInput.id),
-      })
-      if (!existing) return { success: false, error: "Manifest not found" }
-      if (existing.status === "finalized") {
-        return {
-          success: false,
-          error: "Finalized manifests cannot be deleted",
-        }
-      }
-
-      await db.delete(manifests).where(eq(manifests.id, parsedInput.id))
-      await logAudit({
-        userId: authResult.session.user.id,
-        userEmail: authResult.session.user.email || "unknown",
-        action: "delete",
-        entity: "manifests",
-        entityId: parsedInput.id,
-        before: existing,
+      await db.transaction(async (tx) => {
+        const [existing] = await tx
+          .delete(manifests)
+          .where(
+            and(eq(manifests.id, parsedInput.id), eq(manifests.status, "draft"))
+          )
+          .returning()
+        if (!existing)
+          throw new Error("Only an existing draft manifest can be deleted")
+        await logAuditInTransaction(tx, {
+          userId: ctx.session.user.id,
+          userEmail: ctx.session.user.email || "unknown",
+          action: "delete",
+          entity: "manifests",
+          entityId: parsedInput.id,
+          before: existing,
+        })
       })
 
       revalidatePath("/dashboard/manifests")

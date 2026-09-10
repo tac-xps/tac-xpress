@@ -31,15 +31,20 @@ export function PostHogProvider({
   bootstrappedFeatureFlags?: Record<string, string | boolean>
 }) {
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_HOST) {
+    if (
+      process.env.NEXT_PUBLIC_POSTHOG_KEY &&
+      process.env.NEXT_PUBLIC_POSTHOG_HOST
+    ) {
       posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
         api_host: "/ingest",
         person_profiles: "identified_only",
         capture_pageview: false,
         capture_pageleave: true,
-        bootstrap: bootstrappedFeatureFlags ? {
-          featureFlags: bootstrappedFeatureFlags,
-        } : undefined,
+        bootstrap: bootstrappedFeatureFlags
+          ? {
+              featureFlags: bootstrappedFeatureFlags,
+            }
+          : undefined,
       })
 
       posthog.onSessionId((sessionId) => {

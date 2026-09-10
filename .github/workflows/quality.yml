@@ -1,0 +1,42 @@
+name: Application quality
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      # Synthetic build configuration. CI never connects to the hosted database.
+      NEXT_PUBLIC_APP_URL: https://quality.invalid
+      NEXT_PUBLIC_SUPABASE_URL: https://quality.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-public-placeholder
+      AUTH_SECRET: ci-only-synthetic-secret-not-for-deployment
+      E2E_TEST_BYPASS_ENABLED: "false"
+      NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm verify
+      - run: pnpm audit --prod --audit-level=moderate
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Prepare isolated browser environment
+        run: touch .env.local
+      - run: pnpm test:e2e --reporter=html
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-report
+          path: playwright-report
+          retention-days: 14

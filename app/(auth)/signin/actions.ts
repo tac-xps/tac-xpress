@@ -1,7 +1,7 @@
 "use server"
 
 import { signIn } from "@/auth"
-import { AuthError } from "next-auth"
+import { AuthError, CredentialsSignin } from "next-auth"
 import { z } from "zod"
 
 const loginSchema = z.object({
@@ -26,6 +26,17 @@ export async function loginAction(prevState: any, formData: FormData) {
       redirectTo: "/dashboard",
     })
   } catch (error) {
+    if (error instanceof CredentialsSignin) {
+      if (error.code === "rate_limited") {
+        return { error: "Too many sign-in attempts. Please try again later." }
+      }
+      if (error.code === "protection_unavailable") {
+        return {
+          error:
+            "Sign-in is temporarily unavailable. Please try again shortly.",
+        }
+      }
+    }
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
