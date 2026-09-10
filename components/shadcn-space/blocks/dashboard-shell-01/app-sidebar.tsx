@@ -39,7 +39,7 @@ const NAV_ITEMS: NavItem[] = [
       { title: "Dispatch", url: "/dashboard/dispatch", icon: DispatchIcon },
       { title: "Manifests", url: "/dashboard/manifests", icon: ManifestsIcon },
       { title: "Fleet", url: "/dashboard/fleet", icon: FleetIcon },
-      { title: "Warehouse", url: "/dashboard/warehouse", icon: Package as any },
+      { title: "Warehouse", url: "/dashboard/warehouse", icon: Package },
       { title: "Tracking", url: "/dashboard/tracking", icon: TrackingIcon },
       { title: "Air Cargo", url: "/dashboard/operations/air-cargo", icon: Plane },
       { title: "Surface Cargo", url: "/dashboard/operations/surface-cargo", icon: Truck },
