@@ -117,7 +117,7 @@ export default async function MetricsPage() {
 
   const recentlyDelivered = shipments.filter(
     (shipment) =>
-      shipment.status === "delivered" && shipment.updated_at >= thirtyDaysAgo
+      shipment.status === "delivered" && shipment.updated_at >= thirtyDaysAgo.toISOString()
   )
   const onTimeCount = recentlyDelivered.filter(
     (shipment) =>

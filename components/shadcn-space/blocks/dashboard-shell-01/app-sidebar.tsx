@@ -24,7 +24,7 @@ import {
 import { NavMain, type NavItem } from "./nav-main"
 import { Logo } from "@/assets/logo/logo"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Package } from "lucide-react"
+import { Package, Plane, Truck } from "lucide-react"
 
 const NAV_ITEMS: NavItem[] = [
   {
@@ -39,8 +39,10 @@ const NAV_ITEMS: NavItem[] = [
       { title: "Dispatch", url: "/dashboard/dispatch", icon: DispatchIcon },
       { title: "Manifests", url: "/dashboard/manifests", icon: ManifestsIcon },
       { title: "Fleet", url: "/dashboard/fleet", icon: FleetIcon },
-      { title: "Warehouse", url: "/dashboard/warehouse", icon: Package as any },
+      { title: "Warehouse", url: "/dashboard/warehouse", icon: Package },
       { title: "Tracking", url: "/dashboard/tracking", icon: TrackingIcon },
+      { title: "Air Cargo", url: "/dashboard/operations/air-cargo", icon: Plane },
+      { title: "Surface Cargo", url: "/dashboard/operations/surface-cargo", icon: Truck },
       {
         title: "Support Tickets",
         url: "/dashboard/messages",
