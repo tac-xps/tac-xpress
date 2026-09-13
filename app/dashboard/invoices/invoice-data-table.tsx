@@ -47,11 +47,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { cn } from "@/lib/utils"
 import { useAction } from "next-safe-action/hooks"
-import {
-  deleteInvoiceAction,
-  sendInvoiceViaWhatsApp,
-  updateInvoiceAction,
-} from "./actions"
+import { deleteInvoiceAction, updateInvoiceAction } from "./actions"
+import { useSendInvoiceWhatsApp } from "./use-send-invoice-whatsapp"
 import { toast } from "sonner"
 import { EditInvoiceDialog } from "./edit-invoice-dialog"
 import { DataTablePagination } from "@/components/ui/data-table-pagination"
@@ -129,9 +126,7 @@ function InvoiceTableActions({ invoice }: { invoice: InvoiceData }) {
     }
   )
 
-  const { executeAsync: executeSend, isExecuting: isSending } = useAction(
-    sendInvoiceViaWhatsApp
-  )
+  const { sendInvoice, isSending } = useSendInvoiceWhatsApp()
 
   const { executeAsync: executeMarkPaid, isExecuting: isMarking } = useAction(
     updateInvoiceAction,
@@ -155,26 +150,7 @@ function InvoiceTableActions({ invoice }: { invoice: InvoiceData }) {
       toast.error("No phone number on file for this customer.")
       return
     }
-    const promise = executeSend({
-      invoiceId: invoice.id,
-      phone,
-    }).then((res) => {
-      if (res?.data && !res.data.success) {
-        throw new Error(
-          (res.data as any).error || "Failed to send WhatsApp message"
-        )
-      }
-      if (res?.serverError) {
-        throw new Error(res.serverError || "An unexpected error occurred")
-      }
-      return res
-    })
-
-    toast.promise(promise, {
-      loading: "Sending invoice via WhatsApp...",
-      success: "WhatsApp message sent successfully!",
-      error: (err) => err.message,
-    })
+    sendInvoice({ invoiceId: invoice.id, phone })
   }
 
   const handleMarkPaid = async () => {
