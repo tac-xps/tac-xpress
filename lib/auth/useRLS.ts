@@ -29,6 +29,7 @@ export function useRLS() {
     data: context,
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: CAPABILITY_CACHE_KEY,
     queryFn: async (): Promise<RLSContext> => {
@@ -81,6 +82,7 @@ export function useRLS() {
     canAccess,
     isLoading,
     error,
+    refetch,
     role: context?.role,
     orgId: context?.orgId,
     capabilityToken: context?.token,
