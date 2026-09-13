@@ -1,6 +1,5 @@
 "use client"
 
-import { useAction } from "next-safe-action/hooks"
 import { Button } from "@/components/ui/button"
 import {
   AlertCircleIcon,
@@ -8,7 +7,7 @@ import {
   RefreshCwIcon,
   SendIcon,
 } from "lucide-react"
-import { sendInvoiceViaWhatsApp } from "./actions"
+import { useSendInvoiceWhatsApp } from "./use-send-invoice-whatsapp"
 import { toast } from "sonner"
 import Link from "next/link"
 import { EyeIcon } from "lucide-react"
@@ -26,31 +25,14 @@ export function InvoiceActions({
   pdfUrl,
   status,
 }: InvoiceActionsProps) {
-  const { executeAsync, isExecuting } = useAction(sendInvoiceViaWhatsApp)
+  const { sendInvoice, isSending } = useSendInvoiceWhatsApp()
 
   const handleSend = async () => {
     if (!phone) {
       toast.error("No phone number available for this customer.")
       return
     }
-
-    const promise = executeAsync({ invoiceId, phone }).then((res) => {
-      if (res?.data && !res.data.success) {
-        throw new Error(
-          (res.data as any).error || "Failed to send WhatsApp message"
-        )
-      }
-      if (res?.serverError) {
-        throw new Error(res.serverError || "An unexpected error occurred")
-      }
-      return res
-    })
-
-    toast.promise(promise, {
-      loading: "Sending invoice via WhatsApp...",
-      success: "WhatsApp message sent successfully!",
-      error: (err) => err.message,
-    })
+    sendInvoice({ invoiceId, phone })
   }
 
   return (
@@ -73,7 +55,7 @@ export function InvoiceActions({
         variant="outline"
         size="sm"
         className="group relative overflow-hidden"
-        disabled={isExecuting || status === "sent"}
+        disabled={isSending || status === "sent"}
         onClick={handleSend}
         aria-label={
           status === "sent"
@@ -82,7 +64,7 @@ export function InvoiceActions({
         }
         title={status === "sent" ? "Already sent" : "Send via WhatsApp"}
       >
-        {isExecuting ? (
+        {isSending ? (
           <RefreshCwIcon className="mr-2 h-4 w-4 animate-spin" />
         ) : status === "sent" ? (
           <CheckCircle2Icon className="mr-2 h-4 w-4 text-success" />
@@ -92,7 +74,7 @@ export function InvoiceActions({
           <SendIcon className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
         )}
         <span className="md:not-sr-only">
-          {isExecuting ? "Sending..." : "Send"}
+          {isSending ? "Sending..." : "Send"}
         </span>
       </Button>
     </div>

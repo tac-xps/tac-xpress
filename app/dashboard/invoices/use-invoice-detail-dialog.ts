@@ -3,11 +3,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { useAction } from "next-safe-action/hooks"
-import {
-  sendInvoiceViaWhatsApp,
-  deleteInvoiceAction,
-  updateInvoiceAction,
-} from "./actions"
+import { deleteInvoiceAction, updateInvoiceAction } from "./actions"
+import { useSendInvoiceWhatsApp } from "./use-send-invoice-whatsapp"
 import { updateInvoiceSchema, type UpdateInvoiceValues } from "./validations"
 
 export function useInvoiceDetailDialog(invoice: {
@@ -40,9 +37,7 @@ export function useInvoiceDetailDialog(invoice: {
       },
     })
 
-  const { executeAsync: sendInvoiceAsync, isExecuting: isSending } = useAction(
-    sendInvoiceViaWhatsApp
-  )
+  const { sendInvoice, isSending } = useSendInvoiceWhatsApp()
 
   const { executeAsync: updateInvoiceAsync, isExecuting: isUpdating } =
     useAction(updateInvoiceAction, {
@@ -79,26 +74,7 @@ export function useInvoiceDetailDialog(invoice: {
       toast.error("No phone number available for this customer.")
       return
     }
-    const promise = sendInvoiceAsync({
-      invoiceId: invoice.id,
-      phone: invoice.customerPhone,
-    }).then((res) => {
-      if (res?.data && !res.data.success) {
-        throw new Error(
-          (res.data as any).error || "Failed to send WhatsApp message"
-        )
-      }
-      if (res?.serverError) {
-        throw new Error(res.serverError || "An unexpected error occurred")
-      }
-      return res
-    })
-
-    toast.promise(promise, {
-      loading: "Sending invoice via WhatsApp...",
-      success: "WhatsApp message sent successfully!",
-      error: (err) => err.message,
-    })
+    sendInvoice({ invoiceId: invoice.id, phone: invoice.customerPhone })
   }
 
   const onSubmit = async (data: UpdateInvoiceValues) => {
