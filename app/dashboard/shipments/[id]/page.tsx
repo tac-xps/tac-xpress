@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
 import { shipments, trackingEvents } from "@/lib/db/schema"
@@ -5,6 +6,10 @@ import { eq, desc, and } from "drizzle-orm"
 import { notFound } from "next/navigation"
 import { SecureBoundary } from "@/components/security/secure-boundary"
 import { ShipmentTimeline } from "@/components/shipments/realtime-tracker"
+import {
+  ShipmentDocumentsCard,
+  ShipmentDocumentsCardSkeleton,
+} from "@/components/shipments/shipment-documents-card"
 import { DataLabel } from "@/components/typography/data-label"
 import { UpdateStatusButton } from "@/components/shipments/UpdateStatusButton"
 
@@ -75,6 +80,10 @@ export default async function ShipmentDetailPage(props: {
           </p>
         </div>
       </div>
+
+      <Suspense fallback={<ShipmentDocumentsCardSkeleton />}>
+        <ShipmentDocumentsCard shipmentId={shipment.id} />
+      </Suspense>
 
       <ShipmentTimeline
         events={events.map((e) => ({

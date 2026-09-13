@@ -51,6 +51,14 @@ function createDb(): DbInstance {
     postgres(connectionString, {
       prepare: false,
       ssl: isLocalhost ? false : "require",
+      // Bound every wait so a stalled database can never hang a request forever.
+      // Without these, a connect or query that never returns leaves server
+      // components awaiting indefinitely and the page never finishes rendering.
+      connect_timeout: 10,
+      idle_timeout: 20,
+      connection: {
+        statement_timeout: 15000,
+      },
     })
 
   if (process.env.NODE_ENV !== "production") {
