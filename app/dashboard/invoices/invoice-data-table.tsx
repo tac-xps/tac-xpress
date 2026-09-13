@@ -17,4 +17,3 @@ const columns = (canVoid: boolean): ColumnDef<InvoiceData>[] => [
   { id: "actions", header: "Actions", cell: ({ row }) => <InvoiceTableActions invoice={row.original} canVoid={canVoid} /> },
 ]
 export function InvoiceDataTable({ data, canVoid = false, ...sort }: { data: InvoiceData[]; canVoid?: boolean } & TableSort) { return <DataTable data={data} columns={columns(canVoid)} {...sort} /> }
-

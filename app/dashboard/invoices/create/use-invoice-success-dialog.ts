@@ -1,7 +1,8 @@
-import { useState, useEffect, useTransition } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { getInvoiceDetails, sendInvoiceViaWhatsApp } from "../actions"
+import { getInvoiceDetails } from "../actions"
+import { useSendInvoiceWhatsApp } from "../use-send-invoice-whatsapp"
 
 export function useInvoiceSuccessDialog({
   shipmentId,
@@ -20,8 +21,11 @@ export function useInvoiceSuccessDialog({
   const [result, setResult] = useState<{ id: string; value: any } | null>(null)
   const data = result?.id === shipmentId ? result.value : null
   const loading = open && result?.id !== shipmentId
-  const [isSending, startSend] = useTransition()
   const [whatsappSent, setWhatsappSent] = useState(false)
+  const { sendInvoice, isSending } = useSendInvoiceWhatsApp({
+    successMessage: "Invoice sent via WhatsApp!",
+    onSuccess: () => setWhatsappSent(true),
+  })
 
   useEffect(() => {
     if (!open) return
@@ -45,38 +49,7 @@ export function useInvoiceSuccessDialog({
       toast.error("No phone number available for the consignor.")
       return
     }
-    startSend(async () => {
-      const sendPromise = sendInvoiceViaWhatsApp({ invoiceId, phone }).then(
-        (result) => {
-          const actionData = result?.data
-          if (!actionData?.success) {
-            const actionError =
-              actionData && "error" in actionData ? actionData.error : undefined
-            throw new Error(
-              actionError ||
-                result?.serverError ||
-                "Failed to send WhatsApp message"
-            )
-          }
-          return actionData
-        }
-      )
-
-      toast.promise(sendPromise, {
-        loading: "Sending invoice via WhatsApp...",
-        success: () => {
-          setWhatsappSent(true)
-          return "Invoice accepted by WhatsApp provider."
-        },
-        error: (err) => err.message,
-      })
-
-      try {
-        await sendPromise
-      } catch (e) {
-        // error is handled by toast
-      }
-    })
+    sendInvoice({ invoiceId, phone })
   }
 
   return {

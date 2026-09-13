@@ -3,6 +3,7 @@
 import { signDocumentToken } from "@/lib/auth/document-token"
 import { getAppUrl } from "@/lib/config/app-url"
 import { revalidatePath } from "next/cache"
+import { after } from "next/server"
 import * as Sentry from "@sentry/nextjs"
 import { z } from "zod"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
@@ -73,8 +74,23 @@ export const sendInvoiceViaWhatsApp = authActionClient
     const { invoiceId, phone } = parsedInput
     let providerAccepted = false
 
+    // Record the send outcome after the response is sent, so the analytics
+    // round trip never adds latency to the operator's toast.
+    const captureSendOutcome = (
+      outcome: "success" | "failure",
+      reason?: string
+    ) =>
+      after(() =>
+        capturePostHogEvent("invoice_whatsapp_send", actor.userId, {
+          invoiceId,
+          outcome,
+          ...(reason ? { reason } : {}),
+        })
+      )
+
     try {
       if (process.env.WHATSAPP_ENABLED !== "true") {
+        captureSendOutcome("failure", "delivery_disabled")
         return {
           success: false,
           error: "WhatsApp delivery is currently disabled.",
@@ -87,6 +103,7 @@ export const sendInvoiceViaWhatsApp = authActionClient
       })
 
       if (!invoice?.shipment || invoice.shipment.deletedAt || invoice.status === "void") {
+        captureSendOutcome("failure", "missing_shipment")
         return {
           success: false,
           error: "Invoice does not have an associated shipment.",
@@ -103,6 +120,7 @@ export const sendInvoiceViaWhatsApp = authActionClient
             level: "error",
           }
         )
+        captureSendOutcome("failure", "not_configured")
         return {
           success: false,
           error: "Invoice delivery is not configured.",
@@ -150,6 +168,7 @@ export const sendInvoiceViaWhatsApp = authActionClient
           level: "error",
           extra: { error: String(err) },
         })
+        captureSendOutcome("failure", "pdf_unavailable")
         return {
           success: false,
           error: "Failed to process invoice PDF.",
@@ -201,6 +220,7 @@ export const sendInvoiceViaWhatsApp = authActionClient
           .set({ whatsappStatus: "failed", updatedAt: new Date() })
           .where(eq(invoices.id, invoiceId))
 
+        captureSendOutcome("failure", "provider_rejected")
         revalidatePath("/dashboard/invoices")
         return {
           success: false,
@@ -216,6 +236,7 @@ export const sendInvoiceViaWhatsApp = authActionClient
         .set({ whatsappStatus: "sent", updatedAt: new Date() })
         .where(eq(invoices.id, invoiceId))
 
+      captureSendOutcome("success")
       revalidatePath("/dashboard/invoices")
       return { success: true }
     } catch (error) {
@@ -230,6 +251,7 @@ export const sendInvoiceViaWhatsApp = authActionClient
         .set({ whatsappStatus: "failed", updatedAt: new Date() })
         .where(eq(invoices.id, invoiceId))
 
+      captureSendOutcome("failure", "exception")
       revalidatePath("/dashboard/invoices")
       return {
         success: false,
