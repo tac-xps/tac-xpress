@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 
 async function createSupabaseAdmin() {
   const email = "admin@tacxpress.in";
-  const password = "Tac@2026";
+  const password = process.env.ADMIN_PASSWORD || "Test@2026";
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;

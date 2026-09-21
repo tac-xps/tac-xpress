@@ -26,41 +26,6 @@ const GENERIC_INVOICE_ERROR =
 const GENERIC_WIZARD_ERROR =
   "A critical error occurred while creating your shipment."
 
-async function invokeInvoicePdfGeneration(
-  invoiceId: string,
-  sig: string
-): Promise<boolean> {
-  const appUrl = getAppUrl()
-
-  const localUrl = `${appUrl}/api/public/invoice-pdf?id=${invoiceId}&sig=${sig}`
-
-  const cookieStore = await cookies()
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ")
-
-  const pdfRes = await fetch(localUrl, {
-    method: "GET",
-    signal: AbortSignal.timeout(55000),
-    headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; TacXpress-InternalPDFWorker/1.0)",
-      "x-internal-call": "1",
-      Cookie: cookieHeader,
-      "x-vercel-protection-bypass":
-        process.env.VERCEL_AUTOMATION_BYPASS_SECRET || "",
-    },
-  })
-
-  if (!pdfRes.ok) {
-    const errorText = await pdfRes.text().catch(() => "")
-    throw new Error(
-      `PDF endpoint failed: ${pdfRes.status} ${pdfRes.statusText} - ${errorText}`
-    )
-  }
-  return true
-}
-
 
 
 const sendInvoiceViaWhatsAppSchema = z.object({
@@ -102,11 +67,20 @@ export const sendInvoiceViaWhatsApp = authActionClient
         with: { shipment: true, customer: true },
       })
 
-      if (!invoice?.shipment || invoice.shipment.deletedAt || invoice.status === "void") {
+      if (!invoice?.shipment || invoice.shipment.deletedAt) {
         captureSendOutcome("failure", "missing_shipment")
         return {
           success: false,
-          error: "Invoice does not have an associated shipment.",
+          error: "Invoice does not have an associated active shipment.",
+        }
+      }
+
+      if (invoice.status === "void") {
+        captureSendOutcome("failure", "void_invoice")
+        return {
+          success: false,
+          error:
+            "Cannot send a voided invoice via WhatsApp. Please issue an active invoice.",
         }
       }
 
@@ -127,8 +101,33 @@ export const sendInvoiceViaWhatsApp = authActionClient
         }
       }
 
-      const recordedPhone = invoice.shipment.consignorPhone || invoice.customer?.phone
-      if (!recordedPhone || normalizeWhatsAppPhone(recordedPhone) !== normalizeWhatsAppPhone(phone)) return { success: false, error: "The recipient changed. Reload the invoice before sending." }
+      const normalizedPhone = normalizeWhatsAppPhone(phone)
+      const candidatePhones = [
+        invoice.shipment.consignorPhone
+          ? normalizeWhatsAppPhone(invoice.shipment.consignorPhone)
+          : null,
+        invoice.customer?.phone
+          ? normalizeWhatsAppPhone(invoice.customer.phone)
+          : null,
+        invoice.shipment.consigneePhone
+          ? normalizeWhatsAppPhone(invoice.shipment.consigneePhone)
+          : null,
+      ].filter((p): p is string => Boolean(p))
+
+      if (candidatePhones.length === 0) {
+        return {
+          success: false,
+          error: "No contact phone number is recorded on this shipment.",
+        }
+      }
+
+      if (!candidatePhones.includes(normalizedPhone)) {
+        return {
+          success: false,
+          error:
+            "The recipient phone does not match any contact recorded on this shipment.",
+        }
+      }
 
       const supabase = createSupabaseClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -139,26 +138,33 @@ export const sendInvoiceViaWhatsApp = authActionClient
       const fileName = `whatsapp-invoice-${invoice.id}.pdf`
 
       try {
-        if (!process.env.INVOICE_PDF_SIGNING_SECRET) {
-          throw new Error("Missing INVOICE_PDF_SIGNING_SECRET")
+        // Check if PDF is already in storage to avoid redundant Puppeteer runs
+        const { data: existingFiles } = await supabase.storage
+          .from("cargo-documents")
+          .list("", { search: fileName })
+
+        const fileExists = existingFiles?.some((f) => f.name === fileName)
+
+        if (!fileExists) {
+          const { renderInvoicePdf } = await import(
+            "@/lib/documents/render-invoice-pdf"
+          )
+          const pdfBuffer = await renderInvoicePdf(invoice.id)
+          const { error: uploadError } = await supabase.storage
+            .from("cargo-documents")
+            .upload(fileName, pdfBuffer, {
+              contentType: "application/pdf",
+              upsert: true,
+            })
+          if (uploadError) throw uploadError
         }
 
-        if (
-          !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-          !process.env.SUPABASE_SERVICE_ROLE_KEY
-        ) {
-          throw new Error("Missing Supabase env vars")
-        }
-
-        const sig = signDocumentToken(invoice.id, "pdf")
-        await invokeInvoicePdfGeneration(invoice.id, sig)
-
-        // Always generate a fresh signed URL for WPBox
+        // Generate a fresh 7-day signed URL for WPBox
         const { data: signedUrlData, error: signError } = await supabase.storage
           .from("cargo-documents")
           .createSignedUrl(fileName, 60 * 60 * 24 * 7)
 
-        if (signError || !signedUrlData) {
+        if (signError || !signedUrlData?.signedUrl) {
           throw signError || new Error("Failed to create signed URL")
         } else {
           finalPdfUrl = signedUrlData.signedUrl
@@ -166,12 +172,12 @@ export const sendInvoiceViaWhatsApp = authActionClient
       } catch (err) {
         Sentry.captureMessage("Failed to retrieve WhatsApp PDF from Supabase", {
           level: "error",
-          extra: { error: String(err) },
+          extra: { error: String(err), invoiceId: invoice.id },
         })
         captureSendOutcome("failure", "pdf_unavailable")
         return {
           success: false,
-          error: "Failed to process invoice PDF.",
+          error: `Failed to process invoice PDF: ${err instanceof Error ? err.message : "Error"}`,
         }
       }
       const sendResult = await sendWhatsAppTemplateMessage({

@@ -13,11 +13,11 @@ export default function AboutPage() {
     <PublicPage>
       <PageIntro
         eyebrow="About TAC-XPRESS"
-        image="surface"
+        image="about"
         title="For the people on both ends of a shipment."
         description="Goods carry a purpose: stock for a business, supplies for a team, something needed at home. We approach cargo with that responsibility in mind."
       />
-      <HomeStory />
+      <HomeStory ctaHref="/services" ctaText="Explore transit routes" />
       <section className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-8 md:grid-cols-2 md:gap-20 lg:py-24">
         <h2 className="max-w-md text-3xl font-medium tracking-tight">
           What to expect

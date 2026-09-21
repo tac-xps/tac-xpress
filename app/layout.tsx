@@ -57,17 +57,14 @@ export default async function RootLayout({
   }
 
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={cn(
-        "antialiased",
-        fontSans.variable,
-        fontMono.variable,
-        "font-sans"
-      )}
-    >
-      <body>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+      <body
+        className={cn(
+          "antialiased font-sans",
+          fontSans.variable,
+          fontMono.variable,
+        )}
+      >
         <PostHogProvider bootstrappedFeatureFlags={bootstrappedFeatureFlags}>
           <QueryProvider>
             <AuthProvider session={session}>

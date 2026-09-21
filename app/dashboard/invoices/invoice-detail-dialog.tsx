@@ -10,6 +10,7 @@ import {
   EyeIcon,
   RefreshCwIcon,
   SendIcon,
+  TagIcon,
   TrashIcon,
 } from "lucide-react"
 import Link from "next/link"
@@ -62,12 +63,14 @@ interface InvoiceDetailDialogProps {
   invoice: {
     id: string
     amount: number
-    status: "unpaid" | "paid"
+    status: "unpaid" | "paid" | "void" | string
     pdfUrl: string | null
     whatsappStatus: "pending" | "sent" | "failed"
     createdAt: Date
     awbNumber: string | null
     customerPhone: string | null
+    consignorPhone?: string | null
+    consigneePhone?: string | null
     consignorName: string | null
     advancePaid: number | null
     balanceDue: number | null
@@ -203,6 +206,20 @@ export function InvoiceDetailDialog({ invoice }: InvoiceDetailDialogProps) {
                         Download
                       </span>
                     )}
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="col-span-2 justify-start"
+                  >
+                    <Link
+                      href={`/invoice/${invoice.id}/label`}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <TagIcon className="mr-2 h-4 w-4" />
+                      View 4″ × 6″ Shipping Label
+                    </Link>
                   </Button>
                   <Button
                     className="group relative col-span-2 justify-start overflow-hidden"

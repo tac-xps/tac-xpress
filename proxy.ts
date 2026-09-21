@@ -81,12 +81,9 @@ function handleAuthenticatedRequest(req: AuthenticatedRequest) {
     // Non-staff sessions stay on sign-in, without a redirect loop.
   }
 
-  const requestHeaders = new Headers(req.headers)
-  requestHeaders.set("x-invoke-path", pathname)
-
   return NextResponse.next({
     request: {
-      headers: requestHeaders,
+      headers: req.headers,
     },
   })
 }
@@ -209,7 +206,7 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
 
 export const config = {
   matcher: [
-    // Exclude auth, cron, webhooks, public API routes, and Next.js internals from middleware
-    "/((?!api/auth|api/cron|api/webhooks|api/public|_next/static|_next/image|favicon.ico|monitoring).*)",
+    // Exclude auth, cron, webhooks, public API routes, PostHog ingest, and Next.js internals from middleware
+    "/((?!api/auth|api/cron|api/webhooks|api/public|ingest|_next/static|_next/image|favicon.ico|monitoring).*)",
   ],
 }

@@ -13,6 +13,8 @@ export function useInvoiceDetailDialog(invoice: {
   amount: number
   advancePaid?: number | null
   customerPhone?: string | null
+  consignorPhone?: string | null
+  consigneePhone?: string | null
   pdfUrl?: string | null
 }) {
   const [open, setOpen] = useState(false)
@@ -69,12 +71,21 @@ export function useInvoiceDetailDialog(invoice: {
     await deleteInvoiceAsync({ id: invoice.id })
   }
 
+  const targetPhone =
+    invoice.customerPhone || invoice.consignorPhone || invoice.consigneePhone
+
   const handleSend = async () => {
-    if (!invoice.customerPhone) {
-      toast.error("No phone number available for this customer.")
+    if (invoice.status === "void") {
+      toast.error(
+        "Cannot dispatch WhatsApp invoice: this invoice has been voided. Re-issue an active invoice first."
+      )
       return
     }
-    sendInvoice({ invoiceId: invoice.id, phone: invoice.customerPhone })
+    if (!targetPhone) {
+      toast.error("No phone number available for this customer or shipment.")
+      return
+    }
+    sendInvoice({ invoiceId: invoice.id, phone: targetPhone })
   }
 
   const onSubmit = async (data: UpdateInvoiceValues) => {

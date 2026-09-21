@@ -14,7 +14,9 @@ export function HomeSupport() {
           <h2 id="support-title" className="cargo-heading">
             A person to help
             <br />
-            with the next step.
+            <span className="bg-gradient-to-r from-foreground via-foreground/90 to-primary bg-clip-text text-transparent">
+              with the next step.
+            </span>
           </h2>
           <p className="max-w-md leading-relaxed text-muted-foreground">
             Planning a shipment, checking on a delivery, or sorting out an
@@ -32,7 +34,7 @@ export function HomeSupport() {
         </div>
         <div
           id="quote"
-          className="min-w-0 rounded-xl border bg-card p-2 sm:p-4"
+          className="min-w-0 border border-transparent [border-image:linear-gradient(135deg,var(--primary),var(--border)_60%,transparent)1] bg-card p-2 sm:p-4 shadow-sm"
         >
           <TicketForm />
         </div>

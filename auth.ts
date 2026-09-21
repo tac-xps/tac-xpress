@@ -100,12 +100,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         // Authentication proves identity; only a provisioned record grants staff access.
         const dbUsers = await db.select().from(users).where(eq(users.id, id))
-        const dbUser = dbUsers[0]
+        let dbUser = dbUsers[0]
+
+        // Auto-reconcile if user was provisioned by email before Supabase Auth ID was assigned
+        if (!dbUser) {
+          const dbUsersByEmail = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, userEmail))
+          const userByEmail = dbUsersByEmail[0]
+
+          if (userByEmail && !userByEmail.deletedAt && isStaffRole(userByEmail.role)) {
+            try {
+              // Synchronize the public.users record ID to the canonical Supabase Auth user ID
+              await db
+                .update(users)
+                .set({ id })
+                .where(eq(users.email, userEmail))
+              dbUser = { ...userByEmail, id }
+            } catch {
+              // If foreign key constraint prevents updating old id, accept user identity with existing dbUser
+              dbUser = userByEmail
+            }
+          }
+        }
 
         if (!dbUser || dbUser.deletedAt || !isStaffRole(dbUser.role)) return null
 
         return {
-          id,
+          id: dbUser.id,
           email: userEmail,
           role: dbUser.role,
         }

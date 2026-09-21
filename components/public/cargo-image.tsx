@@ -1,17 +1,30 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 
-export type CargoAsset = "hero" | "air" | "surface" | "packing" | "warehouse"
+export type CargoAsset = "hero" | "air" | "surface" | "packing" | "warehouse" | "about"
 const descriptions: Record<CargoAsset, string> = {
-  hero: "Conceptual 3D render of air and road cargo meeting at a terminal at dusk.",
-  air: "Conceptual 3D render of a cargo aircraft and a pallet loader in warm evening light.",
+  hero:
+    "3D Blender Cycles render of a modern TAC-XPRESS electric freight truck navigating a scenic Himalayan mountain highway pass at golden hour sunrise.",
+  air: "3D Blender architectural render of a regional cargo aircraft and pallet loader at sunset.",
   surface:
-    "Conceptual 3D render of a cargo truck following a road through green foothills.",
+    "3D Blender landscape render of a cargo container truck following a mountain highway through green foothills.",
   packing:
-    "Conceptual 3D still life of cartons, protective packing and a carefully cushioned ceramic bowl.",
+    "3D Blender still life render of corrugated cartons, protective packing and a cushioned ceramic bowl.",
   warehouse:
-    "Conceptual 3D render of an organized cargo loading bay in late afternoon light.",
+    "3D Blender architectural render of an organized cargo warehouse loading bay in warm late afternoon light.",
+  about:
+    "3D Blender architectural render of a cargo collection and handover hub in Northeast India with scenic hills.",
 }
+
+const assetPaths: Record<CargoAsset, string> = {
+  hero: "/images/cargo-2026/hero-3d-mountain-pass.webp",
+  air: "/images/cargo-2026/air-3d.webp",
+  surface: "/images/cargo-2026/surface-3d.webp",
+  packing: "/images/cargo-2026/packing-3d.webp",
+  warehouse: "/images/cargo-2026/warehouse-3d.webp",
+  about: "/images/cargo-2026/about-3d.webp",
+}
+
 interface CargoImageProps {
   asset: CargoAsset
   className?: string
@@ -29,7 +42,7 @@ export function CargoImage({
   return (
     <div className={cn("cargo-media", className)}>
       <Image
-        src={`/images/cargo-2026/${asset}.webp`}
+        src={assetPaths[asset]}
         alt={descriptions[asset]}
         fill
         sizes={sizes}

@@ -48,7 +48,10 @@ export function InvoiceTableActions({
     "delete" | "paid" | "send" | null
   >(null)
   const [pending, startTransition] = useTransition()
-  const phone = invoice.shipment?.consignorPhone || invoice.customer?.phone
+  const phone =
+    invoice.shipment?.consignorPhone ||
+    invoice.customer?.phone ||
+    invoice.shipment?.consigneePhone
   function confirm() {
     startTransition(async () => {
       try {
@@ -108,7 +111,7 @@ export function InvoiceTableActions({
               View invoice
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem disabled={invoice.status === "void"} asChild>
+          <DropdownMenuItem asChild>
             <Link href={`/invoice/${invoice.id}/label`}>
               <Eye />
               View shipping label
@@ -121,8 +124,16 @@ export function InvoiceTableActions({
             </a>
           </DropdownMenuItem>
           <DropdownMenuItem
-            disabled={!phone || pending || invoice.status === "void"}
-            onSelect={() => setConfirmation("send")}
+            disabled={!phone || pending}
+            onSelect={() => {
+              if (invoice.status === "void") {
+                toast.error(
+                  "Cannot dispatch WhatsApp invoice: this invoice has been voided. Re-issue an active invoice first."
+                )
+                return
+              }
+              setConfirmation("send")
+            }}
           >
             <Send />
             Send via WhatsApp
