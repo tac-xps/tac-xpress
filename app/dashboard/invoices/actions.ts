@@ -46,7 +46,7 @@ export const sendInvoiceViaWhatsApp = authActionClient
       reason?: string
     ) =>
       after(() =>
-        capturePostHogEvent("invoice_whatsapp_send", ctx.session.userId, {
+        capturePostHogEvent("invoice_whatsapp_send", ctx.session.user.id, {
           invoiceId,
           outcome,
           ...(reason ? { reason } : {}),
