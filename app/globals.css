@@ -567,7 +567,7 @@
   padding-inline: var(--cargo-gutter);
 }
 
-@media (min-width: 1920px) {
+@media (width >= 1920px) {
   .cargo-container {
     max-width: 1680px;
   }
