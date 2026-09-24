@@ -1,13 +1,12 @@
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { feedback } from "@/lib/db/schema"
-import { desc, ilike, or } from "drizzle-orm"
+import { desc, ilike, or, sql } from "drizzle-orm"
 import { FeedbackClientTable } from "./feedback-client-table"
 import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
 import {
   DEFAULT_PAGE_SIZE,
-  PageNavigation,
   parsePage,
 } from "@/components/ui/page-navigation"
 import { containsPattern, firstParam, type RecordSearchParams } from "@/lib/table-query"
@@ -38,9 +37,24 @@ export default async function FeedbackPage({
         )
       : undefined,
     orderBy: [desc(feedback.createdAt)],
-    limit: DEFAULT_PAGE_SIZE + 1,
+    limit: DEFAULT_PAGE_SIZE,
     offset: (page - 1) * DEFAULT_PAGE_SIZE,
   })
+
+  const countResult = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(feedback)
+    .where(
+      q
+        ? or(
+            ilike(feedback.name, pattern),
+            ilike(feedback.email, pattern),
+            ilike(feedback.message, pattern)
+          )
+        : undefined
+    )
+  const totalCount = Number(countResult[0].count)
+  const pageCount = Math.ceil(totalCount / DEFAULT_PAGE_SIZE)
 
   const formattedData = feedbackRows.map((fb) => ({
     id: fb.id,
@@ -64,18 +78,10 @@ export default async function FeedbackPage({
           placeholder="Search by name, email, or message..."
         />
         <FeedbackClientTable
-          data={formattedData.slice(0, DEFAULT_PAGE_SIZE)}
-          sort="createdAt"
-          order="desc"
+          data={formattedData}
+          pageCount={pageCount}
         />
       </div>
-
-      <PageNavigation
-        page={page}
-        hasNext={feedbackRows.length > DEFAULT_PAGE_SIZE}
-        pathname="/dashboard/feedback"
-        query={{ q }}
-      />
     </div>
   )
 }

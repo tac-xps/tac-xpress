@@ -1,12 +1,12 @@
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { messageOutbound, tickets as ticketsTable } from "@/lib/db/schema"
-import { and, desc, eq, ilike, or } from "drizzle-orm"
+import { and, desc, eq, ilike, or, sql } from "drizzle-orm"
 import { TicketsClient } from "./tickets-client"
 import { OutboundMessageLog } from "./outbound-message-log"
 import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
-import { PageNavigation, parsePage, DEFAULT_PAGE_SIZE } from "@/components/ui/page-navigation"
+import { parsePage, DEFAULT_PAGE_SIZE } from "@/components/ui/page-navigation"
 import { containsPattern, parseRecordQuery, recordOrder, type RecordSearchParams } from "@/lib/table-query"
 import { CreateTicketDialog } from "./create-ticket-dialog"
 const statuses = [
@@ -31,7 +31,7 @@ export default async function MessagesPage({
   if (!statuses.some(({ value }) => value === query.status))
     query.status = "all"
   const pattern = containsPattern(query.q)
-  const [rows, outboundMessages] = await Promise.all([
+  const [rows, countResult, outboundMessages] = await Promise.all([
     db
       .select()
       .from(ticketsTable)
@@ -68,8 +68,35 @@ export default async function MessagesPage({
         ),
         desc(ticketsTable.id)
       )
-      .limit(DEFAULT_PAGE_SIZE + 1)
+      .limit(DEFAULT_PAGE_SIZE)
       .offset((page - 1) * DEFAULT_PAGE_SIZE),
+    db
+      .select({ count: sql<number>`count(*)` })
+      .from(ticketsTable)
+      .where(
+        and(
+          query.q
+            ? or(
+                ilike(ticketsTable.subject, pattern),
+                ilike(ticketsTable.customerName, pattern),
+                ilike(ticketsTable.customerEmail, pattern),
+                ilike(ticketsTable.guestEmail, pattern),
+                ilike(ticketsTable.relatedAwb, pattern),
+                ilike(ticketsTable.awbNumber, pattern)
+              )
+            : undefined,
+          query.status !== "all"
+            ? eq(
+                ticketsTable.status,
+                query.status as
+                  | "open"
+                  | "in_progress"
+                  | "resolved"
+                  | "awaiting_customer"
+              )
+            : undefined
+        )
+      ),
     db
       .select({
         id: messageOutbound.id,
@@ -83,8 +110,9 @@ export default async function MessagesPage({
       .orderBy(desc(messageOutbound.createdAt), desc(messageOutbound.id))
       .limit(25),
   ])
+  const totalCount = Number(countResult[0].count)
+  const pageCount = Math.ceil(totalCount / DEFAULT_PAGE_SIZE)
   const tickets = rows
-    .slice(0, DEFAULT_PAGE_SIZE)
     .map((ticket) => ({
       id: ticket.id,
       customer_name: ticket.customerName,
@@ -122,14 +150,7 @@ export default async function MessagesPage({
         />
         <TicketsClient
           initialTickets={tickets}
-          sort={query.sort}
-          order={query.order}
-        />
-        <PageNavigation
-          page={page}
-          hasNext={rows.length > DEFAULT_PAGE_SIZE}
-          pathname="/dashboard/messages"
-          query={query}
+          pageCount={pageCount}
         />
       </section>
       <section aria-label="Latest outbound messages" className="space-y-3">

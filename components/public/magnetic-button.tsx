@@ -1,8 +1,7 @@
 "use client"
 
 import React, { useRef, useEffect } from "react"
-import gsap from "gsap"
-import { useReducedMotion } from "motion/react"
+import { motion, useReducedMotion, useMotionValue, useSpring } from "motion/react"
 
 interface MagneticButtonProps {
   children: React.ReactNode
@@ -12,7 +11,7 @@ interface MagneticButtonProps {
 }
 
 /**
- * Reusable magnetic button component powered by GSAP.
+ * Reusable magnetic button component powered by Framer Motion.
  * Provides micro-physics cursor attraction with elastic snap-back.
  * Adheres to WCAG: automatically disabled when prefers-reduced-motion is active.
  */
@@ -25,12 +24,15 @@ export function MagneticButton({
   const containerRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = useReducedMotion()
 
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  
+  const springX = useSpring(x, { stiffness: 150, damping: 15, mass: 0.1 })
+  const springY = useSpring(y, { stiffness: 150, damping: 15, mass: 0.1 })
+
   useEffect(() => {
     const el = containerRef.current
     if (!el || shouldReduceMotion) return
-
-    const xTo = gsap.quickTo(el, "x", { duration: 0.35, ease: "power2.out" })
-    const yTo = gsap.quickTo(el, "y", { duration: 0.35, ease: "power2.out" })
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = el.getBoundingClientRect()
@@ -39,17 +41,13 @@ export function MagneticButton({
       const deltaX = (e.clientX - centerX) * strength
       const deltaY = (e.clientY - centerY) * strength
 
-      xTo(deltaX)
-      yTo(deltaY)
+      x.set(deltaX)
+      y.set(deltaY)
     }
 
     const handleMouseLeave = () => {
-      gsap.to(el, {
-        x: 0,
-        y: 0,
-        duration: 0.65,
-        ease: "elastic.out(1, 0.4)",
-      })
+      x.set(0)
+      y.set(0)
     }
 
     el.addEventListener("mousemove", handleMouseMove)
@@ -58,17 +56,17 @@ export function MagneticButton({
     return () => {
       el.removeEventListener("mousemove", handleMouseMove)
       el.removeEventListener("mouseleave", handleMouseLeave)
-      gsap.killTweensOf(el)
     }
-  }, [strength, shouldReduceMotion])
+  }, [strength, shouldReduceMotion, x, y])
 
   return (
-    <div
+    <motion.div
       ref={containerRef}
       className={className}
       onClick={onClick}
+      style={{ x: springX, y: springY }}
     >
       {children}
-    </div>
+    </motion.div>
   )
 }

@@ -5,6 +5,7 @@ import { webhookSchema } from "@/lib/whatsapp/webhook-schema"
 import { getWhatsAppConfig } from "@/lib/whatsapp/config"
 import { recordWhatsAppStatusUpdate } from "@/lib/whatsapp/service"
 import { processInboundMessage } from "@/app/actions/whatsapp-inbound"
+import { enforceRateLimit, webhookLimiter } from "@/lib/server/rate-limit"
 
 export const maxDuration = 60
 async function signedBody(request: Request) {
@@ -31,6 +32,8 @@ async function signedBody(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const limited = await enforceRateLimit(request, webhookLimiter, "whatsapp_webhook_rate_limit")
+  if (limited) return limited
   const config = getWhatsAppConfig()
   const signature = request.headers.get("x-hub-signature-256")
   if (!config.appSecret)

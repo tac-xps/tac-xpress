@@ -4,9 +4,12 @@ import { supabaseAdmin } from "@/lib/supabase/clients"
 import { verifyDocumentToken } from "@/lib/auth/document-token"
 import { renderInvoicePdf } from "@/lib/documents/render-invoice-pdf"
 import { capturePublicError, createPublicErrorResponse } from "@/lib/server/public-errors"
+import { enforceRateLimit, invoicePdfLimiter } from "@/lib/server/rate-limit"
 export const maxDuration = 60
 
 export async function GET(request: NextRequest) {
+  const limited = await enforceRateLimit(request, invoicePdfLimiter, "invoice_pdf_rate_limit")
+  if (limited) return limited
   const id = request.nextUrl.searchParams.get("id")
   const sig = request.nextUrl.searchParams.get("sig")
   if (!z.string().uuid().safeParse(id).success) return createPublicErrorResponse("Invalid invoice ID", 400)

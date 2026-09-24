@@ -1,8 +1,9 @@
 "use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { DataTable, type TableSort } from "@/components/operations/data-table"
-import { ColumnHeader } from "@/components/operations/column-header"
+import { DataTable } from "@/components/ui/data-table/data-table"
+import { DataTableColumnHeader as ColumnHeader } from "@/components/ui/data-table/data-table-column-header"
+import { useDataTable } from "@/hooks/use-data-table"
 import { StaffActions } from "./staff-actions"
 import { Badge } from "@/components/ui/badge"
 
@@ -46,6 +47,11 @@ const columns: ColumnDef<StaffData>[] = [
   },
 ]
 
-export function StaffClientTable({ data, ...sort }: { data: StaffData[] } & TableSort) { 
-  return <DataTable data={data} columns={columns} {...sort} /> 
+export function StaffClientTable({ data, pageCount }: { data: StaffData[], pageCount: number }) { 
+  const { table } = useDataTable({
+    data,
+    columns,
+    pageCount,
+  })
+  return <DataTable table={table} columnsLength={columns.length} /> 
 }

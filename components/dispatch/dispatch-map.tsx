@@ -8,7 +8,7 @@ import Map, {
   Source,
   Layer,
 } from "react-map-gl/maplibre"
-import maplibregl from "maplibre-gl"
+import * as maplibregl from "maplibre-gl"
 import "maplibre-gl/dist/maplibre-gl.css"
 import { Truck, MapPin } from "lucide-react"
 import { useTheme } from "next-themes"

@@ -99,10 +99,37 @@ export async function ShipmentRegister({
       ),
       desc(shipments.id),
     ],
-    limit: DEFAULT_PAGE_SIZE + 1,
+    limit: DEFAULT_PAGE_SIZE,
     offset: (page - 1) * DEFAULT_PAGE_SIZE,
   })
-  const data = rows.slice(0, DEFAULT_PAGE_SIZE)
+  
+  const countResult = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(shipments)
+    .where(
+      and(
+        scope,
+        isNull(shipments.deletedAt),
+        query.q
+          ? or(
+              ilike(shipments.awbNumber, pattern),
+              ilike(shipments.origin, pattern),
+              ilike(shipments.destination, pattern),
+              ilike(shipments.consignorName, pattern),
+              ilike(shipments.consigneeName, pattern)
+            )
+          : undefined,
+        query.status !== "all"
+          ? eq(
+              shipments.status,
+              query.status as "pending" | "in-transit" | "delivered"
+            )
+          : undefined
+      )
+    )
+  const totalCount = Number(countResult[0].count)
+  const pageCount = Math.ceil(totalCount / DEFAULT_PAGE_SIZE)
+  const data = rows
   return (
     <div className="flex min-w-0 flex-col gap-6">
       <PageHeader
@@ -149,13 +176,7 @@ export async function ShipmentRegister({
           order={query.order}
           placeholder="AWB, route or contact name"
         />
-        <ShipmentsDataTable data={data} sort={query.sort} order={query.order} />
-        <PageNavigation
-          page={page}
-          hasNext={rows.length > DEFAULT_PAGE_SIZE}
-          pathname={pathname}
-          query={query}
-        />
+        <ShipmentsDataTable data={data} pageCount={pageCount} />
       </section>
     </div>
   )

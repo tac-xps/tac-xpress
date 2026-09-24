@@ -77,6 +77,7 @@ export const workspaceNavigation = [
         icon: History,
       },
       { title: "Integrations", href: "/dashboard/integrations", icon: Plug },
+      { title: "Jobs & DLQ", href: "/dashboard/jobs", icon: ClipboardList },
     ],
   },
 ]

@@ -5,6 +5,9 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
+    env: {
+      ARCJET_ENV: 'development',
+    },
     include: ['__tests__/**/*.test.{ts,tsx}', 'tests/unit/**/*.test.{ts,tsx}'],
     alias: {
       '@': resolve(__dirname, './')

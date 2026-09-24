@@ -1,3 +1,4 @@
+process.env.ARCJET_ENV = "development"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { createHmac } from "node:crypto"
 const state = vi.hoisted(() => ({ secret: "webhook-test-secret", token: "verification-test-token", inbound: vi.fn(), receipt: vi.fn() }))
@@ -5,10 +6,17 @@ vi.mock("@/lib/whatsapp/config", () => ({ getWhatsAppConfig: () => ({ appSecret:
 vi.mock("@/app/actions/whatsapp-inbound", () => ({ processInboundMessage: state.inbound }))
 vi.mock("@/lib/whatsapp/service", () => ({ recordWhatsAppStatusUpdate: state.receipt }))
 vi.mock("@sentry/nextjs", () => ({ captureException: vi.fn() }))
+vi.mock("@arcjet/next", () => ({
+  default: () => ({ protect: vi.fn().mockResolvedValue({ isDenied: () => false, isErrored: () => false, reason: { isRateLimit: () => false }, results: [] }) }),
+  detectBot: vi.fn(),
+  tokenBucket: vi.fn(),
+  slidingWindow: vi.fn(),
+  fixedWindow: vi.fn(),
+}))
 import { GET, POST } from "@/app/api/webhooks/whatsapp/route"
 const payload = { entry: [{ changes: [{ value: { messages: [{ id: "wamid.fixture", from: "919876543210", timestamp: "1788780000", type: "text", text: { body: "Track AWB-123456789" } }] } }] }] }
 function request(body = JSON.stringify(payload), signature?: string) {
-  return new Request("https://example.test/api/webhooks/whatsapp", { method: "POST", body, headers: { "x-hub-signature-256": signature ?? `sha256=${createHmac("sha256", state.secret).update(body).digest("hex")}` } })
+  return new Request("https://example.test/api/webhooks/whatsapp", { method: "POST", body, headers: { "x-forwarded-for": "127.0.0.1", "x-hub-signature-256": signature ?? `sha256=${createHmac("sha256", state.secret).update(body).digest("hex")}` } })
 }
 beforeEach(() => { vi.clearAllMocks(); state.secret = "webhook-test-secret"; state.token = "verification-test-token"; state.inbound.mockResolvedValue({}); state.receipt.mockResolvedValue(undefined) })
 describe("WhatsApp webhook boundary", () => {

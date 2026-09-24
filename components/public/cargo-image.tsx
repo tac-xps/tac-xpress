@@ -29,14 +29,14 @@ interface CargoImageProps {
   asset: CargoAsset
   className?: string
   sizes?: string
-  preload?: boolean
+  priority?: boolean
   loading?: "eager" | "lazy"
 }
 export function CargoImage({
   asset,
   className,
   sizes = "(min-width: 1024px) 50vw, 100vw",
-  preload = false,
+  priority = false,
   loading,
 }: CargoImageProps) {
   return (
@@ -46,7 +46,7 @@ export function CargoImage({
         alt={descriptions[asset]}
         fill
         sizes={sizes}
-        preload={preload}
+        priority={priority}
         loading={loading}
         className="object-cover"
       />

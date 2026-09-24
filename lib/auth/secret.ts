@@ -1,3 +1,5 @@
+import "server-only"
+
 const DEV_FALLBACK_AUTH_SECRET =
   "fallback_secret_for_vercel_production_please_set_env"
 
@@ -13,16 +15,6 @@ export function resolveAuthSecret() {
   const secret = getConfiguredAuthSecret()
   if (secret) {
     return secret
-  }
-
-  // NextAuth runs on the server. If this code is evaluated in the browser
-  // (e.g., via Storybook bundling shared libs), do not throw.
-  if (
-    (typeof window !== "undefined" && !process.env.VITEST) ||
-    process.env.STORYBOOK === "true" ||
-    process.env.STORYBOOK === "1"
-  ) {
-    return DEV_FALLBACK_AUTH_SECRET
   }
 
   if (process.env.NODE_ENV === "production") {

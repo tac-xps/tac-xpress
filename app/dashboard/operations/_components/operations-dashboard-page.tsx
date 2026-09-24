@@ -3,7 +3,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { ShipmentsDataTable } from "@/app/dashboard/shipments/shipment-data-table"
 import {
   DEFAULT_PAGE_SIZE,
-  PageNavigation,
 } from "@/components/ui/page-navigation"
 
 export interface KpiCard {
@@ -60,7 +59,7 @@ export function OperationsDashboardPage({
     (page - 1) * DEFAULT_PAGE_SIZE,
     page * DEFAULT_PAGE_SIZE
   )
-  const hasNext = rows.length > page * DEFAULT_PAGE_SIZE
+  const pageCount = Math.ceil(rows.length / DEFAULT_PAGE_SIZE)
 
   return (
     <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 md:gap-8">
@@ -105,9 +104,8 @@ export function OperationsDashboardPage({
         <CardContent className="p-0">
           <div className="w-full">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            <ShipmentsDataTable data={paginatedShipments as any} />
+            <ShipmentsDataTable data={paginatedShipments as any} pageCount={pageCount} />
           </div>
-          <PageNavigation page={page} hasNext={hasNext} pathname={pathname} />
         </CardContent>
       </Card>
     </div>

@@ -1,8 +1,9 @@
 "use client"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { hubs as hubsSchema } from "@/lib/db/schema"
-import { DataTable, type TableSort } from "@/components/operations/data-table"
-import { ColumnHeader } from "@/components/operations/column-header"
+import { DataTable } from "@/components/ui/data-table/data-table"
+import { DataTableColumnHeader as ColumnHeader } from "@/components/ui/data-table/data-table-column-header"
+import { useDataTable } from "@/hooks/use-data-table"
 import { Badge } from "@/components/ui/badge"
 import { HubActions } from "./hub-actions"
 type Hub = typeof hubsSchema.$inferSelect
@@ -38,7 +39,12 @@ const columns: ColumnDef<Hub>[] = [
 ]
 export function HubsClientTable({
   hubs,
-  ...sorting
-}: { hubs: Hub[] } & TableSort) {
-  return <DataTable data={hubs} columns={columns} {...sorting} />
+  pageCount,
+}: { hubs: Hub[], pageCount: number }) {
+  const { table } = useDataTable({
+    data: hubs,
+    columns,
+    pageCount,
+  })
+  return <DataTable table={table} columnsLength={columns.length} />
 }

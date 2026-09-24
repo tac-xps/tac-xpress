@@ -2,8 +2,9 @@
 import Link from "next/link"
 import { format } from "date-fns"
 import type { ColumnDef } from "@tanstack/react-table"
-import { DataTable, type TableSort } from "@/components/operations/data-table"
-import { ColumnHeader } from "@/components/operations/column-header"
+import { DataTable } from "@/components/ui/data-table/data-table"
+import { DataTableColumnHeader as ColumnHeader } from "@/components/ui/data-table/data-table-column-header"
+import { useDataTable } from "@/hooks/use-data-table"
 import { ShipmentActions, type ShipmentWithRelations } from "./shipment-actions"
 import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/logistics/status-badge"
@@ -15,5 +16,12 @@ const columns: ColumnDef<ShipmentWithRelations>[] = [
   { accessorKey: "status", header: ({ column }) => <ColumnHeader column={column} title="Status" />, cell: ({ row }) => <StatusBadge status={row.original.status} /> },
   { id: "actions", header: "Actions", cell: ({ row }) => <ShipmentActions shipment={row.original} /> },
 ]
-export function ShipmentsDataTable({ data, ...sort }: { data: ShipmentWithRelations[] } & TableSort) { return <DataTable data={data} columns={columns} {...sort} /> }
+export function ShipmentsDataTable({ data, pageCount }: { data: ShipmentWithRelations[], pageCount: number }) {
+  const { table } = useDataTable({
+    data,
+    columns,
+    pageCount,
+  })
+  return <DataTable table={table} columnsLength={columns.length} />
+}
 

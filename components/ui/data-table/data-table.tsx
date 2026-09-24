@@ -29,11 +29,13 @@ export function DataTable<TData>({
 }: DataTableProps<TData>) {
   return (
     <div className="space-y-4">
-      <DataTableToolbar
-        table={table}
-        searchKey={searchKey}
-        searchPlaceholder={searchPlaceholder}
-      />
+      {searchKey && (
+        <DataTableToolbar
+          table={table}
+          searchKey={searchKey}
+          searchPlaceholder={searchPlaceholder}
+        />
+      )}
       <div className="rounded-none border border-border bg-card">
         <Table>
           <TableHeader>

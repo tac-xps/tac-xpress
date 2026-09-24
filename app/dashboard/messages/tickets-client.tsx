@@ -3,17 +3,16 @@ import { useEffect, useMemo, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { DataTable } from "@/components/operations/data-table"
+import { DataTable } from "@/components/ui/data-table/data-table"
+import { useDataTable } from "@/hooks/use-data-table"
 import { TicketDetailsDialog } from "./ticket-details-dialog"
 import { getColumns, type TicketData } from "./columns"
 export function TicketsClient({
   initialTickets,
-  sort = "created_at",
-  order = "desc",
+  pageCount,
 }: {
   initialTickets: TicketData[]
-  sort?: string
-  order?: "asc" | "desc"
+  pageCount: number
 }) {
   const [selected, setSelected] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
@@ -22,6 +21,11 @@ export function TicketsClient({
     () => getColumns((ticket) => setSelected(ticket.id)),
     []
   )
+  const { table } = useDataTable({
+    data: initialTickets,
+    columns,
+    pageCount,
+  })
   const ticket = initialTickets.find((item) => item.id === selected) ?? null
   useEffect(() => {
     const refresh = () => {
@@ -47,10 +51,8 @@ export function TicketsClient({
         </Button>
       </div>
       <DataTable
-        columns={columns}
-        data={initialTickets}
-        sort={sort}
-        order={order}
+        table={table}
+        columnsLength={columns.length}
       />
       {ticket && (
         <TicketDetailsDialog

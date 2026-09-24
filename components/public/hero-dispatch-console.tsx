@@ -4,6 +4,7 @@ import { useState, useRef } from "react"
 import Link from "next/link"
 import { ArrowUpRight, FileUp, Search, SlidersHorizontal, Plane, Truck } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { TrackForm } from "./track-form"
 import { cn } from "@/lib/utils"
 
 interface HeroDispatchConsoleProps {
@@ -15,17 +16,9 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
   const [activeTab, setActiveTab] = useState<"track" | "quote">("track")
   const [selectedDest, setSelectedDest] = useState("imphal")
   const [cargoType, setCargoType] = useState<"air" | "surface">("air")
-  const [fileName, setFileName] = useState<string | null>(null)
 
   const trackTabRef = useRef<HTMLButtonElement>(null)
   const quoteTabRef = useRef<HTMLButtonElement>(null)
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setFileName(file.name)
-    }
-  }
 
   const handleTabKeyDown = (e: React.KeyboardEvent, currentTab: "track" | "quote") => {
     if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
@@ -106,55 +99,7 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
             aria-labelledby="tab-track"
             className="flex min-h-[148px] flex-col justify-between"
           >
-            <form action="/track" method="get" className="flex min-h-[148px] flex-col justify-between">
-              <div>
-                <label htmlFor="hero-awb-input" className="sr-only">
-                  AWB Consignment Number
-                </label>
-                <input
-                  id="hero-awb-input"
-                  name="awb"
-                  required
-                  maxLength={40}
-                  autoComplete="off"
-                  placeholder="Enter 10-digit AWB number (e.g., TAC-948210)..."
-                  className="w-full px-4 py-3 font-mono text-sm border focus:outline-none focus-visible:ring-1 transition-colors bg-surface text-foreground placeholder:text-muted-foreground/60 border-border focus:border-orange-500 focus-visible:ring-orange-500"
-                />
-                <p className="mt-2 text-xs font-mono text-muted-foreground">
-                  Direct lookup for New Delhi ↔ Northeast India consignments.
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-3 pt-3 sm:flex-row sm:items-center sm:justify-between border-t border-border">
-                <label
-                  htmlFor="manifest-upload"
-                  className="inline-flex cursor-pointer items-center gap-2 font-mono text-xs transition-colors text-muted-foreground hover:text-foreground"
-                >
-                  <FileUp className="size-4 text-orange-500" aria-hidden="true" />
-                  <span className="truncate max-w-[220px]">
-                    {fileName ? fileName : "Attach e-Way bill / invoice"}
-                  </span>
-                  <input
-                    id="manifest-upload"
-                    type="file"
-                    accept=".pdf,image/*"
-                    onChange={handleFileChange}
-                    className="sr-only"
-                    aria-label="Attach e-Way bill or invoice"
-                  />
-                </label>
-
-                <div className="flex items-center gap-3">
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="rounded-none h-10 px-5 font-sans text-sm font-medium tracking-wide focus-visible:ring-1 active:scale-[0.98] transition-transform bg-orange-500 hover:bg-orange-600 text-white focus-visible:ring-orange-500"
-                  >
-                    Track Cargo <ArrowUpRight data-icon="inline-end" className="size-4 ml-1" aria-hidden="true" />
-                  </Button>
-                </div>
-              </div>
-            </form>
+            <TrackForm variant="console" />
           </div>
         ) : (
           /* Tab 2: Quick Rate & Route Check */

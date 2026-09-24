@@ -1,4 +1,4 @@
-import { TicketForm } from "@/app/(landing)/components/ticket-form"
+import { TicketForm } from "@/components/public/ticket-form"
 import { DecorIcon } from "@/components/decor-icon"
 import { SupportLifebuoyIcon } from "@/components/icons/landing-icons"
 

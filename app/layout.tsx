@@ -1,3 +1,4 @@
+import { Metadata } from "next"
 import { DM_Sans, IBM_Plex_Mono } from "next/font/google"
 
 import "./globals.css"
@@ -24,7 +25,8 @@ const fontMono = IBM_Plex_Mono({
   preload: false,
 })
 
-export const metadata = {
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://tac-xpress.com"),
   title: "TAC-XPRESS | Air and surface cargo",
   description:
     "Air and surface cargo between Northeast India and New Delhi. Explore services, prepare your shipment and track with your AWB.",

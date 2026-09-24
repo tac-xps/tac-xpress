@@ -3,7 +3,8 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import { ArrowUpRight, ChevronDown, ChevronUp, Package, Truck, Search } from "lucide-react"
-import { HeroLottieTruck } from "./hero-lottie-truck"
+import dynamic from "next/dynamic"
+const HeroLottieTruck = dynamic(() => import("./hero-lottie-truck").then(mod => mod.HeroLottieTruck), { ssr: false })
 import { HeroDispatchConsole } from "./hero-dispatch-console"
 import { cn } from "@/lib/utils"
 import {
@@ -11,6 +12,7 @@ import {
   useReducedMotion,
   AnimatePresence,
 } from "motion/react"
+import { TrackForm } from "./track-form"
 import { MagneticButton } from "./magnetic-button"
 
 /**
@@ -148,33 +150,9 @@ export function HomeHero() {
             </motion.p>
 
             {/* Quick AWB Consignment Tracking Input */}
-            <motion.form
-              action="/track"
-              method="get"
-              aria-label="Track a consignment by AWB number"
-              className="mt-6 flex max-w-md items-center border border-border bg-card focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all shadow-xs"
-              variants={fadeUp}
-              custom={dur(0.30)}
-            >
-              <div className="pl-3.5 text-muted-foreground" aria-hidden="true">
-                <Search className="size-4 text-primary" />
-              </div>
-              <input
-                name="awb"
-                type="text"
-                required
-                maxLength={40}
-                placeholder="Enter AWB number (e.g. TAC-948210)..."
-                className="h-11 flex-1 bg-transparent px-3 font-mono text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="h-11 px-4 sm:px-5 bg-primary text-primary-foreground font-mono text-xs font-semibold uppercase tracking-wider hover:bg-primary/90 transition-colors shrink-0 flex items-center gap-1.5 active:scale-[0.97]"
-              >
-                <span>Track</span>
-                <ArrowUpRight className="size-3.5 text-primary-foreground/80" aria-hidden="true" />
-              </button>
-            </motion.form>
+            <motion.div variants={fadeUp} custom={dur(0.30)} className="mt-6">
+              <TrackForm variant="inline" />
+            </motion.div>
 
             {/* CTA Actions */}
             <motion.div

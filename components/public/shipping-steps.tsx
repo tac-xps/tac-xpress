@@ -2,69 +2,52 @@
 
 // Adapted from @tailark-oss/veil-content-2 with an ordered shipping process.
 import { useRef, useState } from "react"
-import { useGSAP } from "@gsap/react"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useEffect } from "react"
 import { motion, useReducedMotion, AnimatePresence } from "motion/react"
 import { bookingSteps } from "./shipping-content"
 import { VerticalRail, VerticalRailStep } from "./vertical-rail"
 
-gsap.registerPlugin(ScrollTrigger)
-
 export function ShippingSteps() {
-  const sectionRef = useRef<HTMLElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)
   const railRef = useRef<HTMLDivElement>(null)
   const [activeStep, setActiveStep] = useState(-1)
   const shouldReduceMotion = useReducedMotion()
 
-  useGSAP(
-    () => {
-      if (shouldReduceMotion) return
+  useEffect(() => {
+    if (shouldReduceMotion) return
+    const rail = railRef.current
+    if (!rail) return
 
-      const heading = headingRef.current
-      const rail = railRef.current
-      if (!heading || !rail) return
-
-      // ── Heading children stagger in ──────────────────────────────────────
-      gsap.fromTo(
-        heading.querySelectorAll(".animate-child"),
-        { autoAlpha: 0, y: 36 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.8,
-          stagger: 0.14,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: heading,
-            start: "top 80%",
-            once: true,
-          },
-        },
-      )
-
-      // ── Per-step activation via ScrollTrigger ────────────────────────────
-      const stepEls = rail.querySelectorAll("li")
-      stepEls.forEach((el, i) => {
-        ScrollTrigger.create({
-          trigger: el,
-          start: "top 65%",
-          end: "bottom 30%",
-          once: false,
-          onEnter: () => setActiveStep(i),
-          onLeaveBack: () => setActiveStep(i - 1),
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const index = Number(entry.target.getAttribute("data-index"))
+          if (entry.isIntersecting) {
+            setActiveStep((prev) => Math.max(prev, index))
+          } else if (entry.boundingClientRect.y > 0) {
+            // Scrolling up past it
+            setActiveStep((prev) => (prev === index ? index - 1 : prev))
+          }
         })
-      })
-    },
-    { scope: sectionRef, dependencies: [shouldReduceMotion] },
-  )
+      },
+      {
+        rootMargin: "-30% 0px -65% 0px", // equivalent to start: "top 65%", end: "bottom 30%"
+      }
+    )
+
+    const stepEls = rail.querySelectorAll("li")
+    stepEls.forEach((el, i) => {
+      el.setAttribute("data-index", String(i))
+      observer.observe(el)
+    })
+
+    return () => observer.disconnect()
+  }, [shouldReduceMotion])
 
   const ease = [0.16, 1, 0.3, 1] as const
 
   return (
     <section
-      ref={sectionRef}
       className="cargo-container cargo-section"
       aria-labelledby="booking-title"
     >
@@ -73,20 +56,37 @@ export function ShippingSteps() {
 
         {/* ── Left: Heading + sticky progress ─────────────────────────── */}
         <div>
-          <div ref={headingRef} className="lg:sticky lg:top-32">
-            <p className="animate-child cargo-eyebrow mb-5 text-muted-foreground">
+          <motion.div
+            ref={headingRef}
+            className="lg:sticky lg:top-32"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-20% 0px" }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.14 } }
+            }}
+          >
+            <motion.p
+              variants={{ hidden: { opacity: 0, y: 36 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } }}
+              className="cargo-eyebrow mb-5 text-muted-foreground"
+            >
               02 / From enquiry to delivery
-            </p>
-            <h2
+            </motion.p>
+            <motion.h2
+              variants={{ hidden: { opacity: 0, y: 36 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } }}
               id="booking-title"
-              className="animate-child cargo-heading"
+              className="cargo-heading"
             >
               A little preparation.
               <br />A clearer journey.
-            </h2>
-            <p className="animate-child mt-5 leading-relaxed text-muted-foreground">
+            </motion.h2>
+            <motion.p
+              variants={{ hidden: { opacity: 0, y: 36 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } }}
+              className="mt-5 leading-relaxed text-muted-foreground"
+            >
               Here is what happens before and after your goods are handed over.
-            </p>
+            </motion.p>
 
             {/* ── Step progress tracker ─────────────────────────────── */}
             <motion.div
@@ -154,7 +154,7 @@ export function ShippingSteps() {
                 </AnimatePresence>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         </div>
 
         {/* ── Right: Rail ─────────────────────────────────────────────── */}

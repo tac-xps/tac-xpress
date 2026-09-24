@@ -12,7 +12,7 @@ import {
   shipments,
   vehicles,
 } from "@/lib/db/schema"
-import { and, eq, isNull, notExists, ilike, or, inArray, desc } from "drizzle-orm"
+import { and, eq, isNull, notExists, ilike, or, inArray, desc, sql } from "drizzle-orm"
 import { format } from "date-fns"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { FileText, Search, Download, Filter } from "lucide-react"
@@ -33,7 +33,6 @@ import { ExportManifestButton } from "./export-button"
 import { ManifestClientTable } from "./manifest-client-table"
 import {
   DEFAULT_PAGE_SIZE,
-  PageNavigation,
   parsePage,
 } from "@/components/ui/page-navigation"
 
@@ -52,6 +51,7 @@ export default async function ManifestsPage({
   const sortColumns = { referenceId: manifests.referenceId, createdAt: manifests.createdAt, status: manifests.status }
   const [
     manifestRows,
+    countResult,
     pendingShipments,
     hubOptions,
     vehicleOptions,
@@ -71,9 +71,12 @@ export default async function ManifestsPage({
           },
         },
       },
-      limit: DEFAULT_PAGE_SIZE + 1,
+      limit: DEFAULT_PAGE_SIZE,
       offset: (page - 1) * DEFAULT_PAGE_SIZE,
     }),
+    db.select({ count: sql<number>`count(*)` }).from(manifests).where(
+      and(query.status !== "all" ? eq(manifests.status, query.status as "draft" | "finalized") : undefined, query.q ? or(ilike(manifests.referenceId, pattern), inArray(manifests.originHubId, db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern))), inArray(manifests.destinationHubId, db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern)))) : undefined)
+    ),
     db
       .select({
         id: shipments.id,
@@ -106,9 +109,10 @@ export default async function ManifestsPage({
       .select({ id: drivers.id, label: drivers.name })
       .from(drivers)
       .where(and(eq(drivers.status, "active"), isNull(drivers.deletedAt))),
-  ])
-  const hasNext = manifestRows.length > DEFAULT_PAGE_SIZE
-  const allManifests = manifestRows.slice(0, DEFAULT_PAGE_SIZE)
+    ])
+  const totalCount = Number(countResult[0].count)
+  const pageCount = Math.ceil(totalCount / DEFAULT_PAGE_SIZE)
+  const allManifests = manifestRows
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 md:gap-8">
@@ -116,13 +120,7 @@ export default async function ManifestsPage({
       <Card className="relative overflow-hidden delay-0">
 <TableToolbar pathname="/dashboard/manifests" query={query.q} status={query.status} sort={query.sort} order={query.order} statuses={[{ value: "draft", label: "Draft" }, { value: "finalized", label: "Finalized" }]} placeholder="Manifest reference or hub name" />
         <CardContent className="p-0">
-          <ManifestClientTable manifests={allManifests} sort={query.sort} order={query.order} />
-          <PageNavigation
-            page={page}
-            hasNext={hasNext}
-            pathname="/dashboard/manifests"
-            query={query}
-          />
+          <ManifestClientTable manifests={allManifests} pageCount={pageCount} />
         </CardContent>
       </Card>
     </div>
