@@ -26,6 +26,11 @@ export interface QueueItem {
   column: string
   name?: string
   isAssigned?: boolean
+  legInfo?: {
+    legNumber: number
+    totalLegs: number
+    currentRoute: string
+  }
 }
 export function DispatchClientLayout({
   pendingShipments,

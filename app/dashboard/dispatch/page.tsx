@@ -35,6 +35,7 @@ export default async function DispatchPage({
       and(ne(shipments.status, "delivered"), isNull(shipments.deletedAt)),
     with: {
       manifestItems: true,
+      legs: true,
     },
     orderBy: (table, { desc }) => [desc(table.createdAt), desc(table.id)],
     limit: 100,
@@ -48,6 +49,20 @@ export default async function DispatchPage({
     let columnId: string = s.status
     if (s.status === "in-transit") columnId = "in_transit"
 
+    const sortedLegs = s.legs ? [...s.legs].sort((a, b) => a.legNumber - b.legNumber) : []
+    const activeLeg =
+      sortedLegs.find((l) => l.status === "in_transit") ??
+      sortedLegs.find((l) => l.status === "pending")
+
+    const legInfo =
+      sortedLegs.length > 0 && activeLeg
+        ? {
+            legNumber: activeLeg.legNumber,
+            totalLegs: sortedLegs.length,
+            currentRoute: `${activeLeg.originLocation} → ${activeLeg.destinationLocation}`,
+          }
+        : undefined
+
     return {
       id: s.awbNumber,
       shipmentId: s.id,
@@ -58,6 +73,7 @@ export default async function DispatchPage({
       column: columnId,
       name: s.awbNumber,
       isAssigned: s.manifestItems.length > 0,
+      legInfo,
     }
   })
 

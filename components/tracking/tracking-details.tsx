@@ -1,10 +1,11 @@
 "use client"
 import { useState, useSyncExternalStore } from "react"
-import { MapPin, Package, ArrowRight } from "lucide-react"
+import { MapPin, Package, ArrowRight, CheckCircle2, Truck, CircleDot } from "lucide-react"
 import type { TrackingResult } from "@/types/tracking"
 import { Badge } from "@/components/ui/badge"
 import { PackageTrackerCard } from "@/components/ui/tracker-card"
 import { AnimatePresence, motion } from "framer-motion"
+import { cn } from "@/lib/utils"
 
 interface TrackingDetailsProps {
   result: TrackingResult
@@ -104,6 +105,87 @@ export function TrackingDetails({ result }: TrackingDetailsProps) {
                   </p>
                 </div>
               </div>
+
+              {result.leg_progress && result.leg_progress.totalLegs > 0 && (
+                <div className="mb-8 rounded-none border border-border/60 bg-muted/20 p-5 sm:p-6">
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h3 className="text-sm font-semibold tracking-tight text-foreground">
+                        Multi-Leg Route Progress
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {result.leg_progress.completedLegs} of {result.leg_progress.totalLegs} segments completed ({result.leg_progress.progressPercent}%)
+                      </p>
+                    </div>
+                    <Badge variant={result.leg_progress.isCompleted ? "success" : "secondary"}>
+                      {result.leg_progress.isCompleted
+                        ? "All Legs Completed"
+                        : `Leg ${result.leg_progress.activeLegNumber || 1} Active`}
+                    </Badge>
+                  </div>
+
+                  <div className="mb-5 h-1.5 w-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full bg-primary transition-all duration-500 ease-out"
+                      style={{ width: `${result.leg_progress.progressPercent}%` }}
+                    />
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                    {result.leg_progress.legs.map((leg) => {
+                      const isComplete = leg.status === "completed"
+                      const isInTransit = leg.status === "in_transit"
+                      return (
+                        <div
+                          key={leg.id}
+                          className={cn(
+                            "relative flex flex-col justify-between border p-3 text-xs transition-colors",
+                            isComplete
+                              ? "border-status-delivered/40 bg-status-delivered/5"
+                              : isInTransit
+                                ? "border-primary/50 bg-primary/5 shadow-xs"
+                                : "border-border/40 bg-background/50 text-muted-foreground"
+                          )}
+                        >
+                          <div className="mb-2 flex items-center justify-between">
+                            <span className="font-mono text-[11px] font-semibold text-foreground">
+                              Segment #{leg.legNumber}
+                            </span>
+                            {isComplete ? (
+                              <span className="inline-flex items-center gap-1 font-medium text-status-delivered">
+                                <CheckCircle2 className="size-3.5" />
+                                Done
+                              </span>
+                            ) : isInTransit ? (
+                              <span className="inline-flex items-center gap-1 font-semibold text-primary animate-pulse">
+                                <Truck className="size-3.5" />
+                                In Transit
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-muted-foreground">
+                                <CircleDot className="size-3.5" />
+                                Pending
+                              </span>
+                            )}
+                          </div>
+                          <div className="space-y-1">
+                            <p className="font-medium text-foreground leading-tight">
+                              {leg.originLocation}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground">
+                              ↓ to
+                            </p>
+                            <p className="font-medium text-foreground leading-tight">
+                              {leg.destinationLocation}
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
               <h3 className="mb-6 text-lg font-semibold">Latest updates</h3>
               {result.events.length ? (
                 <ol className="flex flex-col gap-6">

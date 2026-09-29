@@ -45,12 +45,39 @@ export async function trackAwb(formData: FormData) {
     const validEvents = rows.filter(r => r.event && r.event.id)
     const displayStatus = validEvents.length > 0 ? validEvents[0].event!.status : "pending"
 
+    let legProgress = null
+    try {
+      const { getShipmentLegProgress } = await import("@/lib/shipments/legs")
+      const rawProgress = await getShipmentLegProgress(shipment.shipment_id)
+      if (rawProgress.totalLegs > 0) {
+        legProgress = {
+          totalLegs: rawProgress.totalLegs,
+          completedLegs: rawProgress.completedLegs,
+          activeLegNumber: rawProgress.activeLeg?.legNumber ?? null,
+          isCompleted: rawProgress.isCompleted,
+          progressPercent: rawProgress.progressPercent,
+          legs: rawProgress.legs.map((leg) => ({
+            id: leg.id,
+            legNumber: leg.legNumber,
+            originLocation: leg.originLocation,
+            destinationLocation: leg.destinationLocation,
+            status: leg.status,
+            startedAt: leg.startedAt ? leg.startedAt.toISOString() : null,
+            completedAt: leg.completedAt ? leg.completedAt.toISOString() : null,
+          })),
+        }
+      }
+    } catch {
+      // Non-fatal if legs aren't present
+    }
+
     await capturePostHogEvent("public_tracking_lookup", "public_tracker", { awb_number: awb, success: true, status: displayStatus })
     return { success: true, data: {
       awb_number: shipment.awb_number, origin: shipment.origin, destination: shipment.destination,
       status: displayStatus || "pending", service: shipment.service, created_at: shipment.created_at.toISOString(),
       estimated_delivery: shipment.estimated_delivery?.toISOString(), current_location: validEvents.length > 0 ? validEvents[0].event!.location : shipment.origin,
       events: validEvents.map(row => ({ ...row.event!, event_time: row.event!.event_time?.toISOString() || row.event!.created_at?.toISOString() || new Date().toISOString(), created_at: row.event!.created_at?.toISOString() || new Date().toISOString() })),
+      leg_progress: legProgress,
     } }
   } catch (error) {
     Sentry.captureException(error, { tags: { area: "public_tracking" } })

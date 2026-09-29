@@ -6,7 +6,8 @@ import { supabaseAdmin } from "@/lib/supabase/clients"
 export async function applySLA(
   ticketId: string,
   priority: string,
-  category?: string
+  category?: string,
+  urgencyScore?: number
 ) {
   // Find matching policy (exact category match first, then priority-only fallback)
   const { data: policy, error: policyError } = await supabaseAdmin
@@ -37,8 +38,15 @@ export async function applySLA(
     throw ticketError || new Error("Ticket unavailable.")
   // Retrying triage must not postpone the customer's response deadline.
   const now = new Date(ticket.created_at)
-  const firstResponseMs = policy.first_response_minutes * 60000
-  const resolutionMs = policy.resolution_minutes * 60000
+  let firstResponseMs = policy.first_response_minutes * 60000
+  let resolutionMs = policy.resolution_minutes * 60000
+
+  // Urgency-based SLA recalibration (Phase 2.4): if urgencyScore === 2, accelerate SLA deadline by 50%
+  const isAccelerated = urgencyScore === 2
+  if (isAccelerated) {
+    firstResponseMs = Math.round(firstResponseMs * 0.5)
+    resolutionMs = Math.round(resolutionMs * 0.5)
+  }
 
   const firstResponseDeadline = new Date(now.getTime() + firstResponseMs)
   const resolutionDeadline = new Date(now.getTime() + resolutionMs)
@@ -65,6 +73,8 @@ export async function applySLA(
       priority,
       category: category ?? null,
       policy_id: policy.id,
+      urgency_score: urgencyScore ?? null,
+      sla_accelerated_50_pct: isAccelerated,
     },
   })
 }

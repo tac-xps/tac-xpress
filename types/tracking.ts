@@ -27,6 +27,25 @@ export interface TrackingEvent {
   notes?: string
 }
 
+export interface PublicLegItem {
+  id: string
+  legNumber: number
+  originLocation: string
+  destinationLocation: string
+  status: string
+  startedAt?: string | null
+  completedAt?: string | null
+}
+
+export interface PublicLegProgress {
+  totalLegs: number
+  completedLegs: number
+  activeLegNumber: number | null
+  isCompleted: boolean
+  progressPercent: number
+  legs: PublicLegItem[]
+}
+
 export interface TrackingResult {
   awb_number: string
   origin: string
@@ -39,4 +58,5 @@ export interface TrackingResult {
   events: TrackingEvent[]
   current_location?: string
   estimated_delivery?: string
+  leg_progress?: PublicLegProgress | null
 }

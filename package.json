@@ -87,6 +87,7 @@
     "@tiptap/react": "^3.31.3",
     "@tiptap/starter-kit": "^3.31.3",
     "@tiptap/suggestion": "^3.31.3",
+    "@typesafe-ai/sdk": "^0.6.0",
     "ai": "^6.0.195",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",

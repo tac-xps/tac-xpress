@@ -8,6 +8,7 @@ import { z } from "zod"
 import { safeParse } from "@/lib/validation/guard"
 import { getPublicShipmentContext } from "@/lib/support/public-shipment-context"
 import * as Sentry from "@sentry/nextjs"
+import { evaluateReplyGuardrail } from "@/lib/jev/reply-guardrail"
 import {
   normalizeWhatsAppPhone,
   sendWhatsAppTextMessage,
@@ -105,7 +106,60 @@ export async function generateAutoReply(
 
   const reply = replyContent
 
-  // Insert as ticket reply
+  // Evaluate draft reply against AI safety guardrails (false claims & unauthorized promises)
+  const guardrail = await evaluateReplyGuardrail({
+    reply,
+    category: input.category,
+    shipmentContext: safeShipmentContext,
+  })
+
+  if (!guardrail.passed) {
+    console.warn(
+      `[AI Responder] Draft blocked by guardrail (${guardrail.provider}):`,
+      guardrail.reason
+    )
+
+    // Persist blocked draft internally for staff review
+    await supabaseAdmin.from("ticket_replies").insert({
+      ticket_id: input.ticketId,
+      message: `⚠️ [BLOCKED BY AI SAFETY GUARDRAIL - REQUIRES STAFF REVIEW]\n\nDrafted Reply:\n${reply}\n\nReason: ${guardrail.reason ?? "Safety score exceeded threshold"}`,
+      sender_type: "ai",
+      sender_name: "TAC-XPRESS AI Safety Guardrail",
+      is_internal: true,
+      created_at: new Date().toISOString(),
+    })
+
+    // Flag ticket for operator review
+    await supabaseAdmin
+      .from("tickets")
+      .update({
+        needs_human_review: true,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", input.ticketId)
+
+    await logAudit({
+      action: "ai_auto_reply_blocked",
+      entity: "tickets",
+      entityId: input.ticketId,
+      userEmail: "ai-responder@system",
+      metadata: {
+        category: input.category,
+        guardrail_provider: guardrail.provider,
+        reason: guardrail.reason,
+        falseClaimProbability: guardrail.falseClaimProbability,
+        unauthorizedPromiseProbability: guardrail.unauthorizedPromiseProbability,
+      },
+      after: {
+        auto_reply_blocked: true,
+        needs_human_review: true,
+      },
+    })
+
+    return null
+  }
+
+  // Insert verified reply as visible ticket reply
   await supabaseAdmin.from("ticket_replies").insert({
     ticket_id: input.ticketId,
     message: reply,
@@ -196,6 +250,8 @@ export async function generateAutoReply(
       shipment: shipment?.awb_number,
       prompt_length: AUTO_REPLY_PROMPT.length,
       reply_length: reply.length,
+      guardrail_provider: guardrail.provider,
+      guardrail_passed: true,
     },
     after: {
       status: "awaiting_customer",
