@@ -4,6 +4,7 @@
 import { useRef, useState } from "react"
 import { useEffect } from "react"
 import { motion, useReducedMotion, AnimatePresence } from "motion/react"
+import { cn } from "@/lib/utils"
 import { bookingSteps } from "./shipping-content"
 import { VerticalRail, VerticalRailStep } from "./vertical-rail"
 
@@ -99,13 +100,10 @@ export function ShippingSteps() {
             </motion.p>
 
             {/* ── Step progress tracker ─────────────────────────────── */}
-            <motion.div
+            <div
               aria-live="polite"
               aria-atomic="true"
               className="animate-child mt-10 space-y-3"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
             >
               {bookingSteps.map((step, i) => (
                 <button
@@ -130,19 +128,14 @@ export function ShippingSteps() {
                   />
 
                   {/* Step label */}
-                  <motion.span
-                    className="font-mono text-[10px] tracking-widest whitespace-nowrap"
-                    animate={{
-                      color:
-                        i === activeStep
-                          ? "var(--color-primary)"
-                          : "var(--color-foreground)",
-                      opacity: i === activeStep ? 1 : 0.7,
-                    }}
-                    transition={{ duration: 0.35 }}
+                  <span
+                    className={cn(
+                      "font-mono text-[10px] tracking-widest whitespace-nowrap transition-colors",
+                      i === activeStep ? "text-primary font-semibold" : "text-foreground"
+                    )}
                   >
                     {`0${i + 1}`}
-                  </motion.span>
+                  </span>
                 </button>
               ))}
 
@@ -163,7 +156,7 @@ export function ShippingSteps() {
                   )}
                 </AnimatePresence>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         </div>
 

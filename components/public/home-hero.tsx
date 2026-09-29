@@ -135,9 +135,9 @@ export function HomeHero() {
               variants={fadeUp}
               custom={dur(0.15)}
             >
-              RAPID TRACE,
+              Your world.
               <br />
-              <span className="text-primary">CLEAR</span> PATHS
+              <span className="text-primary">On the move.</span>
             </motion.h1>
 
             {/* Subtitle */}

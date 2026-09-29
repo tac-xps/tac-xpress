@@ -125,25 +125,15 @@ export function NavDesktopLinks() {
   const currentIndicator = hoveredHref ?? activeHref
 
   return (
-    <motion.div
-      initial={shouldReduceMotion ? false : "hidden"}
-      animate="visible"
-      variants={{
-        hidden: {},
-        visible: { transition: { staggerChildren: shouldReduceMotion ? 0 : 0.07, delayChildren: shouldReduceMotion ? 0 : 0.2 } },
-      }}
+    <div
       className="hidden items-center gap-8 text-sm lg:flex"
       onMouseLeave={() => setHoveredHref(null)}
     >
       {links.map((link) => {
         const isActive = activeHref === link.href
         return (
-          <motion.div
+          <div
             key={link.href}
-            variants={{
-              hidden: { opacity: 0, y: shouldReduceMotion ? 0 : -10 },
-              visible: { opacity: 1, y: 0, transition: { duration: shouldReduceMotion ? 0 : 0.45, ease: "easeOut" } },
-            }}
             className="relative py-1"
             onMouseEnter={() => setHoveredHref(link.href)}
             onFocus={() => setHoveredHref(link.href)}
@@ -175,10 +165,10 @@ export function NavDesktopLinks() {
                 aria-hidden="true"
               />
             )}
-          </motion.div>
+          </div>
         )
       })}
-    </motion.div>
+    </div>
   )
 }
 
