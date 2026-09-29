@@ -7,10 +7,11 @@ import { StaffClientTable } from "./staff-client-table"
 import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
 import {
-  DEFAULT_PAGE_SIZE,
-  parsePage,
-} from "@/components/ui/page-navigation"
-import { containsPattern, firstParam, type RecordSearchParams } from "@/lib/table-query"
+  containsPattern,
+  parseRecordQuery,
+  recordOrder,
+  type RecordSearchParams,
+} from "@/lib/table-query"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -25,15 +26,26 @@ export default async function StaffPage({
   await requireAdminPage()
 
   const params = await searchParams
-  const page = parsePage(params.page)
-  const q = firstParam(params.q).trim().slice(0, 100)
-  const pattern = containsPattern(q)
+  const query = parseRecordQuery(
+    params,
+    ["name", "email", "role", "createdAt"] as const,
+    "role"
+  )
+  const pattern = containsPattern(query.q)
+
+  const sortColumns = {
+    name: users.name,
+    email: users.email,
+    role: users.role,
+    createdAt: users.createdAt,
+  }
+  const sortColumn = sortColumns[query.sort as keyof typeof sortColumns] ?? users.role
 
   const staffRows = await db.query.users.findMany({
     where: and(
       isNull(users.deletedAt),
       inArray(users.role, ["staff", "admin"]),
-      q
+      query.q
         ? or(
             ilike(users.name, pattern),
             ilike(users.email, pattern),
@@ -41,9 +53,9 @@ export default async function StaffPage({
           )
         : undefined
     ),
-    orderBy: [desc(users.role), desc(users.createdAt)],
-    limit: DEFAULT_PAGE_SIZE,
-    offset: (page - 1) * DEFAULT_PAGE_SIZE,
+    orderBy: [recordOrder(sortColumn, query.order), desc(users.createdAt)],
+    limit: query.pageSize,
+    offset: (query.page - 1) * query.pageSize,
   })
 
   const countResult = await db
@@ -53,7 +65,7 @@ export default async function StaffPage({
       and(
         isNull(users.deletedAt),
         inArray(users.role, ["staff", "admin"]),
-        q
+        query.q
           ? or(
               ilike(users.name, pattern),
               ilike(users.email, pattern),
@@ -63,7 +75,7 @@ export default async function StaffPage({
       )
     )
   const totalCount = Number(countResult[0].count)
-  const pageCount = Math.ceil(totalCount / DEFAULT_PAGE_SIZE)
+  const pageCount = Math.ceil(totalCount / query.pageSize)
 
   return (
     <div className="flex min-w-0 flex-col gap-6">
@@ -77,7 +89,9 @@ export default async function StaffPage({
       <div className="rounded-none border bg-card">
         <TableToolbar
           pathname="/dashboard/staff"
-          query={q}
+          query={query.q}
+          sort={query.sort}
+          order={query.order}
           placeholder="Search by name, email, or phone..."
         />
         <StaffClientTable

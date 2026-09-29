@@ -13,7 +13,7 @@ interface DataTableToolbarProps<TData> {
 
 export function DataTableToolbar<TData>({
   table,
-  searchKey = "id",
+  searchKey,
   searchPlaceholder = "Search...",
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
@@ -21,14 +21,16 @@ export function DataTableToolbar<TData>({
   return (
     <div className="flex items-center justify-between p-1">
       <div className="flex flex-1 items-center space-x-2">
-        <Input
-          placeholder={searchPlaceholder}
-          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(searchKey)?.setFilterValue(event.target.value)
-          }
-          className="h-8 w-36 lg:w-64"
-        />
+        {searchKey && (
+          <Input
+            placeholder={searchPlaceholder}
+            value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn(searchKey)?.setFilterValue(event.target.value)
+            }
+            className="h-8 w-36 lg:w-64"
+          />
+        )}
         {/* We can add faceted filters here dynamically if passed as props */}
         {isFiltered && (
           <Button

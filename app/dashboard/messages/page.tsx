@@ -22,7 +22,6 @@ export default async function MessagesPage({
 }) {
   await requireStaffPage()
   const params = await searchParams
-  const page = parsePage(params.page)
   const query = parseRecordQuery(
     params,
     ["created_at", "customer_name"],
@@ -68,8 +67,8 @@ export default async function MessagesPage({
         ),
         desc(ticketsTable.id)
       )
-      .limit(DEFAULT_PAGE_SIZE)
-      .offset((page - 1) * DEFAULT_PAGE_SIZE),
+      .limit(query.pageSize)
+      .offset((query.page - 1) * query.pageSize),
     db
       .select({ count: sql<number>`count(*)` })
       .from(ticketsTable)
@@ -111,7 +110,7 @@ export default async function MessagesPage({
       .limit(25),
   ])
   const totalCount = Number(countResult[0].count)
-  const pageCount = Math.ceil(totalCount / DEFAULT_PAGE_SIZE)
+  const pageCount = Math.ceil(totalCount / query.pageSize)
   const tickets = rows
     .map((ticket) => ({
       id: ticket.id,

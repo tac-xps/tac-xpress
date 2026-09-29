@@ -14,12 +14,24 @@ export async function GET(request: Request) {
     const referer = request.headers.get("referer")
     const host = request.headers.get("host")
     
-    // Basic origin/referer protection against hotlinking
-    if (origin && !origin.includes(host ?? "")) {
-      return NextResponse.json({ error: "Invalid origin." }, { status: 403 })
+    // Strict origin/referer protection against hotlinking
+    if (origin) {
+      try {
+        if (new URL(origin).host !== host) {
+          return NextResponse.json({ error: "Invalid origin." }, { status: 403 })
+        }
+      } catch {
+        return NextResponse.json({ error: "Invalid origin." }, { status: 403 })
+      }
     }
-    if (!origin && referer && !referer.includes(host ?? "")) {
-      return NextResponse.json({ error: "Invalid referer." }, { status: 403 })
+    if (!origin && referer) {
+      try {
+        if (new URL(referer).host !== host) {
+          return NextResponse.json({ error: "Invalid referer." }, { status: 403 })
+        }
+      } catch {
+        return NextResponse.json({ error: "Invalid referer." }, { status: 403 })
+      }
     }
 
     const { data, error } = await supabaseAdmin.storage.from("cargo-documents").download(path)
@@ -35,7 +47,7 @@ export async function GET(request: Request) {
       headers: { 
         "Content-Type": contentType, 
         "Content-Disposition": `inline; filename="${parsed.filename.replace(/^[a-f0-9-]{36}_/, "")}"`, 
-        "Cache-Control": "private, max-age=3600, stale-while-revalidate=86400", 
+        "Cache-Control": "private, no-store", 
         "X-Content-Type-Options": "nosniff" 
       } 
     })

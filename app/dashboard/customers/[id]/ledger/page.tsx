@@ -1,28 +1,24 @@
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { invoices, users, shipments } from "@/lib/db/schema"
-import { eq, desc } from "drizzle-orm"
+import { eq, desc, sql } from "drizzle-orm"
 import { notFound } from "next/navigation"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { LedgerDataTable, type CustomerInvoiceRow } from "./ledger-data-table"
+import { parseRecordQuery, type RecordSearchParams } from "@/lib/table-query"
 
 export const dynamic = "force-dynamic"
 
 export default async function CustomerLedgerPage(props: {
   params: Promise<{ id: string }>
+  searchParams: Promise<RecordSearchParams>
 }) {
   await requireStaffPage()
 
   const params = await props.params
+  const searchParams = await props.searchParams
   const customerId = params.id
+  const { page, pageSize } = parseRecordQuery(searchParams, [])
 
   const customer = await db.query.users.findFirst({
     where: eq(users.id, customerId),
@@ -32,33 +28,46 @@ export default async function CustomerLedgerPage(props: {
     notFound()
   }
 
-  const customerInvoices = await db
+  const [customerInvoices, countRes] = await Promise.all([
+    db
+      .select({
+        id: invoices.id,
+        amount: invoices.amount,
+        advancePaid: invoices.advancePaid,
+        balanceDue: invoices.balanceDue,
+        status: invoices.status,
+        createdAt: invoices.createdAt,
+        awbNumber: shipments.awbNumber,
+      })
+      .from(invoices)
+      .leftJoin(shipments, eq(invoices.shipmentId, shipments.id))
+      .where(eq(invoices.customerId, customerId))
+      .orderBy(desc(invoices.createdAt))
+      .limit(pageSize)
+      .offset((page - 1) * pageSize),
+    db
+      .select({ count: sql<number>`count(*)` })
+      .from(invoices)
+      .where(eq(invoices.customerId, customerId))
+  ])
+
+  // These sums should ideally come from an aggregate query across all invoices,
+  // but keeping it simple for the current page slice or aggregate everything.
+  // Actually, to get true totals, we should aggregate everything, not just the page.
+  const aggregateSums = await db
     .select({
-      id: invoices.id,
-      amount: invoices.amount,
-      advancePaid: invoices.advancePaid,
-      balanceDue: invoices.balanceDue,
-      status: invoices.status,
-      createdAt: invoices.createdAt,
-      awbNumber: shipments.awbNumber,
+      totalBilled: sql<number>`sum(${invoices.amount})`,
+      totalAdvance: sql<number>`sum(${invoices.advancePaid})`,
+      totalDue: sql<number>`sum(${invoices.balanceDue})`,
     })
     .from(invoices)
-    .leftJoin(shipments, eq(invoices.shipmentId, shipments.id))
     .where(eq(invoices.customerId, customerId))
-    .orderBy(desc(invoices.createdAt))
 
-  const totalBilled = customerInvoices.reduce(
-    (sum, inv) => sum + (inv.amount || 0),
-    0
-  )
-  const totalAdvance = customerInvoices.reduce(
-    (sum, inv) => sum + (inv.advancePaid || 0),
-    0
-  )
-  const totalDue = customerInvoices.reduce(
-    (sum, inv) => sum + (inv.balanceDue || 0),
-    0
-  )
+  const totalBilled = Number(aggregateSums[0].totalBilled) || 0
+  const totalAdvance = Number(aggregateSums[0].totalAdvance) || 0
+  const totalDue = Number(aggregateSums[0].totalDue) || 0
+
+  const pageCount = Math.ceil(Number(countRes[0].count) / pageSize)
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">
@@ -106,58 +115,7 @@ export default async function CustomerLedgerPage(props: {
         </Card>
       </div>
 
-      <div className="mt-4 border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>AWB Number</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Billed</TableHead>
-              <TableHead className="text-right">Paid</TableHead>
-              <TableHead className="text-right">Due</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {customerInvoices.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
-                  No invoices found for this customer.
-                </TableCell>
-              </TableRow>
-            ) : (
-              customerInvoices.map((inv) => (
-                <TableRow key={inv.id}>
-                  <TableCell>
-                    {new Date(inv.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {inv.awbNumber || "N/A"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        inv.status === "paid" ? "default" : "destructive"
-                      }
-                    >
-                      {inv.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    ₹{((inv.amount || 0) / 100).toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-trend-positive text-right">
-                    ₹{((inv.advancePaid || 0) / 100).toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right font-bold text-destructive">
-                    ₹{((inv.balanceDue || 0) / 100).toLocaleString()}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <LedgerDataTable data={customerInvoices as CustomerInvoiceRow[]} pageCount={pageCount} />
     </div>
   )
 }

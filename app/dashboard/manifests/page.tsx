@@ -44,7 +44,6 @@ export default async function ManifestsPage({
   await requireStaffPage()
 
   const params = await searchParams
-  const page = parsePage(params.page)
   const query = parseRecordQuery(params, ["referenceId", "createdAt", "status"])
   if (!["draft", "finalized"].includes(query.status)) query.status = "all"
   const pattern = containsPattern(query.q)
@@ -71,8 +70,8 @@ export default async function ManifestsPage({
           },
         },
       },
-      limit: DEFAULT_PAGE_SIZE,
-      offset: (page - 1) * DEFAULT_PAGE_SIZE,
+      limit: query.pageSize,
+      offset: (query.page - 1) * query.pageSize,
     }),
     db.select({ count: sql<number>`count(*)` }).from(manifests).where(
       and(query.status !== "all" ? eq(manifests.status, query.status as "draft" | "finalized") : undefined, query.q ? or(ilike(manifests.referenceId, pattern), inArray(manifests.originHubId, db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern))), inArray(manifests.destinationHubId, db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern)))) : undefined)
@@ -111,7 +110,7 @@ export default async function ManifestsPage({
       .where(and(eq(drivers.status, "active"), isNull(drivers.deletedAt))),
     ])
   const totalCount = Number(countResult[0].count)
-  const pageCount = Math.ceil(totalCount / DEFAULT_PAGE_SIZE)
+  const pageCount = Math.ceil(totalCount / query.pageSize)
   const allManifests = manifestRows
 
   return (

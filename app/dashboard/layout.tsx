@@ -30,13 +30,12 @@ function AppShellSkeleton() {
 }
 
 async function AppShellWrapper({
+  session,
   children,
 }: {
+  session: Awaited<ReturnType<typeof requireDashboardSession>>
   children: React.ReactNode
 }) {
-  const session = await requireDashboardSession().catch(() =>
-    redirect("/signin")
-  )
   const user = await db.query.users.findFirst({
     where: eq(users.id, session.user.id),
     columns: { name: true, avatarUrl: true, isOnboarded: true },
@@ -58,16 +57,20 @@ async function AppShellWrapper({
   )
 }
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const session = await requireDashboardSession().catch(() =>
+    redirect("/signin")
+  )
+
   return (
     <NotificationWrapper>
       <ScannerProvider>
         <Suspense fallback={<AppShellSkeleton />}>
-          <AppShellWrapper>{children}</AppShellWrapper>
+          <AppShellWrapper session={session}>{children}</AppShellWrapper>
         </Suspense>
       </ScannerProvider>
     </NotificationWrapper>

@@ -12,8 +12,8 @@ function createLimiter(max: number, interval: `${number}m` | `${number}h` | `${n
 export const invoicePdfLimiter = createLimiter(20, "1m")
 // Fleet telemetry POST — per-device updates
 export const fleetTelemetryLimiter = createLimiter(60, "1m")
-// WhatsApp / Carrier webhooks — HMAC verified but still rate limited
-export const webhookLimiter = createLimiter(100, "1m")
+// WhatsApp / Carrier webhooks — HMAC verified but still rate limited (sized for provider bursts)
+export const webhookLimiter = createLimiter(600, "1m")
 
 function isArcjetBypassed(): boolean {
   return (

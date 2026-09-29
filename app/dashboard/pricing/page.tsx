@@ -1,60 +1,49 @@
 import { requireStaffPage } from "@/lib/auth/page-access"
 import * as Sentry from "@sentry/nextjs"
 import { Calculator } from "lucide-react"
-import { desc, isNull } from "drizzle-orm"
+import { desc, isNull, sql } from "drizzle-orm"
 
 import { AddPricingRuleDialog } from "./add-pricing-rule-dialog"
-import { PricingActions } from "./pricing-actions"
 import { PricingCalculatorClient } from "./pricing-calculator-client"
+import { PricingDataTable } from "./pricing-data-table"
 import { PricingIcon } from "@/components/icons/sidebar-icons"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { db } from "@/lib/db"
 import { pricingRules } from "@/lib/db/schema"
-import {
-  DEFAULT_PAGE_SIZE,
-  PageNavigation,
-  parsePage,
-} from "@/components/ui/page-navigation"
-
-function formatServiceType(service: string) {
-  return service
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ")
-}
+import { parseRecordQuery, type RecordSearchParams } from "@/lib/table-query"
 
 export default async function PricingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string | string[] }>
+  searchParams: Promise<RecordSearchParams>
 }) {
   await requireStaffPage()
 
-  const page = parsePage((await searchParams).page)
+  const { page, pageSize } = parseRecordQuery(await searchParams, [])
   let rules: (typeof pricingRules.$inferSelect)[] = []
+  let totalCount = 0
 
   try {
-    rules = await db
-      .select()
-      .from(pricingRules)
-      .where(isNull(pricingRules.deletedAt))
-      .orderBy(desc(pricingRules.createdAt))
-      .limit(DEFAULT_PAGE_SIZE + 1)
-      .offset((page - 1) * DEFAULT_PAGE_SIZE)
+    const [rulesData, countData] = await Promise.all([
+      db
+        .select()
+        .from(pricingRules)
+        .where(isNull(pricingRules.deletedAt))
+        .orderBy(desc(pricingRules.createdAt))
+        .limit(pageSize)
+        .offset((page - 1) * pageSize),
+      db
+        .select({ count: sql<number>`count(*)` })
+        .from(pricingRules)
+        .where(isNull(pricingRules.deletedAt))
+    ])
+    rules = rulesData
+    totalCount = Number(countData[0].count)
   } catch (error) {
     Sentry.captureException(error)
     throw error
   }
-  const hasNext = rules.length > DEFAULT_PAGE_SIZE
-  rules = rules.slice(0, DEFAULT_PAGE_SIZE)
+  
+  const pageCount = Math.ceil(totalCount / pageSize)
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 duration-500 animate-in fade-in md:gap-8">
@@ -77,77 +66,7 @@ export default async function PricingPage({
 
       <PricingCalculatorClient />
 
-      <Card className="overflow-hidden border border-border bg-card shadow-card">
-        <CardHeader className="flex flex-row items-center justify-between border-b border-border/50 bg-muted/10 p-6">
-          <CardTitle className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-            <Calculator className="size-5 text-primary" />
-            Active Route Rates
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          {rules.length === 0 ? (
-            <div className="flex min-h-48 flex-col items-center justify-center p-6 text-center">
-              <Calculator className="mb-3 size-8 text-muted-foreground" />
-              <p className="text-sm font-semibold">
-                No pricing rules configured
-              </p>
-              <p className="mt-1 max-w-sm text-xs text-muted-foreground">
-                Add an approved route rate before generating customer quotes.
-              </p>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader className="bg-muted/5">
-                <TableRow>
-                  <TableHead className="pl-6 font-semibold">
-                    Service Type
-                  </TableHead>
-                  <TableHead className="font-semibold">Origin Hub</TableHead>
-                  <TableHead className="font-semibold">
-                    Destination Hub
-                  </TableHead>
-                  <TableHead className="text-right font-semibold">
-                    Base Price
-                  </TableHead>
-                  <TableHead className="text-right font-semibold">
-                    Price per Kg
-                  </TableHead>
-                  <TableHead className="w-20 pr-6" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rules.map((rule) => (
-                  <TableRow key={rule.id}>
-                    <TableCell className="pl-6 font-medium">
-                      {formatServiceType(rule.serviceType)}
-                    </TableCell>
-                    <TableCell className="font-mono uppercase">
-                      {rule.origin}
-                    </TableCell>
-                    <TableCell className="font-mono uppercase">
-                      {rule.destination}
-                    </TableCell>
-                    <TableCell className="text-right font-medium tabular-nums">
-                      ₹{(rule.basePrice / 100).toFixed(2)}
-                    </TableCell>
-                    <TableCell className="text-right font-medium tabular-nums">
-                      ₹{(rule.pricePerKg / 100).toFixed(2)}
-                    </TableCell>
-                    <TableCell className="pr-6 text-center">
-                      <PricingActions rule={rule} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-        <PageNavigation
-          page={page}
-          hasNext={hasNext}
-          pathname="/dashboard/pricing"
-        />
-      </Card>
+      <PricingDataTable data={rules} pageCount={pageCount} />
     </div>
   )
 }

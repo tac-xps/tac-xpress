@@ -31,21 +31,21 @@ Tac-Xpress is functionally coherent but **stuck between two eras**: a polished p
 - `proxy.ts` (`aj` shield + bot + slidingWindow 100/m `DRY_RUN` dev) wraps `auth(handleAuthenticatedRequest)`. Handles unauth → `/signin`, non-staff → `?reason=staff-only`, legacy `/login`/`onboarding` redirects, `x-internal-document-token` bypass for `/invoice/:id`, `actionLimiter` for `next-action` POST, fail-closed `503` on Arcjet ERROR for sensitive routes. `config.matcher` excludes `api/auth|cron|webhooks|public|ingest|_next|monitoring`.
 - `auth.config.ts` + `auth.ts` (NextAuth Credentials → Supabase `signInWithPassword` → reconcile `public.users` by `auth.uid`/`email`, `isStaffRole` gate, E2E synthetic users `000…/111…/222…`).
 - `lib/auth/*`: `roles.ts`, `document-token.ts` (HMAC `pdf`/`render` 5m), `guards.ts` (`requireDashboard*` re-queries DB), `page-access.ts`, `credential-rate-limit.ts`, `verify-mobile-client.ts` (Bearer `MOBILE_API_SECRET`), `e2e-bypass.ts` (6 guards), `supabase/clients.ts` (dummy fallbacks + lazy Proxy).
-- Sentry: `sentry.*.config.ts` — server/edge hardcode DSN, `tracesSampleRate 1`, `sendDefaultPii true`; client uses env `NEXT_PUBLIC_SENTRY_DSN`, `tracesSampleRate 0.2`.
+- Sentry: `sentry.*.config.ts` — server and edge configs use `process.env.SENTRY_DSN`, production `tracesSampleRate 0.2`, and `sendDefaultPii false`; client uses env `NEXT_PUBLIC_SENTRY_DSN`, `tracesSampleRate 0.2`.
 - CSP in `next.config.ts`: `script-src 'self' 'unsafe-inline' https:` + HSTS `preload`.
 
 ### 2.3 Dashboard / Operations Workspace
 - `app/dashboard/layout.tsx` RSC guard → `NotificationWrapper` → `OnboardingTourProvider` → `ScannerProvider` → `AppShell` → `WorkspaceFrame` (`SidebarProvider`, `AppSidebar sticky top-0 h-svh`) + `SiteHeader` + `SystemBanner`.
 - `components/operations/navigation.ts` = 21-item single source (Daily Ops/ Network / Business / Reporting).
 - Overview: `app/dashboard/page.tsx` `Promise.all(getDashboardOverview(), …)` + `lib/dashboard-metrics.ts` + `lib/control-center.ts` + `lib/service-metrics.ts`. All uncached DB aggregates, 90-day/30-day windows.
-- Domains: shipments (`shipment-register.tsx` `mode=all|air|surface|warehouse`), dispatch (`manifests` where `referenceId like PU-%|DL-%` Kanban), manifests (hub loads), warehouse/audit, tracking/live-fleet (not wired to Realtime), fleet (dual `vehicles` vs `fleet_vehicles`), hubs, invoices (cents/GST/paise), communications (`messageOutbound` + `background_jobs` + `email_notifications`), customers/ledger, pricing (`origin/destination` text), support/messages, feedback (second table), staff (admin-only), integrations (`getWhatsAppConfig`), operations air/surface via `OperationsDashboardPage`.
+- Domains: shipments (`shipment-register.tsx` `mode=all, air, surface, warehouse`), dispatch (`manifests` where `referenceId like PU-% or DL-%` Kanban), manifests (hub loads), warehouse/audit, tracking/live-fleet (not wired to Realtime), fleet (dual `vehicles` vs `fleet_vehicles`), hubs, invoices (cents/GST/paise), communications (`messageOutbound` + `background_jobs` + `email_notifications`), customers/ledger, pricing (`origin/destination` text), support/messages, feedback (second table), staff (admin-only), integrations (`getWhatsAppConfig`), operations air/surface via `OperationsDashboardPage`.
 - State: Zustand (`use-app-store.ts` vestigial), Jotai (kibo table only), TanStack Query installed but only used in `useRLS.ts`, TanStack Table heavily used, `nuqs` for URL pagination.
 - Fetch: RSC direct `db.query` + `revalidatePath`; no `unstable_cache`; `hasNext = rows.length > PAGE_SIZE`.
 
 ### 2.4 Data & Integrations
 - `lib/db/schema.ts` 18 tables; 7 operational tables (`background_jobs`, `email_notifications`, `dead_letter_queue`, `audit_log`, `notifications`, `sla_policies`, `fleet_telemetry`) absent from Drizzle, managed by raw `sql` in `supabase/migrations/*` (27 files). `drizzle/*` (`0000-0003`) out of sync with `supabase/migrations`.
-- `app/api/*` 20 routes: `auth/[...nextauth]`, `auth/capabilities`, `cron/communications|slac-check` (`CRON_SECRET`), `webhooks/whatsapp|carrier` (HMAC), `fleet/telemetry` (Bearer + Zod + upsert), `documents/download`, `public/invoice-pdf` (HMAC `pdf`), `cargo-documents/[entity]/[id]` (5 MB magic-byte, origin check, single bucket), `staff-avatar/[id]` (self-only), plus customers/drivers/vehicles/hubs/chat/stream/manifest print/health.
-- Jobs: `lib/jobs/store.ts` (`support_email|support_triage`, `ON CONFLICT (kind,dedupe_key)`, `FOR UPDATE SKIP LOCKED`, `locked_until +5m`, backoff `60*2^n`) + `lib/jobs/worker.ts` (Resend idempotency `ticket-created/${job.id}`, 23h vs 24h window, OpenRouter triage).
+- `app/api/*` 20 routes: `auth/[...nextauth]`, `auth/capabilities`, `cron/communications`, `cron/slac-check` (`CRON_SECRET`), `webhooks/whatsapp`, `webhooks/carrier` (HMAC), `fleet/telemetry` (Bearer + Zod + upsert), `documents/download`, `public/invoice-pdf` (HMAC `pdf`), `cargo-documents/[entity]/[id]` (5 MB magic-byte, origin check, single bucket), `staff-avatar/[id]` (self-only), plus customers/drivers/vehicles/hubs/chat/stream/manifest print/health.
+- Jobs: `lib/jobs/store.ts` (`support_email` / `support_triage`, `ON CONFLICT (kind,dedupe_key)`, `FOR UPDATE SKIP LOCKED`, `locked_until +5m`, backoff `60*2^n`) + `lib/jobs/worker.ts` (Resend idempotency `ticket-created/${job.id}`, 23h vs 24h window, OpenRouter triage).
 - Communications: `lib/whatsapp/service.ts` via WPBox relay (`chat.leminai.com`, `hasSemanticFailure`, phone IN normalisation), `inbound-store.ts` (advisory lock + audit dedup + ack via `after()`), `delivery-status.ts` (monotonic), `email-notifications.ts` (Resend 15s + `email_notifications` log).
 - AI: `app/actions/ai-triage.ts` + `ai-responder.ts` (OpenRouter `gpt-4o-mini`, `withRetry 1`, `publicShipmentContext` leaked to LLM).
 - Fleet: `lib/fleet-telemetry-store.ts` upsert newer wins + 15m staleness filter; `lib/documents/render-invoice-pdf.ts` Chromium `networkidle0` 30s per render.
@@ -65,10 +65,10 @@ Tac-Xpress is functionally coherent but **stuck between two eras**: a polished p
 
 | ID | Area | Finding | Impact |
 |----|------|---------|--------|
-| P0-01 | Auth | `sentry.server/edge.config.ts` hardcodes DSN in repo + `sendDefaultPii true` + `tracesSampleRate 1` | Secret leak / PII / cost blowout |
-| P0-02 | Perimeter | `config.matcher` excludes `api/public|webhooks|cron|auth` from Arcjet; no per-route rate limit on `public/invoice-pdf`, `fleet/telemetry POST`, `webhooks/whatsapp` replay | Abuse/DoS |
+| P0-01 | Auth | `sentry.*.config.ts` — verified server and edge use `process.env.SENTRY_DSN`, production `tracesSampleRate: 0.2`, and `sendDefaultPii: false` | Retain hardened baseline |
+| P0-02 | Perimeter | `config.matcher` excludes `api/public`, `api/webhooks`, `api/cron`, `api/auth` from Arcjet; add per-route rate limits on `public/invoice-pdf`, `fleet/telemetry POST`, `webhooks/whatsapp` | Abuse / DoS prevention |
 | P0-03 | Dashboard | `app/driver/layout.tsx` has zero auth guard; `app/portal/*` are placeholders redirecting customers to staff dashboard | AuthZ bypass / confusion |
-| P0-04 | Data | Dual fleet truth `vehicles` (ops `active|maintenance|retired`, FK `drivers`) vs `fleet_vehicles` (registry `active|maintenance|idle`, FK `users`) + `manifests` overloaded (`PU-|DL-` runs vs line-haul) | Data corruption / divergent queries |
+| P0-04 | Data | Dual fleet truth `vehicles` (ops `active`, `maintenance`, `retired`, FK `drivers`) vs `fleet_vehicles` (registry `active`, `maintenance`, `idle`, FK `users`) + `manifests` overloaded (`PU-` / `DL-` runs vs line-haul) | Data corruption / divergent queries |
 | P0-05 | Storage | Single private bucket `cargo-documents` co-mingles cargo docs + staff avatars + invoice PDFs; `app/api/cargo-documents` origin check fails behind CDN; `upsert:true` on invoice PDF clobbers | Access / overwrite |
 
 ### P1 — High Value, High Friction If Deferred
@@ -94,8 +94,8 @@ Before implementation starts, lock these (recommended answer first):
 
 | Decision | Options | Recommendation |
 |----------|---------|---------------|
-| Fleet truth | (A) Unify to single `vehicles` table | **A** — migrate `fleet_vehicles → vehicles` with `fleet_source` enum (`managed|registry`), keep 15m telemetry on `fleet_telemetry.vehicle_id → vehicles.id` only; stop `registration_number` fallback spoof |
-| Manifest vs Dispatch | (A) Add `manifest_type` enum | **A** — `manifest_type: linehaul|pickup_run|delivery_run` with CHECK on `referenceId` prefix; defer separate `dispatch_runs` table until SLA engine needs leg-completion |
+| Fleet truth | (A) Unify to single `vehicles` table | **A** — migrate `fleet_vehicles → vehicles` with `fleet_source` enum (`managed`, `registry`), keep 15m telemetry on `fleet_telemetry.vehicle_id → vehicles.id` only; stop `registration_number` fallback spoof |
+| Manifest vs Dispatch | (A) Add `manifest_type` enum | **A** — `manifest_type: linehaul, pickup_run, delivery_run` with CHECK on `referenceId` prefix; defer separate `dispatch_runs` table until SLA engine needs leg-completion |
 | Portal | (A) Retire portal entirely | **A for now** — portal is nonfunctional. Remove `app/portal/*` redirects + keep `lib/auth/portal-ownership.ts` for future, or commit to (B) build `verifyPortalSession` + sender-only ledger. Decide at kickoff. |
 | AI auto-reply | (A) Keep disabled, triage only | **A** — keep `AI_AUTO_REPLY_ENABLED=false`, ship `ai-triage` → `needs_human_review` path only; gate auto-reply behind explicit provider acceptance + content moderation review |
 | State libs | (A) Remove Zustand/Jotai | **A** — delete `use-app-store.ts`, remove `jotai` dep, keep `nuqs` + `TanStack Table`; add `QueryProvider` already exists — wire it or remove `tanstack/query` dep |
@@ -113,7 +113,7 @@ Do not parallelise across phases until the phase’s validation passes locally.
 ### Phase 0 — Safety Gates & Baselines (no UI movement)
 
 - **0.1 Env & Secrets**
-  - Replace hardcoded `sentry.server/edge.config.ts` DSN with `process.env.SENTRY_DSN` (fallback only in dev), lower `tracesSampleRate` to `0.2` prod, set `sendDefaultPii false` (or `false` by default + `true` only for explicit allowlist).
+  - Verify `sentry.server/edge.config.ts` uses `process.env.SENTRY_DSN`, production `tracesSampleRate 0.2`, and `sendDefaultPii: false` (already satisfied and verified).
   - Add CI gate: `pnpm verify:production-env` + `pnpm audit --prod` must pass on every PR (Vercel build step already expected).
   - Remove `DEV_FALLBACK_AUTH_SECRET` from client bundle; keep it `server-only` and never export to Storybook/browser.
 
@@ -201,7 +201,7 @@ Do not parallelise across phases until the phase’s validation passes locally.
 
 - **4.1 Sentry & PostHog**
   - Wire `lib/posthog/posthog-server.ts` consistently (`capturePostHogEvent` already used in dispatch/manifest/shipment actions).
-  - Lower `tracesSampleRate`, sample `replays` as today (0.1 sess / 0.5 error). Add `beforeSend` `level` mapping already present — extend to `sla`, `jobs`, `whatsapp` areas.
+  - Maintain production `tracesSampleRate 0.2`, sample `replays` as today (0.1 sess / 0.5 error). Add `beforeSend` `level` mapping already present — extend to `sla`, `jobs`, `whatsapp` areas.
 
 - **4.2 A11y**
   - Fix `MagneticButton` to disable magnet on `focus-visible`, ensure `SheetTrigger` `aria-expanded`, keep `prefers-reduced-motion` disables ship/parallax (`SiteNavigation` already respects). Run `pnpm test:a11y` (axe) on every PR.
@@ -253,7 +253,7 @@ Do not parallelise across phases until the phase’s validation passes locally.
 | Risk | Trigger | Mitigation |
 |------|---------|------------|
 | `vehicles` migration locks prod table | `fleet_vehicles` merge runs on live | Run on staging clone first; use `CONCURRENTLY` indexes + advisory lock; keep rollback migration |
-| Chronium PDF cache serves stale invoice | `invoice.updatedAt` not bumped on payment | Hash includes `amount|balanceDue|status|updatedAt` + short TTL signed URL (1h already) |
+| Chromium PDF cache serves stale invoice | `invoice.updatedAt` not bumped on payment | Hash includes `amount, balanceDue, status, updatedAt` + short TTL signed URL (1h already) |
 | Search index creation blocks writes | `pg_trgm`/gin build on 100k rows | `CREATE INDEX CONCURRENTLY` + statement_timeout 15s already set in `lib/db/index.ts` |
 | Tracking consolidation breaks GET /track | `awb` param handling diverges | Keep `app/track/page.tsx` as canonical, components only render the form; integration test on `?awb=` canonical |
 | WhatsApp relay changes contract | `leminai.com` opaque | Pin `WPBOX_BASE_URL` env, add contract test on `sendViaRelay` payload shape |

@@ -55,7 +55,6 @@ export async function ShipmentRegister({
           : undefined
   await requireStaffPage()
   const params = await searchParams
-  const page = parsePage(params.page)
   const query = parseRecordQuery(params, [
     "awbNumber",
     "origin",
@@ -99,8 +98,8 @@ export async function ShipmentRegister({
       ),
       desc(shipments.id),
     ],
-    limit: DEFAULT_PAGE_SIZE,
-    offset: (page - 1) * DEFAULT_PAGE_SIZE,
+    limit: query.pageSize,
+    offset: (query.page - 1) * query.pageSize,
   })
   
   const countResult = await db
@@ -128,7 +127,7 @@ export async function ShipmentRegister({
       )
     )
   const totalCount = Number(countResult[0].count)
-  const pageCount = Math.ceil(totalCount / DEFAULT_PAGE_SIZE)
+  const pageCount = Math.ceil(totalCount / query.pageSize)
   const data = rows
   return (
     <div className="flex min-w-0 flex-col gap-6">
@@ -137,7 +136,7 @@ export async function ShipmentRegister({
         description="Book, follow and update consignments across the network. Search by AWB, route or contact name."
       >
         <ExportPage
-          filename={`shipments-page-${page}`}
+          filename={`shipments-page-${query.page}`}
           rows={[
             ["AWB", "Origin", "Destination", "Service", "Weight kg", "Status"],
             ...data.map((row) => [

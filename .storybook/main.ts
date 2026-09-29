@@ -1,4 +1,7 @@
+import { createRequire } from 'module';
 import type { StorybookConfig } from '@storybook/nextjs';
+
+const require = createRequire(import.meta.url);
 
 const config: StorybookConfig = {
   stories: [
@@ -15,6 +18,43 @@ const config: StorybookConfig = {
   staticDirs: [
     '../public',
   ],
+  webpackFinal: async (config) => {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'next/dist/client/components/navigation-dynamic-rendering.js': require.resolve(
+        'next/dist/client/components/navigation-dynamic-rendering.browser.js'
+      ),
+      'next/dist/client/components/navigation-dynamic-rendering': require.resolve(
+        'next/dist/client/components/navigation-dynamic-rendering.browser.js'
+      ),
+      'next/dist/client/components/server-async-storage.js': require.resolve(
+        'next/dist/client/components/server-async-storage.browser.js'
+      ),
+      'next/dist/client/components/server-async-storage': require.resolve(
+        'next/dist/client/components/server-async-storage.browser.js'
+      ),
+      'next/dist/client/components/instant-samples.js': require.resolve(
+        'next/dist/client/components/instant-samples.browser.js'
+      ),
+      'next/dist/client/components/instant-samples': require.resolve(
+        'next/dist/client/components/instant-samples.browser.js'
+      ),
+      'next/dist/client/components/client-boundary-params.js': require.resolve(
+        'next/dist/client/components/client-boundary-params.browser.js'
+      ),
+      'next/dist/client/components/client-boundary-params': require.resolve(
+        'next/dist/client/components/client-boundary-params.browser.js'
+      ),
+      'next/dist/client/components/unstable-rethrow.js': require.resolve(
+        'next/dist/client/components/unstable-rethrow.browser.js'
+      ),
+      'next/dist/client/components/unstable-rethrow': require.resolve(
+        'next/dist/client/components/unstable-rethrow.browser.js'
+      ),
+    };
+    return config;
+  },
 };
 
 export default config;

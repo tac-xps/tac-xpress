@@ -44,6 +44,12 @@ const getServerScrollSnapshot = () => 0
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const
 
+function isLinkActive(pathname: string | null, href: string) {
+  if (!pathname) return false
+  if (href === "/") return pathname === "/"
+  return pathname === href || pathname.startsWith(href + "/")
+}
+
 export function NavHeaderShell({
   overlay,
   inverse,
@@ -58,6 +64,8 @@ export function NavHeaderShell({
 
   return (
     <header
+      data-overlay={overlay ? "true" : undefined}
+      data-scrolled={scrolled ? "true" : undefined}
       className={cn(
         "cargo-nav sticky top-0 z-40 border-b transition-colors duration-200",
         inverse && "cargo-inverse",
@@ -86,12 +94,17 @@ function NavScrollProgress({ scrollY }: { scrollY: number }) {
   const [progress, setProgress] = useState(0)
   
   useEffect(() => {
-    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
-    if (scrollHeight > 0) {
-      requestAnimationFrame(() => {
-        setProgress(Math.min(Math.max(scrollY / scrollHeight, 0), 1))
-      })
+    const updateProgress = () => {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
+      if (scrollHeight > 0) {
+        requestAnimationFrame(() => {
+          setProgress(Math.min(Math.max(window.scrollY / scrollHeight, 0), 1))
+        })
+      }
     }
+    updateProgress()
+    window.addEventListener("resize", updateProgress, { passive: true })
+    return () => window.removeEventListener("resize", updateProgress)
   }, [scrollY])
 
   return (
@@ -105,21 +118,19 @@ function NavScrollProgress({ scrollY }: { scrollY: number }) {
 
 export function NavDesktopLinks() {
   const pathname = usePathname()
+  const shouldReduceMotion = useReducedMotion()
   const [hoveredHref, setHoveredHref] = useState<string | null>(null)
 
-  const activeHref = links.find(
-    (link) => pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href + "/"))
-  )?.href
-
+  const activeHref = links.find((link) => isLinkActive(pathname, link.href))?.href
   const currentIndicator = hoveredHref ?? activeHref
 
   return (
     <motion.div
-      initial="hidden"
+      initial={shouldReduceMotion ? false : "hidden"}
       animate="visible"
       variants={{
         hidden: {},
-        visible: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } },
+        visible: { transition: { staggerChildren: shouldReduceMotion ? 0 : 0.07, delayChildren: shouldReduceMotion ? 0 : 0.2 } },
       }}
       className="hidden items-center gap-8 text-sm lg:flex"
       onMouseLeave={() => setHoveredHref(null)}
@@ -130,8 +141,8 @@ export function NavDesktopLinks() {
           <motion.div
             key={link.href}
             variants={{
-              hidden: { opacity: 0, y: -10 },
-              visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
+              hidden: { opacity: 0, y: shouldReduceMotion ? 0 : -10 },
+              visible: { opacity: 1, y: 0, transition: { duration: shouldReduceMotion ? 0 : 0.45, ease: "easeOut" } },
             }}
             className="relative py-1"
             onMouseEnter={() => setHoveredHref(link.href)}
@@ -156,7 +167,7 @@ export function NavDesktopLinks() {
                   "absolute -bottom-1 left-0 right-0 h-[2px]",
                   isActive ? "bg-primary" : "bg-foreground/40"
                 )}
-                transition={{
+                transition={shouldReduceMotion ? { duration: 0 } : {
                   type: "spring",
                   stiffness: 400,
                   damping: 32,
@@ -212,7 +223,7 @@ export function NavMobileSheet() {
           <AnimatePresence>
             {open &&
               links.map((link, i) => {
-                const isActive = pathname === link.href
+                const isActive = isLinkActive(pathname, link.href)
                 return (
                   <motion.div
                     key={link.href}

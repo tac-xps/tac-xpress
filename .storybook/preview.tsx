@@ -108,6 +108,13 @@ const preview: Preview = {
       delay: 300,
     },
 
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        pathname: "/",
+      },
+    },
+
     controls: {
       matchers: {
         color: /(background|color)$/i,

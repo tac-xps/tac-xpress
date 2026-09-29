@@ -23,7 +23,6 @@ export default async function HubsPage({
 }) {
   await requireStaffPage()
   const params = await searchParams
-  const page = parsePage(params.page)
   const query = parseRecordQuery(params, ["createdAt", "name", "location"])
   const pattern = containsPattern(query.q)
   const columns = {
@@ -50,8 +49,8 @@ export default async function HubsPage({
       recordOrder(columns[query.sort as keyof typeof columns], query.order),
       desc(hubs.id)
     )
-    .limit(DEFAULT_PAGE_SIZE)
-    .offset((page - 1) * DEFAULT_PAGE_SIZE)
+    .limit(query.pageSize)
+    .offset((query.page - 1) * query.pageSize)
 
   const countResult = await db
     .select({ count: sql<number>`count(*)` })
@@ -69,7 +68,7 @@ export default async function HubsPage({
       )
     )
   const totalCount = Number(countResult[0].count)
-  const pageCount = Math.ceil(totalCount / DEFAULT_PAGE_SIZE)
+  const pageCount = Math.ceil(totalCount / query.pageSize)
   return (
     <div className="flex min-w-0 flex-col gap-6">
       <PageHeader

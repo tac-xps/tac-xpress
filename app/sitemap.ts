@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://tac-xpress.com';
+  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://tac-xpress.com').replace(/\/+$/, '');
 
   return [
     {
@@ -21,12 +21,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/dashboard`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly', // Private route, so it shouldn't really matter
-      priority: 0.1,
     },
   ];
 }

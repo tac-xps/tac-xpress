@@ -11,6 +11,7 @@ import {
   boolean,
   real,
   jsonb,
+  unique,
 } from "drizzle-orm/pg-core"
 import { sql, relations } from "drizzle-orm"
 
@@ -609,20 +610,26 @@ export const manifestItemsRelations = relations(manifestItems, ({ one }) => ({
 }))
 
 
-export const backgroundJobs = pgTable("background_jobs", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  kind: text("kind").notNull(),
-  dedupeKey: text("dedupe_key").notNull(),
-  payload: jsonb("payload").notNull(),
-  status: text("status").notNull().default("pending"),
-  attempts: integer("attempts").notNull().default(0),
-  availableAt: timestamp("available_at", { withTimezone: true }).notNull().defaultNow(),
-  lockedUntil: timestamp("locked_until", { withTimezone: true }),
-  leaseToken: uuid("lease_token"),
-  lastError: text("last_error"),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  completedAt: timestamp("completed_at", { withTimezone: true }),
-})
+export const backgroundJobs = pgTable(
+  "background_jobs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    kind: text("kind").notNull(),
+    dedupeKey: text("dedupe_key").notNull(),
+    payload: jsonb("payload").notNull(),
+    status: text("status").notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    availableAt: timestamp("available_at", { withTimezone: true }).notNull().defaultNow(),
+    lockedUntil: timestamp("locked_until", { withTimezone: true }),
+    leaseToken: uuid("lease_token"),
+    lastError: text("last_error"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (table) => [
+    unique("background_jobs_kind_dedupe_key_unique").on(table.kind, table.dedupeKey),
+  ]
+)
 
 export const deadLetterQueue = pgTable("dead_letter_queue", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -641,3 +648,5 @@ export type Driver = typeof drivers.$inferSelect
 export type Manifest = typeof manifests.$inferSelect
 export type Ticket = typeof tickets.$inferSelect
 export type TicketReply = typeof ticketReplies.$inferSelect
+export type BackgroundJob = typeof backgroundJobs.$inferSelect
+export type DLQItem = typeof deadLetterQueue.$inferSelect

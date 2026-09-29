@@ -14,7 +14,6 @@ export function ShippingSteps() {
   const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
-    if (shouldReduceMotion) return
     const rail = railRef.current
     if (!rail) return
 
@@ -24,14 +23,17 @@ export function ShippingSteps() {
           const index = Number(entry.target.getAttribute("data-index"))
           if (entry.isIntersecting) {
             setActiveStep((prev) => Math.max(prev, index))
-          } else if (entry.boundingClientRect.y > 0) {
-            // Scrolling up past it
-            setActiveStep((prev) => (prev === index ? index - 1 : prev))
+          } else {
+            const rootTop = entry.rootBounds ? entry.rootBounds.top : 0
+            if (entry.boundingClientRect.top > rootTop) {
+              // Exited below the intersection area (scrolling up)
+              setActiveStep((prev) => (prev === index ? index - 1 : prev))
+            }
           }
         })
       },
       {
-        rootMargin: "-30% 0px -65% 0px", // equivalent to start: "top 65%", end: "bottom 30%"
+        rootMargin: "-65% 0px -30% 0px", // align activation with the "top 65%" threshold
       }
     )
 
@@ -42,9 +44,17 @@ export function ShippingSteps() {
     })
 
     return () => observer.disconnect()
-  }, [shouldReduceMotion])
+  }, [])
 
   const ease = [0.16, 1, 0.3, 1] as const
+  const textVariant = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 36 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: shouldReduceMotion ? 0 : 0.8, ease: "easeOut" as const },
+    },
+  }
 
   return (
     <section
@@ -68,13 +78,13 @@ export function ShippingSteps() {
             }}
           >
             <motion.p
-              variants={{ hidden: { opacity: 0, y: 36 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } }}
+              variants={textVariant}
               className="cargo-eyebrow mb-5 text-muted-foreground"
             >
               02 / From enquiry to delivery
             </motion.p>
             <motion.h2
-              variants={{ hidden: { opacity: 0, y: 36 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } }}
+              variants={textVariant}
               id="booking-title"
               className="cargo-heading"
             >
@@ -82,7 +92,7 @@ export function ShippingSteps() {
               <br />A clearer journey.
             </motion.h2>
             <motion.p
-              variants={{ hidden: { opacity: 0, y: 36 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } }}
+              variants={textVariant}
               className="mt-5 leading-relaxed text-muted-foreground"
             >
               Here is what happens before and after your goods are handed over.
@@ -126,8 +136,8 @@ export function ShippingSteps() {
                       color:
                         i === activeStep
                           ? "var(--color-primary)"
-                          : "var(--color-muted-foreground)",
-                      opacity: i === activeStep ? 1 : i < activeStep ? 0.6 : 0.35,
+                          : "var(--color-foreground)",
+                      opacity: i === activeStep ? 1 : 0.7,
                     }}
                     transition={{ duration: 0.35 }}
                   >

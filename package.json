@@ -11,7 +11,7 @@
   "scripts": {
     "design:lint": "designmd lint docs/DESIGN.md",
     "design:diff": "designmd diff docs/DESIGN.md docs/DESIGN-v2.md",
-    "preinstall": "node -e \"if (!process.env.npm_config_user_agent?.startsWith('pnpm/')) { console.error('Use pnpm to install dependencies.'); process.exit(1) }\"",
+    "preinstall": "npx only-allow pnpm",
     "dev": "next dev --turbo",
     "dev:webpack": "next dev --webpack",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",
@@ -203,10 +203,11 @@
   "pnpm": {
     "overrides": {
       "postcss@<8.5.23": "8.5.23",
-      "undici@>=7.0.0 <7.29.0": "7.29.0",
+      "undici@>=7.0.0 <7.29.1": "7.29.1",
       "brace-expansion@>=5.0.0 <5.0.9": "5.0.9",
       "protobufjs@>=7.0.0 <7.6.5": "7.6.5",
-      "fast-uri@>=3.0.0 <3.1.6": "3.1.6",
+      "fast-uri@>=3.0.0 <3.1.7": "3.1.7",
+      "@ai-sdk/provider-utils@<4.0.33": "4.0.33",
       "sharp@>=0.34.0 <0.36.0": "0.35.4",
       "nanoid@>=3.0.0 <3.3.18": "3.3.18",
       "@auth/core@>=0.41.0 <0.41.3": "0.41.3",

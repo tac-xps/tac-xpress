@@ -12,6 +12,7 @@ import { PostHogProvider } from "@/providers/posthog-provider"
 import { Toaster } from "sonner"
 import * as Sentry from "@sentry/nextjs"
 import PostHogClient from "@/lib/posthog"
+import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 const fontSans = DM_Sans({
   subsets: ["latin"],
@@ -71,7 +72,9 @@ export default async function RootLayout({
           <QueryProvider>
             <AuthProvider session={session}>
               <ThemeProvider>
-                <TooltipProvider>{children}</TooltipProvider>
+                <NuqsAdapter>
+                  <TooltipProvider>{children}</TooltipProvider>
+                </NuqsAdapter>
                 <Toaster position="top-right" richColors />
               </ThemeProvider>
             </AuthProvider>
