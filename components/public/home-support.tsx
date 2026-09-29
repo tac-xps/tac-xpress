@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { TicketForm } from "@/app/(landing)/components/ticket-form"
+import { TicketForm } from "@/components/public/ticket-form"
 export function HomeSupport() {
   return (
     <section

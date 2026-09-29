@@ -23,14 +23,6 @@ if (isChromatic()) {
   `
   document.head.appendChild(style)
 
-  // Pause GSAP global timeline (loaded lazily — safe to do at module level)
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const gsap = require('gsap').default
-    gsap.globalTimeline.pause()
-  } catch {
-    // GSAP not loaded yet — no-op
-  }
 
   // Disable Motion (Framer Motion) animations globally
   try {
@@ -114,6 +106,13 @@ const preview: Preview = {
       viewports: [375, 768, 1280, 1920],
       // Delay snapshot to let fonts and images settle
       delay: 300,
+    },
+
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        pathname: "/",
+      },
     },
 
     controls: {

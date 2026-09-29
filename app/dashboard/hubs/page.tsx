@@ -1,14 +1,13 @@
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { hubs } from "@/lib/db/schema"
-import { and, desc, ilike, isNull, or } from "drizzle-orm"
+import { and, desc, ilike, isNull, or, sql } from "drizzle-orm"
 import { AddHubDialog } from "./add-hub-dialog"
 import { HubsClientTable } from "./hubs-client-table"
 import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
 import {
   DEFAULT_PAGE_SIZE,
-  PageNavigation,
   parsePage,
 } from "@/components/ui/page-navigation"
 import {
@@ -24,7 +23,6 @@ export default async function HubsPage({
 }) {
   await requireStaffPage()
   const params = await searchParams
-  const page = parsePage(params.page)
   const query = parseRecordQuery(params, ["createdAt", "name", "location"])
   const pattern = containsPattern(query.q)
   const columns = {
@@ -51,8 +49,26 @@ export default async function HubsPage({
       recordOrder(columns[query.sort as keyof typeof columns], query.order),
       desc(hubs.id)
     )
-    .limit(DEFAULT_PAGE_SIZE + 1)
-    .offset((page - 1) * DEFAULT_PAGE_SIZE)
+    .limit(query.pageSize)
+    .offset((query.page - 1) * query.pageSize)
+
+  const countResult = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(hubs)
+    .where(
+      and(
+        isNull(hubs.deletedAt),
+        query.q
+          ? or(
+              ilike(hubs.name, pattern),
+              ilike(hubs.location, pattern),
+              ilike(hubs.contact, pattern)
+            )
+          : undefined
+      )
+    )
+  const totalCount = Number(countResult[0].count)
+  const pageCount = Math.ceil(totalCount / query.pageSize)
   return (
     <div className="flex min-w-0 flex-col gap-6">
       <PageHeader
@@ -73,15 +89,8 @@ export default async function HubsPage({
           placeholder="Hub, location or contact"
         />
         <HubsClientTable
-          hubs={rows.slice(0, DEFAULT_PAGE_SIZE)}
-          sort={query.sort}
-          order={query.order}
-        />
-        <PageNavigation
-          page={page}
-          hasNext={rows.length > DEFAULT_PAGE_SIZE}
-          pathname="/dashboard/hubs"
-          query={query}
+          hubs={rows}
+          pageCount={pageCount}
         />
       </section>
     </div>

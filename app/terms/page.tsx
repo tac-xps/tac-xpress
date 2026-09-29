@@ -1,6 +1,6 @@
-import { Logo } from "@/components/logo"
+import { PublicPage } from "@/components/public/public-page"
+import { PageIntro } from "@/components/public/page-intro"
 import {
-  ArrowLeft,
   ShieldCheck,
   Scale,
   AlertTriangle,
@@ -10,35 +10,24 @@ import {
   Gavel,
   FileCheck,
 } from "lucide-react"
-import Link from "next/link"
+
+const CURRENT_YEAR = new Date().getFullYear()
+
+export const metadata = {
+  title: "Terms and Conditions | TAC-XPRESS",
+  description: "Terms and conditions for TAC-XPRESS cargo services.",
+}
 
 export default function TermsAndConditionsPage() {
   return (
-    <div className="cargo-public min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-10 w-full border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto flex h-16 max-w-4xl items-center justify-between px-4 md:px-8">
-          <Link href="/" className="transition-opacity hover:opacity-80">
-            <Logo className="h-8" />
-          </Link>
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Home
-          </Link>
-        </div>
-      </header>
+    <PublicPage>
+      <PageIntro
+        eyebrow="Legal"
+        title="Terms & Conditions"
+        description="Please read these terms carefully before booking your shipment. By using TAC-XPRESS services, you agree to the following policies."
+      />
 
-      <main className="container mx-auto max-w-4xl px-4 py-12 md:px-8 lg:py-16">
-        <div className="mb-12 max-w-2xl">
-          <h1 className="cargo-heading">Terms & Conditions</h1>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Please read these terms carefully before booking your shipment. By
-            using TAC-XPRESS services, you agree to the following policies.
-          </p>
-        </div>
-
+      <section className="container mx-auto max-w-4xl px-4 pb-12 md:px-8 lg:pb-16">
         <div className="grid gap-8 sm:grid-cols-2">
           {/* Item 1 */}
           <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
@@ -119,7 +108,7 @@ export default function TermsAndConditionsPage() {
 
           {/* Item 7 */}
           <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/10 text-secondary-foreground">
               <FileText className="h-5 w-5" />
             </div>
             <h3 className="font-bold text-foreground">Lien and Disposal</h3>
@@ -133,7 +122,7 @@ export default function TermsAndConditionsPage() {
 
           {/* Item 8 */}
           <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <Gavel className="h-5 w-5" />
             </div>
             <h3 className="font-bold text-foreground">
@@ -149,11 +138,11 @@ export default function TermsAndConditionsPage() {
 
         <div className="mt-16 border-t pt-8 text-center text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} Tapan Associate Courier and Cargo
+            © {CURRENT_YEAR} Tapan Associate Courier and Cargo
             Service. All rights reserved.
           </p>
         </div>
-      </main>
-    </div>
+      </section>
+    </PublicPage>
   )
 }

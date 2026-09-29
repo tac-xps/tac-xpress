@@ -17,6 +17,7 @@ export default [...nextVitals, {
     "storybook-static/**",
     ".storybook/**",
     "stories/**",
+    ".kilo/**",
   ],
 }, {
   rules: {

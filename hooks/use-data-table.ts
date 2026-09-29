@@ -19,30 +19,36 @@ interface UseDataTableProps<TData, TValue> {
   pageCount: number
   defaultPerPage?: number
   defaultSort?: string
+  pageKey?: string
+  perPageKey?: string
+  sortKey?: string
 }
 
 export function useDataTable<TData, TValue>({
   data,
   columns,
   pageCount,
-  defaultPerPage = 10,
+  defaultPerPage = 25,
   defaultSort = "createdAt.desc",
+  pageKey = "page",
+  perPageKey = "per_page",
+  sortKey = "sort",
 }: UseDataTableProps<TData, TValue>) {
   // Query States
   const [page, setPage] = useQueryState(
-    "page",
+    pageKey,
     parseAsInteger
       .withDefault(1)
       .withOptions({ shallow: false, history: "push" })
   )
   const [perPage, setPerPage] = useQueryState(
-    "per_page",
+    perPageKey,
     parseAsInteger
       .withDefault(defaultPerPage)
       .withOptions({ shallow: false, history: "push" })
   )
   const [sort, setSort] = useQueryState(
-    "sort",
+    sortKey,
     parseAsString
       .withDefault(defaultSort)
       .withOptions({ shallow: false, history: "push" })

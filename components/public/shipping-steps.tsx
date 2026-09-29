@@ -2,69 +2,63 @@
 
 // Adapted from @tailark-oss/veil-content-2 with an ordered shipping process.
 import { useRef, useState } from "react"
-import { useGSAP } from "@gsap/react"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useEffect } from "react"
 import { motion, useReducedMotion, AnimatePresence } from "motion/react"
+import { cn } from "@/lib/utils"
 import { bookingSteps } from "./shipping-content"
 import { VerticalRail, VerticalRailStep } from "./vertical-rail"
 
-gsap.registerPlugin(ScrollTrigger)
-
 export function ShippingSteps() {
-  const sectionRef = useRef<HTMLElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)
   const railRef = useRef<HTMLDivElement>(null)
   const [activeStep, setActiveStep] = useState(-1)
   const shouldReduceMotion = useReducedMotion()
 
-  useGSAP(
-    () => {
-      if (shouldReduceMotion) return
+  useEffect(() => {
+    const rail = railRef.current
+    if (!rail) return
 
-      const heading = headingRef.current
-      const rail = railRef.current
-      if (!heading || !rail) return
-
-      // ── Heading children stagger in ──────────────────────────────────────
-      gsap.fromTo(
-        heading.querySelectorAll(".animate-child"),
-        { autoAlpha: 0, y: 36 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.8,
-          stagger: 0.14,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: heading,
-            start: "top 80%",
-            once: true,
-          },
-        },
-      )
-
-      // ── Per-step activation via ScrollTrigger ────────────────────────────
-      const stepEls = rail.querySelectorAll("li")
-      stepEls.forEach((el, i) => {
-        ScrollTrigger.create({
-          trigger: el,
-          start: "top 65%",
-          end: "bottom 30%",
-          once: false,
-          onEnter: () => setActiveStep(i),
-          onLeaveBack: () => setActiveStep(i - 1),
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const index = Number(entry.target.getAttribute("data-index"))
+          if (entry.isIntersecting) {
+            setActiveStep((prev) => Math.max(prev, index))
+          } else {
+            const rootTop = entry.rootBounds ? entry.rootBounds.top : 0
+            if (entry.boundingClientRect.top > rootTop) {
+              // Exited below the intersection area (scrolling up)
+              setActiveStep((prev) => (prev === index ? index - 1 : prev))
+            }
+          }
         })
-      })
-    },
-    { scope: sectionRef, dependencies: [shouldReduceMotion] },
-  )
+      },
+      {
+        rootMargin: "-65% 0px -30% 0px", // align activation with the "top 65%" threshold
+      }
+    )
+
+    const stepEls = rail.querySelectorAll("li")
+    stepEls.forEach((el, i) => {
+      el.setAttribute("data-index", String(i))
+      observer.observe(el)
+    })
+
+    return () => observer.disconnect()
+  }, [])
 
   const ease = [0.16, 1, 0.3, 1] as const
+  const textVariant = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 36 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: shouldReduceMotion ? 0 : 0.8, ease: "easeOut" as const },
+    },
+  }
 
   return (
     <section
-      ref={sectionRef}
       className="cargo-container cargo-section"
       aria-labelledby="booking-title"
     >
@@ -73,29 +67,43 @@ export function ShippingSteps() {
 
         {/* ── Left: Heading + sticky progress ─────────────────────────── */}
         <div>
-          <div ref={headingRef} className="lg:sticky lg:top-32">
-            <p className="animate-child cargo-eyebrow mb-5 text-muted-foreground">
+          <motion.div
+            ref={headingRef}
+            className="lg:sticky lg:top-32"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-20% 0px" }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.14 } }
+            }}
+          >
+            <motion.p
+              variants={textVariant}
+              className="cargo-eyebrow mb-5 text-muted-foreground"
+            >
               02 / From enquiry to delivery
-            </p>
-            <h2
+            </motion.p>
+            <motion.h2
+              variants={textVariant}
               id="booking-title"
-              className="animate-child cargo-heading"
+              className="cargo-heading"
             >
               A little preparation.
               <br />A clearer journey.
-            </h2>
-            <p className="animate-child mt-5 leading-relaxed text-muted-foreground">
+            </motion.h2>
+            <motion.p
+              variants={textVariant}
+              className="mt-5 leading-relaxed text-muted-foreground"
+            >
               Here is what happens before and after your goods are handed over.
-            </p>
+            </motion.p>
 
             {/* ── Step progress tracker ─────────────────────────────── */}
-            <motion.div
+            <div
               aria-live="polite"
               aria-atomic="true"
               className="animate-child mt-10 space-y-3"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
             >
               {bookingSteps.map((step, i) => (
                 <button
@@ -120,19 +128,14 @@ export function ShippingSteps() {
                   />
 
                   {/* Step label */}
-                  <motion.span
-                    className="font-mono text-[10px] tracking-widest whitespace-nowrap"
-                    animate={{
-                      color:
-                        i === activeStep
-                          ? "var(--color-primary)"
-                          : "var(--color-muted-foreground)",
-                      opacity: i === activeStep ? 1 : i < activeStep ? 0.6 : 0.35,
-                    }}
-                    transition={{ duration: 0.35 }}
+                  <span
+                    className={cn(
+                      "font-mono text-[10px] tracking-widest whitespace-nowrap transition-colors",
+                      i === activeStep ? "text-primary font-semibold" : "text-foreground"
+                    )}
                   >
                     {`0${i + 1}`}
-                  </motion.span>
+                  </span>
                 </button>
               ))}
 
@@ -153,8 +156,8 @@ export function ShippingSteps() {
                   )}
                 </AnimatePresence>
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* ── Right: Rail ─────────────────────────────────────────────── */}

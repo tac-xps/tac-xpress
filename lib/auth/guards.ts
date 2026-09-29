@@ -5,6 +5,7 @@ import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { and, eq, isNull } from "drizzle-orm"
 import * as Sentry from "@sentry/nextjs"
+import { cache } from "react"
 
 export const DASHBOARD_ROLES = ["admin", "staff"] as const
 
@@ -12,24 +13,31 @@ type DashboardRole = (typeof DASHBOARD_ROLES)[number]
 
 type AuthSession = Session | null
 
-async function currentAllowedRole(
-  session: AuthSession,
-  allowedRoles: readonly DashboardRole[] = DASHBOARD_ROLES
-) {
-  if (!session?.user?.id) return null
-  try {
-    const [currentUser] = await db.select({ role: users.role }).from(users)
-      .where(and(eq(users.id, session.user.id), isNull(users.deletedAt))).limit(1)
-    return currentUser && allowedRoles.includes(currentUser.role as DashboardRole) ? currentUser.role : null
-  } catch (error) {
-    Sentry.captureException(error, { tags: { area: "authorization" } })
-    return null
+const currentAllowedRole = cache(
+  async (
+    session: AuthSession,
+    allowedRoles: readonly DashboardRole[] = DASHBOARD_ROLES
+  ) => {
+    if (!session?.user?.id) return null
+    try {
+      const [currentUser] = await db
+        .select({ role: users.role })
+        .from(users)
+        .where(and(eq(users.id, session.user.id), isNull(users.deletedAt)))
+        .limit(1)
+      return currentUser &&
+        allowedRoles.includes(currentUser.role as DashboardRole)
+        ? currentUser.role
+        : null
+    } catch (error) {
+      Sentry.captureException(error, { tags: { area: "authorization" } })
+      return null
+    }
   }
-}
+)
 
-export async function requireDashboardSession(
-  allowedRoles: readonly DashboardRole[] = DASHBOARD_ROLES
-) {
+export const requireDashboardSession = cache(
+  async (allowedRoles: readonly DashboardRole[] = DASHBOARD_ROLES) => {
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -42,7 +50,7 @@ export async function requireDashboardSession(
   }
 
   return { ...session, user: { ...session.user, role: currentRole } }
-}
+})
 
 export async function requireDashboardAction(
   allowedRoles: readonly DashboardRole[] = DASHBOARD_ROLES

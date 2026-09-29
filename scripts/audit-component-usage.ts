@@ -8,12 +8,13 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 async function runAudit() {
-  const componentsDir = path.join(__dirname, "..", "components")
+  const srcDir = path.join(__dirname, "..")
 
-  // Create madge dependency graph
-  const res = await madge(componentsDir, {
+  // Create madge dependency graph across the app and components
+  const res = await madge(srcDir, {
     fileExtensions: ["ts", "tsx"],
-    excludeRegExp: [/\.stories\.tsx$/, /\.test\.tsx$/],
+    tsConfig: path.join(__dirname, "..", "tsconfig.json"),
+    excludeRegExp: [/\.stories\.tsx$/, /\.test\.tsx$/, /node_modules/, /\/tests\//, /\.next/],
   })
 
   const graph = res.obj()
@@ -60,18 +61,26 @@ async function runAudit() {
   results.sort((a, b) => b.radius - a.radius)
 
   let output = "# P0-BACKLOG (Blast Radius Priority)\n\n"
+  output += "## Unused Components\n\n"
+  
+  const unused = results.filter((item) => item.radius === 0 && item.component.startsWith("components/"))
+  for (const item of unused) {
+    output += `- \`${item.component}\`\n`
+  }
+
+  output += "\n## Used Components\n\n"
   output += "| Component | Transitive Dependents |\n"
   output += "|-----------|-----------------------|\n"
 
   for (const item of results) {
-    if (item.radius > 0) {
+    if (item.radius > 0 && item.component.startsWith("components/")) {
       output += `| \`${item.component}\` | ${item.radius} |\n`
     }
   }
 
   const outPath = path.join(__dirname, "..", "P0-BACKLOG.md")
   fs.writeFileSync(outPath, output)
-  console.log(`✅ Audit complete. Generated P0-BACKLOG.md`)
+  console.log(`✅ Audit complete. Generated P0-BACKLOG.md. Found ${unused.length} unused components.`)
 }
 
 runAudit().catch((err) => {

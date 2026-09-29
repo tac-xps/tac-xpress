@@ -1,8 +1,9 @@
 "use client"
 import { format } from "date-fns"
 import type { ColumnDef } from "@tanstack/react-table"
-import { DataTable, type TableSort } from "@/components/operations/data-table"
-import { ColumnHeader } from "@/components/operations/column-header"
+import { DataTable } from "@/components/ui/data-table/data-table"
+import { DataTableColumnHeader as ColumnHeader } from "@/components/ui/data-table/data-table-column-header"
+import { useDataTable } from "@/hooks/use-data-table"
 import { Badge } from "@/components/ui/badge"
 import { ManifestActions } from "./manifest-actions"
 import type { ManifestDetail } from "./manifest-detail-dialog"
@@ -15,5 +16,12 @@ const columns: ColumnDef<ManifestRow>[] = [
   { accessorKey: "status", header: ({ column }) => <ColumnHeader column={column} title="Status" />, cell: ({ row }) => <Badge variant={row.original.status === "finalized" ? "success" : "outline"} className="capitalize">{row.original.status}</Badge> },
   { id: "actions", header: "Actions", cell: ({ row }) => <ManifestActions manifest={row.original} /> },
 ]
-export function ManifestClientTable({ manifests, ...sort }: { manifests: ManifestRow[] } & TableSort) { return <DataTable data={manifests} columns={columns} {...sort} /> }
+export function ManifestClientTable({ manifests, pageCount }: { manifests: ManifestRow[], pageCount: number }) {
+  const { table } = useDataTable({
+    data: manifests,
+    columns,
+    pageCount,
+  })
+  return <DataTable table={table} columnsLength={columns.length} />
+}
 

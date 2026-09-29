@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/nextjs"
 import { verifyMobileClient } from "@/lib/auth/verify-mobile-client"
 import { requireDashboardApi } from "@/lib/auth/guards"
 import { fleetTelemetryStore } from "@/lib/fleet-telemetry-store"
+import { enforceRateLimit, fleetTelemetryLimiter } from "@/lib/server/rate-limit"
 import { readBoundedJson } from "@/lib/server/read-json"
 export const dynamic = "force-dynamic"
 const telemetrySchema = z.object({
@@ -15,6 +16,8 @@ const telemetrySchema = z.object({
   timestamp: z.string().datetime(),
 })
 export async function POST(request: Request) {
+  const limited = await enforceRateLimit(request, fleetTelemetryLimiter, "fleet_telemetry_rate_limit")
+  if (limited) return limited
   const denied = verifyMobileClient(request)
   if (denied) return denied
   const parsed = telemetrySchema.safeParse(await readBoundedJson(request, 8000))

@@ -2,8 +2,9 @@
 import Link from "next/link"
 import { format } from "date-fns"
 import type { ColumnDef } from "@tanstack/react-table"
-import { DataTable, type TableSort } from "@/components/operations/data-table"
-import { ColumnHeader } from "@/components/operations/column-header"
+import { DataTable } from "@/components/ui/data-table/data-table"
+import { DataTableColumnHeader as ColumnHeader } from "@/components/ui/data-table/data-table-column-header"
+import { useDataTable } from "@/hooks/use-data-table"
 import { Badge } from "@/components/ui/badge"
 import { InvoiceTableActions } from "./invoice-table-actions"
 import { type InvoiceData, formatInvoiceCurrency } from "./invoice-types"
@@ -16,4 +17,12 @@ const columns = (canVoid: boolean): ColumnDef<InvoiceData>[] => [
   { id: "delivery", header: "WhatsApp", cell: ({ row }) => <Badge variant={row.original.whatsappStatus === "failed" ? "destructive" : "outline"}>{row.original.whatsappStatus === "sent" ? "Provider accepted" : row.original.whatsappStatus === "failed" ? "Needs review" : "Not sent"}</Badge> },
   { id: "actions", header: "Actions", cell: ({ row }) => <InvoiceTableActions invoice={row.original} canVoid={canVoid} /> },
 ]
-export function InvoiceDataTable({ data, canVoid = false, ...sort }: { data: InvoiceData[]; canVoid?: boolean } & TableSort) { return <DataTable data={data} columns={columns(canVoid)} {...sort} /> }
+export function InvoiceDataTable({ data, canVoid = false, pageCount }: { data: InvoiceData[]; canVoid?: boolean, pageCount: number }) {
+  const tableColumns = columns(canVoid)
+  const { table } = useDataTable({
+    data,
+    columns: tableColumns,
+    pageCount,
+  })
+  return <DataTable table={table} columnsLength={tableColumns.length} />
+}

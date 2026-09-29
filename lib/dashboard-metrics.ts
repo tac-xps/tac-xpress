@@ -9,7 +9,6 @@ import {
 import { isNull, sql } from "drizzle-orm"
 import { db } from "@/lib/db"
 import {
-  fleetVehicles,
   hubs,
   invoices,
   manifestItems,
@@ -297,7 +296,6 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
   const [
     shipmentSummaryRows,
     vehicleSummaryRows,
-    registrySummaryRows,
     shipmentVolumeRows,
     revenueRows,
     customerGrowthRows,
@@ -324,15 +322,7 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
       })
       .from(vehicles)
       .where(isNull(vehicles.deletedAt)),
-    db
-      .select({
-        total: sql<number>`count(*)`,
-        active: sql<number>`coalesce(sum(case when ${fleetVehicles.status} = 'active' then 1 else 0 end), 0)`,
-        maintenance: sql<number>`coalesce(sum(case when ${fleetVehicles.status} = 'maintenance' then 1 else 0 end), 0)`,
-        idle: sql<number>`coalesce(sum(case when ${fleetVehicles.status} = 'idle' then 1 else 0 end), 0)`,
-      })
-      .from(fleetVehicles)
-      .where(isNull(fleetVehicles.deletedAt)),
+
     db
       .select({
         month: sql<string>`to_char(date_trunc('month', ${shipments.bookingDate}), 'YYYY-MM')`,
@@ -380,7 +370,6 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
 
   const shipmentSummary = shipmentSummaryRows[0]
   const vehicleSummary = vehicleSummaryRows[0]
-  const registrySummary = registrySummaryRows[0]
 
   const currentOnTimeRate = toRate(
     toNumber(shipmentSummary?.currentOnTime),
@@ -412,23 +401,23 @@ export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
     fleetAvailability: {
       managedTotal: toNumber(vehicleSummary?.total),
       managedOperational: toNumber(vehicleSummary?.active),
-      registryTotal: toNumber(registrySummary?.total),
-      registryOperational: toNumber(registrySummary?.active),
+      registryTotal: 0,
+      registryOperational: 0,
       data: [
         {
           label: "Active",
           managed: toNumber(vehicleSummary?.active),
-          registry: toNumber(registrySummary?.active),
+          registry: 0,
         },
         {
           label: "Maintenance",
           managed: toNumber(vehicleSummary?.maintenance),
-          registry: toNumber(registrySummary?.maintenance),
+          registry: 0,
         },
         {
           label: "Idle / Retired",
           managed: toNumber(vehicleSummary?.retired),
-          registry: toNumber(registrySummary?.idle),
+          registry: 0,
         },
       ],
     },

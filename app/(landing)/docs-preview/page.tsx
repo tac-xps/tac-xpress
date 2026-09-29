@@ -1,4 +1,5 @@
 import React from "react"
+import { notFound } from "next/navigation"
 import { ShippingLabel, type LabelShipment } from "@/components/documents/shipping-label"
 import { InvoiceDocument } from "@/components/invoice-document"
 import type { Invoice, Shipment } from "@/lib/db/schema"
@@ -7,6 +8,7 @@ import { DELHI_HUB_ADDRESS, SINGJAMEI_HUB_ADDRESS } from "@/lib/documents/addres
 export const metadata = {
   title: "Documents Preview | TAC-XPRESS Amazon-Style Invoice & Barcode Label",
   description: "Live visual testbed for 4x6 thermal shipping label and A4 GST Tax invoice.",
+  robots: "noindex, nofollow",
 }
 
 const mockShipment: Shipment = {
@@ -110,6 +112,7 @@ const labelShipment: LabelShipment = {
 }
 
 export default function DocsPreviewPage() {
+  if (process.env.NODE_ENV === "production") notFound()
   return (
     <main className="min-h-screen bg-neutral-100/90 py-10 px-4 text-neutral-900">
       <div className="mx-auto max-w-7xl space-y-8">

@@ -1,8 +1,9 @@
 "use client"
 import Link from "next/link"
 import type { ColumnDef } from "@tanstack/react-table"
-import { DataTable, type TableSort } from "@/components/operations/data-table"
-import { ColumnHeader } from "@/components/operations/column-header"
+import { DataTable } from "@/components/ui/data-table/data-table"
+import { DataTableColumnHeader as ColumnHeader } from "@/components/ui/data-table/data-table-column-header"
+import { useDataTable } from "@/hooks/use-data-table"
 import { CustomerActions } from "./customer-actions"
 type CustomerData = { id: string; name: string | null; phone: string | null; email: string | null; city: string | null; state: string | null; pinCode: string | null; address: string | null }
 const columns: ColumnDef<CustomerData>[] = [
@@ -13,5 +14,12 @@ const columns: ColumnDef<CustomerData>[] = [
   { accessorKey: "address", header: "Address", cell: ({ row }) => <p className="max-w-64 whitespace-normal text-muted-foreground">{row.original.address || "Not recorded"}</p> },
   { id: "actions", header: "Actions", cell: ({ row }) => <CustomerActions customer={{ ...row.original, name: row.original.name || "" }} /> },
 ]
-export function CustomerDataTable({ data, ...sort }: { data: CustomerData[] } & TableSort) { return <DataTable data={data} columns={columns} {...sort} /> }
+export function CustomerDataTable({ data, pageCount }: { data: CustomerData[], pageCount: number }) {
+  const { table } = useDataTable({
+    data,
+    columns,
+    pageCount,
+  })
+  return <DataTable table={table} columnsLength={columns.length} />
+}
 

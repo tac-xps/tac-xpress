@@ -1,3 +1,4 @@
+import { Metadata } from "next"
 import { DM_Sans, IBM_Plex_Mono } from "next/font/google"
 
 import "./globals.css"
@@ -11,6 +12,7 @@ import { PostHogProvider } from "@/providers/posthog-provider"
 import { Toaster } from "sonner"
 import * as Sentry from "@sentry/nextjs"
 import PostHogClient from "@/lib/posthog"
+import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 const fontSans = DM_Sans({
   subsets: ["latin"],
@@ -24,7 +26,8 @@ const fontMono = IBM_Plex_Mono({
   preload: false,
 })
 
-export const metadata = {
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://tac-xpress.com"),
   title: "TAC-XPRESS | Air and surface cargo",
   description:
     "Air and surface cargo between Northeast India and New Delhi. Explore services, prepare your shipment and track with your AWB.",
@@ -69,7 +72,9 @@ export default async function RootLayout({
           <QueryProvider>
             <AuthProvider session={session}>
               <ThemeProvider>
-                <TooltipProvider>{children}</TooltipProvider>
+                <NuqsAdapter>
+                  <TooltipProvider>{children}</TooltipProvider>
+                </NuqsAdapter>
                 <Toaster position="top-right" richColors />
               </ThemeProvider>
             </AuthProvider>

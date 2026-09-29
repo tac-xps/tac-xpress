@@ -44,9 +44,9 @@ Staff workspace activity is fetched through a guarded server action on initial l
 
 Public: `/`, `/services`, `/services/air-cargo`, `/services/surface-cargo`, `/shipping-guide`, `/about`, `/contact`, `/track`, `/feedback`, `/terms`, and staff `/signin`.
 
-Staff: operations overview, shipments/detail, dispatch, manifests, warehouse/audit, tracking/scanner, fleet, hubs, invoices, communications, customer ledger, pricing, support, analytics, service levels and integrations. Driver/delivery pages are staff tools; driver-specific assignment isolation remains outside the verified release scope. Public navigation keeps Staff access in the footer utility row rather than the customer task navigation.
+Staff: operations overview, shipments/detail, dispatch, manifests, warehouse/audit, tracking/scanner, fleet (now unified strictly to vehicles and drivers), hubs, invoices, communications, customer ledger, pricing, support, analytics, service levels and integrations. Driver/delivery pages are staff tools.
 
-Tailark Veil and official shadcn Radix supply the interface, with shared Nordic Lagom tokens. [UI sources](UI-SOURCES.md) record provenance. [Route-source inventory](../artifacts/route-source-audit.json) records current statically reachable modules. Storybook sample data is isolated from live operations.
+Tailark Veil and official shadcn Radix supply the interface, with shared Nordic Lagom tokens. Dashboard tables use a unified Shadcn `DataTable` pattern with server-side pagination and URL state managed by `nuqs`, eliminating vestigial client-side global stores like Zustand or Jotai. Background jobs and a dead-letter queue (DLQ) are fully monitored in the dashboard. [UI sources](UI-SOURCES.md) record provenance. [Route-source inventory](../artifacts/route-source-audit.json) records current statically reachable modules. Storybook sample data is isolated from live operations.
 
 ## Release evidence
 

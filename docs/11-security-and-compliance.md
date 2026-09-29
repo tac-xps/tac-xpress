@@ -4,6 +4,15 @@
 
 `proxy.ts` is the Next.js perimeter. It applies Arcjet, protects dashboard navigation, hides test-only paths, and fails closed in production when its key is absent. Server actions and route handlers still enforce their own role, ownership, or integration checks.
 
+### Matcher-Excluded Routes Protections
+Several routes are excluded from the `proxy.ts` global matcher (`api/auth`, `api/cron`, `api/webhooks`, `api/public`, `ingest`, `_next`, `monitoring`) for performance or architectural reasons. They enforce their own protections:
+- **`api/auth`**: Managed entirely by NextAuth, utilizing its built-in CSRF, state validation, and specific credential rate limits.
+- **`api/cron`**: Protected by a strict `CRON_SECRET` bearer token check.
+- **`api/webhooks`**: Enforces strict HMAC signature validation (e.g., `WHATSAPP_APP_SECRET`) on payloads and uses per-route Arcjet `slidingWindow` rate limits.
+- **`api/public`**: Validates expiring document-purpose HMAC signatures (`x-internal-document-token`) and applies per-route Arcjet `slidingWindow` rate limits (e.g., PDF generation).
+- **`ingest`**: Exclusively used by PostHog telemetry proxy.
+- **`_next` / `monitoring`**: Static assets and Sentry tunnel; protections managed by Vercel and Sentry respectively.
+
 ## Data protection
 
 - Service-role credentials remain server-only.

@@ -1,5 +1,5 @@
 // Adapted from @tailark-oss/veil-contact-1; connected to the existing support action.
-import { TicketForm } from "@/app/(landing)/components/ticket-form"
+import { TicketForm } from "@/components/public/ticket-form"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Info } from "lucide-react"
 export function ContactSection() {

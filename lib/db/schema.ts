@@ -11,6 +11,7 @@ import {
   boolean,
   real,
   jsonb,
+  unique,
 } from "drizzle-orm/pg-core"
 import { sql, relations } from "drizzle-orm"
 
@@ -94,11 +95,6 @@ export const driverStatusEnum = pgEnum("driver_status", [
   "active",
   "on_leave",
   "inactive",
-])
-export const fleetVehicleStatusEnum = pgEnum("fleet_vehicle_status", [
-  "active",
-  "maintenance",
-  "idle",
 ])
 
 export const users = pgTable("users", {
@@ -346,16 +342,6 @@ export const drivers = pgTable("drivers", {
   deletedAt: timestamp("deleted_at"),
 })
 
-export const fleetVehicles = pgTable("fleet_vehicles", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  registrationNumber: text("registration_number").notNull().unique(),
-  driverId: uuid("driver_id").references(() => users.id, {
-    onDelete: "set null",
-  }),
-  status: fleetVehicleStatusEnum("status").default("active").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  deletedAt: timestamp("deleted_at"),
-})
 
 export const manifests = pgTable(
   "manifests",
@@ -544,7 +530,6 @@ export const usersRelations = relations(users, ({ many }) => ({
   tickets: many(tickets),
   invoices: many(invoices),
   manifests: many(manifests),
-  fleetVehicles: many(fleetVehicles),
 }))
 
 export const ticketsRelations = relations(tickets, ({ one, many }) => ({
@@ -624,19 +609,44 @@ export const manifestItemsRelations = relations(manifestItems, ({ one }) => ({
   }),
 }))
 
-export const fleetVehiclesRelations = relations(fleetVehicles, ({ one }) => ({
-  driver: one(users, {
-    fields: [fleetVehicles.driverId],
-    references: [users.id],
-  }),
-}))
+
+export const backgroundJobs = pgTable(
+  "background_jobs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    kind: text("kind").notNull(),
+    dedupeKey: text("dedupe_key").notNull(),
+    payload: jsonb("payload").notNull(),
+    status: text("status").notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    availableAt: timestamp("available_at", { withTimezone: true }).notNull().defaultNow(),
+    lockedUntil: timestamp("locked_until", { withTimezone: true }),
+    leaseToken: uuid("lease_token"),
+    lastError: text("last_error"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (table) => [
+    unique("background_jobs_kind_dedupe_key_unique").on(table.kind, table.dedupeKey),
+  ]
+)
+
+export const deadLetterQueue = pgTable("dead_letter_queue", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  action: text("action").notNull(),
+  payload: jsonb("payload"),
+  error: text("error"),
+  retryCount: integer("retry_count").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+})
 
 export type User = typeof users.$inferSelect
 export type Shipment = typeof shipments.$inferSelect
 export type Invoice = typeof invoices.$inferSelect
-export type FleetVehicle = typeof fleetVehicles.$inferSelect
 export type Vehicle = typeof vehicles.$inferSelect
 export type Driver = typeof drivers.$inferSelect
 export type Manifest = typeof manifests.$inferSelect
 export type Ticket = typeof tickets.$inferSelect
 export type TicketReply = typeof ticketReplies.$inferSelect
+export type BackgroundJob = typeof backgroundJobs.$inferSelect
+export type DLQItem = typeof deadLetterQueue.$inferSelect
