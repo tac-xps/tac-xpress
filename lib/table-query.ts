@@ -8,6 +8,7 @@ export type RecordSearchParams = {
   status?: string | string[]
   sort?: string | string[]
   order?: string | string[]
+  [key: string]: string | string[] | undefined
 }
 
 export function firstParam(value: string | string[] | undefined) {

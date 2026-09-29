@@ -57,6 +57,7 @@ export function TrackForm({ variant = "inline", className, ...props }: TrackForm
   if (variant === "desk") {
     return (
       <form
+        noValidate
         action="/track"
         method="get"
         aria-label="Track your shipment"
@@ -74,6 +75,7 @@ export function TrackForm({ variant = "inline", className, ...props }: TrackForm
                 name="awb"
                 required
                 maxLength={40}
+                pattern="^[A-Za-z0-9\-]{5,40}$"
                 autoComplete="off"
                 placeholder={placeholder}
                 aria-describedby="home-awb-help"

@@ -29,7 +29,7 @@ export default async function StaffPage({
   const query = parseRecordQuery(
     params,
     ["name", "email", "role", "createdAt"] as const,
-    "role"
+    "createdAt"
   )
   const pattern = containsPattern(query.q)
 
@@ -39,7 +39,7 @@ export default async function StaffPage({
     role: users.role,
     createdAt: users.createdAt,
   }
-  const sortColumn = sortColumns[query.sort as keyof typeof sortColumns] ?? users.role
+  const sortColumn = sortColumns[query.sort as keyof typeof sortColumns] ?? users.createdAt
 
   const staffRows = await db.query.users.findMany({
     where: and(

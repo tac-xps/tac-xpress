@@ -104,7 +104,7 @@
   --muted-foreground:         oklch(47.5% 0.021 291);   /* was #625d70 */
   --accent:                   oklch(91.5% 0.015 291);   /* was #e8e2f0 */
   --accent-foreground:        oklch(25.3% 0.035 291);
-  --destructive:              oklch(55% 0.18 30);
+  --destructive:              oklch(49% 0.18 30);
   --destructive-foreground:   oklch(98% 0.005 250);
   --border:                   oklch(86.5% 0.010 291);   /* was #dad6e2 */
   --border-strong:            oklch(54.5% 0.022 291);   /* was #80788e */
@@ -117,7 +117,7 @@
   --status-pending:           oklch(44% 0.09 70);
   --status-transit:           oklch(43% 0.11 255);
   --status-delivered:         oklch(39% 0.09 155);
-  --status-failed:            oklch(55% 0.18 30);
+  --status-failed:            oklch(49% 0.18 30);
 
   /* ── Chart palette ─────────────────────────────────────────────────────── */
   --chart-1:                  oklch(39.5% 0.099 293);   /* violet  — was #59497a */

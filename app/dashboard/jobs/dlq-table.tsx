@@ -25,6 +25,9 @@ export function DlqTable({
     data,
     columns,
     pageCount,
+    pageKey: "dlq_page",
+    perPageKey: "dlq_per_page",
+    sortKey: "dlq_sort",
   })
 
   return (

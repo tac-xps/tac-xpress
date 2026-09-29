@@ -27,6 +27,9 @@ export function DriversDataTable({
     data,
     columns,
     pageCount,
+    pageKey: "driver_page",
+    perPageKey: "driver_per_page",
+    sortKey: "driver_sort",
   })
 
   return (

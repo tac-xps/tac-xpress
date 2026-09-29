@@ -12,16 +12,18 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
 
   const params = await searchParams
   const { page, pageSize } = parseRecordQuery(params, [])
+  const dlqPage = Math.max(1, Number(params.dlq_page) || 1)
+  const dlqPageSize = Math.max(1, Math.min(100, Number(params.dlq_per_page) || 25))
 
   const [failedJobs, dlqItems, failedJobsCountRes, dlqItemsCountRes] = await Promise.all([
     db.select().from(backgroundJobs).where(eq(backgroundJobs.status, 'failed')).orderBy(desc(backgroundJobs.createdAt)).limit(pageSize).offset((page - 1) * pageSize),
-    db.select().from(deadLetterQueue).orderBy(desc(deadLetterQueue.createdAt)).limit(pageSize).offset((page - 1) * pageSize),
+    db.select().from(deadLetterQueue).orderBy(desc(deadLetterQueue.createdAt)).limit(dlqPageSize).offset((dlqPage - 1) * dlqPageSize),
     db.select({ count: sql<number>`count(*)` }).from(backgroundJobs).where(eq(backgroundJobs.status, 'failed')),
     db.select({ count: sql<number>`count(*)` }).from(deadLetterQueue)
   ])
 
   const failedJobsPageCount = Math.ceil(Number(failedJobsCountRes[0].count) / pageSize)
-  const dlqItemsPageCount = Math.ceil(Number(dlqItemsCountRes[0].count) / pageSize)
+  const dlqItemsPageCount = Math.ceil(Number(dlqItemsCountRes[0].count) / dlqPageSize)
 
   return (
     <div className="flex min-w-0 flex-col gap-6">

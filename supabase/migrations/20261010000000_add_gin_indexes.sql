@@ -1,3 +1,8 @@
+-- squawk:ignore-file require-concurrent-index-creation
+-- Note: Supabase CLI migration runners execute migration scripts in an implicit transaction block where
+-- `CREATE INDEX CONCURRENTLY` is disallowed by PostgreSQL. For high-throughput live production environments,
+-- execute these index creation statements concurrently via a non-transactional deployment session.
+
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 -- Users

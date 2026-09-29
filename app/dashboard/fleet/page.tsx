@@ -14,6 +14,8 @@ export default async function FleetPage({ searchParams }: { searchParams: Promis
   await requireStaffPage()
   const params = await searchParams
   const { page, pageSize, q } = parseRecordQuery(params, [])
+  const driverPage = Math.max(1, Number(params.driver_page) || 1)
+  const driverPageSize = Math.max(1, Math.min(100, Number(params.driver_per_page) || 25))
   const pattern = containsPattern(q)
   
   const vehicleWhere = and(isNull(vehicles.deletedAt), q ? ilike(vehicles.registrationNumber, pattern) : undefined)
@@ -21,14 +23,14 @@ export default async function FleetPage({ searchParams }: { searchParams: Promis
 
   const [vehicleRows, driverRows, driverOptions, vehicleCountRes, driverCountRes] = await Promise.all([
     db.query.vehicles.findMany({ where: vehicleWhere, with: { driver: true }, orderBy: [desc(vehicles.createdAt), desc(vehicles.id)], limit: pageSize, offset: (page - 1) * pageSize }),
-    db.query.drivers.findMany({ where: driverWhere, orderBy: [desc(drivers.createdAt), desc(drivers.id)], limit: pageSize, offset: (page - 1) * pageSize }),
+    db.query.drivers.findMany({ where: driverWhere, orderBy: [desc(drivers.createdAt), desc(drivers.id)], limit: driverPageSize, offset: (driverPage - 1) * driverPageSize }),
     db.select({ id: drivers.id, name: drivers.name }).from(drivers).where(isNull(drivers.deletedAt)).orderBy(drivers.name).limit(200),
     db.select({ count: sql<number>`count(*)` }).from(vehicles).where(vehicleWhere),
     db.select({ count: sql<number>`count(*)` }).from(drivers).where(driverWhere),
   ])
 
   const vehiclePageCount = Math.ceil(Number(vehicleCountRes[0].count) / pageSize)
-  const driverPageCount = Math.ceil(Number(driverCountRes[0].count) / pageSize)
+  const driverPageCount = Math.ceil(Number(driverCountRes[0].count) / driverPageSize)
 
   return (
     <div className="flex min-w-0 flex-col gap-6">

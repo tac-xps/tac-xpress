@@ -17,18 +17,12 @@ export async function GET(request: NextRequest) {
   try {
     const fileName = `whatsapp-invoice-${id}.pdf`
     
-    // Check if the PDF already exists to mitigate Chromium load (cache hit)
-    const { data: existingData } = await supabaseAdmin.storage.from("cargo-documents").list("", {
-      search: fileName,
-      limit: 1
-    })
-    
-    if (!existingData || existingData.length === 0 || existingData[0].name !== fileName) {
-      // Cache miss: generate PDF
-      const pdf = await renderInvoicePdf(id!)
-      const { error } = await supabaseAdmin.storage.from("cargo-documents").upload(fileName, pdf, { contentType: "application/pdf", upsert: true })
-      if (error) throw error
-    }
+    // Always render fresh invoice PDF to ensure balance/payments/line items are up to date
+    const pdf = await renderInvoicePdf(id!)
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from("cargo-documents")
+      .upload(fileName, pdf, { contentType: "application/pdf", upsert: true })
+    if (uploadError) throw uploadError
 
     const { data: link, error: linkError } = await supabaseAdmin.storage.from("cargo-documents").createSignedUrl(fileName, 3600)
     if (linkError || !link) throw linkError || new Error("Document URL unavailable")
