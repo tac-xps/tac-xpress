@@ -28,15 +28,15 @@ export default async function SurfaceCargoPage({
     <OperationsDashboardPage
       page={page}
       rows={rows}
-      icon={<TruckIcon className="size-8 text-emerald-500" />}
-      iconBg="bg-emerald-500/10"
+      icon={<TruckIcon className="size-8 text-status-delivered" />}
+      iconBg="bg-status-delivered/10"
       heading="Surface Cargo Operations"
       description="Monitor road and ocean freight movements."
       tableTitle="Active Surface Shipments"
       pathname="/dashboard/operations/surface-cargo"
       kpiCards={[
         { label: "Total Dispatches", value: totalDispatches },
-        { label: "Fleet En Route", value: fleetEnRoute, colourClass: "text-amber-500" },
+        { label: "Fleet En Route", value: fleetEnRoute, colourClass: "text-status-pending" },
         { label: "Border Delays / At Risk", value: borderDelays, colourClass: "text-destructive" },
       ]}
     />

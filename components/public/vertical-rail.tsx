@@ -107,9 +107,8 @@ export function VerticalRailStep({
       >
         {/* Inner dot */}
         <motion.span
-          className="h-2 w-2 rounded-none"
+          className={cn("h-2 w-2 rounded-none transition-colors", isActive ? "bg-primary-foreground" : "bg-primary")}
           animate={{
-            backgroundColor: isActive ? "#fff" : "var(--color-primary)",
             scale: isActive ? 1 : 0.7,
           }}
           transition={{ duration: 0.3, ease: "easeOut" }}

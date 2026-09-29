@@ -25,15 +25,15 @@ export default async function AirCargoPage({
     <OperationsDashboardPage
       page={page}
       rows={rows}
-      icon={<PlaneIcon className="size-8 text-sky-500" />}
-      iconBg="bg-sky-500/10"
+      icon={<PlaneIcon className="size-8 text-primary" />}
+      iconBg="bg-primary/10"
       heading="Air Cargo Operations"
       description="Monitor high-priority express air shipments."
       tableTitle="Active Air Shipments"
       pathname="/dashboard/operations/air-cargo"
       kpiCards={[
         { label: "Total Air Volume", value: totalVolume },
-        { label: "In-Transit", value: inTransit, colourClass: "text-amber-500" },
+        { label: "In-Transit", value: inTransit, colourClass: "text-status-pending" },
         { label: "Delayed / At Risk", value: delayedFlights, colourClass: "text-destructive" },
       ]}
     />

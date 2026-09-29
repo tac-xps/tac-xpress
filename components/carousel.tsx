@@ -401,7 +401,7 @@ const Lightbox: React.FC<LightboxProps> = ({
     >
       <button
         type="button"
-        className="absolute top-4 right-4 text-primary-foreground transition-colors hover:text-gray-300"
+        className="absolute top-4 right-4 text-primary-foreground/80 transition-colors hover:text-primary-foreground"
         onClick={onClose}
       >
         <X size={32} />
@@ -409,7 +409,7 @@ const Lightbox: React.FC<LightboxProps> = ({
 
       <button
         type="button"
-        className="absolute left-4 text-primary-foreground transition-colors hover:text-gray-300"
+        className="absolute left-4 text-primary-foreground/80 transition-colors hover:text-primary-foreground"
         onClick={(e) => {
           e.stopPropagation()
           prev()
@@ -427,7 +427,7 @@ const Lightbox: React.FC<LightboxProps> = ({
 
       <button
         type="button"
-        className="absolute right-4 text-primary-foreground transition-colors hover:text-gray-300"
+        className="absolute right-4 text-primary-foreground/80 transition-colors hover:text-primary-foreground"
         onClick={(e) => {
           e.stopPropagation()
           next()
@@ -436,7 +436,7 @@ const Lightbox: React.FC<LightboxProps> = ({
         <ChevronRight size={40} />
       </button>
 
-      <span className="absolute bottom-4 text-sm text-white/60 tabular-nums">
+      <span className="absolute bottom-4 text-sm text-primary-foreground/60 tabular-nums">
         {current + 1} / {slides.length}
       </span>
     </div>

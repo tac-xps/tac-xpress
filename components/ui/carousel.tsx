@@ -87,8 +87,6 @@ function Carousel({
     setApi(api)
   }, [api, setApi])
 
-
-
   return (
     <CarouselContext.Provider
       value={{

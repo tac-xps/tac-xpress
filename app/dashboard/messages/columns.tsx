@@ -105,7 +105,7 @@ export const getColumns = (
               </Badge>
             )}
             {ticket.needs_human_review && (
-              <Badge variant="warning" className="text-[10px] px-1.5 py-0 h-4 gap-1 border-amber-500/30 text-amber-600 dark:text-amber-400">
+              <Badge variant="warning" className="text-[10px] px-1.5 py-0 h-4 gap-1">
                 <AlertCircle className="size-2.5" />
                 Needs Review
               </Badge>

@@ -98,13 +98,13 @@ export function TicketDetailsDialog({
 
         <div className="grid gap-6 py-4">
           {ticket.needs_human_review && (
-            <div className="flex items-start gap-3 rounded-none border border-amber-500/40 bg-amber-500/10 p-3.5 text-sm text-amber-900 dark:text-amber-200">
-              <AlertTriangle className="size-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+            <div className="flex items-start gap-3 rounded-none border border-status-pending/40 bg-status-pending/10 p-3.5 text-sm text-foreground">
+              <AlertTriangle className="size-5 shrink-0 text-status-pending mt-0.5" />
               <div className="space-y-1">
-                <p className="font-semibold text-amber-950 dark:text-amber-100">
+                <p className="font-semibold text-foreground">
                   Human Review Required
                 </p>
-                <p className="text-xs text-amber-800/90 dark:text-amber-300/90 leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   Autonomous outbound responses are paused. AI triage flagged this conversation due to high-urgency keywords, customer grievance, or strict safety guardrail triggers. Please inspect and reply manually.
                 </p>
               </div>

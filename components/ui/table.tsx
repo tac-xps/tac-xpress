@@ -1,17 +1,13 @@
 "use client"
 
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div
       data-slot="table-container"
-      role="region"
-      aria-label={props["aria-label"] || "Scrollable data table"}
-      tabIndex={0}
-      className="relative w-full overflow-x-auto focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="relative w-full overflow-x-auto"
     >
       <table
         data-slot="table"
@@ -73,7 +69,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "h-11 px-4 text-left align-middle font-medium whitespace-nowrap text-muted-foreground first:pl-6 last:pr-6 [&:has([role=checkbox])]:pr-0",
+        "h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0",
         className
       )}
       {...props}
@@ -86,7 +82,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
     <td
       data-slot="table-cell"
       className={cn(
-        "px-4 py-3 align-middle whitespace-nowrap first:pl-6 last:pr-6 [&:has([role=checkbox])]:pr-0",
+        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0",
         className
       )}
       {...props}
@@ -101,7 +97,7 @@ function TableCaption({
   return (
     <caption
       data-slot="table-caption"
-      className={cn("mt-4 text-xs text-muted-foreground", className)}
+      className={cn("mt-4 text-sm text-muted-foreground", className)}
       {...props}
     />
   )
