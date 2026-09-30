@@ -84,11 +84,11 @@ export function HomeHero() {
         >
           {/* Eyebrow Pill */}
           <motion.div
-            className="inline-flex items-center gap-2 px-3 py-1.5 bg-muted/80 dark:bg-foreground/[0.06] border border-border dark:border-foreground/10 font-mono text-[11px] font-semibold tracking-wider text-foreground uppercase self-start"
+            className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface border border-border font-mono text-[11px] font-semibold tracking-wider text-foreground uppercase self-start rounded-xs shadow-2xs"
             variants={fadeIn}
             custom={dur(0.05)}
           >
-            <span className="flex size-4 items-center justify-center bg-primary text-primary-foreground">
+            <span className="flex size-4 items-center justify-center bg-primary text-primary-foreground rounded-xs">
               <Truck className="size-2.5" aria-hidden="true" />
             </span>
             <span>FAST AND SECURE TRANSPORT FLOW</span>
@@ -164,7 +164,7 @@ export function HomeHero() {
                 <button
                   type="button"
                   onClick={() => setConsoleOpen((prev) => !prev)}
-                  className="inline-flex items-center gap-2 h-10 px-5 bg-primary text-primary-foreground font-mono text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.97]"
+                  className="inline-flex items-center gap-2 h-10 px-5 bg-primary text-primary-foreground font-mono text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.97] rounded-md"
                 >
                   <span>EXPLORE DESK</span>
                   <Package className="size-3.5" aria-hidden="true" />

@@ -27,7 +27,7 @@ export function TrackForm({ variant = "inline", className, ...props }: TrackForm
         action="/track"
         method="get"
         aria-label="Track a consignment by AWB number"
-        className={cn("flex max-w-md items-center border border-border bg-card focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all shadow-xs", className)}
+        className={cn("flex max-w-md items-center border border-border bg-card focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all shadow-xs rounded-sm overflow-hidden", className)}
         {...props}
       >
         <div className="pl-3.5 text-muted-foreground" aria-hidden="true">
@@ -48,7 +48,7 @@ export function TrackForm({ variant = "inline", className, ...props }: TrackForm
           className="h-11 px-4 sm:px-5 bg-primary text-primary-foreground font-mono text-xs font-semibold uppercase tracking-wider hover:bg-primary/90 transition-colors shrink-0 flex items-center gap-1.5 active:scale-[0.97]"
         >
           <span>Track</span>
-          <ArrowUpRight className="size-3.5 text-primary-foreground/80" aria-hidden="true" />
+          <ArrowUpRight className="size-3.5 text-primary-foreground" aria-hidden="true" />
         </button>
       </form>
     )
