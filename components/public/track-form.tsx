@@ -41,7 +41,7 @@ export function TrackForm({ variant = "inline", className, ...props }: TrackForm
           maxLength={40}
           pattern="^[A-Za-z0-9\-]{5,40}$"
           placeholder={placeholder}
-          className="h-11 flex-1 bg-transparent px-3 font-mono text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none uppercase"
+          className="h-11 flex-1 bg-transparent px-3 font-mono text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none uppercase"
         />
         <button
           type="submit"
@@ -117,7 +117,7 @@ export function TrackForm({ variant = "inline", className, ...props }: TrackForm
             pattern="^[A-Za-z0-9\-]{5,40}$"
             autoComplete="off"
             placeholder={placeholder}
-            className="w-full px-4 py-3 font-mono text-sm border focus:outline-none focus-visible:ring-1 transition-colors bg-surface text-foreground placeholder:text-muted-foreground/60 border-border focus:border-primary focus-visible:ring-primary uppercase"
+            className="w-full px-4 py-3 font-mono text-sm border focus:outline-none focus-visible:ring-1 transition-colors bg-surface text-foreground placeholder:text-muted-foreground border-border focus:border-primary focus-visible:ring-primary uppercase"
           />
           <p className="mt-2 text-xs font-mono text-muted-foreground">
             Direct lookup for New Delhi ↔ Northeast India consignments.

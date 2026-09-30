@@ -13,7 +13,7 @@ interface HeroDispatchConsoleProps {
 }
 
 export function HeroDispatchConsole({ className, variant: _variant }: HeroDispatchConsoleProps = {}) {
-  const [activeTab, setActiveTab] = useState<"track" | "quote">("track")
+  const [activeTab, setActiveTab] = useState<"track" | "quote">("quote")
   const [selectedDest, setSelectedDest] = useState("imphal")
   const [cargoType, setCargoType] = useState<"air" | "surface">("air")
 

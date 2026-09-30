@@ -3,8 +3,7 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import { ArrowUpRight, ChevronDown, ChevronUp, Package, Truck, Search } from "lucide-react"
-import dynamic from "next/dynamic"
-const HeroLottieTruck = dynamic(() => import("./hero-lottie-truck").then(mod => mod.HeroLottieTruck), { ssr: false })
+import { HeroLottieTruck } from "./hero-lottie-truck"
 import { HeroDispatchConsole } from "./hero-dispatch-console"
 import { cn } from "@/lib/utils"
 import {
