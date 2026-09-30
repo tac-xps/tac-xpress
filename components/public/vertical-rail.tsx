@@ -30,8 +30,8 @@ export function VerticalRail({
       <motion.span
         aria-hidden="true"
         className="pointer-events-none absolute -left-[2px] top-0 w-[2px] origin-top bg-primary/80"
-        initial={{ scaleY: 0 }}
-        animate={isInView ? { scaleY: 1 } : { scaleY: 0 }}
+        initial={{ scaleY: 1 }}
+        animate={{ scaleY: 1 }}
         transition={
           shouldReduceMotion
             ? { duration: 0 }
@@ -97,8 +97,8 @@ export function VerticalRailStep({
             ? "bg-primary border-primary border-2 ring-4"
             : "bg-muted dark:bg-card border-2 border-border ring-4",
         )}
-        initial={shouldReduceMotion ? {} : { scale: 0, opacity: 0 }}
-        animate={isInView ? { scale: 1, opacity: 1 } : {}}
+        initial={false}
+        animate={isInView ? { scale: 1, opacity: 1 } : { scale: 1, opacity: 1 }}
         transition={
           shouldReduceMotion
             ? { duration: 0 }
@@ -133,57 +133,36 @@ export function VerticalRailStep({
       {/* ── Content ────────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 md:max-w-xl">
         {/* Step number */}
-        <motion.span
+        <span
           className={cn(
             "font-mono text-xs font-bold tracking-[0.15em] uppercase transition-colors duration-300",
             isActive ? "text-primary" : "text-muted-foreground/60",
           )}
-          initial={shouldReduceMotion ? {} : { opacity: 0, y: 12 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={
-            shouldReduceMotion
-              ? { duration: 0 }
-              : { duration: 0.45, ease, delay: 0.15 }
-          }
         >
           {number}
-        </motion.span>
+        </span>
 
         {/* Title */}
-        <motion.h3
+        <h3
           className={cn(
             "text-2xl font-semibold tracking-tight transition-all duration-500",
             isActive
               ? "text-foreground"
               : "text-foreground/40",
           )}
-          initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={
-            shouldReduceMotion
-              ? { duration: 0 }
-              : { duration: 0.55, ease, delay: 0.22 }
-          }
         >
           {title}
-        </motion.h3>
+        </h3>
 
         {/* Body */}
-        <motion.p
+        <p
           className={cn(
             "leading-relaxed text-sm sm:text-base transition-all duration-500",
             isActive ? "text-muted-foreground" : "text-muted-foreground/40",
           )}
-          initial={shouldReduceMotion ? {} : { opacity: 0, y: 14 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={
-            shouldReduceMotion
-              ? { duration: 0 }
-              : { duration: 0.6, ease, delay: 0.32 }
-          }
         >
           {text}
-        </motion.p>
+        </p>
       </div>
     </li>
   )

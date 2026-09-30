@@ -56,7 +56,7 @@ export function ShippingPreparation() {
 
         <motion.dl
           className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
-          initial="hidden"
+          initial={false}
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
           variants={{
@@ -73,7 +73,7 @@ export function ShippingPreparation() {
               key={item.title}
               className="border-t border-border pt-6 transition-colors duration-200 hover:border-primary group"
               variants={{
-                hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 14 },
+                hidden: { opacity: 1, y: 0 },
                 visible: {
                   opacity: 1,
                   y: 0,

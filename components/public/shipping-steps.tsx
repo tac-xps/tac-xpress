@@ -49,11 +49,11 @@ export function ShippingSteps() {
 
   const ease = [0.16, 1, 0.3, 1] as const
   const textVariant = {
-    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 36 },
+    hidden: { opacity: 1, y: 0 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: shouldReduceMotion ? 0 : 0.8, ease: "easeOut" as const },
+      transition: { duration: shouldReduceMotion ? 0 : 0.4, ease: "easeOut" as const },
     },
   }
 
@@ -70,12 +70,12 @@ export function ShippingSteps() {
           <motion.div
             ref={headingRef}
             className="lg:sticky lg:top-32"
-            initial="hidden"
+            initial={false}
             whileInView="visible"
-            viewport={{ once: true, margin: "-20% 0px" }}
+            viewport={{ once: true }}
             variants={{
               hidden: {},
-              visible: { transition: { staggerChildren: 0.14 } }
+              visible: { transition: { staggerChildren: 0.1 } }
             }}
           >
             <motion.p

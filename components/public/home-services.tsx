@@ -59,7 +59,7 @@ export function HomeServices() {
 
         <motion.div
           className="mt-12 grid gap-12 md:grid-cols-3 md:gap-7"
-          initial="hidden"
+          initial={false}
           whileInView="visible"
           viewport={{ once: true, amount: 0.15 }}
           variants={{
@@ -76,7 +76,7 @@ export function HomeServices() {
               key={card.href}
               className="cargo-service flex min-w-0 flex-col items-start rounded-none transition-shadow"
               variants={{
-                hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+                hidden: { opacity: 1, y: 0 },
                 visible: {
                   opacity: 1,
                   y: 0,
