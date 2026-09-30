@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import { ArrowUpRight, ChevronDown, ChevronUp, Package, Truck, Search } from "lucide-react"
-import { HeroLottieTruck } from "./hero-lottie-truck"
+import { HeroLottieAirplane } from "./hero-lottie-airplane"
 import { HeroDispatchConsole } from "./hero-dispatch-console"
 import { cn } from "@/lib/utils"
 import {
@@ -206,16 +206,16 @@ export function HomeHero() {
             </motion.div>
           </motion.div>
 
-          {/* Right Column: Truck Image with Floating Badges */}
+          {/* Right Column: Animated Air Cargo Airplane */}
           <motion.div
             className="lg:col-span-7 xl:col-span-7 relative w-full flex justify-center lg:justify-end items-center"
             variants={slideFromRight}
             initial="hidden"
             animate="visible"
           >
-            <div className="relative w-full max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl">
-              {/* Animated Lottie Linehaul Truck (public/lottie/Truck.json) */}
-              <HeroLottieTruck />
+            <div className="relative w-full max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-2xl flex items-center justify-center">
+              {/* Animated Lottie Airplane (public/lottie/small_3d_airplane_animation.json) */}
+              <HeroLottieAirplane />
             </div>
           </motion.div>
         </div>
