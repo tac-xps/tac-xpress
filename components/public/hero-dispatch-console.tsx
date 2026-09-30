@@ -112,9 +112,9 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="flex flex-col gap-1.5">
                 <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Origin</span>
-                <div className="border border-border px-3.5 py-2 font-mono text-sm flex items-center justify-between bg-surface text-foreground">
+                <div className="border border-border px-3.5 py-2 font-mono text-sm flex items-center justify-between bg-surface text-foreground rounded-sm">
                   <span>DEL / New Delhi</span>
-                  <span className="text-[10px] px-1.5 py-0.5 font-bold bg-primary/10 text-primary">
+                  <span className="text-[10px] px-1.5 py-0.5 font-bold bg-primary/10 text-primary rounded-xs">
                     HUB 01
                   </span>
                 </div>
@@ -131,7 +131,7 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
                   id="hero-dest-select"
                   value={selectedDest}
                   onChange={(e) => setSelectedDest(e.target.value)}
-                  className="border border-border px-3.5 py-2 font-mono text-sm focus:outline-none focus-visible:ring-1 transition-colors bg-surface text-foreground focus:border-primary focus-visible:ring-primary"
+                  className="border border-border px-3.5 py-2 font-mono text-sm focus:outline-none focus-visible:ring-1 transition-colors bg-surface text-foreground focus:border-primary focus-visible:ring-primary rounded-sm"
                 >
                   <option value="imphal">IMF / Imphal (Manipur)</option>
                   <option value="guwahati">GAU / Guwahati (Assam)</option>
@@ -148,7 +148,7 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
                   aria-pressed={cargoType === "air"}
                   onClick={() => setCargoType("air")}
                   className={cn(
-                    "inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-xs transition-colors border",
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-xs transition-colors border rounded-xs",
                     cargoType === "air"
                       ? "border-primary bg-primary/10 text-primary font-medium"
                       : "border-border text-muted-foreground hover:text-foreground"
@@ -162,7 +162,7 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
                   aria-pressed={cargoType === "surface"}
                   onClick={() => setCargoType("surface")}
                   className={cn(
-                    "inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-xs transition-colors border",
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-xs transition-colors border rounded-xs",
                     cargoType === "surface"
                       ? "border-primary bg-primary/10 text-primary font-medium"
                       : "border-border text-muted-foreground hover:text-foreground"
@@ -176,7 +176,7 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
               <Button
                 asChild
                 size="lg"
-                className="rounded-none h-10 px-5 font-sans text-sm font-medium tracking-wide focus-visible:ring-1 active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:ring-primary"
+                className="rounded-md h-10 px-5 font-sans text-sm font-medium tracking-wide focus-visible:ring-1 active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:ring-primary"
               >
                 <Link href={`/contact?origin=DEL&dest=${selectedDest.toUpperCase()}&mode=${cargoType}`}>
                   Calculate Freight <ArrowUpRight data-icon="inline-end" className="size-4 ml-1" aria-hidden="true" />

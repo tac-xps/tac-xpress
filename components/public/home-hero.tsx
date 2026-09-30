@@ -68,12 +68,6 @@ export function HomeHero() {
       aria-labelledby="home-title"
       id="hero-section"
     >
-      {/* Subtle ambient radial glow for warmth */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0 cargo-home-hero-glow"
-        aria-hidden="true"
-      />
-
       <div className="cargo-container relative z-10 w-full flex flex-col justify-between gap-8 sm:gap-10 lg:gap-12">
 
         {/* ── TOP BAR: EYEBROW & STAT TRIAD ─────────────────────── */}

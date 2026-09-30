@@ -77,12 +77,6 @@ export function HeroLottieTruck({ className }: HeroLottieTruckProps) {
         className
       )}
     >
-      {/* Subtle ambient radial glow behind truck in dark & light mode */}
-      <div
-        className="pointer-events-none absolute inset-0 -z-10 bg-radial from-primary/15 via-transparent to-transparent blur-3xl opacity-70 dark:opacity-40 scale-110"
-        aria-hidden="true"
-      />
-
       {/* Animated Lottie SVG Container */}
       <div
         ref={containerRef}

@@ -741,16 +741,6 @@
   pointer-events: none;
 }
 
-/* Light: subtle Fjord teal ambient lift at top edge */
-.cargo-home-hero-glow {
-  background: radial-gradient(ellipse 80% 45% at 50% 0%, color-mix(in oklch, var(--cargo-fjord) 14%, transparent), transparent 70%);
-}
-
-/* Dark: soft Fjord bloom at top */
-.dark .cargo-home-hero-glow {
-  background: radial-gradient(ellipse 80% 55% at 50% 0%, color-mix(in oklch, var(--cargo-fjord) 20%, transparent), transparent 70%);
-}
-
 .cargo-service-media {
   aspect-ratio: 4 / 3;
   border-radius: var(--radius-lg);
