@@ -708,14 +708,6 @@
   pointer-events: none;
 }
 
-.cargo-service-media img {
-  /* removed hover transitions */
-}
-
-.cargo-service:focus-within .cargo-service-media img {
-  /* removed hover focus */
-}
-
 .cargo-story-media {
   aspect-ratio: 1 / 1;
 }
@@ -763,10 +755,6 @@
 
 .cargo-page-media {
   aspect-ratio: 4 / 3;
-}
-
-@media (hover: hover) {
-  /* removed hover zoom effect */
 }
 
 @media (width <= 767px) {
