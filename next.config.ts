@@ -44,10 +44,7 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       "lucide-react",
       "recharts",
-      "framer-motion",
-      "mapbox-gl",
-      "@aliimam/icons",
-      "@aliimam/logos",
+      "motion",
     ],
   },
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],

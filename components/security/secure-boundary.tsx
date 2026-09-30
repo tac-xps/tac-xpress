@@ -3,7 +3,7 @@
 import { useRLS, type TableName, type Operation } from "@/lib/auth/useRLS"
 import { POLICY_MANIFEST } from "@/lib/strategy/policy-manifest"
 import { Lock, ShieldAlert, ArrowUpRight, AlertTriangle, RefreshCw } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 
 interface SecureBoundaryProps {
   table: TableName

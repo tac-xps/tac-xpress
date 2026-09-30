@@ -4,7 +4,7 @@ import { MapPin, Package, ArrowRight, CheckCircle2, Truck, CircleDot } from "luc
 import type { TrackingResult } from "@/types/tracking"
 import { Badge } from "@/components/ui/badge"
 import { PackageTrackerCard } from "@/components/ui/tracker-card"
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion } from "motion/react"
 import { cn } from "@/lib/utils"
 
 interface TrackingDetailsProps {
