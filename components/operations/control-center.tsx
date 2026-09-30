@@ -1,4 +1,4 @@
-import { OverviewRegister } from "./overview-register"
+import { RecentActivityRegister } from "./recent-activity-register"
 import Link from "next/link"
 import {
   ArrowUpRight,
@@ -87,50 +87,7 @@ export function ControlCenterPanels({
           </div>
         ))}
       </dl>
-      <div className="grid min-w-0 gap-6 xl:grid-cols-3">
-        <OverviewRegister
-          title="Recent invoices"
-          description="Latest five billing records"
-          href="/dashboard/invoices"
-          rows={snapshot.recentInvoices.map((invoice) => ({
-            id: invoice.id,
-            title: invoice.shipment?.consignorName || "Billing record",
-            detail: invoice.shipment?.awbNumber || invoice.id.slice(0, 8),
-            value: formatInvoiceCurrency(invoice.amount),
-            status: invoice.status,
-            href:
-              invoice.status === "void"
-                ? "/dashboard/invoices?q=" + invoice.id
-                : "/invoice/" + invoice.id,
-          }))}
-        />
-        <OverviewRegister
-          title="Website enquiries"
-          description="Latest five contact requests"
-          href="/dashboard/messages"
-          rows={snapshot.recentContacts.map((ticket) => ({
-            id: ticket.id,
-            title: ticket.subject,
-            detail: ticket.customerName || "Website enquiry",
-            status: ticket.status,
-            href: "/dashboard/messages?q=" + encodeURIComponent(ticket.subject),
-          }))}
-        />
-        <OverviewRegister
-          title="WhatsApp delivery"
-          description="Provider updates, latest five attempts"
-          href="/dashboard/communications"
-          rows={snapshot.recentMessages.map((message) => ({
-            id: message.id,
-            title:
-              message.relatedAwb ||
-              (message.relatedInvoiceId
-                ? "INV-" + message.relatedInvoiceId.slice(0, 8)
-                : "Support message"),
-            status: message.status,
-          }))}
-        />
-      </div>
+      <RecentActivityRegister snapshot={snapshot} />
     </>
   )
 }

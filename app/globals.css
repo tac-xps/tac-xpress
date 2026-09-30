@@ -525,22 +525,22 @@
 }
 
 .cargo-public .cargo-accent {
-  --background: #eeebf4;
-  --foreground: #252130;
-  --muted-foreground: #625870;
-  --border: #c4b9d2;
+  --background: oklch(93.8% 0.012 290);
+  --foreground: oklch(25.5% 0.025 290);
+  --muted-foreground: oklch(47.5% 0.038 290);
+  --border: oklch(78.5% 0.025 290);
 
   color: var(--foreground);
   background: linear-gradient(160deg, var(--background) 0%, color-mix(in oklch, var(--background) 92%, var(--primary) 8%) 100%);
 }
 
 .dark .cargo-public .cargo-accent {
-  --background: #211b30;
-  --foreground: #f7f7f8;
-  --muted-foreground: #bbb4ca;
-  --border: #51465f;
+  --background: oklch(22.5% 0.028 290);
+  --foreground: oklch(97.5% 0.002 67.8);
+  --muted-foreground: oklch(76.5% 0.020 290);
+  --border: oklch(38.0% 0.030 290);
 
-  background: linear-gradient(160deg, #1b1527 0%, #251d38 50%, #1c162a 100%);
+  background: linear-gradient(160deg, oklch(19.0% 0.024 290) 0%, oklch(24.0% 0.032 290) 50%, oklch(20.0% 0.025 290) 100%);
 }
 
 /* Rebind existing Tailwind aliases at each public surface boundary. */
