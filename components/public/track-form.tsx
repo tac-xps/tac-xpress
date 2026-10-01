@@ -57,6 +57,7 @@ export function TrackForm({ variant = "inline", className, ...props }: TrackForm
   if (variant === "desk") {
     return (
       <form
+        noValidate
         action="/track"
         method="get"
         aria-label="Track your shipment"
