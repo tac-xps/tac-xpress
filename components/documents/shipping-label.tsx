@@ -40,9 +40,9 @@ interface ShippingLabelProps {
 }
 
 /**
- * Standard 4" × 6" Thermal Barcode Shipping Label.
+ * Standard 4" × 3" Thermal Barcode Shipping Label (Aspect Ratio 4:3).
  *
- * Minimalist Freight & Courier Layout matching modern parcel thermal designs:
+ * Minimalist Freight & Courier Layout engineered for 4:3 landscape thermal rolls:
  * - Zone 1 (Top): Origin Station ('FROM:' + Origin routing barcode) and Service Specs (Ship Date, Weight, Service Tier, Day of Week, Deliver By, Payment).
  * - Zone 2 (Middle): Destination ('TO:' + Destination postal routing barcode, Consignee name, Destination City/State/PIN, Singjamei Hub [SJM], and Driver Scan QR code).
  *   STRICT PRIVACY: Customer street address and phone number are NEVER printed.
@@ -94,30 +94,30 @@ export function ShippingLabel({ shipment }: ShippingLabelProps) {
   return (
     <article
       data-shipping-label
-      className="box-border flex h-[6in] w-[4in] shrink-0 flex-col border-2 border-black bg-white p-3 font-sans text-black select-none [print-color-adjust:exact]"
-      aria-label={`Shipping label for AWB ${shipment.awbNumber}`}
+      className="box-border flex h-[3in] w-[4in] aspect-[4/3] shrink-0 flex-col justify-between border-2 border-black bg-white p-2 font-sans text-black select-none [print-color-adjust:exact]"
+      aria-label={`4:3 Shipping label for AWB ${shipment.awbNumber}`}
     >
       {/* ── ZONE 1: ORIGIN ('FROM:') & SERVICE LEVEL / SHIP DATE (TOP) ── */}
-      <section className="grid grid-cols-2 gap-3 border-b-2 border-black pb-2.5">
+      <section className="grid grid-cols-2 gap-2 border-b-2 border-black pb-1">
         {/* Top Left: FROM + Origin Routing Barcode + Hub Details */}
         <div className="flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-black tracking-wider text-black">
+              <span className="font-mono text-[10px] font-black tracking-wider text-black leading-none">
                 FROM:
               </span>
-              <span className="font-mono text-[9px] font-bold text-neutral-600">
+              <span className="font-mono text-[8px] font-bold text-neutral-600 leading-none">
                 (DEL)
               </span>
             </div>
 
             {/* Origin Hub Barcode */}
-            <div className="mt-1 flex items-center justify-start [&_svg]:h-[24px] [&_svg]:max-w-[1.6in]">
+            <div className="mt-0.5 flex items-center justify-start [&_svg]:h-[18px] [&_svg]:max-w-[1.4in]">
               <Barcode
                 value="DEL-HUB"
                 format="CODE128"
-                width={1.3}
-                height={24}
+                width={1.2}
+                height={18}
                 displayValue={false}
                 margin={0}
                 background="#ffffff"
@@ -126,12 +126,12 @@ export function ShippingLabel({ shipment }: ShippingLabelProps) {
             </div>
 
             {/* Origin Station Text */}
-            <div className="mt-1 text-[9px] leading-tight text-neutral-800">
+            <div className="mt-0.5 text-[7.5px] leading-tight text-neutral-800">
               <p className="font-bold text-black uppercase">
                 TAC-XPRESS CENTRAL HUB
               </p>
               <p>South Delhi, New Delhi - 110003</p>
-              <p className="font-mono text-[8px] text-neutral-600 mt-0.5">
+              <p className="font-mono text-[7px] text-neutral-600">
                 GSTIN: {DELHI_HUB_ADDRESS.gstin}
               </p>
             </div>
@@ -140,7 +140,7 @@ export function ShippingLabel({ shipment }: ShippingLabelProps) {
 
         {/* Top Right: SHIP DATE, WEIGHT, SERVICE TIER, DAY, DELIVER BY, PAYMENT */}
         <div className="flex flex-col items-end text-right justify-between">
-          <div className="text-[9px] font-mono leading-tight">
+          <div className="text-[8px] font-mono leading-tight">
             <p>
               <span className="text-neutral-600 font-semibold">SHIP DATE: </span>
               <span className="font-bold text-black">{bookingDateFormatted}</span>
@@ -153,28 +153,28 @@ export function ShippingLabel({ shipment }: ShippingLabelProps) {
             </p>
           </div>
 
-          {/* Large Bold Service Typography & Estimated Day of Week */}
-          <div className="my-1 flex flex-col items-end">
-            <span className="text-sm font-black uppercase tracking-tight text-black leading-none">
+          {/* Bold Service Typography & Estimated Day of Week */}
+          <div className="my-0.5 flex items-center gap-1.5 justify-end">
+            <span className="text-[11px] font-black uppercase tracking-tight text-black leading-none">
               {serviceLabel}
             </span>
-            <span className="text-2xl font-black uppercase tracking-tight text-black leading-none mt-1">
+            <span className="text-base font-black uppercase tracking-tight text-black leading-none">
               {deliveryDayOfWeek}
             </span>
           </div>
 
           {/* Deliver By & Payment Mode Pill */}
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <div className="text-[8.5px] font-bold text-neutral-800">
+          <div className="flex items-center gap-1">
+            <div className="text-[7.5px] font-bold text-neutral-800">
               <span>DELIVER BY: </span>
               <span className="font-mono font-black">{deliverByFormatted}</span>
             </div>
             {isCOD ? (
-              <span className="border border-black bg-black px-1.5 py-0.5 font-mono text-[8.5px] font-black uppercase text-white tracking-wider">
+              <span className="border border-black bg-black px-1 py-0.2 font-mono text-[7.5px] font-black uppercase text-white tracking-wider">
                 COD: ₹{codAmount}
               </span>
             ) : (
-              <span className="border border-black bg-white px-1.5 py-0.5 font-mono text-[8.5px] font-black uppercase text-black tracking-wider">
+              <span className="border border-black bg-white px-1 py-0.2 font-mono text-[7.5px] font-black uppercase text-black tracking-wider">
                 PREPAID
               </span>
             )}
@@ -183,20 +183,20 @@ export function ShippingLabel({ shipment }: ShippingLabelProps) {
       </section>
 
       {/* ── ZONE 2: DESTINATION ('TO:') & PRIVACY-PROTECTED RECIPIENT (MIDDLE) ── */}
-      <section className="flex-1 border-b-2 border-black py-2.5 flex flex-col justify-between">
+      <section className="flex-1 border-b-2 border-black py-1 flex flex-col justify-between min-h-0">
         <div>
           {/* TO header + Destination Sorting Barcode */}
-          <div className="flex items-center justify-between border-b border-neutral-300 pb-1.5">
+          <div className="flex items-center justify-between border-b border-neutral-300 pb-0.5">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-sm font-black tracking-wider text-black">
+              <span className="font-mono text-xs font-black tracking-wider text-black">
                 TO:
               </span>
-              <div className="flex items-center [&_svg]:h-[26px] [&_svg]:max-w-[1.8in]">
+              <div className="flex items-center [&_svg]:h-[18px] [&_svg]:max-w-[1.6in]">
                 <Barcode
                   value={destinationPin}
                   format="CODE128"
-                  width={1.5}
-                  height={26}
+                  width={1.3}
+                  height={18}
                   displayValue={false}
                   margin={0}
                   background="#ffffff"
@@ -204,42 +204,42 @@ export function ShippingLabel({ shipment }: ShippingLabelProps) {
                 />
               </div>
             </div>
-            <span className="font-mono text-[10px] font-black tracking-widest text-black">
+            <span className="font-mono text-[9px] font-black tracking-widest text-black">
               PIN: {destinationPin}
             </span>
           </div>
 
           {/* Recipient Details & QR Layout */}
-          <div className="mt-2 flex items-start justify-between gap-3">
+          <div className="mt-1 flex items-start justify-between gap-2">
             {/* Left: Consignee name, destination region, station, privacy notice */}
             <div className="flex-1 min-w-0">
-              <p className="text-lg font-black uppercase text-black tracking-tight leading-tight truncate">
+              <p className="text-xs font-black uppercase text-black tracking-tight leading-tight truncate">
                 {shipment.consigneeName || "CONSIGNEE RECIPIENT"}
               </p>
-              <p className="text-sm font-bold uppercase text-neutral-900 mt-1">
+              <p className="text-[10px] font-bold uppercase text-neutral-900 mt-0.5 leading-tight">
                 {destinationCity}, {destinationState} - {destinationPin}
               </p>
 
               {/* Station Hub Routing Indicator */}
-              <div className="mt-2.5 flex items-center gap-2">
-                <span className="border border-black bg-black px-1.5 py-0.5 font-mono text-[9px] font-black text-white uppercase tracking-wider">
+              <div className="mt-1 flex items-center gap-1.5">
+                <span className="border border-black bg-black px-1 py-0.2 font-mono text-[8px] font-black text-white uppercase tracking-wider">
                   SJM HUB
                 </span>
-                <span className="text-[10px] font-bold text-neutral-800 uppercase">
+                <span className="text-[8.5px] font-bold text-neutral-800 uppercase">
                   Singjamei Delivery Station [SJM]
                 </span>
               </div>
 
               {shipment.contentDescription && (
-                <p className="mt-2 font-mono text-[9px] text-neutral-700 truncate">
+                <p className="mt-0.5 font-mono text-[8px] text-neutral-700 truncate">
                   <span className="font-semibold text-neutral-500">CONTENT: </span>
                   <span className="font-bold uppercase text-black">{shipment.contentDescription}</span>
                 </p>
               )}
 
               {/* Privacy Enforcement Notice */}
-              <div className="mt-2.5 inline-flex items-center gap-1 border border-neutral-300 bg-neutral-100 px-2 py-0.5 text-[8px] font-mono font-semibold uppercase text-neutral-600">
-                <span>🔒 Privacy Protected • Street Address & Phone Masked</span>
+              <div className="mt-1 inline-flex items-center gap-1 border border-neutral-300 bg-neutral-100 px-1.5 py-0.2 text-[7px] font-mono font-semibold uppercase text-neutral-600">
+                <span>🔒 Privacy Protected • Address & Phone Masked</span>
               </div>
             </div>
 
@@ -247,38 +247,38 @@ export function ShippingLabel({ shipment }: ShippingLabelProps) {
             <div className="flex flex-col items-center shrink-0 text-center">
               <QRCode
                 data={`https://tacservice.in/track?awb=${encodeURIComponent(shipment.awbNumber)}`}
-                className="size-20 shrink-0 border border-black p-1 bg-white"
+                className="size-14 shrink-0 border border-black p-0.5 bg-white"
               />
-              <span className="font-mono text-[7.5px] font-bold text-neutral-700 tracking-wider mt-1 uppercase">
-                DRIVER VERIFY
+              <span className="font-mono text-[6.5px] font-bold text-neutral-700 tracking-wider mt-0.5 uppercase">
+                DRIVER SCAN
               </span>
             </div>
           </div>
         </div>
 
         {/* Handling and Route Sort Summary */}
-        <div className="flex items-center justify-between text-[9px] font-mono text-neutral-600 pt-1.5 border-t border-neutral-200">
-          <span>SORT CODE: DEL-SJM-DIR</span>
+        <div className="flex items-center justify-between text-[7.5px] font-mono text-neutral-600 pt-0.5 border-t border-neutral-200">
+          <span>SORT: DEL-SJM-DIR</span>
           <span className="font-bold text-black uppercase">
-            KEEP DRY • HANDLE WITH CARE
+            KEEP DRY • HANDLE W/ CARE
           </span>
         </div>
       </section>
 
       {/* ── ZONE 3: PRIMARY CODE 128 TRACKING BARCODE (BOTTOM) ── */}
-      <section className="flex flex-col items-center justify-center pt-2">
-        <div className="w-full flex items-center justify-between font-mono text-sm font-black tracking-widest text-black mb-1">
+      <section className="flex flex-col items-center justify-center pt-1">
+        <div className="w-full flex items-center justify-between font-mono text-[11px] font-black tracking-widest text-black mb-0.5 leading-none">
           <span>TRACKING #:</span>
           <span>{shipment.awbNumber}</span>
         </div>
 
         {/* Large Primary Barcode for Instant Laser/Thermal Reading */}
-        <div className="w-full flex justify-center [&_svg]:h-[80px] [&_svg]:w-full [&_svg]:max-w-[3.7in]">
+        <div className="w-full flex justify-center [&_svg]:h-[46px] [&_svg]:w-full [&_svg]:max-w-[3.7in]">
           <Barcode
             value={shipment.awbNumber}
             format="CODE128"
-            width={2.2}
-            height={80}
+            width={2.0}
+            height={46}
             displayValue={false}
             margin={0}
             background="#ffffff"
@@ -286,9 +286,9 @@ export function ShippingLabel({ shipment }: ShippingLabelProps) {
           />
         </div>
 
-        <div className="mt-1 flex w-full items-center justify-between font-mono text-[8px] font-bold uppercase tracking-wider text-neutral-600">
+        <div className="mt-0.5 flex w-full items-center justify-between font-mono text-[7px] font-bold uppercase tracking-wider text-neutral-600 leading-none">
           <span>TAC-XPRESS LOGISTICS NETWORK</span>
-          <span>4&quot; × 6&quot; THERMAL FREIGHT</span>
+          <span>4&quot; × 3&quot; THERMAL FREIGHT</span>
         </div>
       </section>
     </article>

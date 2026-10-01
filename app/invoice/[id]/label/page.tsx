@@ -24,9 +24,9 @@ export default async function ShippingLabelPage({ params }: { params: Promise<{ 
   if (!shipment || shipment.deletedAt) notFound()
   return (
     <main className="flex min-h-screen flex-col items-center gap-4 bg-muted p-4 print:block print:bg-white print:p-0">
-      <style>{'@media print { @page { size: 4in 6in; margin: 0; } html, body { margin: 0; padding: 0; } }'}</style>
+      <style>{'@media print { @page { size: 4in 3in; margin: 0; } html, body { margin: 0; padding: 0; } }'}</style>
       <div className="print:hidden"><PrintButton /></div>
-      <div className="max-w-full overflow-x-auto" role="region" aria-label="4 by 6 inch print preview" tabIndex={0}>
+      <div className="max-w-full overflow-x-auto" role="region" aria-label="4 by 3 inch print preview" tabIndex={0}>
         <ShippingLabel shipment={shipment} />
       </div>
     </main>
