@@ -125,6 +125,11 @@ export default async function MessagesPage({
       assigned_to: ticket.assignedTo,
       related_awb: ticket.relatedAwb || ticket.awbNumber,
       created_at: ticket.createdAt.toISOString(),
+      ai_confidence: ticket.aiConfidence,
+      ai_routing: ticket.aiRouting,
+      needs_human_review: ticket.needsHumanReview,
+      sla_at_risk: ticket.slaAtRisk,
+      sla_breached: ticket.slaBreached,
     }))
   return (
     <div className="flex min-w-0 flex-col gap-6">

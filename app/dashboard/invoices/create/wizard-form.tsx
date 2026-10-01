@@ -7,7 +7,7 @@ import { Form } from "@/components/ui/form"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import {
   ArrowLeft,
   ArrowRight,

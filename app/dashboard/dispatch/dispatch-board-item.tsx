@@ -25,7 +25,15 @@ export function DispatchBoardItem({
         </Link>
         <Badge variant="outline">{item.type}</Badge>
       </div>
-      <p className="mt-3 text-sm">{item.route}</p>
+      <p className="mt-3 text-sm font-medium">{item.route}</p>
+      {item.legInfo && (
+        <div className="mt-2 flex items-center gap-1.5 text-xs text-primary font-medium">
+          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary font-mono">
+            Leg {item.legInfo.legNumber}/{item.legInfo.totalLegs}
+          </Badge>
+          <span className="truncate text-muted-foreground">{item.legInfo.currentRoute}</span>
+        </div>
+      )}
       <p className="mt-2 text-xs text-muted-foreground">{item.time}</p>
       {item.column === "pending" && (
         <div className="mt-4 border-t pt-3">

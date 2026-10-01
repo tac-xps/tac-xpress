@@ -14,7 +14,7 @@ import { CargoStatement } from "./cargo-statement"
 export function LogisticsHome() {
   return (
     <div className="cargo-public min-h-svh bg-background text-foreground">
-      <SiteNavigation overlay />
+      <SiteNavigation />
       <main id="main-content">
         <HomeHero />
         <HomeServices />

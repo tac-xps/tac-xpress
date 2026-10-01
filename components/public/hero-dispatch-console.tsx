@@ -13,7 +13,7 @@ interface HeroDispatchConsoleProps {
 }
 
 export function HeroDispatchConsole({ className, variant: _variant }: HeroDispatchConsoleProps = {}) {
-  const [activeTab, setActiveTab] = useState<"track" | "quote">("track")
+  const [activeTab, setActiveTab] = useState<"track" | "quote">("quote")
   const [selectedDest, setSelectedDest] = useState("imphal")
   const [cargoType, setCargoType] = useState<"air" | "surface">("air")
 
@@ -59,11 +59,11 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
           className={cn(
             "flex items-center gap-2 pb-2 transition-colors focus:outline-none focus-visible:ring-1",
             activeTab === "track"
-              ? "border-b-2 border-orange-500 font-bold text-foreground"
+              ? "border-b-2 border-primary font-bold text-foreground"
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          <Search className="size-3.5 text-orange-500" aria-hidden="true" />
+          <Search className="size-3.5 text-primary" aria-hidden="true" />
           <span>01 / Track Consignment</span>
         </button>
 
@@ -80,11 +80,11 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
           className={cn(
             "flex items-center gap-2 pb-2 transition-colors focus:outline-none focus-visible:ring-1",
             activeTab === "quote"
-              ? "border-b-2 border-orange-500 font-bold text-foreground"
+              ? "border-b-2 border-primary font-bold text-foreground"
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          <SlidersHorizontal className="size-3.5 text-orange-500" aria-hidden="true" />
+          <SlidersHorizontal className="size-3.5 text-primary" aria-hidden="true" />
           <span>02 / Rate & Route Check</span>
         </button>
       </div>
@@ -102,7 +102,7 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
             <TrackForm variant="console" />
           </div>
         ) : (
-          /* Tab 2: Quick Rate & Route Check */
+          /* Tab 2: Rate & Route Check */
           <div
             role="tabpanel"
             id="panel-quote"
@@ -112,9 +112,9 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="flex flex-col gap-1.5">
                 <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Origin</span>
-                <div className="border border-border px-3.5 py-2 font-mono text-sm flex items-center justify-between bg-surface text-foreground">
+                <div className="border border-border px-3.5 py-2 font-mono text-sm flex items-center justify-between bg-surface text-foreground rounded-sm">
                   <span>DEL / New Delhi</span>
-                  <span className="text-[10px] px-1.5 py-0.5 font-bold bg-orange-100 text-orange-700 dark:bg-primary/20 dark:text-primary">
+                  <span className="text-[10px] px-1.5 py-0.5 font-bold bg-primary/10 text-primary rounded-xs">
                     HUB 01
                   </span>
                 </div>
@@ -131,7 +131,7 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
                   id="hero-dest-select"
                   value={selectedDest}
                   onChange={(e) => setSelectedDest(e.target.value)}
-                  className="border border-border px-3.5 py-2 font-mono text-sm focus:outline-none focus-visible:ring-1 transition-colors bg-surface text-foreground focus:border-orange-500 focus-visible:ring-orange-500"
+                  className="border border-border px-3.5 py-2 font-mono text-sm focus:outline-none focus-visible:ring-1 transition-colors bg-surface text-foreground focus:border-primary focus-visible:ring-primary rounded-sm"
                 >
                   <option value="imphal">IMF / Imphal (Manipur)</option>
                   <option value="guwahati">GAU / Guwahati (Assam)</option>
@@ -148,9 +148,9 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
                   aria-pressed={cargoType === "air"}
                   onClick={() => setCargoType("air")}
                   className={cn(
-                    "inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-xs transition-colors border",
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-xs transition-colors border rounded-xs",
                     cargoType === "air"
-                      ? "border-orange-500 bg-orange-50 text-orange-700 dark:border-primary dark:bg-primary/20 dark:text-primary font-medium"
+                      ? "border-primary bg-primary/10 text-primary font-medium"
                       : "border-border text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -162,9 +162,9 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
                   aria-pressed={cargoType === "surface"}
                   onClick={() => setCargoType("surface")}
                   className={cn(
-                    "inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-xs transition-colors border",
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-xs transition-colors border rounded-xs",
                     cargoType === "surface"
-                      ? "border-orange-500 bg-orange-50 text-orange-700 dark:border-primary dark:bg-primary/20 dark:text-primary font-medium"
+                      ? "border-primary bg-primary/10 text-primary font-medium"
                       : "border-border text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -176,7 +176,7 @@ export function HeroDispatchConsole({ className, variant: _variant }: HeroDispat
               <Button
                 asChild
                 size="lg"
-                className="rounded-none h-10 px-5 font-sans text-sm font-medium tracking-wide focus-visible:ring-1 active:scale-[0.98] transition-transform bg-orange-500 hover:bg-orange-600 text-white focus-visible:ring-orange-500"
+                className="rounded-md h-10 px-5 font-sans text-sm font-medium tracking-wide focus-visible:ring-1 active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:ring-primary"
               >
                 <Link href={`/contact?origin=DEL&dest=${selectedDest.toUpperCase()}&mode=${cargoType}`}>
                   Calculate Freight <ArrowUpRight data-icon="inline-end" className="size-4 ml-1" aria-hidden="true" />

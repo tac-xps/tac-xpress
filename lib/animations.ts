@@ -1,4 +1,4 @@
-import { Variants } from "framer-motion"
+import type { Variants } from "motion/react"
 
 export const fadeSlideVariant: Variants = {
   hidden: { opacity: 0, y: 20 },

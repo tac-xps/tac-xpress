@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckCircle2, QrCode } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 
@@ -92,7 +92,7 @@ export const PackageTrackerCard = ({
           onClick={onTrackClick}
           className="flex w-full items-center justify-center gap-2 rounded-none border border-border bg-muted/50 px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted"
         >
-          <CheckCircle2 className="h-4 w-4 text-green-500" />
+          <CheckCircle2 className="size-4 text-status-delivered" />
           Show full tracking
         </motion.button>
       </div>

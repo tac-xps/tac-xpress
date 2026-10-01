@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Eye, ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { Eye, ArrowUpDown, MoreHorizontal, Sparkles, AlertCircle, ShieldAlert } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -29,6 +29,11 @@ export type TicketData = {
   related_awb: string | null
   assigned_to: string | null
   created_at: string
+  ai_confidence?: number | null
+  ai_routing?: string | null
+  needs_human_review?: boolean | null
+  sla_at_risk?: boolean | null
+  sla_breached?: boolean | null
 }
 
 export const getColumns = (
@@ -78,9 +83,54 @@ export const getColumns = (
   {
     accessorKey: "subject",
     header: "Subject",
-    cell: ({ row }) => (
-      <span className="font-medium">{row.getValue("subject")}</span>
-    ),
+    cell: ({ row }) => {
+      const ticket = row.original
+      const isUrgent = ticket.priority === "urgent" || ticket.priority === "high"
+      return (
+        <div className="flex flex-col gap-1.5 py-1 min-w-[200px] max-w-[340px]">
+          <span className="font-medium leading-snug line-clamp-2">{ticket.subject}</span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {ticket.priority && (
+              <Badge
+                variant={
+                  isUrgent
+                    ? "destructive"
+                    : ticket.priority === "medium"
+                      ? "warning"
+                      : "neutral"
+                }
+                className="text-[10px] px-1.5 py-0 h-4 capitalize"
+              >
+                {ticket.priority}
+              </Badge>
+            )}
+            {ticket.needs_human_review && (
+              <Badge variant="warning" className="text-[10px] px-1.5 py-0 h-4 gap-1">
+                <AlertCircle className="size-2.5" />
+                Needs Review
+              </Badge>
+            )}
+            {ticket.ai_routing && (
+              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 gap-1 border-primary/30 text-primary">
+                <Sparkles className="size-2.5" />
+                {ticket.ai_routing}
+                {ticket.ai_confidence ? ` (${Math.round(ticket.ai_confidence * 100)}%)` : ""}
+              </Badge>
+            )}
+            {ticket.sla_at_risk && !ticket.sla_breached && (
+              <Badge variant="warning" className="text-[10px] px-1.5 py-0 h-4">
+                SLA At Risk
+              </Badge>
+            )}
+            {ticket.sla_breached && (
+              <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4">
+                SLA Breached
+              </Badge>
+            )}
+          </div>
+        </div>
+      )
+    },
   },
   {
     accessorKey: "category",

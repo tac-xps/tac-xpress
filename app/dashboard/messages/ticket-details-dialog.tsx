@@ -16,7 +16,7 @@ import {
   replyToTicketFromDashboard,
 } from "@/app/actions/tickets"
 import type { TicketData } from "./columns"
-import { Calendar, Mail, Phone, Tag, Box, Loader2, Send } from "lucide-react"
+import { Calendar, Mail, Phone, Tag, Box, Loader2, Send, Sparkles, AlertTriangle, Clock } from "lucide-react"
 import { toast } from "sonner"
 
 export function TicketDetailsDialog({
@@ -97,6 +97,54 @@ export function TicketDetailsDialog({
         </DialogHeader>
 
         <div className="grid gap-6 py-4">
+          {ticket.needs_human_review && (
+            <div className="flex items-start gap-3 rounded-none border border-status-pending/40 bg-status-pending/10 p-3.5 text-sm text-foreground">
+              <AlertTriangle className="size-5 shrink-0 text-status-pending mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-semibold text-foreground">
+                  Human Review Required
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Autonomous outbound responses are paused. AI triage flagged this conversation due to high-urgency keywords, customer grievance, or strict safety guardrail triggers. Please inspect and reply manually.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {(ticket.ai_routing || ticket.sla_breached || ticket.sla_at_risk) && (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-none border border-border/50 bg-muted/20 px-4 py-3 text-xs">
+              <div className="flex flex-wrap items-center gap-2">
+                <Sparkles className="size-4 text-primary shrink-0" />
+                <span className="font-medium text-foreground">AI Triage:</span>
+                {ticket.ai_routing && (
+                  <Badge variant="outline" className="text-[11px] font-mono capitalize">
+                    {ticket.ai_routing}
+                  </Badge>
+                )}
+                {ticket.ai_confidence !== null && ticket.ai_confidence !== undefined && (
+                  <span className="text-muted-foreground">
+                    Confidence: <span className="font-semibold text-foreground">{Math.round(ticket.ai_confidence * 100)}%</span>
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {ticket.sla_breached && (
+                  <Badge variant="destructive" className="text-[11px]">
+                    SLA Breached
+                  </Badge>
+                )}
+                {ticket.sla_at_risk && !ticket.sla_breached && (
+                  <Badge variant="warning" className="text-[11px]">
+                    SLA At Risk
+                  </Badge>
+                )}
+                <Badge variant="secondary" className="text-[11px] capitalize">
+                  Priority: {ticket.priority}
+                </Badge>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 rounded-none border border-border/50 bg-muted/30 p-4 text-sm">
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-2 break-words text-muted-foreground">

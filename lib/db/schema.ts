@@ -96,6 +96,12 @@ export const driverStatusEnum = pgEnum("driver_status", [
   "on_leave",
   "inactive",
 ])
+export const legStatusEnum = pgEnum("leg_status", [
+  "pending",
+  "in_transit",
+  "completed",
+  "exception",
+])
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey(),
@@ -227,6 +233,7 @@ export const tickets = pgTable(
     aiConfidence: real("ai_confidence").default(0),
     aiRouting: text("ai_routing"),
     aiAutoReplyEnabled: boolean("ai_auto_reply_enabled").default(true),
+    needsHumanReview: boolean("needs_human_review").default(false),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -430,6 +437,53 @@ export const trackingEvents = pgTable(
   ]
 )
 
+export const shipmentLegs = pgTable(
+  "shipment_legs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    shipmentId: uuid("shipment_id")
+      .references(() => shipments.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    legNumber: integer("leg_number").notNull(),
+    originHubId: uuid("origin_hub_id").references(() => hubs.id, {
+      onDelete: "restrict",
+    }),
+    destinationHubId: uuid("destination_hub_id").references(() => hubs.id, {
+      onDelete: "restrict",
+    }),
+    originLocation: text("origin_location").notNull(),
+    destinationLocation: text("destination_location").notNull(),
+    vehicleId: uuid("vehicle_id").references(() => vehicles.id, {
+      onDelete: "set null",
+    }),
+    driverId: uuid("driver_id").references(() => drivers.id, {
+      onDelete: "set null",
+    }),
+    manifestId: uuid("manifest_id").references(() => manifests.id, {
+      onDelete: "set null",
+    }),
+    status: legStatusEnum("status").notNull().default("pending"),
+    startedAt: timestamp("started_at"),
+    completedAt: timestamp("completed_at"),
+    notes: text("notes"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdateFn(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("shipment_legs_shipment_id_idx").on(table.shipmentId),
+    index("shipment_legs_status_idx").on(table.status),
+    unique("shipment_legs_shipment_leg_number_unique").on(
+      table.shipmentId,
+      table.legNumber
+    ),
+  ]
+)
+
 export const whatsappSubscribers = pgTable(
   "whatsapp_subscribers",
   {
@@ -523,6 +577,7 @@ export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
   invoice: one(invoices),
   trackingEvents: many(trackingEvents),
   manifestItems: many(manifestItems),
+  legs: many(shipmentLegs),
 }))
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -609,6 +664,33 @@ export const manifestItemsRelations = relations(manifestItems, ({ one }) => ({
   }),
 }))
 
+export const shipmentLegsRelations = relations(shipmentLegs, ({ one }) => ({
+  shipment: one(shipments, {
+    fields: [shipmentLegs.shipmentId],
+    references: [shipments.id],
+  }),
+  originHub: one(hubs, {
+    fields: [shipmentLegs.originHubId],
+    references: [hubs.id],
+  }),
+  destinationHub: one(hubs, {
+    fields: [shipmentLegs.destinationHubId],
+    references: [hubs.id],
+  }),
+  vehicle: one(vehicles, {
+    fields: [shipmentLegs.vehicleId],
+    references: [vehicles.id],
+  }),
+  driver: one(drivers, {
+    fields: [shipmentLegs.driverId],
+    references: [drivers.id],
+  }),
+  manifest: one(manifests, {
+    fields: [shipmentLegs.manifestId],
+    references: [manifests.id],
+  }),
+}))
+
 
 export const backgroundJobs = pgTable(
   "background_jobs",
@@ -650,3 +732,5 @@ export type Ticket = typeof tickets.$inferSelect
 export type TicketReply = typeof ticketReplies.$inferSelect
 export type BackgroundJob = typeof backgroundJobs.$inferSelect
 export type DLQItem = typeof deadLetterQueue.$inferSelect
+export type ShipmentLeg = typeof shipmentLegs.$inferSelect
+export type NewShipmentLeg = typeof shipmentLegs.$inferInsert

@@ -8,6 +8,7 @@ import { shipments, trackingEvents } from "@/lib/db/schema"
 export function publicTrackingQuery(awb: string) {
   return db
     .select({
+      shipment_id: shipments.id,
       awb_number: shipments.awbNumber,
       origin: shipments.origin,
       destination: shipments.destination,

@@ -3,8 +3,7 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import { ArrowUpRight, ChevronDown, ChevronUp, Package, Truck, Search } from "lucide-react"
-import dynamic from "next/dynamic"
-const HeroLottieTruck = dynamic(() => import("./hero-lottie-truck").then(mod => mod.HeroLottieTruck), { ssr: false })
+import { HeroLottieBox } from "./hero-lottie-box"
 import { HeroDispatchConsole } from "./hero-dispatch-console"
 import { cn } from "@/lib/utils"
 import {
@@ -69,12 +68,6 @@ export function HomeHero() {
       aria-labelledby="home-title"
       id="hero-section"
     >
-      {/* Subtle ambient radial glow for warmth */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0 cargo-home-hero-glow"
-        aria-hidden="true"
-      />
-
       <div className="cargo-container relative z-10 w-full flex flex-col justify-between gap-8 sm:gap-10 lg:gap-12">
 
         {/* ── TOP BAR: EYEBROW & STAT TRIAD ─────────────────────── */}
@@ -85,11 +78,11 @@ export function HomeHero() {
         >
           {/* Eyebrow Pill */}
           <motion.div
-            className="inline-flex items-center gap-2 px-3 py-1.5 bg-muted/80 dark:bg-foreground/[0.06] border border-border dark:border-foreground/10 font-mono text-[11px] font-semibold tracking-wider text-foreground uppercase self-start"
+            className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface border border-border font-mono text-[11px] font-semibold tracking-wider text-foreground uppercase self-start rounded-xs shadow-2xs"
             variants={fadeIn}
             custom={dur(0.05)}
           >
-            <span className="flex size-4 items-center justify-center bg-primary text-primary-foreground">
+            <span className="flex size-4 items-center justify-center bg-primary text-primary-foreground rounded-xs">
               <Truck className="size-2.5" aria-hidden="true" />
             </span>
             <span>FAST AND SECURE TRANSPORT FLOW</span>
@@ -165,7 +158,7 @@ export function HomeHero() {
                 <button
                   type="button"
                   onClick={() => setConsoleOpen((prev) => !prev)}
-                  className="inline-flex items-center gap-2 h-10 px-5 bg-primary text-primary-foreground font-mono text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.97]"
+                  className="inline-flex items-center gap-2 h-10 px-5 bg-primary text-primary-foreground font-mono text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.97] rounded-md"
                 >
                   <span>EXPLORE DESK</span>
                   <Package className="size-3.5" aria-hidden="true" />
@@ -213,16 +206,16 @@ export function HomeHero() {
             </motion.div>
           </motion.div>
 
-          {/* Right Column: Truck Image with Floating Badges */}
+          {/* Right Column: Animated Cargo Box */}
           <motion.div
             className="lg:col-span-7 xl:col-span-7 relative w-full flex justify-center lg:justify-end items-center"
             variants={slideFromRight}
             initial="hidden"
             animate="visible"
           >
-            <div className="relative w-full max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl">
-              {/* Animated Lottie Linehaul Truck (public/lottie/Truck.json) */}
-              <HeroLottieTruck />
+            <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg flex items-center justify-center">
+              {/* Animated Lottie Box (public/lottie/empty_box.json) */}
+              <HeroLottieBox />
             </div>
           </motion.div>
         </div>

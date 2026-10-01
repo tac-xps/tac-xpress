@@ -18,6 +18,7 @@ interface InboundInput {
   timestamp: Date
   awb: string | null
   consent?: boolean
+  isComplaint?: boolean
 }
 
 /** Provider replay and concurrent messages commit exactly one inbox record. */
@@ -90,6 +91,9 @@ export async function saveInboundMessage(input: InboundInput) {
                 ? "open"
                 : existing.status,
             relatedAwb: existing.relatedAwb || input.awb,
+            ...(input.isComplaint
+              ? { priority: "high", intakeCategory: "complaint" }
+              : {}),
             updatedAt: new Date(),
           })
           .where(eq(tickets.id, ticketId))
@@ -105,11 +109,15 @@ export async function saveInboundMessage(input: InboundInput) {
             customerPhone: input.phone,
             customerName: input.name,
             source: "whatsapp",
-            intakeCategory: input.awb ? "shipment" : "general",
+            intakeCategory: input.isComplaint
+              ? "complaint"
+              : input.awb
+                ? "shipment"
+                : "general",
             category: "general",
             relatedAwb: input.awb,
             status: "open",
-            priority: "medium",
+            priority: input.isComplaint ? "high" : "medium",
           })
           .returning({ id: tickets.id })
         ticketId = created.id

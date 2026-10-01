@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { InvoiceDocument } from "@/components/invoice-document"
 import { ShippingLabelPreview } from "./shipping-label-preview"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { fadeSlideVariant } from "@/lib/animations"
 import {
   Check,

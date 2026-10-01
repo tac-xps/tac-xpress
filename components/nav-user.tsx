@@ -22,7 +22,7 @@ import {
 import Link from "next/link"
 
 import { useEffect, useState } from "react"
-import { createClient } from "@/utils/supabase/client"
+import { supabaseBrowser } from "@/lib/supabase/clients"
 
 export function NavUser() {
   const [user, setUser] = useState<{
@@ -33,7 +33,7 @@ export function NavUser() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const supabase = createClient()
+      const supabase = supabaseBrowser()
       const {
         data: { user },
       } = await supabase.auth.getUser()
@@ -116,7 +116,7 @@ export function NavUser() {
             className="w-full cursor-pointer"
             variant="destructive"
             onClick={async () => {
-              const supabase = createClient()
+              const supabase = supabaseBrowser()
               await supabase.auth.signOut()
               window.location.href = "/login"
             }}

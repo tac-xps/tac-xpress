@@ -29,9 +29,9 @@ export function WorkspaceFrame({
           <main
             id="tour-main-content"
             tabIndex={-1}
-            className="relative min-w-0 flex-1 p-4 sm:p-6 lg:p-8"
+            className="relative min-w-0 flex-1 p-5 sm:p-6 lg:p-8 xl:p-10"
           >
-            <div className="relative mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
+            <div className="relative mx-auto flex w-full max-w-[1536px] min-w-0 flex-col gap-6 md:gap-8">
               {children}
             </div>
           </main>

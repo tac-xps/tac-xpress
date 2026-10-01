@@ -4,7 +4,7 @@
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { CargoImage } from "./cargo-image"
+import { WarehouseLottieDelivery } from "./warehouse-lottie-delivery"
 import { MagneticButton } from "./magnetic-button"
 import { motion, useReducedMotion } from "motion/react"
 
@@ -32,7 +32,7 @@ export function HomeStory({
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <CargoImage asset="warehouse" className="cargo-story-media" />
+          <WarehouseLottieDelivery />
           <p className="mt-4 font-mono text-xs text-muted-foreground">
             Connecting communities / Delhi to Northeast India cargo route
           </p>
@@ -66,7 +66,7 @@ export function HomeStory({
                 asChild
                 variant="outline"
                 size="lg"
-                className="rounded-none border-current bg-transparent font-mono text-xs font-semibold uppercase tracking-wider transition-all hover:bg-foreground hover:text-background active:scale-[0.97]"
+                className="rounded-md border-current bg-transparent font-mono text-xs font-semibold uppercase tracking-wider transition-all hover:bg-foreground hover:text-background active:scale-[0.97]"
               >
                 <Link href={ctaHref}>
                   <span>{ctaText}</span>

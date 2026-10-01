@@ -1,8 +1,7 @@
 "use client"
 
 // Adapted from @tailark-oss/veil-content-2 with an ordered shipping process.
-import { useRef, useState } from "react"
-import { useEffect } from "react"
+import { useRef, useState, useEffect } from "react"
 import { motion, useReducedMotion, AnimatePresence } from "motion/react"
 import { cn } from "@/lib/utils"
 import { bookingSteps } from "./shipping-content"
@@ -11,50 +10,64 @@ import { VerticalRail, VerticalRailStep } from "./vertical-rail"
 export function ShippingSteps() {
   const headingRef = useRef<HTMLDivElement>(null)
   const railRef = useRef<HTMLDivElement>(null)
-  const [activeStep, setActiveStep] = useState(-1)
+  const [activeStep, setActiveStep] = useState(0)
   const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
     const rail = railRef.current
     if (!rail) return
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const index = Number(entry.target.getAttribute("data-index"))
-          if (entry.isIntersecting) {
-            setActiveStep((prev) => Math.max(prev, index))
-          } else {
-            const rootTop = entry.rootBounds ? entry.rootBounds.top : 0
-            if (entry.boundingClientRect.top > rootTop) {
-              // Exited below the intersection area (scrolling up)
-              setActiveStep((prev) => (prev === index ? index - 1 : prev))
-            }
-          }
-        })
-      },
-      {
-        rootMargin: "-65% 0px -30% 0px", // align activation with the "top 65%" threshold
-      }
-    )
+    const handleScroll = () => {
+      const stepEls = rail.querySelectorAll<HTMLLIElement>("li")
+      if (!stepEls.length) return
 
-    const stepEls = rail.querySelectorAll("li")
-    stepEls.forEach((el, i) => {
-      el.setAttribute("data-index", String(i))
-      observer.observe(el)
-    })
+      // Ergonomic focal point: 42% down the viewport, exactly where user reads content
+      const focalY = window.innerHeight * 0.42
 
-    return () => observer.disconnect()
+      let bestIndex = 0
+      let minDistance = Infinity
+
+      stepEls.forEach((el, index) => {
+        const rect = el.getBoundingClientRect()
+        // Check distance of step from focal line
+        const distance = Math.abs(rect.top - focalY)
+        if (rect.top <= focalY + 140 && distance < minDistance) {
+          minDistance = distance
+          bestIndex = index
+        }
+      })
+
+      setActiveStep(bestIndex)
+    }
+
+    // Run on initial render
+    handleScroll()
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    window.addEventListener("resize", handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("resize", handleScroll)
+    }
   }, [])
 
   const ease = [0.16, 1, 0.3, 1] as const
   const textVariant = {
-    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 36 },
+    hidden: { opacity: 1, y: 0 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: shouldReduceMotion ? 0 : 0.8, ease: "easeOut" as const },
+      transition: { duration: shouldReduceMotion ? 0 : 0.4, ease: "easeOut" as const },
     },
+  }
+
+  const scrollToStep = (index: number) => {
+    setActiveStep(index)
+    const stepEls = railRef.current?.querySelectorAll<HTMLLIElement>("li")
+    if (stepEls?.[index]) {
+      stepEls[index].scrollIntoView({ behavior: shouldReduceMotion ? "auto" : "smooth", block: "center" })
+    }
   }
 
   return (
@@ -70,12 +83,12 @@ export function ShippingSteps() {
           <motion.div
             ref={headingRef}
             className="lg:sticky lg:top-32"
-            initial="hidden"
+            initial={false}
             whileInView="visible"
-            viewport={{ once: true, margin: "-20% 0px" }}
+            viewport={{ once: true }}
             variants={{
               hidden: {},
-              visible: { transition: { staggerChildren: 0.14 } }
+              visible: { transition: { staggerChildren: 0.1 } }
             }}
           >
             <motion.p
@@ -105,55 +118,63 @@ export function ShippingSteps() {
               aria-atomic="true"
               className="animate-child mt-10 space-y-3"
             >
-              {bookingSteps.map((step, i) => (
-                <button
-                  key={step.title}
-                  aria-label={`Step ${i + 1}: ${step.title}`}
-                  className="flex w-full items-center gap-3 text-left group/pill"
-                  tabIndex={-1}
-                >
-                  {/* Progress bar */}
-                  <motion.span
-                    className="block h-[3px] flex-1 rounded-full origin-left"
-                    animate={{
-                      backgroundColor:
-                        i < activeStep
-                          ? "var(--color-primary)"
-                          : i === activeStep
-                            ? "var(--color-primary)"
-                            : "var(--color-border)",
-                      scaleX: i === activeStep ? 1 : i < activeStep ? 1 : 0.4,
-                    }}
-                    transition={{ duration: 0.5, ease }}
-                  />
+              {bookingSteps.map((step, i) => {
+                const isCurrent = i === activeStep
+                const isPassed = i < activeStep
 
-                  {/* Step label */}
-                  <span
-                    className={cn(
-                      "font-mono text-[10px] tracking-widest whitespace-nowrap transition-colors",
-                      i === activeStep ? "text-primary font-semibold" : "text-foreground"
-                    )}
+                return (
+                  <button
+                    key={step.title}
+                    type="button"
+                    onClick={() => scrollToStep(i)}
+                    aria-label={`Step ${i + 1}: ${step.title}`}
+                    className="flex w-full items-center gap-3 text-left group/pill cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm py-1 transition-opacity hover:opacity-90"
                   >
-                    {`0${i + 1}`}
-                  </span>
-                </button>
-              ))}
+                    {/* Progress bar */}
+                    <span
+                      className={cn(
+                        "block h-[3px] flex-1 rounded-full origin-left transition-all duration-300",
+                        isCurrent
+                          ? "bg-primary scale-x-100"
+                          : isPassed
+                            ? "bg-primary/50 scale-x-100"
+                            : "bg-border scale-x-50"
+                      )}
+                    />
+
+                    {/* Step label */}
+                    <span
+                      className={cn(
+                        "font-mono text-xs tracking-widest whitespace-nowrap transition-colors duration-300",
+                        isCurrent
+                          ? "text-primary font-bold"
+                          : isPassed
+                            ? "text-foreground font-semibold"
+                            : "text-muted-foreground"
+                      )}
+                    >
+                      {`0${i + 1}`}
+                    </span>
+                  </button>
+                )
+              })}
 
               {/* Current step name */}
-              <div className="pt-3 min-h-[2rem]">
+              <div className="pt-3 min-h-[2.5rem]">
                 <AnimatePresence mode="wait">
-                  {activeStep >= 0 && (
-                    <motion.p
-                      key={activeStep}
-                      className="text-sm font-medium text-primary"
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.3, ease }}
-                    >
-                      {bookingSteps[activeStep]?.title}
-                    </motion.p>
-                  )}
+                  <motion.p
+                    key={activeStep}
+                    initial={false}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.2, ease }}
+                    className="text-sm font-semibold text-primary"
+                  >
+                    <span className="font-mono text-xs uppercase tracking-wider mr-2 text-foreground">
+                      Step 0{activeStep + 1} •
+                    </span>
+                    {bookingSteps[activeStep]?.title}
+                  </motion.p>
                 </AnimatePresence>
               </div>
             </div>
@@ -169,7 +190,8 @@ export function ShippingSteps() {
                 number={`0${index + 1} / STEP`}
                 title={step.title}
                 text={step.text}
-                isActive={index <= activeStep}
+                isActive={index === activeStep}
+                isCompleted={index < activeStep}
               />
             ))}
           </VerticalRail>

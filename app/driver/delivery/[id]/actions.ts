@@ -37,6 +37,7 @@ export const completeDeliveryAction = authActionClient
           status: "delivered",
           location: "Delivery Address", // Could get from driver GPS
           description: "Shipment delivered and signed by consignee.",
+          isPublic: true,
         })
       })
 

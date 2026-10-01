@@ -26,7 +26,7 @@ export default async function CommunicationsPage({
   await requireStaffPage()
   const { status } = await searchParams
   const failedOnly = status === "failed"
-  const [messages, jobResult, emailResult] = await Promise.all([
+  const [messages, jobResult, emailResult, dlqResult] = await Promise.all([
     db
       .select({
         id: messageOutbound.id,
@@ -47,6 +47,9 @@ export default async function CommunicationsPage({
     db.execute(
       sql`select id, template_name, status, sent_at from email_notifications order by sent_at desc, id desc limit 10`
     ),
+    db.execute(
+      sql`select count(*)::int as count from dead_letter_queue`
+    ),
   ])
   const jobs = queryRows<{ status: string; count: number }>(jobResult)
   const emails = queryRows<{
@@ -55,6 +58,7 @@ export default async function CommunicationsPage({
     status: string
     sent_at: string
   }>(emailResult)
+  const dlqCount = queryRows<{ count: number }>(dlqResult)[0]?.count ?? 0
   const pending = jobs
     .filter((job) => job.status === "pending" || job.status === "processing")
     .reduce((sum, job) => sum + job.count, 0)
@@ -72,12 +76,12 @@ export default async function CommunicationsPage({
           <Link href="/dashboard/invoices">Send an invoice</Link>
         </Button>
       </PageHeader>
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle>Background follow-ups</CardTitle>
             <CardDescription>
-              Saved contact requests retain their work across server restarts.
+              Saved contact requests retain work across server restarts.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -90,15 +94,44 @@ export default async function CommunicationsPage({
               </div>
               <div>
                 <dt className="text-sm text-muted-foreground">
-                  Needs operator review
+                  Needs review
                 </dt>
                 <dd className="mt-2 text-2xl tabular-nums">{failed}</dd>
               </div>
             </dl>
             <p className="mt-4 text-xs text-muted-foreground">
               Failed or uncertain sends require review before another attempt.
-              Provider acceptance does not confirm delivery.
             </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-start justify-between space-y-0">
+            <div>
+              <CardTitle>Dead Letter Queue</CardTitle>
+              <CardDescription>
+                Exhausted retries and unhandled events.
+              </CardDescription>
+            </div>
+            <Badge
+              variant={dlqCount > 0 ? "destructive" : "outline"}
+              className="tabular-nums"
+            >
+              {dlqCount > 0 ? `${dlqCount} issues` : "Clear"}
+            </Badge>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold tabular-nums">{dlqCount}</span>
+              <span className="text-xs text-muted-foreground">items awaiting recovery</span>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Failed asynchronous tasks, broken webhooks, or failed AI responder calls.
+            </p>
+            <div className="mt-4">
+              <Button asChild size="sm" variant="outline" className="w-full text-xs">
+                <Link href="/dashboard/jobs">Inspect & Retry DLQ</Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
         <Card>

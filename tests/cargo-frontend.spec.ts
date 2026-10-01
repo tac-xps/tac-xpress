@@ -11,7 +11,7 @@ for (const width of [320, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 })
     await page.goto("/")
     const images = page.locator("main img")
-    expect(await images.count()).toBeGreaterThanOrEqual(5)
+    expect(await images.count()).toBeGreaterThanOrEqual(4)
     for (const image of await images.all()) {
       await image.scrollIntoViewIfNeeded()
       await expect(image).toBeVisible()

@@ -2,10 +2,11 @@
 
 import { ReactNode, useRef } from "react"
 import { cn } from "@/lib/utils"
-import { motion, useReducedMotion, useInView } from "motion/react"
+import { motion, useReducedMotion } from "motion/react"
+import { Check } from "lucide-react"
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   VerticalRail — animated draw line (2px, primary color, glows in)
+   VerticalRail — track line (2px, border blend)
 ───────────────────────────────────────────────────────────────────────────── */
 export function VerticalRail({
   children,
@@ -15,30 +16,15 @@ export function VerticalRail({
   className?: string
 }) {
   const ref = useRef<HTMLOListElement>(null)
-  const isInView = useInView(ref, { once: true, amount: 0.02 })
-  const shouldReduceMotion = useReducedMotion()
 
   return (
     <ol
       ref={ref}
       className={cn(
-        "cargo-rail relative ml-2 py-4 sm:ml-4 border-l-2 border-border/30",
+        "cargo-rail relative ml-2 py-4 sm:ml-4 border-l-2 border-border/50",
         className,
       )}
     >
-      {/* Animated primary-color line draws downward */}
-      <motion.span
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-[2px] top-0 w-[2px] origin-top bg-primary/80"
-        initial={{ scaleY: 0 }}
-        animate={isInView ? { scaleY: 1 } : { scaleY: 0 }}
-        transition={
-          shouldReduceMotion
-            ? { duration: 0 }
-            : { duration: 2.4, ease: [0.16, 1, 0.3, 1], delay: 0.15 }
-        }
-        style={{ height: "100%" }}
-      />
       {children}
     </ol>
   )
@@ -46,8 +32,9 @@ export function VerticalRail({
 
 /* ─────────────────────────────────────────────────────────────────────────────
    VerticalRailStep
-   - Inactive: dimmed (opacity 0.45), y-offset
-   - Active:   full opacity, highlighted bg strip, pulsing marker ring
+   - Inactive:  clear, accessible text (text-foreground/80, text-muted-foreground), clean surface marker
+   - Active:    vibrant Fjord Teal marker, primary active indicator border, high-contrast Spruce Ink text
+   - Completed: marked with check indicator, readable muted tone
 ───────────────────────────────────────────────────────────────────────────── */
 export function VerticalRailStep({
   number,
@@ -55,136 +42,107 @@ export function VerticalRailStep({
   text,
   className,
   isActive = false,
+  isCompleted = false,
 }: {
   number: string
   title: string
   text: string
   className?: string
   isActive?: boolean
+  isCompleted?: boolean
 }) {
   const shouldReduceMotion = useReducedMotion()
-  const ref = useRef<HTMLLIElement>(null)
-  const isInView = useInView(ref, { once: true, amount: 0.15 })
-
-  const ease = [0.16, 1, 0.3, 1] as const
 
   return (
     <li
-      ref={ref}
       className={cn(
-        "cargo-rail-step relative pb-16 pl-10 last:pb-0 sm:pl-14 group",
+        "relative pb-16 pl-10 last:pb-2 sm:pl-14 transition-colors duration-300",
         className,
       )}
     >
-      {/* ── Active step background highlight strip ─────────────────────── */}
-      <motion.span
+      {/* ── Active step background highlight strip with Nordic Fjord border ─────────────────────── */}
+      <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 -left-4 right-0 rounded-r-lg"
-        animate={{
-          backgroundColor: isActive
-            ? "color-mix(in oklab, var(--color-primary) 6%, transparent)"
-            : "transparent",
-        }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        className={cn(
+          "pointer-events-none absolute inset-y-0 -left-4 right-0 rounded-r-xl transition-all duration-300",
+          isActive
+            ? "bg-primary/[0.08] dark:bg-primary/[0.12] border-l-2 border-primary"
+            : "bg-transparent border-l-2 border-transparent",
+        )}
       />
 
       {/* ── Marker ─────────────────────────────────────────────────────── */}
-      <motion.span
+      <span
         aria-hidden="true"
         className={cn(
-          "absolute -left-[10px] top-1 flex h-5 w-5 items-center justify-center rounded-sm ring-background transition-colors duration-300",
+          "absolute -left-[11px] top-1 flex h-6 w-6 items-center justify-center rounded-sm transition-all duration-300 ring-4 ring-background",
           isActive
-            ? "bg-primary border-primary border-2 ring-4"
-            : "bg-muted dark:bg-card border-2 border-border ring-4",
+            ? "bg-primary text-primary-foreground border-2 border-primary shadow-sm"
+            : isCompleted
+              ? "bg-primary/20 text-primary border-2 border-primary/50"
+              : "bg-surface text-muted-foreground border-2 border-border",
         )}
-        initial={shouldReduceMotion ? {} : { scale: 0, opacity: 0 }}
-        animate={isInView ? { scale: 1, opacity: 1 } : {}}
-        transition={
-          shouldReduceMotion
-            ? { duration: 0 }
-            : { type: "spring", stiffness: 500, damping: 22, delay: 0.1 }
-        }
       >
-        {/* Inner dot */}
-        <motion.span
-          className="h-2 w-2 rounded-none"
-          animate={{
-            backgroundColor: isActive ? "#fff" : "var(--color-primary)",
-            scale: isActive ? 1 : 0.7,
-          }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-        />
+        {isCompleted ? (
+          <Check className="size-3 stroke-[2.5]" aria-hidden="true" />
+        ) : (
+          <span
+            className={cn(
+              "size-2 transition-transform duration-300 rounded-none",
+              isActive ? "bg-primary-foreground scale-100" : "bg-muted-foreground/60 scale-75",
+            )}
+          />
+        )}
 
-        {/* Pulsing ring — only on active */}
+        {/* Pulsing ring — only on currently active step */}
         {isActive && !shouldReduceMotion && (
           <motion.span
-            className="absolute inset-0 rounded-sm border-2 border-primary"
+            className="absolute inset-0 rounded-sm border-2 border-primary pointer-events-none"
             initial={{ scale: 1, opacity: 0.8 }}
-            animate={{ scale: 2.2, opacity: 0 }}
+            animate={{ scale: 2.1, opacity: 0 }}
             transition={{
-              duration: 1.2,
+              duration: 1.4,
               ease: "easeOut",
               repeat: Infinity,
-              repeatDelay: 0.6,
+              repeatDelay: 0.5,
             }}
           />
         )}
-      </motion.span>
+      </span>
 
       {/* ── Content ────────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 md:max-w-xl">
         {/* Step number */}
-        <motion.span
+        <span
           className={cn(
             "font-mono text-xs font-bold tracking-[0.15em] uppercase transition-colors duration-300",
-            isActive ? "text-primary" : "text-muted-foreground/60",
+            isActive ? "text-primary" : "text-muted-foreground",
           )}
-          initial={shouldReduceMotion ? {} : { opacity: 0, y: 12 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={
-            shouldReduceMotion
-              ? { duration: 0 }
-              : { duration: 0.45, ease, delay: 0.15 }
-          }
         >
           {number}
-        </motion.span>
+        </span>
 
         {/* Title */}
-        <motion.h3
+        <h3
           className={cn(
-            "text-2xl font-semibold tracking-tight transition-all duration-500",
+            "text-2xl font-semibold tracking-tight transition-all duration-300",
             isActive
-              ? "text-foreground"
-              : "text-foreground/40",
+              ? "text-foreground font-bold"
+              : "text-foreground/80",
           )}
-          initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={
-            shouldReduceMotion
-              ? { duration: 0 }
-              : { duration: 0.55, ease, delay: 0.22 }
-          }
         >
           {title}
-        </motion.h3>
+        </h3>
 
         {/* Body */}
-        <motion.p
+        <p
           className={cn(
-            "leading-relaxed text-sm sm:text-base transition-all duration-500",
-            isActive ? "text-muted-foreground" : "text-muted-foreground/40",
+            "leading-relaxed text-sm sm:text-base transition-all duration-300",
+            isActive ? "text-foreground/90 font-normal" : "text-muted-foreground",
           )}
-          initial={shouldReduceMotion ? {} : { opacity: 0, y: 14 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={
-            shouldReduceMotion
-              ? { duration: 0 }
-              : { duration: 0.6, ease, delay: 0.32 }
-          }
         >
           {text}
-        </motion.p>
+        </p>
       </div>
     </li>
   )
