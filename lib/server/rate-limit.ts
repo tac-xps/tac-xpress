@@ -15,10 +15,13 @@ export const fleetTelemetryLimiter = createLimiter(60, "1m")
 // WhatsApp / Carrier webhooks — HMAC verified but still rate limited (sized for provider bursts)
 export const webhookLimiter = createLimiter(600, "1m")
 
-function isArcjetBypassed(): boolean {
+export function isArcjetBypassed(): boolean {
   return (
-    process.env.NODE_ENV === "development" &&
-    (!process.env.ARCJET_KEY || /placeholder|dummy|example/i.test(process.env.ARCJET_KEY))
+    (process.env.NODE_ENV === "development" ||
+      process.env.NODE_ENV === "test" ||
+      process.env.E2E_TEST_BYPASS_ENABLED === "true") &&
+    (!process.env.ARCJET_KEY ||
+      /placeholder|dummy|example|invalid/i.test(process.env.ARCJET_KEY))
   )
 }
 

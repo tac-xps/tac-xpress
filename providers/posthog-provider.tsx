@@ -35,21 +35,26 @@ export function PostHogProvider({
       process.env.NEXT_PUBLIC_POSTHOG_KEY &&
       process.env.NEXT_PUBLIC_POSTHOG_HOST
     ) {
-      posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-        api_host: "/ingest",
-        person_profiles: "identified_only",
-        capture_pageview: false,
-        capture_pageleave: true,
-        bootstrap: bootstrappedFeatureFlags
-          ? {
-              featureFlags: bootstrappedFeatureFlags,
-            }
-          : undefined,
-      })
+      if (
+        typeof window !== "undefined" &&
+        !(posthog as unknown as { __loaded?: boolean }).__loaded
+      ) {
+        posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+          api_host: "/ingest",
+          person_profiles: "identified_only",
+          capture_pageview: false,
+          capture_pageleave: true,
+          bootstrap: bootstrappedFeatureFlags
+            ? {
+                featureFlags: bootstrappedFeatureFlags,
+              }
+            : undefined,
+        })
 
-      posthog.onSessionId((sessionId) => {
-        Sentry.setTag("posthog_session_id", sessionId)
-      })
+        posthog.onSessionId((sessionId) => {
+          Sentry.setTag("posthog_session_id", sessionId)
+        })
+      }
     }
   }, [])
 
