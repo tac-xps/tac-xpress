@@ -101,18 +101,18 @@ export const AmazonTaxInvoiceA4: Story = {
   ),
 }
 
-export const AmazonThermalLabelAir: Story = {
-  name: "Amazon-Style Barcode Label (4x6 Air)",
+export const MinimalistThermalLabelAir: Story = {
+  name: "Minimalist Barcode Label (4x3 Air • 4:3 Aspect Ratio)",
   render: () => (
     <div className="flex min-h-screen items-center justify-center bg-neutral-100 p-8">
-      <style>{"@media print { @page { size: 4in 6in; margin: 0; } }"}</style>
+      <style>{"@media print { @page { size: 4in 3in; margin: 0; } }"}</style>
       <ShippingLabel shipment={shipment} />
     </div>
   ),
 }
 
-export const AmazonThermalLabelCOD: Story = {
-  name: "Amazon-Style Barcode Label (4x6 COD)",
+export const MinimalistThermalLabelCOD: Story = {
+  name: "Minimalist Barcode Label (4x3 COD • 4:3 Aspect Ratio)",
   render: () => (
     <div className="flex min-h-screen items-center justify-center bg-neutral-100 p-8">
       <ShippingLabel

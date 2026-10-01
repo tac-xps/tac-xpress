@@ -140,13 +140,13 @@ export default function DocsPreviewPage() {
 
         {/* Studio Grid: Label on Left, Invoice on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: 4x6 Thermal Label */}
+          {/* Left Column: 4x3 Thermal Label (4:3 Aspect Ratio) */}
           <section className="lg:col-span-4 flex flex-col items-center gap-4">
             <div className="w-full flex items-center justify-between">
               <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-700">
-                1. Thermal Shipping Label (4&quot; × 6&quot;)
+                1. Thermal Shipping Label (4&quot; × 3&quot; Landscape)
               </h2>
-              <span className="text-[11px] font-mono text-neutral-500">203/300 DPI</span>
+              <span className="text-[11px] font-mono text-neutral-500">4:3 Aspect • 203/300 DPI</span>
             </div>
 
             <div className="rounded-lg border border-neutral-300 bg-white p-4 shadow-md">

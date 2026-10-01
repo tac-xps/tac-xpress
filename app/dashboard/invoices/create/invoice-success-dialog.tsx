@@ -188,7 +188,7 @@ export function InvoiceSuccessDialog({
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="origin-top scale-[0.85]"
+                  className="origin-top scale-100 sm:scale-105"
                 >
                   <ShippingLabelPreview shipment={data.shipment} />
                 </motion.div>
