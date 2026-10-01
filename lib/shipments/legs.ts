@@ -138,7 +138,7 @@ export async function completeShipmentLeg(params: {
         (l) => l.legNumber > currentLeg.legNumber && l.status === "pending"
       )
 
-      const isFinalLeg = !nextLeg
+      const isFinalLeg = allLegs.every((leg) => leg.status === "completed")
 
       if (isFinalLeg) {
         // All legs completed -> mark entire shipment delivered
@@ -155,7 +155,7 @@ export async function completeShipmentLeg(params: {
           loggedBy: params.loggedBy,
           isPublic: true,
         })
-      } else {
+      } else if (nextLeg) {
         // Advance to next leg
         await tx
           .update(shipmentLegs)

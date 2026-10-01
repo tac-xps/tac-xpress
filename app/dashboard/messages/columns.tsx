@@ -117,6 +117,11 @@ export const getColumns = (
                 {ticket.ai_confidence ? ` (${Math.round(ticket.ai_confidence * 100)}%)` : ""}
               </Badge>
             )}
+            {ticket.sla_at_risk && !ticket.sla_breached && (
+              <Badge variant="warning" className="text-[10px] px-1.5 py-0 h-4">
+                SLA At Risk
+              </Badge>
+            )}
             {ticket.sla_breached && (
               <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4">
                 SLA Breached

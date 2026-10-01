@@ -120,7 +120,7 @@ export default async function DriverDeliveryPage({
   const totalStops = mappedShipments.length
   const completedStops = mappedShipments.filter((s) => s.status === "delivered").length
   const inTransitStops = mappedShipments.filter(
-    (s) => s.status === "out_for_delivery" || s.status === "in_transit"
+    (s) => s.status === "out-for-delivery" || s.status === "in-transit"
   ).length
   const pendingStops = totalStops - completedStops
   const totalWeightKg = Math.round(

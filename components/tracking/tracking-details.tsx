@@ -1,6 +1,6 @@
 "use client"
 import { useState, useSyncExternalStore } from "react"
-import { MapPin, Package, ArrowRight, CheckCircle2, Truck, CircleDot } from "lucide-react"
+import { MapPin, Package, ArrowRight, CheckCircle2, Truck, CircleDot, AlertTriangle } from "lucide-react"
 import type { TrackingResult } from "@/types/tracking"
 import { Badge } from "@/components/ui/badge"
 import { PackageTrackerCard } from "@/components/ui/tracker-card"
@@ -135,6 +135,7 @@ export function TrackingDetails({ result }: TrackingDetailsProps) {
                     {result.leg_progress.legs.map((leg) => {
                       const isComplete = leg.status === "completed"
                       const isInTransit = leg.status === "in_transit"
+                      const isException = leg.status === "exception"
                       return (
                         <div
                           key={leg.id}
@@ -144,7 +145,9 @@ export function TrackingDetails({ result }: TrackingDetailsProps) {
                               ? "border-status-delivered/40 bg-status-delivered/5"
                               : isInTransit
                                 ? "border-primary/50 bg-primary/5 shadow-xs"
-                                : "border-border/40 bg-background/50 text-muted-foreground"
+                                : isException
+                                  ? "border-destructive/50 bg-destructive/5"
+                                  : "border-border/40 bg-background/50 text-muted-foreground"
                           )}
                         >
                           <div className="mb-2 flex items-center justify-between">
@@ -160,6 +163,11 @@ export function TrackingDetails({ result }: TrackingDetailsProps) {
                               <span className="inline-flex items-center gap-1 font-semibold text-primary animate-pulse">
                                 <Truck className="size-3.5" />
                                 In Transit
+                              </span>
+                            ) : isException ? (
+                              <span className="inline-flex items-center gap-1 font-semibold text-destructive">
+                                <AlertTriangle className="size-3.5" />
+                                Exception
                               </span>
                             ) : (
                               <span className="inline-flex items-center gap-1 text-muted-foreground">

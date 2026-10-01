@@ -39,6 +39,9 @@ export async function processInboundMessage(value: unknown, contact?: Contact) {
 
   const awb = extractTrackingReference(text) ?? null
 
+  const isUrgentComplaint =
+    classification.intent === "complaint" || classification.isComplaint
+
   const result = await saveInboundMessage({
     messageId: message.id,
     phone,
@@ -47,24 +50,27 @@ export async function processInboundMessage(value: unknown, contact?: Contact) {
     timestamp: new Date(message.timestamp * 1000),
     awb,
     consent,
+    isComplaint: isUrgentComplaint,
   })
 
-  if (result.duplicate) return result
-
   // If message was classified as an urgent complaint, escalate priority
-  if (result.ticketId && classification.isComplaint) {
-    await db
-      .update(tickets)
-      .set({
-        priority: "high",
-        intakeCategory: "complaint",
-        updatedAt: new Date(),
-      })
-      .where(eq(tickets.id, result.ticketId))
-      .catch((err) => {
-        Sentry.captureException(err, { tags: { area: "whatsapp_priority_escalation" } })
-      })
+  if (result.ticketId && isUrgentComplaint) {
+    try {
+      await db
+        .update(tickets)
+        .set({
+          priority: "high",
+          intakeCategory: "complaint",
+          updatedAt: new Date(),
+        })
+        .where(eq(tickets.id, result.ticketId))
+    } catch (err) {
+      Sentry.captureException(err, { tags: { area: "whatsapp_priority_escalation" } })
+      throw err
+    }
   }
+
+  if (result.duplicate) return result
 
   // The inbox is durable before acknowledging the provider. An acknowledgement
   // failure must not repeat the customer message or the committed support work.

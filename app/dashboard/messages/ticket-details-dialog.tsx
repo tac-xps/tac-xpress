@@ -111,7 +111,7 @@ export function TicketDetailsDialog({
             </div>
           )}
 
-          {(ticket.ai_routing || ticket.ai_confidence !== undefined || ticket.sla_breached || ticket.sla_at_risk) && (
+          {(ticket.ai_routing || ticket.sla_breached || ticket.sla_at_risk) && (
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-none border border-border/50 bg-muted/20 px-4 py-3 text-xs">
               <div className="flex flex-wrap items-center gap-2">
                 <Sparkles className="size-4 text-primary shrink-0" />

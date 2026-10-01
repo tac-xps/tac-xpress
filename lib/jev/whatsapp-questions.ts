@@ -58,7 +58,7 @@ export function deriveWhatsAppIntentFromRules(text: string): {
   const clean = text.trim().toLowerCase()
 
   // Opt-out commands (standard regulatory keywords)
-  if (["stop", "unsubscribe", "opt out", "cancel", "halt", "end"].includes(clean)) {
+  if (/\b(stop|unsubscribe|opt out|cancel|halt|end)\b/i.test(clean)) {
     return {
       intent: "opt_out",
       confidence: 1.0,
@@ -79,7 +79,7 @@ export function deriveWhatsAppIntentFromRules(text: string): {
 
   // Explicit urgent complaints (evaluated before tracking so e.g. "TAC12345 damaged" escalates immediately)
   if (
-    /\b(damaged|broken parcel|package crushed|cargo ruined|lost parcel|stolen cargo|terrible service|file a complaint|escalate this)\b/i.test(
+    /\b(damaged|broken parcel|package crushed|cargo ruined|lost parcel|stolen cargo|terrible service|late delivery|delivery is late|delayed delivery|file a complaint|escalate this)\b/i.test(
       clean
     )
   ) {
@@ -87,7 +87,7 @@ export function deriveWhatsAppIntentFromRules(text: string): {
       intent: "complaint",
       confidence: 0.9,
       isComplaint: true,
-      isOptOut: /\b(stop|unsubscribe|opt out|cancel|halt)\b/i.test(clean),
+      isOptOut: /\b(stop|unsubscribe|opt out|cancel|halt|end)\b/i.test(clean),
     }
   }
 

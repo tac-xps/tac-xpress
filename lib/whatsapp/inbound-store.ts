@@ -18,6 +18,7 @@ interface InboundInput {
   timestamp: Date
   awb: string | null
   consent?: boolean
+  isComplaint?: boolean
 }
 
 /** Provider replay and concurrent messages commit exactly one inbox record. */
@@ -28,10 +29,13 @@ export async function saveInboundMessage(input: InboundInput) {
     )
     const previous = queryRows(
       await tx.execute(
-        sql`select id from audit_log where action = 'whatsapp_inbound' and metadata->>'message_id' = ${input.messageId} limit 1`
+        sql`select id, entity_id from audit_log where action = 'whatsapp_inbound' and metadata->>'message_id' = ${input.messageId} limit 1`
       )
     )
-    if (previous.length) return { duplicate: true, ticketId: null }
+    if (previous.length) {
+      const prevTicketId = (previous[0] as { entity_id?: string | null })?.entity_id ?? null
+      return { duplicate: true, ticketId: prevTicketId }
+    }
     await tx.execute(
       sql`select pg_advisory_xact_lock(hashtextextended(${`wa-phone:${input.phone}`}, 0))`
     )
@@ -90,6 +94,9 @@ export async function saveInboundMessage(input: InboundInput) {
                 ? "open"
                 : existing.status,
             relatedAwb: existing.relatedAwb || input.awb,
+            ...(input.isComplaint
+              ? { priority: "high", intakeCategory: "complaint" }
+              : {}),
             updatedAt: new Date(),
           })
           .where(eq(tickets.id, ticketId))
@@ -105,11 +112,15 @@ export async function saveInboundMessage(input: InboundInput) {
             customerPhone: input.phone,
             customerName: input.name,
             source: "whatsapp",
-            intakeCategory: input.awb ? "shipment" : "general",
+            intakeCategory: input.isComplaint
+              ? "complaint"
+              : input.awb
+                ? "shipment"
+                : "general",
             category: "general",
             relatedAwb: input.awb,
             status: "open",
-            priority: "medium",
+            priority: input.isComplaint ? "high" : "medium",
           })
           .returning({ id: tickets.id })
         ticketId = created.id

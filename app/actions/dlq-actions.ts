@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db"
 import { deadLetterQueue, backgroundJobs, tickets } from "@/lib/db/schema"
-import { eq, sql } from "drizzle-orm"
+import { and, eq, sql } from "drizzle-orm"
 import { requireDashboardAction } from "@/lib/auth/guards"
 import { logAudit } from "@/lib/audit"
 import * as Sentry from "@sentry/nextjs"
@@ -183,7 +183,11 @@ export async function dismissDlqItem(dlqId: string): Promise<DlqActionResponse> 
   }
 
   const [item] = await db
-    .select({ id: deadLetterQueue.id, action: deadLetterQueue.action })
+    .select({
+      id: deadLetterQueue.id,
+      action: deadLetterQueue.action,
+      retryCount: deadLetterQueue.retryCount,
+    })
     .from(deadLetterQueue)
     .where(eq(deadLetterQueue.id, dlqId))
     .limit(1)
@@ -206,7 +210,20 @@ export async function dismissDlqItem(dlqId: string): Promise<DlqActionResponse> 
     Sentry.captureException(auditErr)
   })
 
-  await db.delete(deadLetterQueue).where(eq(deadLetterQueue.id, dlqId))
+  // Only delete if retryCount hasn't changed (no concurrent retry claimed it)
+  const deleted = await db
+    .delete(deadLetterQueue)
+    .where(
+      and(
+        eq(deadLetterQueue.id, dlqId),
+        eq(deadLetterQueue.retryCount, item.retryCount)
+      )
+    )
+    .returning({ id: deadLetterQueue.id })
+
+  if (!deleted.length) {
+    return { success: false, error: "DLQ item is currently being retried. Please wait." }
+  }
 
   revalidatePath("/dashboard/jobs")
   revalidatePath("/dashboard/communications")
