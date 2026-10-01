@@ -53,6 +53,8 @@ export async function processInboundMessage(value: unknown, contact?: Contact) {
     isComplaint: isUrgentComplaint,
   })
 
+  if (result.duplicate) return result
+
   // If message was classified as an urgent complaint, escalate priority
   if (result.ticketId && isUrgentComplaint) {
     try {
@@ -69,8 +71,6 @@ export async function processInboundMessage(value: unknown, contact?: Contact) {
       throw err
     }
   }
-
-  if (result.duplicate) return result
 
   // The inbox is durable before acknowledging the provider. An acknowledgement
   // failure must not repeat the customer message or the committed support work.
