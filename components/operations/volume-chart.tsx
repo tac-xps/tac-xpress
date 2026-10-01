@@ -36,11 +36,11 @@ export function VolumeChart({ data }: { data: ShipmentVolumePoint[] }) {
     0
   )
   return (
-    <Card className="h-full shadow-none">
-      <CardHeader className="flex flex-wrap items-start justify-between gap-4">
+    <Card className="h-full border border-border/80 shadow-xs">
+      <CardHeader className="flex flex-wrap items-start justify-between gap-4 pb-2">
         <div>
           <CardTitle>Shipment volume</CardTitle>
-          <CardDescription className="mt-2">
+          <CardDescription className="mt-1">
             {total.toLocaleString("en-IN")} bookings in the displayed period
           </CardDescription>
         </div>
@@ -58,15 +58,15 @@ export function VolumeChart({ data }: { data: ShipmentVolumePoint[] }) {
       <CardContent>
         <ChartContainer
           config={config}
-          className="h-64 w-full"
+          className="h-72 w-full pt-2"
           aria-label={`Daily shipment bookings over the last ${days} days`}
         >
           <BarChart
             accessibilityLayer
             data={points}
-            margin={{ top: 12, right: 4, left: 4, bottom: 0 }}
+            margin={{ top: 16, right: 16, left: 8, bottom: 4 }}
           >
-            <CartesianGrid vertical={false} />
+            <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" opacity={0.6} />
             <XAxis
               dataKey="date"
               tick={{ fill: "var(--muted-foreground)" }}
@@ -81,7 +81,7 @@ export function VolumeChart({ data }: { data: ShipmentVolumePoint[] }) {
               }
             />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartLegend content={<ChartLegendContent className="pt-3" />} />
             <Bar
               dataKey="airCargo"
               stackId="volume"
@@ -93,7 +93,7 @@ export function VolumeChart({ data }: { data: ShipmentVolumePoint[] }) {
               stackId="volume"
               fill="var(--color-surfaceCargo)"
               isAnimationActive={false}
-              radius={0}
+              radius={[4, 4, 0, 0]}
             />
           </BarChart>
         </ChartContainer>

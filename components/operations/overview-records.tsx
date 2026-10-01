@@ -29,30 +29,34 @@ export type OpenManifest = {
 }
 export function OpenManifests({ data }: { data: OpenManifest[] }) {
   return (
-    <Card className="shadow-none">
-      <CardHeader>
-        <CardTitle>Draft manifests</CardTitle>
-        <CardDescription>Latest 10 loads awaiting finalization</CardDescription>
+    <Card className="border border-border/80 shadow-xs overflow-hidden">
+      <CardHeader className="border-b border-border/80 bg-muted/20 px-6 py-4">
+        <div>
+          <CardTitle>Draft manifests</CardTitle>
+          <CardDescription className="mt-1">
+            Latest 10 loads awaiting finalization
+          </CardDescription>
+        </div>
         <CardAction>
           <Button asChild variant="ghost" size="sm">
             <Link href="/dashboard/manifests?status=draft">View all</Link>
           </Button>
         </CardAction>
       </CardHeader>
-      <CardContent className="px-0">
+      <CardContent className="p-0">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="pl-5">Reference</TableHead>
+              <TableHead>Reference</TableHead>
               <TableHead>Route</TableHead>
               <TableHead>Assignment</TableHead>
-              <TableHead className="pr-5">Status</TableHead>
+              <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((item) => (
               <TableRow key={item.id}>
-                <TableCell className="pl-5 font-mono text-xs">
+                <TableCell className="font-mono text-xs font-semibold text-primary">
                   <Link
                     href={`/dashboard/manifests?q=${encodeURIComponent(item.referenceId)}`}
                     className="underline-offset-4 hover:underline"
@@ -61,18 +65,20 @@ export function OpenManifests({ data }: { data: OpenManifest[] }) {
                   </Link>
                 </TableCell>
                 <TableCell>
-                  {item.originHub?.name ?? "Origin not assigned"} →{" "}
-                  {item.destinationHub?.name ?? "Destination not assigned"}
+                  <span className="font-medium text-foreground">
+                    {item.originHub?.name ?? "Origin not assigned"} →{" "}
+                    {item.destinationHub?.name ?? "Destination not assigned"}
+                  </span>
                 </TableCell>
                 <TableCell>
-                  <span className="block">
+                  <span className="block font-medium">
                     {item.driver?.name ?? "Driver not assigned"}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground font-mono">
                     {item.vehicle?.registrationNumber ?? "Vehicle not assigned"}
                   </span>
                 </TableCell>
-                <TableCell className="pr-5">
+                <TableCell>
                   <Badge variant="outline">Draft</Badge>
                 </TableCell>
               </TableRow>
@@ -94,33 +100,36 @@ export function OpenManifests({ data }: { data: OpenManifest[] }) {
     </Card>
   )
 }
+
 export function HubActivity({ hubs }: { hubs: HubVolumePoint[] }) {
   return (
-    <Card className="shadow-none">
-      <CardHeader>
-        <CardTitle>Hub throughput</CardTitle>
-        <CardDescription>
-          Top four hubs · all-time manifest items
-        </CardDescription>
+    <Card className="border border-border/80 shadow-xs overflow-hidden">
+      <CardHeader className="border-b border-border/80 bg-muted/20 px-6 py-4">
+        <div>
+          <CardTitle>Hub throughput</CardTitle>
+          <CardDescription className="mt-1">
+            Top four hubs · all-time manifest items
+          </CardDescription>
+        </div>
         <CardAction>
           <Button asChild variant="ghost" size="sm">
             <Link href="/dashboard/hubs">Hubs</Link>
           </Button>
         </CardAction>
       </CardHeader>
-      <CardContent className="flex flex-col gap-5">
+      <CardContent className="flex flex-col divide-y divide-border/60 p-6">
         {hubs.map((hub) => (
           <div
             key={hub.id}
-            className="flex items-center justify-between gap-4 border-t pt-4 first:border-0 first:pt-0"
+            className="flex items-center justify-between gap-4 py-3.5 first:pt-0 last:pb-0"
           >
             <div>
-              <p className="font-medium">{hub.name}</p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="font-medium text-foreground">{hub.name}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 {hub.location}
               </p>
             </div>
-            <span className="text-xl tabular-nums">
+            <span className="text-lg font-mono font-bold tabular-nums">
               {hub.totalShipments.toLocaleString("en-IN")}
             </span>
           </div>

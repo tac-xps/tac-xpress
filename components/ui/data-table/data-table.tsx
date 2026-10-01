@@ -1,5 +1,6 @@
 import * as React from "react"
 import { type Table as TableType, flexRender } from "@tanstack/react-table"
+import { cn } from "@/lib/utils"
 
 import {
   Table,
@@ -18,6 +19,7 @@ interface DataTableProps<TData> {
   searchKey?: string
   searchPlaceholder?: string
   isLoading?: boolean
+  bordered?: boolean
 }
 
 export function DataTable<TData>({
@@ -26,6 +28,7 @@ export function DataTable<TData>({
   searchKey,
   searchPlaceholder,
   isLoading,
+  bordered = true,
 }: DataTableProps<TData>) {
   return (
     <div className="space-y-4">
@@ -34,7 +37,12 @@ export function DataTable<TData>({
         searchKey={searchKey}
         searchPlaceholder={searchPlaceholder}
       />
-      <div className="rounded-none border border-border bg-card">
+      <div
+        className={cn(
+          "overflow-hidden bg-card",
+          bordered && "rounded-xl border border-border/80 shadow-xs"
+        )}
+      >
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -59,7 +67,7 @@ export function DataTable<TData>({
               <TableRow>
                 <TableCell
                   colSpan={columnsLength}
-                  className="h-24 text-center text-muted-foreground"
+                  className="h-28 text-center text-muted-foreground"
                 >
                   Loading...
                 </TableCell>
@@ -84,16 +92,18 @@ export function DataTable<TData>({
               <TableRow>
                 <TableCell
                   colSpan={columnsLength}
-                  className="h-24 text-center text-muted-foreground"
+                  className="h-28 text-center text-muted-foreground"
                 >
-                  No results.
+                  No results found.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+        <div className="border-t border-border/80 bg-muted/20 px-4 py-3 sm:px-6">
+          <DataTablePagination table={table} />
+        </div>
       </div>
-      <DataTablePagination table={table} />
     </div>
   )
 }
