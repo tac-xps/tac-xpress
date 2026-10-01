@@ -56,12 +56,17 @@ export function InvoicePreviewDialog({
     },
   })
 
-  // Synchronize initialTab whenever dialog opens or initialTab changes
-  useEffect(() => {
-    if (open) {
+  const [prevOpen, setPrevOpen] = useState(open)
+  const [prevInitialTab, setPrevInitialTab] = useState(initialTab)
+
+  // Synchronize initialTab whenever dialog opens or initialTab changes (during render)
+  if (open !== prevOpen || initialTab !== prevInitialTab) {
+    setPrevOpen(open)
+    setPrevInitialTab(initialTab)
+    if (open || initialTab !== prevInitialTab) {
       setActiveTab(initialTab)
     }
-  }, [open, initialTab])
+  }
 
   // Fetch full details if data is missing or different invoice
   useEffect(() => {
