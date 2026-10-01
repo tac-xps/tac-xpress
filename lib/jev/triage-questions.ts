@@ -90,12 +90,12 @@ export function derivePriority(opts: {
   // Critical: lost cargo, critical urgency, or dangerous escalation
   if (category === "lost" || urgencyScore === 2) return "critical"
 
-  // High: delayed + frustrated, damaged, billing dispute with high frustration
-  if (urgencyScore === 1 && (isFrustrated > 0.7 || category === "damage")) return "high"
+  // High: delayed + frustrated, elevated delay, damaged, billing dispute with high frustration
+  if (urgencyScore === 1 && (isFrustrated > 0.7 || category === "damage" || category === "delay")) return "high"
   if (isBillingDispute > 0.8 && isFrustrated > 0.6) return "high"
 
-  // Medium: standard delay, billing question, or elevated urgency alone
-  if (category === "delay" || urgencyScore === 1 || isBillingDispute > 0.5) return "medium"
+  // Medium: standard delay, routine damage, billing question, or elevated urgency alone
+  if (category === "delay" || category === "damage" || urgencyScore === 1 || isBillingDispute > 0.5) return "medium"
 
   return "low"
 }

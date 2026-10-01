@@ -108,6 +108,12 @@ export async function completeShipmentLeg(params: {
         return { success: true, isFinalLeg: false }
       }
 
+      if (currentLeg.status !== "in_transit") {
+        throw new Error(
+          `Cannot complete leg ${currentLeg.legNumber}: current status is "${currentLeg.status}", expected "in_transit".`
+        )
+      }
+
       const now = new Date()
 
       // Mark current leg as completed

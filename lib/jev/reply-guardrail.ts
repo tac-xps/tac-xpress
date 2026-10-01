@@ -170,9 +170,11 @@ export async function evaluateReplyGuardrail(params: {
 
       const parsed = JSON.parse(completion.choices[0]?.message?.content || "{}")
       const passed =
-        parsed.passed !== false &&
-        (parsed.falseClaimScore ?? 0) <= GUARDRAIL_THRESHOLD &&
-        (parsed.promiseScore ?? 0) <= GUARDRAIL_THRESHOLD
+        parsed.passed === true &&
+        typeof parsed.falseClaimScore === "number" &&
+        parsed.falseClaimScore <= GUARDRAIL_THRESHOLD &&
+        typeof parsed.promiseScore === "number" &&
+        parsed.promiseScore <= GUARDRAIL_THRESHOLD
 
       return {
         passed,
@@ -185,7 +187,12 @@ export async function evaluateReplyGuardrail(params: {
       Sentry.captureException(error, {
         tags: { area: "openai_reply_guardrail" },
       })
-      console.warn("[Guardrail] OpenAI audit failed, using heuristic result", error)
+      console.warn("[Guardrail] OpenAI audit failed; failing closed for staff review", error)
+      return {
+        passed: false,
+        provider: "openai",
+        reason: "Remote safety evaluator failed or timed out: queued for manual staff review",
+      }
     }
   }
 

@@ -77,30 +77,7 @@ export function deriveWhatsAppIntentFromRules(text: string): {
     }
   }
 
-  // Explicit tracking mentions or standard AWB patterns
-  if (
-    /^(track|where is|status of|eta of)/i.test(clean) ||
-    /\b(tac|wb|awb|del|ghy)[0-9]{4,}\b/i.test(clean)
-  ) {
-    return {
-      intent: "tracking_request",
-      confidence: 0.9,
-      isComplaint: false,
-      isOptOut: false,
-    }
-  }
-
-  // Explicit billing keywords
-  if (/\b(invoice|bill|charge|freight cost|payment receipt|gst bill)\b/i.test(clean)) {
-    return {
-      intent: "billing_inquiry",
-      confidence: 0.85,
-      isComplaint: false,
-      isOptOut: false,
-    }
-  }
-
-  // Explicit urgent complaints
+  // Explicit urgent complaints (evaluated before tracking so e.g. "TAC12345 damaged" escalates immediately)
   if (
     /\b(damaged|broken parcel|package crushed|cargo ruined|lost parcel|stolen cargo|terrible service|file a complaint|escalate this)\b/i.test(
       clean
@@ -110,7 +87,30 @@ export function deriveWhatsAppIntentFromRules(text: string): {
       intent: "complaint",
       confidence: 0.9,
       isComplaint: true,
-      isOptOut: false,
+      isOptOut: /\b(stop|unsubscribe|opt out|cancel|halt)\b/i.test(clean),
+    }
+  }
+
+  // Explicit tracking mentions or standard AWB patterns
+  if (
+    /^(track|where is|status of|eta of)/i.test(clean) ||
+    /\b(tac|wb|awb|del|ghy)[0-9]{4,}\b/i.test(clean)
+  ) {
+    return {
+      intent: "tracking_request",
+      confidence: 0.9,
+      isComplaint: false,
+      isOptOut: /\b(stop|unsubscribe|opt out|cancel|halt)\b/i.test(clean),
+    }
+  }
+
+  // Explicit billing keywords
+  if (/\b(invoice|bill|charge|freight cost|payment receipt|gst bill)\b/i.test(clean)) {
+    return {
+      intent: "billing_inquiry",
+      confidence: 0.85,
+      isComplaint: false,
+      isOptOut: /\b(stop|unsubscribe|opt out|cancel|halt)\b/i.test(clean),
     }
   }
 

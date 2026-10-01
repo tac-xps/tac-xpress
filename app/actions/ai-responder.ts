@@ -120,7 +120,7 @@ export async function generateAutoReply(
     )
 
     // Persist blocked draft internally for staff review
-    await supabaseAdmin.from("ticket_replies").insert({
+    const replyInsert = await supabaseAdmin.from("ticket_replies").insert({
       ticket_id: input.ticketId,
       message: `⚠️ [BLOCKED BY AI SAFETY GUARDRAIL - REQUIRES STAFF REVIEW]\n\nDrafted Reply:\n${reply}\n\nReason: ${guardrail.reason ?? "Safety score exceeded threshold"}`,
       sender_type: "ai",
@@ -128,15 +128,23 @@ export async function generateAutoReply(
       is_internal: true,
       created_at: new Date().toISOString(),
     })
+    if (replyInsert.error) {
+      console.error("[AI Responder] Failed to insert blocked reply:", replyInsert.error)
+      Sentry.captureException(replyInsert.error, { tags: { area: "ai_responder_blocked_draft" } })
+    }
 
     // Flag ticket for operator review
-    await supabaseAdmin
+    const ticketUpdate = await supabaseAdmin
       .from("tickets")
       .update({
         needs_human_review: true,
         updated_at: new Date().toISOString(),
       })
       .eq("id", input.ticketId)
+    if (ticketUpdate.error) {
+      console.error("[AI Responder] Failed to set needs_human_review:", ticketUpdate.error)
+      Sentry.captureException(ticketUpdate.error, { tags: { area: "ai_responder_ticket_flag" } })
+    }
 
     await logAudit({
       action: "ai_auto_reply_blocked",

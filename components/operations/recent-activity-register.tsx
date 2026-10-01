@@ -39,14 +39,24 @@ function ActivityList({
 }) {
   if (!rows.length) {
     return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyTitle>No records yet</EmptyTitle>
-          <EmptyDescription>
-            New records will appear here as work is recorded.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
+      <div>
+        <Empty className="py-8">
+          <EmptyHeader>
+            <EmptyTitle>No records yet</EmptyTitle>
+            <EmptyDescription>
+              New records will appear here as work is recorded.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+        <div className="border-t border-border px-5 py-2.5 bg-muted/20 flex items-center justify-end">
+          <Button asChild variant="ghost" size="sm" className="h-8 gap-1 text-xs">
+            <Link href={viewAllHref}>
+              <span>{viewAllLabel}</span>
+              <ArrowUpRight className="size-3.5" aria-hidden="true" />
+            </Link>
+          </Button>
+        </div>
+      </div>
     )
   }
 

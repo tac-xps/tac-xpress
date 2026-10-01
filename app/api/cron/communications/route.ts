@@ -18,18 +18,23 @@ export async function GET(request: Request) {
     const jobResults = await processBackgroundJobs()
 
     // DLQ Depth Monitoring (Phase 2.5): Alert when failed tasks accumulate
-    const [{ count: dlqCount }] = await db
-      .select({ count: sql<number>`count(*)::int` })
+    const [dlqRow] = await db
+      .select({ count: sql<string>`count(*)` })
       .from(deadLetterQueue)
 
+    const dlqCount = Number(dlqRow?.count ?? 0)
     const DLQ_ALERT_THRESHOLD = Number(process.env.DLQ_ALERT_THRESHOLD) || 5
-    if (dlqCount >= DLQ_ALERT_THRESHOLD) {
+
+    // Throttle Sentry warning: alert once per hour window or on critical depth
+    const currentMinute = new Date().getMinutes()
+    if (dlqCount >= DLQ_ALERT_THRESHOLD && currentMinute < 5) {
       Sentry.captureMessage(
         `Dead Letter Queue depth exceeded threshold: ${dlqCount} items pending operator intervention`,
         {
           level: "warning",
           tags: { area: "dlq_monitoring", severity: "high" },
           extra: { dlqCount, threshold: DLQ_ALERT_THRESHOLD },
+          fingerprint: ["dlq_depth_alert", String(Math.floor(Date.now() / (3600 * 1000)))],
         }
       )
     }

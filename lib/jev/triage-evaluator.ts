@@ -99,7 +99,7 @@ export async function evaluateTicketWithJev(
 
       const priority = derivePriority({
         category,
-        urgencyScore,
+        urgencyScore: Math.round(urgencyScore),
         isBillingDispute,
         isFrustrated,
       })

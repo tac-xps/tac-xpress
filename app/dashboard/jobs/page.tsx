@@ -1,7 +1,7 @@
 import { requireAdminPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { backgroundJobs, deadLetterQueue } from "@/lib/db/schema"
-import { desc, eq, sql } from "drizzle-orm"
+import { asc, desc, eq, sql } from "drizzle-orm"
 import { PageHeader } from "@/components/operations/page-header"
 import { FailedJobsTable } from "./failed-jobs-table"
 import { DlqTable } from "./dlq-table"
@@ -15,9 +15,21 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
   const dlqPage = Math.max(1, Number(params.dlq_page) || 1)
   const dlqPageSize = Math.max(1, Math.min(100, Number(params.dlq_per_page) || 25))
 
+  const dlqSort = typeof params.dlq_sort === "string" ? params.dlq_sort : "createdAt.desc"
+  const [dlqField, dlqDir] = dlqSort.split(".")
+  const dlqOrderFn = dlqDir === "asc" ? asc : desc
+  const dlqOrderCol =
+    dlqField === "action"
+      ? deadLetterQueue.action
+      : dlqField === "error"
+        ? deadLetterQueue.error
+        : dlqField === "retryCount"
+          ? deadLetterQueue.retryCount
+          : deadLetterQueue.createdAt
+
   const [failedJobs, dlqItems, failedJobsCountRes, dlqItemsCountRes] = await Promise.all([
     db.select().from(backgroundJobs).where(eq(backgroundJobs.status, 'failed')).orderBy(desc(backgroundJobs.createdAt)).limit(pageSize).offset((page - 1) * pageSize),
-    db.select().from(deadLetterQueue).orderBy(desc(deadLetterQueue.createdAt)).limit(dlqPageSize).offset((dlqPage - 1) * dlqPageSize),
+    db.select().from(deadLetterQueue).orderBy(dlqOrderFn(dlqOrderCol)).limit(dlqPageSize).offset((dlqPage - 1) * dlqPageSize),
     db.select({ count: sql<number>`count(*)` }).from(backgroundJobs).where(eq(backgroundJobs.status, 'failed')),
     db.select({ count: sql<number>`count(*)` }).from(deadLetterQueue)
   ])

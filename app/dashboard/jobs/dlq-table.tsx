@@ -34,7 +34,7 @@ export function DlqTable({
   data: DLQItem[]
   pageCount: number
 }) {
-  const [selectedPayload, setSelectedPayload] = useState<unknown | null>(null)
+  const [selectedPayload, setSelectedPayload] = useState<{ payload: unknown } | null>(null)
   const [activeDlqId, setActiveDlqId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
@@ -105,7 +105,7 @@ export function DlqTable({
       cell: ({ row }) => (
         <button
           type="button"
-          onClick={() => setSelectedPayload(row.original.payload)}
+          onClick={() => setSelectedPayload({ payload: row.original.payload })}
           className="group flex max-w-[220px] items-center gap-1.5 truncate rounded px-1.5 py-1 text-left font-mono text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
           title="Click to view full payload"
         >
@@ -216,7 +216,7 @@ export function DlqTable({
             </DialogDescription>
           </DialogHeader>
           <pre className="max-h-[350px] overflow-auto rounded-md bg-muted p-4 font-mono text-xs text-foreground">
-            {JSON.stringify(selectedPayload, null, 2)}
+            {JSON.stringify(selectedPayload?.payload, null, 2)}
           </pre>
         </DialogContent>
       </Dialog>
