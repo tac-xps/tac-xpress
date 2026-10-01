@@ -5,11 +5,13 @@ import {
   MoreHorizontal,
   Download,
   Eye,
+  Tag,
   Pencil,
   Send,
   CheckCircle,
   Trash2,
 } from "lucide-react"
+import { InvoicePreviewDialog } from "./invoice-preview-dialog"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -44,6 +46,9 @@ export function InvoiceTableActions({
   canVoid?: boolean
 }) {
   const [edit, setEdit] = useState(false)
+  const [previewMode, setPreviewMode] = useState<"invoice" | "label" | null>(
+    null
+  )
   const [confirmation, setConfirmation] = useState<
     "delete" | "paid" | "send" | null
   >(null)
@@ -105,17 +110,13 @@ export function InvoiceTableActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem asChild>
-            <Link href={`/invoice/${invoice.id}`}>
-              <Eye />
-              View invoice
-            </Link>
+          <DropdownMenuItem onSelect={() => setPreviewMode("invoice")}>
+            <Eye className="mr-2 h-4 w-4" />
+            View invoice
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={`/invoice/${invoice.id}/label`}>
-              <Eye />
-              View shipping label
-            </Link>
+          <DropdownMenuItem onSelect={() => setPreviewMode("label")}>
+            <Tag className="mr-2 h-4 w-4" />
+            View shipping label
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <a href={`/api/documents/download?id=${invoice.id}`} download>
@@ -208,6 +209,16 @@ export function InvoiceTableActions({
           invoice={invoice}
           open={edit}
           onOpenChange={setEdit}
+        />
+      )}
+      {previewMode && (
+        <InvoicePreviewDialog
+          invoiceId={invoice.id}
+          shipmentId={invoice.shipmentId}
+          initialTab={previewMode}
+          open={Boolean(previewMode)}
+          onOpenChange={(open) => !open && setPreviewMode(null)}
+          initialData={invoice.shipment ? invoice : undefined}
         />
       )}
     </>

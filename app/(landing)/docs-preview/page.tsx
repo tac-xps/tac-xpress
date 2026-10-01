@@ -2,6 +2,7 @@ import React from "react"
 import { notFound } from "next/navigation"
 import { ShippingLabel, type LabelShipment } from "@/components/documents/shipping-label"
 import { InvoiceDocument } from "@/components/invoice-document"
+import { DocsPreviewDialogTrigger } from "./docs-preview-dialog-trigger"
 import type { Invoice, Shipment } from "@/lib/db/schema"
 import { DELHI_HUB_ADDRESS, SINGJAMEI_HUB_ADDRESS } from "@/lib/documents/address-constants"
 
@@ -134,6 +135,15 @@ export default function DocsPreviewPage() {
               <span className="rounded bg-neutral-800 px-2.5 py-1 text-white font-bold">
                 SINGJAMEI HUB: 795008 (Destination)
               </span>
+            </div>
+            <div className="w-full pt-2 flex items-center justify-between border-t border-neutral-200">
+              <span className="text-xs font-medium text-neutral-600">
+                Pop-up Dialog Previews:
+              </span>
+              <DocsPreviewDialogTrigger
+                invoice={mockInvoice}
+                shipment={mockShipment}
+              />
             </div>
           </div>
         </header>

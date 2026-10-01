@@ -678,18 +678,28 @@ export const createWizardInvoiceAction = authActionClient
     }
   })
 
-const getInvoiceDetailsSchema = z.object({
-  shipmentId: z.string().uuid("Invalid shipment ID"),
-})
+const getInvoiceDetailsSchema = z
+  .object({
+    shipmentId: z.string().uuid("Invalid shipment ID").optional(),
+    invoiceId: z.string().uuid("Invalid invoice ID").optional(),
+  })
+  .refine((data) => Boolean(data.shipmentId || data.invoiceId), {
+    message: "Either shipmentId or invoiceId must be provided",
+  })
 
 export const getInvoiceDetails = authActionClient
   .schema(getInvoiceDetailsSchema)
   .action(async ({ parsedInput, ctx }) => {
     try {
+      const whereCondition = parsedInput.invoiceId
+        ? eq(invoices.id, parsedInput.invoiceId)
+        : eq(invoices.shipmentId, parsedInput.shipmentId!)
+
       const targetInvoice = await db.query.invoices.findFirst({
-        where: eq(invoices.shipmentId, parsedInput.shipmentId),
+        where: whereCondition,
         with: {
           shipment: true,
+          customer: true,
         },
       })
 
@@ -704,6 +714,7 @@ export const getInvoiceDetails = authActionClient
         extra: {
           actorId: ctx.session.user.id,
           shipmentId: parsedInput.shipmentId,
+          invoiceId: parsedInput.invoiceId,
         },
       })
       return null

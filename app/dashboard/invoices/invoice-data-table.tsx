@@ -1,5 +1,6 @@
 "use client"
-import Link from "next/link"
+
+import { useState } from "react"
 import { format } from "date-fns"
 import type { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@/components/ui/data-table/data-table"
@@ -7,9 +8,37 @@ import { DataTableColumnHeader as ColumnHeader } from "@/components/ui/data-tabl
 import { useDataTable } from "@/hooks/use-data-table"
 import { Badge } from "@/components/ui/badge"
 import { InvoiceTableActions } from "./invoice-table-actions"
+import { InvoicePreviewDialog } from "./invoice-preview-dialog"
 import { type InvoiceData, formatInvoiceCurrency } from "./invoice-types"
+
+function InvoiceIdCell({ invoice }: { invoice: InvoiceData }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="font-mono text-xs font-medium text-foreground underline-offset-4 hover:underline hover:text-primary transition-colors cursor-pointer text-left"
+        aria-label={`View invoice ${invoice.id.slice(0, 8)}`}
+      >
+        {invoice.id.slice(0, 8).toUpperCase()}
+      </button>
+      {open && (
+        <InvoicePreviewDialog
+          invoiceId={invoice.id}
+          shipmentId={invoice.shipmentId}
+          initialTab="invoice"
+          open={open}
+          onOpenChange={setOpen}
+          initialData={invoice.shipment ? invoice : undefined}
+        />
+      )}
+    </>
+  )
+}
+
 const columns = (canVoid: boolean): ColumnDef<InvoiceData>[] => [
-  { accessorKey: "id", header: ({ column }) => <ColumnHeader column={column} title="Invoice" />, cell: ({ row }) => <Link href={`/invoice/${row.original.id}`} className="font-mono text-xs font-medium underline-offset-4 hover:underline">{row.original.id.slice(0, 8).toUpperCase()}</Link> },
+  { accessorKey: "id", header: ({ column }) => <ColumnHeader column={column} title="Invoice" />, cell: ({ row }) => <InvoiceIdCell invoice={row.original} /> },
   { id: "customer", header: "Customer / shipment", cell: ({ row }) => <div><p className="font-medium">{row.original.customer?.name || row.original.shipment?.consignorName || "Name not recorded"}</p><p className="mt-1 font-mono text-xs text-muted-foreground">{row.original.shipment?.awbNumber ?? "Shipment not linked"}</p></div> },
   { accessorKey: "createdAt", header: ({ column }) => <ColumnHeader column={column} title="Issued" />, cell: ({ row }) => format(new Date(row.original.createdAt), "dd MMM yyyy") },
   { accessorKey: "status", header: ({ column }) => <ColumnHeader column={column} title="Status" />, cell: ({ row }) => <Badge variant={row.original.status === "paid" ? "success" : row.original.status === "unpaid" ? "warning" : "outline"} className="capitalize">{row.original.status}</Badge> },

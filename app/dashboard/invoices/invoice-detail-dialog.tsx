@@ -58,6 +58,7 @@ import {
 import { cn } from "@/lib/utils"
 
 import { useInvoiceDetailDialog } from "./use-invoice-detail-dialog"
+import { InvoicePreviewDialog } from "./invoice-preview-dialog"
 
 interface InvoiceDetailDialogProps {
   invoice: {
@@ -126,6 +127,9 @@ export function InvoiceDetailDialog({ invoice }: InvoiceDetailDialogProps) {
     onSubmit,
   } = useInvoiceDetailDialog(invoice)
   const [editOpen, setEditOpen] = useState(false)
+  const [previewMode, setPreviewMode] = useState<"invoice" | "label" | null>(
+    null
+  )
 
   const documentHref = `/invoice/${invoice.id}?preview=true`
 
@@ -170,25 +174,12 @@ export function InvoiceDetailDialog({ invoice }: InvoiceDetailDialogProps) {
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <Button
-                    asChild={Boolean(documentHref)}
-                    disabled={!documentHref}
+                    type="button"
                     variant="outline"
+                    onClick={() => setPreviewMode("invoice")}
                   >
-                    {documentHref ? (
-                      <Link
-                        href={documentHref}
-                        rel="noreferrer"
-                        target="_blank"
-                      >
-                        <EyeIcon className="h-4 w-4" />
-                        View PDF
-                      </Link>
-                    ) : (
-                      <span>
-                        <EyeIcon className="h-4 w-4" />
-                        View PDF
-                      </span>
-                    )}
+                    <EyeIcon className="mr-2 h-4 w-4" />
+                    View PDF
                   </Button>
                   <Button
                     asChild={Boolean(downloadHref)}
@@ -208,18 +199,13 @@ export function InvoiceDetailDialog({ invoice }: InvoiceDetailDialogProps) {
                     )}
                   </Button>
                   <Button
-                    asChild
+                    type="button"
                     variant="outline"
                     className="col-span-2 justify-start"
+                    onClick={() => setPreviewMode("label")}
                   >
-                    <Link
-                      href={`/invoice/${invoice.id}/label`}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      <TagIcon className="mr-2 h-4 w-4" />
-                      View 4″ × 6″ Shipping Label
-                    </Link>
+                    <TagIcon className="mr-2 h-4 w-4" />
+                    View Shipping Label (4″ × 3″)
                   </Button>
                   <Button
                     className="group relative col-span-2 justify-start overflow-hidden"
@@ -448,6 +434,15 @@ export function InvoiceDetailDialog({ invoice }: InvoiceDetailDialogProps) {
           </section>
         </div>
       </DialogContent>
+      {previewMode && (
+        <InvoicePreviewDialog
+          invoiceId={invoice.id}
+          shipmentId={invoice.shipmentId}
+          initialTab={previewMode}
+          open={Boolean(previewMode)}
+          onOpenChange={(open) => !open && setPreviewMode(null)}
+        />
+      )}
     </Dialog>
   )
 }

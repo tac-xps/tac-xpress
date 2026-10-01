@@ -1,7 +1,10 @@
+import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/nextjs"
 import type { Invoice, Shipment } from "@/lib/db/schema"
 import { InvoiceDocument } from "@/components/invoice-document"
 import { ShippingLabel } from "@/components/documents/shipping-label"
+import { InvoicePreviewDialog } from "@/app/dashboard/invoices/invoice-preview-dialog"
+import { Button } from "@/components/ui/button"
 
 // Isolated print fixtures matching Delhi -> Singjamei route
 const shipment: Shipment = {
@@ -126,21 +129,33 @@ export const MinimalistThermalLabelCOD: Story = {
   ),
 }
 
-export const LongAddressLabel: Story = {
-  name: "Label with Extended Address",
-  render: () => (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-100 p-8">
-      <ShippingLabel
-        shipment={{
-          ...shipment,
-          consigneeName: "Dr. K. Ibochouba Singh & Sons Medical Supplies",
-          consigneeAddress:
-            "Building 42, Floor 2, Opposite Community Health Center, Singjamei Top Leikai, Near Supermarket Junction, Imphal West District, Manipur - 795008. Deliver during clinic hours 10 AM to 5 PM.",
-          consignorName: "M/S North India Surgical & Diagnostic Instruments Co.",
-          consignorAddress:
-            "Warehouse 8B, DSIIDC Industrial Complex, Khasra 382, Near Gate 4, Wazir Nagar Extension, Kotla Mubarakpur, New Delhi - 110003.",
-        }}
-      />
-    </div>
-  ),
+export const InvoicePreviewDialogDemo: Story = {
+  name: "Invoice & 4:3 Label Pop-up Dialog",
+  render: () => {
+    const [open, setOpen] = useState(true)
+    const [tab, setTab] = useState<"invoice" | "label">("invoice")
+    return (
+      <div className="flex min-h-screen items-center justify-center p-8 bg-neutral-100">
+        <div className="flex gap-4">
+          <Button onClick={() => { setTab("invoice"); setOpen(true); }}>
+            View Invoice (Pop-up Dialog)
+          </Button>
+          <Button onClick={() => { setTab("label"); setOpen(true); }}>
+            View Shipping Label (Pop-up Dialog)
+          </Button>
+        </div>
+        <InvoicePreviewDialog
+          invoiceId={invoice.id}
+          shipmentId={shipment.id}
+          initialTab={tab}
+          open={open}
+          onOpenChange={setOpen}
+          initialData={{
+            ...invoice,
+            shipment,
+          }}
+        />
+      </div>
+    )
+  },
 }
