@@ -7,6 +7,8 @@ import { PackageTrackerCard } from "@/components/ui/tracker-card"
 import { AnimatePresence, motion } from "motion/react"
 import { cn } from "@/lib/utils"
 
+import { AnimatedParcel } from "./animated-parcel"
+
 interface TrackingDetailsProps {
   result: TrackingResult
 }
@@ -30,13 +32,7 @@ export function TrackingDetails({ result }: TrackingDetailsProps) {
     () => ""
   )
 
-  const packageImage = (
-    <Package 
-      className="h-32 w-32 text-primary/80 drop-shadow-lg" 
-      strokeWidth={1} 
-      aria-label="Package"
-    />
-  )
+  const packageImage = <AnimatedParcel status={result.status} />
   
   const destinationFlag = <MapPin className="h-4 w-4 text-muted-foreground" />
 
