@@ -1,86 +1,156 @@
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
-import { manifests, manifestItems, shipments } from "@/lib/db/schema"
-import { eq, desc } from "drizzle-orm"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { MapPin, Box, CheckCircle } from "lucide-react"
-import Link from "next/link"
+import { manifests, shipments } from "@/lib/db/schema"
+import { desc } from "drizzle-orm"
+import {
+  DeliveryClient,
+  type ManifestSummaryItem,
+  type DeliveryShipmentItem,
+  type RouteSummaryMetrics,
+} from "./delivery-client"
 
 export const dynamic = "force-dynamic"
 
-export default async function DriverDeliveryPage() {
+interface DriverDeliveryPageProps {
+  searchParams: Promise<{
+    manifestId?: string
+  }>
+}
+
+export default async function DriverDeliveryPage({
+  searchParams,
+}: DriverDeliveryPageProps) {
   await requireStaffPage()
 
-  // Demo: Fetching all active manifests (status: 'finalized' or 'draft' for now)
-  const activeManifests = await db
-    .select()
-    .from(manifests)
-    .orderBy(desc(manifests.createdAt))
-    .limit(1)
+  const resolvedParams = await searchParams
+  const requestedManifestId = resolvedParams?.manifestId
 
-  const activeManifest = activeManifests[0]
+  // Fetch recent manifests with relations
+  const rawManifests = await db.query.manifests.findMany({
+    limit: 20,
+    with: {
+      originHub: true,
+      destinationHub: true,
+      driver: true,
+      vehicle: true,
+      items: {
+        with: {
+          shipment: {
+            with: {
+              invoice: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: [desc(manifests.createdAt)],
+  })
 
-  let assignedShipments: any[] = []
-  if (activeManifest) {
-    const items = await db
-      .select({
-        shipment: shipments,
-      })
-      .from(manifestItems)
-      .innerJoin(shipments, eq(manifestItems.shipmentId, shipments.id))
-      .where(eq(manifestItems.manifestId, activeManifest.id))
+  // Format manifest summaries for the switcher
+  const manifestsList: ManifestSummaryItem[] = rawManifests.map((m) => ({
+    id: m.id,
+    referenceId: m.referenceId,
+    status: m.status,
+    originHub: m.originHub?.name ?? "Origin Hub",
+    destinationHub: m.destinationHub?.name ?? "Destination Hub",
+    driverName: m.driver?.name ?? "Unassigned Driver",
+    driverPhone: m.driver?.phone ?? null,
+    vehicleReg: m.vehicle?.registrationNumber ?? "No vehicle assigned",
+    createdAt: m.createdAt ? new Date(m.createdAt).toISOString() : new Date().toISOString(),
+  }))
 
-    assignedShipments = items.map((i) => i.shipment)
+  // Resolve currently active manifest
+  const selectedRawManifest =
+    (requestedManifestId
+      ? rawManifests.find((m) => m.id === requestedManifestId)
+      : rawManifests[0]) ?? null
+
+  const activeManifestSummary: ManifestSummaryItem | null = selectedRawManifest
+    ? {
+        id: selectedRawManifest.id,
+        referenceId: selectedRawManifest.referenceId,
+        status: selectedRawManifest.status,
+        originHub: selectedRawManifest.originHub?.name ?? "Origin Hub",
+        destinationHub: selectedRawManifest.destinationHub?.name ?? "Destination Hub",
+        driverName: selectedRawManifest.driver?.name ?? "Unassigned Driver",
+        driverPhone: selectedRawManifest.driver?.phone ?? null,
+        vehicleReg: selectedRawManifest.vehicle?.registrationNumber ?? "No vehicle assigned",
+        createdAt: selectedRawManifest.createdAt
+          ? new Date(selectedRawManifest.createdAt).toISOString()
+          : new Date().toISOString(),
+      }
+    : null
+
+  // Resolve assigned shipments
+  let rawShipments: any[] = []
+  if (selectedRawManifest && selectedRawManifest.items.length > 0) {
+    rawShipments = selectedRawManifest.items
+      .map((item) => item.shipment)
+      .filter((s): s is NonNullable<typeof s> => Boolean(s))
+  } else if (rawManifests.length === 0) {
+    // If no manifests exist yet, fetch recent shipments so driver delivery console remains functional
+    rawShipments = await db.query.shipments.findMany({
+      limit: 15,
+      orderBy: [desc(shipments.createdAt)],
+      with: {
+        invoice: true,
+      },
+    })
+  }
+
+  // Map to DeliveryShipmentItem
+  const mappedShipments: DeliveryShipmentItem[] = rawShipments.map((s) => ({
+    id: s.id,
+    awbNumber: s.awbNumber,
+    status: s.status,
+    consigneeName: s.consigneeName ?? "Consignee",
+    consigneePhone: s.consigneePhone ?? null,
+    consigneeAddress: s.consigneeAddress || s.destination || "Destination Hub",
+    consigneePinCode: s.consigneePinCode ?? null,
+    pieces: Number(s.pieces ?? 1),
+    weightKg: Number(s.weightKg ?? 1),
+    serviceType: s.serviceType ?? "express_air",
+    declaredValue: Number(s.declaredValue ?? 0),
+    edd: s.edd ? new Date(s.edd).toISOString() : null,
+    invoiceAmount: s.invoice ? s.invoice.amount / 100 : null,
+    paymentStatus: s.invoice?.status ?? "unpaid",
+  }))
+
+  // Calculate Route Telemetry Metrics
+  const totalStops = mappedShipments.length
+  const completedStops = mappedShipments.filter((s) => s.status === "delivered").length
+  const inTransitStops = mappedShipments.filter(
+    (s) => s.status === "out_for_delivery" || s.status === "in_transit"
+  ).length
+  const pendingStops = totalStops - completedStops
+  const totalWeightKg = Math.round(
+    mappedShipments.reduce((acc, s) => acc + (s.weightKg || 0), 0) * 10
+  ) / 10
+  const totalPieces = mappedShipments.reduce((acc, s) => acc + (s.pieces || 0), 0)
+  const codPendingAmount = mappedShipments.reduce((acc, s) => {
+    if (s.invoiceAmount && s.paymentStatus !== "paid") {
+      return acc + s.invoiceAmount
+    }
+    return acc
+  }, 0)
+
+  const summaryMetrics: RouteSummaryMetrics = {
+    totalStops,
+    completedStops,
+    inTransitStops,
+    pendingStops,
+    totalWeightKg,
+    totalPieces,
+    codPendingAmount,
   }
 
   return (
-    <div className="flex flex-col gap-4 pb-20">
-      <h1 className="text-2xl font-semibold tracking-tight">Latest dispatch</h1>
-      <p className="text-sm text-muted-foreground">Staff delivery tools for the latest manifest. Confirm the assigned driver before completing a delivery.</p>
-
-      {assignedShipments.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-center text-muted-foreground">
-            No shipments assigned to your route today.
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {assignedShipments.map((shipment) => (
-            <Link key={shipment.id} href={`/driver/delivery/${shipment.id}`}>
-              <Card className="cursor-pointer transition-colors hover:border-primary active:scale-[0.98]">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-bold">
-                    {shipment.awbNumber}
-                  </CardTitle>
-                  <Badge
-                    variant={
-                      shipment.status === "delivered" ? "default" : "secondary"
-                    }
-                  >
-                    {shipment.status}
-                  </Badge>
-                </CardHeader>
-                <CardContent>
-                  <div className="mt-2 flex items-start gap-2 text-sm text-muted-foreground">
-                    <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-                    <span className="line-clamp-2">
-                      {shipment.consigneeAddress || shipment.destination}
-                    </span>
-                  </div>
-                  <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-                    <Box className="h-4 w-4 shrink-0" />
-                    <span>
-                      {shipment.pieces} piece(s) • {shipment.weightKg} kg
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
+    <DeliveryClient
+      manifests={manifestsList}
+      activeManifest={activeManifestSummary}
+      shipments={mappedShipments}
+      summary={summaryMetrics}
+    />
   )
 }
+
