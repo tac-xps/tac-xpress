@@ -8,23 +8,48 @@ import { Check } from "lucide-react"
 /* ─────────────────────────────────────────────────────────────────────────────
    VerticalRail — track line (2px, border blend)
 ───────────────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────────
+   VerticalRail — track line (2px, border blend) with animated active beam
+───────────────────────────────────────────────────────────────────────────── */
 export function VerticalRail({
   children,
   className,
+  activeStep = 0,
+  totalSteps = 4,
 }: {
   children: ReactNode
   className?: string
+  activeStep?: number
+  totalSteps?: number
 }) {
   const ref = useRef<HTMLOListElement>(null)
+  const shouldReduceMotion = useReducedMotion()
+
+  // Dynamic progress percentage along the rail track
+  const progressRatio = totalSteps > 1 ? (activeStep + 0.5) / totalSteps : 1
 
   return (
     <ol
       ref={ref}
       className={cn(
-        "cargo-rail relative ml-2 py-4 sm:ml-4 border-l-2 border-border/50",
+        "cargo-rail relative ml-2 py-2 sm:ml-4 border-l-2 border-border/40",
         className,
       )}
     >
+      {/* ── Illuminated active rail progress runner ── */}
+      <motion.div
+        aria-hidden="true"
+        className="absolute -left-[2px] top-0 w-[2px] bg-gradient-to-b from-primary via-primary to-primary/60 rounded-full"
+        initial={false}
+        animate={{
+          height: `${Math.min(100, Math.max(0, progressRatio * 100))}%`,
+        }}
+        transition={
+          shouldReduceMotion
+            ? { duration: 0 }
+            : { type: "spring", stiffness: 280, damping: 30 }
+        }
+      />
       {children}
     </ol>
   )
@@ -56,31 +81,33 @@ export function VerticalRailStep({
   return (
     <li
       className={cn(
-        "relative pb-16 pl-10 last:pb-2 sm:pl-14 transition-colors duration-300",
+        "group/step relative mb-6 last:mb-0 rounded-2xl transition-colors duration-300",
         className,
       )}
     >
-      {/* ── Active step background highlight strip with Nordic Fjord border ─────────────────────── */}
-      <div
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute inset-y-0 -left-4 right-0 rounded-r-xl transition-all duration-300",
-          isActive
-            ? "bg-primary/[0.08] dark:bg-primary/[0.12] border-l-2 border-primary"
-            : "bg-transparent border-l-2 border-transparent",
-        )}
-      />
+      {/* ── Active step background highlight card with Motion layoutId ─────────────────────── */}
+      {isActive && (
+        <motion.div
+          layoutId="active-step-highlight"
+          className="pointer-events-none absolute inset-0 -left-3.5 sm:-left-4 rounded-2xl bg-primary/[0.08] dark:bg-primary/[0.14] border-l-[3px] border-primary shadow-[0_4px_24px_rgba(30,123,122,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.25)]"
+          transition={
+            shouldReduceMotion
+              ? { duration: 0 }
+              : { type: "spring", stiffness: 320, damping: 32 }
+          }
+        />
+      )}
 
-      {/* ── Marker ─────────────────────────────────────────────────────── */}
+      {/* ── Marker positioned symmetrically with header line ───────────────────────────────── */}
       <span
         aria-hidden="true"
         className={cn(
-          "absolute -left-[11px] top-1 flex h-6 w-6 items-center justify-center rounded-sm transition-all duration-300 ring-4 ring-background",
+          "absolute -left-[13px] top-6 flex h-6 w-6 items-center justify-center rounded-md transition-all duration-300 ring-4 ring-background z-10",
           isActive
-            ? "bg-primary text-primary-foreground border-2 border-primary shadow-sm"
+            ? "bg-primary text-primary-foreground border-2 border-primary shadow-sm scale-105"
             : isCompleted
               ? "bg-primary/20 text-primary border-2 border-primary/50"
-              : "bg-surface text-muted-foreground border-2 border-border",
+              : "bg-surface text-muted-foreground border-2 border-border/80",
         )}
       >
         {isCompleted ? (
@@ -88,7 +115,7 @@ export function VerticalRailStep({
         ) : (
           <span
             className={cn(
-              "size-2 transition-transform duration-300 rounded-none",
+              "size-2 transition-transform duration-300 rounded-xs",
               isActive ? "bg-primary-foreground scale-100" : "bg-muted-foreground/60 scale-75",
             )}
           />
@@ -97,11 +124,11 @@ export function VerticalRailStep({
         {/* Pulsing ring — only on currently active step */}
         {isActive && !shouldReduceMotion && (
           <motion.span
-            className="absolute inset-0 rounded-sm border-2 border-primary pointer-events-none"
+            className="absolute inset-0 rounded-md border-2 border-primary pointer-events-none"
             initial={{ scale: 1, opacity: 0.8 }}
             animate={{ scale: 2.1, opacity: 0 }}
             transition={{
-              duration: 1.4,
+              duration: 1.5,
               ease: "easeOut",
               repeat: Infinity,
               repeatDelay: 0.5,
@@ -110,12 +137,12 @@ export function VerticalRailStep({
         )}
       </span>
 
-      {/* ── Content ────────────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-3 md:max-w-xl">
+      {/* ── Content Container with Generous, Balanced Vertical Padding (24px top & bottom) ──── */}
+      <div className="relative z-10 flex flex-col gap-3 py-6 pl-10 pr-4 sm:pl-14 sm:pr-6 md:max-w-xl">
         {/* Step number */}
         <span
           className={cn(
-            "font-mono text-xs font-bold tracking-[0.15em] uppercase transition-colors duration-300",
+            "font-mono text-xs font-bold tracking-[0.15em] uppercase transition-colors duration-300 leading-normal",
             isActive ? "text-primary" : "text-muted-foreground",
           )}
         >
@@ -125,7 +152,7 @@ export function VerticalRailStep({
         {/* Title */}
         <h3
           className={cn(
-            "text-2xl font-semibold tracking-tight transition-all duration-300",
+            "text-2xl font-semibold tracking-tight transition-colors duration-300",
             isActive
               ? "text-foreground font-bold"
               : "text-foreground/80",
@@ -137,7 +164,7 @@ export function VerticalRailStep({
         {/* Body */}
         <p
           className={cn(
-            "leading-relaxed text-sm sm:text-base transition-all duration-300",
+            "leading-relaxed text-sm sm:text-base transition-colors duration-300",
             isActive ? "text-foreground/90 font-normal" : "text-muted-foreground",
           )}
         >

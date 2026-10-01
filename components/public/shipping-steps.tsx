@@ -21,17 +21,18 @@ export function ShippingSteps() {
       const stepEls = rail.querySelectorAll<HTMLLIElement>("li")
       if (!stepEls.length) return
 
-      // Ergonomic focal point: 42% down the viewport, exactly where user reads content
-      const focalY = window.innerHeight * 0.42
+      // Ergonomic focal point: 44% down the viewport, exactly where user reads content
+      const focalY = window.innerHeight * 0.44
 
       let bestIndex = 0
       let minDistance = Infinity
 
       stepEls.forEach((el, index) => {
         const rect = el.getBoundingClientRect()
-        // Check distance of step from focal line
-        const distance = Math.abs(rect.top - focalY)
-        if (rect.top <= focalY + 140 && distance < minDistance) {
+        // Compute distance from vertical center of each step card to focal line
+        const stepCenter = rect.top + rect.height * 0.5
+        const distance = Math.abs(stepCenter - focalY)
+        if (distance < minDistance) {
           minDistance = distance
           bestIndex = index
         }
@@ -128,19 +129,24 @@ export function ShippingSteps() {
                     type="button"
                     onClick={() => scrollToStep(i)}
                     aria-label={`Step ${i + 1}: ${step.title}`}
-                    className="flex w-full items-center gap-3 text-left group/pill cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm py-1 transition-opacity hover:opacity-90"
+                    className="flex w-full items-center gap-3 text-left group/pill cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md py-1.5 px-2 transition-all hover:bg-muted/30"
                   >
-                    {/* Progress bar */}
-                    <span
-                      className={cn(
-                        "block h-[3px] flex-1 rounded-full origin-left transition-all duration-300",
-                        isCurrent
-                          ? "bg-primary scale-x-100"
-                          : isPassed
-                            ? "bg-primary/50 scale-x-100"
-                            : "bg-border scale-x-50"
-                      )}
-                    />
+                    {/* Progress bar container */}
+                    <div className="relative h-[3px] flex-1 bg-border/60 rounded-full overflow-hidden">
+                      <motion.div
+                        className="absolute inset-y-0 left-0 bg-primary rounded-full origin-left"
+                        initial={false}
+                        animate={{
+                          width: isCurrent ? "100%" : isPassed ? "100%" : "25%",
+                          opacity: isCurrent ? 1 : isPassed ? 0.6 : 0.25,
+                        }}
+                        transition={
+                          shouldReduceMotion
+                            ? { duration: 0 }
+                            : { type: "spring", stiffness: 350, damping: 30 }
+                        }
+                      />
+                    </div>
 
                     {/* Step label */}
                     <span
@@ -150,7 +156,7 @@ export function ShippingSteps() {
                           ? "text-primary font-bold"
                           : isPassed
                             ? "text-foreground font-semibold"
-                            : "text-muted-foreground"
+                            : "text-muted-foreground",
                       )}
                     >
                       {`0${i + 1}`}
@@ -183,7 +189,7 @@ export function ShippingSteps() {
 
         {/* ── Right: Rail ─────────────────────────────────────────────── */}
         <div ref={railRef} className="mt-16 lg:mt-0">
-          <VerticalRail>
+          <VerticalRail activeStep={activeStep} totalSteps={bookingSteps.length}>
             {bookingSteps.map((step, index) => (
               <VerticalRailStep
                 key={step.title}
