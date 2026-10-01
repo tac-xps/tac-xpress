@@ -55,7 +55,9 @@ export async function retryDlqItem(dlqId: string): Promise<DlqActionResponse> {
           awb = t?.relatedAwb ?? undefined
         }
         const { generateAutoReply } = await import("@/app/actions/ai-responder")
-        const replyResult = await generateAutoReply(payload.ticketId, payload.category, awb)
+        const replyResult = await generateAutoReply(payload.ticketId, payload.category, awb, {
+          enqueueDlqOnFailure: false,
+        })
         if (!replyResult) {
           throw new Error("AI auto-reply generation returned null or failed safety guardrail.")
         }

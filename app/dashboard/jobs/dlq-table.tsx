@@ -178,6 +178,7 @@ export function DlqTable({
     pageCount,
     pageKey: "dlq_page",
     perPageKey: "dlq_per_page",
+    // Synchronized with server-side query sorting in app/dashboard/jobs/page.tsx
     sortKey: "dlq_sort",
   })
 

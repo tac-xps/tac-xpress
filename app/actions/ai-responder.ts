@@ -53,7 +53,8 @@ Return ONLY the response text. No JSON, no markdown headers.`
 export async function generateAutoReply(
   ticketId: string,
   category: string,
-  awb?: string
+  awb?: string,
+  options?: { enqueueDlqOnFailure?: boolean }
 ) {
   // Validate inputs
   const input = safeParse(autoReplyInputSchema, { ticketId, category, awb })
@@ -81,6 +82,8 @@ export async function generateAutoReply(
     ? JSON.stringify(shipment)
     : "No public shipment updates are available."
 
+  const enqueueDlq = options?.enqueueDlqOnFailure ?? true
+
   const completion = await withRetry(
     () =>
       openai.chat.completions.create({
@@ -96,7 +99,10 @@ export async function generateAutoReply(
         max_tokens: 300,
       }),
     "ai_auto_reply_generation",
-    { ticketId: input.ticketId, category: input.category }
+    { ticketId: input.ticketId, category: input.category, awb: input.awb },
+    3,
+    1000,
+    enqueueDlq
   )
 
   if (!completion) return null // DLQ handled it
@@ -131,6 +137,7 @@ export async function generateAutoReply(
     if (replyInsert.error) {
       console.error("[AI Responder] Failed to insert blocked reply:", replyInsert.error)
       Sentry.captureException(replyInsert.error, { tags: { area: "ai_responder_blocked_draft" } })
+      throw new Error(`Failed to persist blocked draft reply: ${replyInsert.error.message}`)
     }
 
     // Flag ticket for operator review
@@ -144,6 +151,7 @@ export async function generateAutoReply(
     if (ticketUpdate.error) {
       console.error("[AI Responder] Failed to set needs_human_review:", ticketUpdate.error)
       Sentry.captureException(ticketUpdate.error, { tags: { area: "ai_responder_ticket_flag" } })
+      throw new Error(`Failed to flag ticket for human review: ${ticketUpdate.error.message}`)
     }
 
     await logAudit({

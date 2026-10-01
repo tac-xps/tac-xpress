@@ -40,7 +40,8 @@ export async function withRetry<T>(
   action: string,
   payload: any,
   maxRetries = 3,
-  baseDelayMs = 1000
+  baseDelayMs = 1000,
+  enqueueOnFailure = true
 ): Promise<T | null> {
   let attempt = 0
 
@@ -56,10 +57,16 @@ export async function withRetry<T>(
       )
 
       if (attempt >= maxRetries) {
-        console.error(
-          `[Retry] Action '${action}' exhausted all retries. Sending to DLQ.`
-        )
-        await enqueueDeadLetter(action, payload, error, attempt)
+        if (enqueueOnFailure) {
+          console.error(
+            `[Retry] Action '${action}' exhausted all retries. Sending to DLQ.`
+          )
+          await enqueueDeadLetter(action, payload, error, attempt)
+        } else {
+          console.error(
+            `[Retry] Action '${action}' exhausted all retries (DLQ enqueuing suppressed for manual retry).`
+          )
+        }
         return null
       }
 
