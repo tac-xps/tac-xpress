@@ -49,8 +49,8 @@ export async function getServiceMetrics() {
         .groupBy(shipments.status),
       db
         .select({
-          eligible: sql<number>`count(*) filter (where ${shipments.edd} is not null)::integer`,
-          onTime: sql<number>`count(*) filter (where ${shipments.edd} is not null and ${delivered.deliveredAt} <= ${shipments.edd})::integer`,
+          eligible: sql<number>`count(case when ${shipments.edd} is not null then 1 end)::integer`,
+          onTime: sql<number>`count(case when ${shipments.edd} is not null and ${delivered.deliveredAt} <= ${shipments.edd} then 1 end)::integer`,
         })
         .from(shipments)
         .innerJoin(delivered, eq(shipments.id, delivered.shipmentId))
@@ -58,7 +58,7 @@ export async function getServiceMetrics() {
           and(
             isNull(shipments.deletedAt),
             eq(shipments.status, "delivered"),
-            gte(delivered.deliveredAt, since)
+            sql`${delivered.deliveredAt} >= ${since.toISOString()}`
           )
         ),
       db
