@@ -53,7 +53,12 @@ export async function loginAction(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   ) {
     // Apply credential rate limiting before calling Supabase authentication
-    const headerList = await headers()
+    let headerList: Headers | undefined
+    try {
+      headerList = await headers()
+    } catch {
+      // Ignored when invoked outside Next.js request context (e.g. unit tests)
+    }
     const syntheticReq = new Request("https://tacexpress.internal/signin", {
       headers: headerList,
     })
