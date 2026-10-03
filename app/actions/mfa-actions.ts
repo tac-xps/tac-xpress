@@ -59,47 +59,55 @@ export async function getMfaSettingsAction() {
   }
 }
 
-// --- Rate Limiting & Attempt Counter for MFA ---
-interface AttemptRecord {
-  failedAttempts: number
-  lockedUntil?: number
-}
-
-const loginAttemptStore = new Map<string, AttemptRecord>()
+// --- Rate Limiting & Persistent Attempt Counter for MFA ---
 const MAX_MFA_ATTEMPTS = 5
 const MFA_LOCKOUT_MS = 5 * 60 * 1000 // 5 minutes
 
-function checkMfaLockout(key: string): { locked: boolean; remainingSeconds?: number } {
-  const record = loginAttemptStore.get(key)
-  if (!record) return { locked: false }
-  if (record.lockedUntil) {
-    const now = Date.now()
-    if (now < record.lockedUntil) {
-      return {
-        locked: true,
-        remainingSeconds: Math.ceil((record.lockedUntil - now) / 1000),
-      }
-    }
-    loginAttemptStore.delete(key)
-  }
-  return { locked: false }
-}
-
-function recordMfaFailure(key: string): { locked: boolean } {
+async function checkMfaLockout(userId: string): Promise<{ locked: boolean; remainingSeconds?: number }> {
+  const mfa = await db.query.userMfa.findFirst({
+    where: eq(userMfa.userId, userId),
+  })
+  if (!mfa?.lockedUntil) return { locked: false }
   const now = Date.now()
-  const record = loginAttemptStore.get(key) || { failedAttempts: 0 }
-  record.failedAttempts += 1
-  if (record.failedAttempts >= MAX_MFA_ATTEMPTS) {
-    record.lockedUntil = now + MFA_LOCKOUT_MS
-    loginAttemptStore.set(key, record)
-    return { locked: true }
+  const lockedTime = new Date(mfa.lockedUntil).getTime()
+  if (now < lockedTime) {
+    return {
+      locked: true,
+      remainingSeconds: Math.ceil((lockedTime - now) / 1000),
+    }
   }
-  loginAttemptStore.set(key, record)
   return { locked: false }
 }
 
-function clearMfaAttempts(key: string) {
-  loginAttemptStore.delete(key)
+async function recordMfaFailure(userId: string): Promise<{ locked: boolean }> {
+  const mfa = await db.query.userMfa.findFirst({
+    where: eq(userMfa.userId, userId),
+  })
+  const currentAttempts = (mfa?.failedAttempts ?? 0) + 1
+  const isLocked = currentAttempts >= MAX_MFA_ATTEMPTS
+  const lockedUntil = isLocked ? new Date(Date.now() + MFA_LOCKOUT_MS) : null
+
+  await db
+    .update(userMfa)
+    .set({
+      failedAttempts: currentAttempts,
+      lockedUntil,
+      updatedAt: new Date(),
+    })
+    .where(eq(userMfa.userId, userId))
+
+  return { locked: isLocked }
+}
+
+async function clearMfaAttempts(userId: string): Promise<void> {
+  await db
+    .update(userMfa)
+    .set({
+      failedAttempts: 0,
+      lockedUntil: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(userMfa.userId, userId))
 }
 
 export async function startTotpSetupAction() {
@@ -157,16 +165,28 @@ export async function confirmTotpSetupAction({ code }: { code: string }) {
 
   const backupCodes = generateBackupCodes(10)
 
-  await db
+  const updatedRows = await db
     .update(userMfa)
     .set({
       totpSecretEncrypted: pendingSecret,
       totpPendingSecretEncrypted: null,
       totpEnabled: true,
       backupCodesHash: backupCodes.hashedCodesJson,
+      failedAttempts: 0,
+      lockedUntil: null,
       updatedAt: new Date(),
     })
-    .where(eq(userMfa.userId, session.user.id))
+    .where(
+      and(
+        eq(userMfa.userId, session.user.id),
+        eq(userMfa.totpPendingSecretEncrypted, pendingSecret)
+      )
+    )
+    .returning({ userId: userMfa.userId })
+
+  if (updatedRows.length === 0) {
+    return { error: "Authenticator setup was already completed or expired. Please refresh." }
+  }
 
   return {
     success: true,
@@ -402,7 +422,7 @@ export async function verifyTotpLoginAction({
     return { error: "Verification challenge expired. Please sign in again." }
   }
 
-  const lockout = checkMfaLockout(challenge.userId)
+  const lockout = await checkMfaLockout(challenge.userId)
   if (lockout.locked) {
     return {
       error: `Too many failed attempts. Account temporarily locked for ${Math.ceil(
@@ -421,7 +441,7 @@ export async function verifyTotpLoginAction({
 
   const isValid = verifyTotpToken(mfa.totpSecretEncrypted, code, true)
   if (!isValid) {
-    const nowLocked = recordMfaFailure(challenge.userId)
+    const nowLocked = await recordMfaFailure(challenge.userId)
     if (nowLocked.locked) {
       return {
         error: "Too many failed attempts. Account temporarily locked for 5 minutes.",
@@ -430,7 +450,7 @@ export async function verifyTotpLoginAction({
     return { error: "Invalid authenticator code. Check the 6 digits and try again." }
   }
 
-  clearMfaAttempts(challenge.userId)
+  await clearMfaAttempts(challenge.userId)
 
   const mfaVerifiedToken = await createMfaVerifiedToken({
     userId: challenge.userId,
@@ -456,7 +476,7 @@ export async function verifyBackupCodeLoginAction({
     return { error: "Verification challenge expired. Please sign in again." }
   }
 
-  const lockout = checkMfaLockout(challenge.userId)
+  const lockout = await checkMfaLockout(challenge.userId)
   if (lockout.locked) {
     return {
       error: `Too many failed attempts. Account temporarily locked for ${Math.ceil(
@@ -475,7 +495,7 @@ export async function verifyBackupCodeLoginAction({
 
   const result = verifyAndBurnBackupCode(code, mfa.backupCodesHash)
   if (!result.valid) {
-    const nowLocked = recordMfaFailure(challenge.userId)
+    const nowLocked = await recordMfaFailure(challenge.userId)
     if (nowLocked.locked) {
       return {
         error: "Too many failed attempts. Account temporarily locked for 5 minutes.",
@@ -506,7 +526,7 @@ export async function verifyBackupCodeLoginAction({
     }
   }
 
-  clearMfaAttempts(challenge.userId)
+  await clearMfaAttempts(challenge.userId)
 
   const mfaVerifiedToken = await createMfaVerifiedToken({
     userId: challenge.userId,

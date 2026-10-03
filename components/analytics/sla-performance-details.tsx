@@ -6,7 +6,8 @@ export function SlaPerformanceDetails({ data }: { data: AnalyticsOverview }) {
   const atRisk = data.statusBreakdown.atRisk
   const delivered = data.statusBreakdown.delivered
   const inTransit = data.statusBreakdown.inTransit
-  const onTimeRate = data.onTimePerformance
+  const airOnTimeRate = data.serviceSla?.air ?? data.onTimePerformance
+  const roadOnTimeRate = data.serviceSla?.road ?? data.onTimePerformance
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -25,13 +26,13 @@ export function SlaPerformanceDetails({ data }: { data: AnalyticsOverview }) {
                 Express Air Cargo (Airport-to-Airport)
               </span>
               <span className="font-mono font-bold text-foreground">
-                {onTimeRate !== null ? `${onTimeRate.toFixed(1)}%` : "N/A"}
+                {airOnTimeRate !== null ? `${airOnTimeRate.toFixed(1)}%` : "N/A"}
               </span>
             </div>
             <div className="w-full bg-muted/40 h-2 rounded-none overflow-hidden">
               <div
                 className="bg-chart-1 h-full transition-all duration-500"
-                style={{ width: onTimeRate !== null ? `${Math.min(onTimeRate, 100)}%` : "0%" }}
+                style={{ width: airOnTimeRate !== null ? `${Math.min(airOnTimeRate, 100)}%` : "0%" }}
               />
             </div>
             <div className="flex justify-between text-xs text-muted-foreground">
@@ -48,13 +49,13 @@ export function SlaPerformanceDetails({ data }: { data: AnalyticsOverview }) {
                 Surface Road Freight (Linehaul Hubs)
               </span>
               <span className="font-mono font-bold text-foreground">
-                {onTimeRate !== null ? `${onTimeRate.toFixed(1)}%` : "N/A"}
+                {roadOnTimeRate !== null ? `${roadOnTimeRate.toFixed(1)}%` : "N/A"}
               </span>
             </div>
             <div className="w-full bg-muted/40 h-2 rounded-none overflow-hidden">
               <div
                 className="bg-chart-2 h-full transition-all duration-500"
-                style={{ width: onTimeRate !== null ? `${Math.min(onTimeRate, 100)}%` : "0%" }}
+                style={{ width: roadOnTimeRate !== null ? `${Math.min(roadOnTimeRate, 100)}%` : "0%" }}
               />
             </div>
             <div className="flex justify-between text-xs text-muted-foreground">

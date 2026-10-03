@@ -69,14 +69,14 @@ export function SupportChat() {
                   whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
                   transition={{ duration: 0.15 }}
                   className="relative aspect-square size-12 sm:size-14 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground p-0 shadow-lg hover:shadow-xl flex items-center justify-center border border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all cursor-pointer"
-                  aria-label="Ask a question"
+                  aria-label="Open AI assistant"
                 >
                   <span className="absolute top-2.5 right-2.5 flex size-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-primary-foreground opacity-75" />
                     <span className="relative inline-flex size-2 rounded-none bg-primary-foreground" />
                   </span>
                   <SquareChatIcon className="size-5 sm:size-6" />
-                  <span className="sr-only">Ask a question</span>
+                  <span className="sr-only">Open AI assistant</span>
                 </MotionButton>
               </SheetTrigger>
             </TooltipTrigger>

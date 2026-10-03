@@ -119,10 +119,10 @@ export function ManifestContinuationPage({
                 {rows.map((item, idx) => (
                   <tr key={item.id || startIndex + idx} className="hover:bg-neutral-50/50">
                     <td className="py-1 px-2 font-mono text-neutral-500">{startIndex + idx + 1}</td>
-                    <td className="py-1 px-2 font-medium text-[#191716]">
+                    <td className="max-w-0 truncate py-1 px-2 font-medium text-[#191716]">
                       {item.description}
                       {item.confidenceReason && (
-                        <span className="font-mono text-[6.5px] text-neutral-400 block">
+                        <span className="block truncate font-mono text-[6.5px] text-neutral-400">
                           {item.confidenceReason}
                         </span>
                       )}

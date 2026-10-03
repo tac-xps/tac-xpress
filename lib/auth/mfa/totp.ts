@@ -69,26 +69,30 @@ export function verifyTotpToken(
   }
 }
 
-function hashBackupCode(code: string): string {
+function hashBackupCode(code: string, salt: string): string {
   return crypto
-    .createHash("sha256")
-    .update(code.trim().toUpperCase() + "tac-backup-salt")
-    .digest("hex")
+    .scryptSync(code.trim().toUpperCase(), salt, 32, { N: 1024, r: 8, p: 1 })
+    .toString("hex")
 }
 
 /**
- * Generates 10 single-use recovery codes in "XXXX-XXXX" format.
+ * Generates 10 single-use recovery codes in "XXXX-XXXX-XXXX-XXXX" format (64-bit entropy).
  */
 export function generateBackupCodes(count = 10): BackupCodesResult {
   const plaintextCodes: string[] = []
   const hashedCodes: string[] = []
 
   for (let i = 0; i < count; i++) {
-    const part1 = crypto.randomBytes(2).toString("hex").toUpperCase()
-    const part2 = crypto.randomBytes(2).toString("hex").toUpperCase()
-    const code = `${part1}-${part2}`
+    const p1 = crypto.randomBytes(2).toString("hex").toUpperCase()
+    const p2 = crypto.randomBytes(2).toString("hex").toUpperCase()
+    const p3 = crypto.randomBytes(2).toString("hex").toUpperCase()
+    const p4 = crypto.randomBytes(2).toString("hex").toUpperCase()
+    const code = `${p1}-${p2}-${p3}-${p4}`
     plaintextCodes.push(code)
-    hashedCodes.push(hashBackupCode(code))
+
+    const salt = crypto.randomBytes(16).toString("hex")
+    const hash = hashBackupCode(code, salt)
+    hashedCodes.push(`${salt}:${hash}`)
   }
 
   return {
@@ -108,15 +112,38 @@ export function verifyAndBurnBackupCode(
 
   try {
     const hashedCodes: string[] = JSON.parse(hashedCodesJson)
-    const targetHash = hashBackupCode(enteredCode)
+    const normalizedInput = enteredCode.trim().toUpperCase()
 
-    const index = hashedCodes.indexOf(targetHash)
-    if (index === -1) {
+    let matchedIndex = -1
+    for (let i = 0; i < hashedCodes.length; i++) {
+      const entry = hashedCodes[i]
+      const [salt, expectedHash] = entry.split(":")
+      if (!salt || !expectedHash) {
+        // Fallback for legacy SHA-256 entries if any
+        const legacyHash = crypto
+          .createHash("sha256")
+          .update(normalizedInput + "tac-backup-salt")
+          .digest("hex")
+        if (entry === legacyHash) {
+          matchedIndex = i
+          break
+        }
+        continue
+      }
+
+      const computed = hashBackupCode(normalizedInput, salt)
+      if (crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(expectedHash))) {
+        matchedIndex = i
+        break
+      }
+    }
+
+    if (matchedIndex === -1) {
       return { valid: false }
     }
 
     // Burn the used code
-    hashedCodes.splice(index, 1)
+    hashedCodes.splice(matchedIndex, 1)
     return {
       valid: true,
       remainingHashedCodesJson: JSON.stringify(hashedCodes),

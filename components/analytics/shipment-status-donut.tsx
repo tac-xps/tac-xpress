@@ -148,7 +148,7 @@ export function ShipmentStatusDonut({
                 <div className="col-span-2 mt-2 flex items-center justify-between border border-destructive/30 bg-destructive/10 px-2.5 py-1.5 text-xs text-destructive">
                   <span className="font-medium">SLA Risk Watch</span>
                   <span className="font-mono font-bold tabular-nums">
-                    {data.atRisk} in-transit
+                    {data.atRisk} shipments
                   </span>
                 </div>
               )}

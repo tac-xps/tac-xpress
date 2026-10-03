@@ -130,12 +130,12 @@ describe("RFC 6238 TOTP Engine", () => {
 })
 
 describe("Single-Use Recovery Codes Engine", () => {
-  it("generates 10 single-use recovery codes in XXXX-XXXX format", () => {
+  it("generates 10 single-use recovery codes in XXXX-XXXX-XXXX-XXXX format", () => {
     const result = generateBackupCodes(10)
     expect(result.plaintextCodes).toHaveLength(10)
 
     for (const code of result.plaintextCodes) {
-      expect(code).toMatch(/^[0-9A-F]{4}-[0-9A-F]{4}$/)
+      expect(code).toMatch(/^[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}$/)
     }
 
     const hashedArray = JSON.parse(result.hashedCodesJson)

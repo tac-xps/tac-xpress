@@ -46,7 +46,7 @@ function fillMissingMonths(data: Array<{ month: string; customers: number }>) {
 
   const sortedMonths = [...data].map((d) => d.month).sort()
   const earliestStr = sortedMonths[0]
-  const latestStr = format(new Date(), "yyyy-MM")
+  const latestStr = sortedMonths[sortedMonths.length - 1]
 
   const earliestDate = new Date(`${earliestStr}-01T00:00:00Z`)
   const latestDate = new Date(`${latestStr}-01T00:00:00Z`)

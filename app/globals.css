@@ -199,7 +199,7 @@
   --card-foreground: oklch(0.985 0.008 255);
   --popover: oklch(0.345 0.052 255);
   --popover-foreground: oklch(0.985 0.008 255);
-  --primary: oklch(0.690 0.160 255);
+  --primary: oklch(0.725 0.145 255);
   --primary-foreground: oklch(0.160 0.030 255);
   --secondary: oklch(0.355 0.046 255);
   --secondary-foreground: oklch(0.985 0.008 255);
@@ -212,8 +212,8 @@
   --border: oklch(0.980 0.015 255 / 14%);
   --border-strong: oklch(0.480 0.055 255);
   --input: oklch(0.980 0.015 255 / 18%);
-  --ring: oklch(0.690 0.160 255);
-  --card-accent: oklch(0.690 0.160 255);
+  --ring: oklch(0.725 0.145 255);
+  --card-accent: oklch(0.725 0.145 255);
 
   /* ── Status colors (APCA Lc >= 60 in Dark Mode & Safe Chroma Clamped) ───── */
   --status-pending: oklch(0.82 0.11 78);

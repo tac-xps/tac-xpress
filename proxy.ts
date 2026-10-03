@@ -156,8 +156,11 @@ async function enforceRequestProtection(request: NextRequest) {
 }
 
 export async function proxy(request: NextRequest, event: NextFetchEvent) {
-  // Auth0 OAuth Handler (/auth/login, /auth/callback, /auth/logout, /auth/profile)
-  if (request.nextUrl.pathname.startsWith("/auth/")) {
+  // Auth0 OAuth Handler (/auth/login, /auth/logout, /auth/profile)
+  if (
+    request.nextUrl.pathname.startsWith("/auth/") &&
+    request.nextUrl.pathname !== "/auth/callback"
+  ) {
     return await auth0.middleware(request)
   }
 

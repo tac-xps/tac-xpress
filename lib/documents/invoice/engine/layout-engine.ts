@@ -116,9 +116,12 @@ export function calculateDocumentLayoutBudget(doc: TaxInvoiceDocument): Document
   const usedHeightMm = Math.round((fixedAndSemiFixedTotal + calculatedManifestHeightMm) * 10) / 10
   const remainingHeightMm = Math.round((contentTargetMm - usedHeightMm + safetyReserveMm) * 10) / 10
 
-  // Continuation sheets list the complete manifest, chunked by row capacity.
+  // Continuation sheets list the remaining manifest items not shown on page 1.
+  const remainingManifestItemCount = requiresContinuationPage
+    ? Math.max(0, manifestItemCount - visiblePage1ManifestLimit)
+    : 0
   const continuationPageCount = requiresContinuationPage
-    ? Math.ceil(manifestItemCount / CONTINUATION_PAGE_ROW_LIMIT)
+    ? Math.max(1, Math.ceil(remainingManifestItemCount / CONTINUATION_PAGE_ROW_LIMIT))
     : 0
 
   let riskState: "Safe" | "Tight" | "Overflow"

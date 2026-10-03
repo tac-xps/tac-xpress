@@ -30,8 +30,10 @@ export async function loginAction(
   prevState: any,
   formData: FormData
 ): Promise<LoginActionResult> {
-  const email = (formData.get("email") as string)?.trim().toLowerCase()
-  const password = formData.get("password") as string
+  const emailEntry = formData.get("email")
+  const email = typeof emailEntry === "string" ? emailEntry.trim().toLowerCase() : ""
+  const passwordEntry = formData.get("password")
+  const password = typeof passwordEntry === "string" ? passwordEntry : ""
 
   const parsed = loginSchema.safeParse({ email, password })
 
@@ -147,6 +149,7 @@ export async function loginAction(
     await signIn("credentials", {
       email,
       password,
+      rateLimitChecked: "true",
       redirectTo: "/dashboard",
     })
   } catch (error) {

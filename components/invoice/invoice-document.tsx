@@ -64,9 +64,9 @@ export function InvoiceDocument({ doc }: InvoiceDocumentProps) {
         <VerificationPanel doc={doc} pageNumber={1} totalPages={budget.pageCount} />
       </article>
 
-      {/* ── CONTINUATION SHEETS: complete manifest, chunked to fit A4 ── */}
+      {/* ── CONTINUATION SHEETS: remaining manifest items after page 1, chunked to fit A4 ── */}
       {Array.from({ length: budget.continuationPageCount }, (_, sheetIdx) => {
-        const start = sheetIdx * budget.continuationPageRowLimit
+        const start = budget.visiblePage1ManifestLimit + sheetIdx * budget.continuationPageRowLimit
         return (
           <ManifestContinuationPage
             key={`continuation-${sheetIdx}`}

@@ -43,11 +43,35 @@ export function CsvExportButton({
       header = ["Metric", "Value", "Benchmark Target", "Status"]
       rows = [
         [
-          "On-Time Performance Rate",
+          "On-Time Performance Rate (Overall)",
           overview.onTimePerformance !== null ? `${overview.onTimePerformance.toFixed(1)}%` : "N/A",
           "98.5%",
           overview.onTimePerformance !== null
             ? overview.onTimePerformance >= 98.5
+              ? "Compliant"
+              : "Breach Alert"
+            : "No Data",
+        ],
+        [
+          "Express Air On-Time Rate",
+          overview.serviceSla?.air !== null && overview.serviceSla?.air !== undefined
+            ? `${overview.serviceSla.air.toFixed(1)}%`
+            : "N/A",
+          "99.0%",
+          overview.serviceSla?.air !== null && overview.serviceSla?.air !== undefined
+            ? overview.serviceSla.air >= 99.0
+              ? "Compliant"
+              : "Breach Alert"
+            : "No Data",
+        ],
+        [
+          "Road Freight On-Time Rate",
+          overview.serviceSla?.road !== null && overview.serviceSla?.road !== undefined
+            ? `${overview.serviceSla.road.toFixed(1)}%`
+            : "N/A",
+          "98.0%",
+          overview.serviceSla?.road !== null && overview.serviceSla?.road !== undefined
+            ? overview.serviceSla.road >= 98.0
               ? "Compliant"
               : "Breach Alert"
             : "No Data",

@@ -582,11 +582,16 @@ export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
   legs: many(shipmentLegs),
 }))
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
   shipments: many(shipments),
   tickets: many(tickets),
   invoices: many(invoices),
   manifests: many(manifests),
+  mfa: one(userMfa, {
+    fields: [users.id],
+    references: [userMfa.userId],
+  }),
+  passkeys: many(userPasskeys),
 }))
 
 export const ticketsRelations = relations(tickets, ({ one, many }) => ({
@@ -752,8 +757,24 @@ export const userMfa = pgTable("user_mfa", {
   totpPendingSecretEncrypted: text("totp_pending_secret_encrypted"), // Pending confirmation
   totpEnabled: boolean("totp_enabled").default(false).notNull(),
   backupCodesHash: text("backup_codes_hash"), // JSON array of hashed recovery codes
+  failedAttempts: integer("failed_attempts").default(0).notNull(),
+  lockedUntil: timestamp("locked_until", { withTimezone: true }),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
+
+export const userPasskeysRelations = relations(userPasskeys, ({ one }) => ({
+  user: one(users, {
+    fields: [userPasskeys.userId],
+    references: [users.id],
+  }),
+}))
+
+export const userMfaRelations = relations(userMfa, ({ one }) => ({
+  user: one(users, {
+    fields: [userMfa.userId],
+    references: [users.id],
+  }),
+}))
 
 export type User = typeof users.$inferSelect
 export type Shipment = typeof shipments.$inferSelect

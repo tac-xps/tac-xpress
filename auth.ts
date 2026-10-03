@@ -21,6 +21,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
         mfaToken: { label: "MFA Token", type: "text" },
+        rateLimitChecked: { label: "Rate Limit Checked", type: "text" },
       },
       async authorize(credentials, request) {
         // 0. Verified MFA Token Flow (completes 2FA / Passkey login)
@@ -47,7 +48,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         ) return null
 
         const email = credentials.email.trim().toLowerCase()
-        if (!(await allowCredentialAttempt(request, email))) return null
+        const rateLimitChecked = credentials?.rateLimitChecked === "true"
+        if (!rateLimitChecked && !(await allowCredentialAttempt(request, email))) return null
         const bypassPassword = process.env.E2E_TEST_USER_PASSWORD
 
         // 1. E2E Bypass Flow

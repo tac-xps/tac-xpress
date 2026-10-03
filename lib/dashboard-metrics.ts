@@ -80,13 +80,16 @@ export type AnalyticsOverview = {
   revenueByMonth: Array<{ month: string; amountPaise: number }>
   customerGrowthByMonth: Array<{ month: string; customers: number }>
   topRoutes: Array<{ route: string; volume: number }>
-  // NEW
   dailyVolume: Array<{ date: string; air: number; surface: number }>
   statusBreakdown: {
     delivered: number
     inTransit: number
     pending: number
     atRisk: number
+  }
+  serviceSla: {
+    air: number | null
+    road: number | null
   }
   period: AnalyticsPeriod
 }
@@ -367,6 +370,10 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Pro
         previousDelivered: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${prevStartUpdatedAtCond} then 1 else 0 end), 0)`,
         currentOnTime: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${currentStartUpdatedAtCond} and ${shipments.edd} is not null and ${shipments.updatedAt} <= ${shipments.edd} then 1 else 0 end), 0)`,
         previousOnTime: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${prevStartUpdatedAtCond} and ${shipments.edd} is not null and ${shipments.updatedAt} <= ${shipments.edd} then 1 else 0 end), 0)`,
+        currentAirDelivered: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${shipments.serviceType} = 'express_air' and ${currentStartUpdatedAtCond} then 1 else 0 end), 0)`,
+        currentAirOnTime: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${shipments.serviceType} = 'express_air' and ${currentStartUpdatedAtCond} and ${shipments.edd} is not null and ${shipments.updatedAt} <= ${shipments.edd} then 1 else 0 end), 0)`,
+        currentRoadDelivered: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${shipments.serviceType} in ('standard_ocean','road_freight') and ${currentStartUpdatedAtCond} then 1 else 0 end), 0)`,
+        currentRoadOnTime: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${shipments.serviceType} in ('standard_ocean','road_freight') and ${currentStartUpdatedAtCond} and ${shipments.edd} is not null and ${shipments.updatedAt} <= ${shipments.edd} then 1 else 0 end), 0)`,
         // Status breakdown for the current period
         countDelivered: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${currentStartShipmentsCond} then 1 else 0 end), 0)`,
         countInTransit: sql<number>`coalesce(sum(case when ${shipments.status} = 'in-transit' and ${currentStartShipmentsCond} then 1 else 0 end), 0)`,
@@ -474,6 +481,15 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Pro
     toNumber(shipmentSummary?.previousDelivered)
   )
 
+  const airOnTimeRate = toRate(
+    toNumber(shipmentSummary?.currentAirOnTime),
+    toNumber(shipmentSummary?.currentAirDelivered)
+  )
+  const roadOnTimeRate = toRate(
+    toNumber(shipmentSummary?.currentRoadOnTime),
+    toNumber(shipmentSummary?.currentRoadDelivered)
+  )
+
   const fleetEfficiency = toRate(
     toNumber(vehicleSummary?.active),
     toNumber(vehicleSummary?.total)
@@ -543,6 +559,10 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Pro
       inTransit: toNumber(shipmentSummary?.countInTransit),
       atRisk: toNumber(shipmentSummary?.countAtRisk),
       pending: toNumber(shipmentSummary?.countPending),
+    },
+    serviceSla: {
+      air: airOnTimeRate,
+      road: roadOnTimeRate,
     },
     period,
   }
