@@ -762,6 +762,22 @@ export const userMfa = pgTable("user_mfa", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
 
+// Distributed single-use token consumption table (MFA grants, rate limit proofs, WebAuthn challenges)
+export const authTokenConsumptions = pgTable(
+  "auth_token_consumptions",
+  {
+    jti: text("jti").primaryKey(),
+    purpose: text("purpose").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("auth_token_consumptions_expires_at_idx").on(table.expiresAt),
+  ]
+)
+
 export const userPasskeysRelations = relations(userPasskeys, ({ one }) => ({
   user: one(users, {
     fields: [userPasskeys.userId],
@@ -792,4 +808,7 @@ export type UserPasskey = typeof userPasskeys.$inferSelect
 export type NewUserPasskey = typeof userPasskeys.$inferInsert
 export type UserMfa = typeof userMfa.$inferSelect
 export type NewUserMfa = typeof userMfa.$inferInsert
+export type AuthTokenConsumption = typeof authTokenConsumptions.$inferSelect
+export type NewAuthTokenConsumption = typeof authTokenConsumptions.$inferInsert
+
 

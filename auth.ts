@@ -51,7 +51,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         ) return null
 
         const email = credentials.email.trim().toLowerCase()
-        const rateLimitVerified = verifyRateLimitProof(credentials?.rateLimitProof, email)
+        const rateLimitVerified = await verifyRateLimitProof(credentials?.rateLimitProof, email)
         if (!rateLimitVerified && !(await allowCredentialAttempt(request, email))) return null
         const bypassPassword = process.env.E2E_TEST_USER_PASSWORD
 

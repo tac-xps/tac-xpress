@@ -83,11 +83,20 @@ export function CsvExportButton({
       ]
     } else if (activeTab === "revenue") {
       header = ["Month", "Billed Revenue (INR)", "New Customer Accounts"]
-      rows = overview.revenueByMonth.map((rev) => {
-        const cust = overview.customerGrowthByMonth.find((c) => c.month === rev.month)?.customers ?? 0
+      const months = [
+        ...new Set([
+          ...overview.revenueByMonth.map((rev) => rev.month),
+          ...overview.customerGrowthByMonth.map((c) => c.month),
+        ]),
+      ].sort()
+
+      rows = months.map((month) => {
+        const rev = overview.revenueByMonth.find((r) => r.month === month)
+        const cust =
+          overview.customerGrowthByMonth.find((c) => c.month === month)?.customers ?? 0
         return [
-          rev.month,
-          (rev.amountPaise / 100).toFixed(2),
+          month,
+          rev ? (rev.amountPaise / 100).toFixed(2) : "0.00",
           cust,
         ]
       })

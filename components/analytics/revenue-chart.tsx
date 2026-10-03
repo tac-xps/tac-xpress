@@ -37,7 +37,7 @@ function formatMonth(value: string) {
   return new Intl.DateTimeFormat("en-IN", {
     month: "short",
     timeZone: "UTC",
-  }).format(new Date(`${value}-01T00:00:00Z`))
+  }).format(new Date(`${value}-15T12:00:00Z`))
 }
 
 export function RevenueChart({
@@ -54,13 +54,19 @@ export function RevenueChart({
 
   const totalRevenue = data.reduce((acc, curr) => acc + curr.amountPaise, 0)
   
-  // Calculate trend
+  // Calculate trend only when at least two months exist
   const currentMonth = data[data.length - 1]?.amountPaise || 0
   const previousMonth = data[data.length - 2]?.amountPaise || 0
   
-  let trend = 0
-  if (previousMonth > 0) {
-    trend = ((currentMonth - previousMonth) / previousMonth) * 100
+  let trend: number | null = null
+  if (data.length >= 2) {
+    if (previousMonth > 0) {
+      trend = ((currentMonth - previousMonth) / previousMonth) * 100
+    } else if (currentMonth > 0) {
+      trend = 100
+    } else {
+      trend = 0
+    }
   }
 
   const descriptionText =
@@ -147,7 +153,9 @@ export function RevenueChart({
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm pt-6">
         <div className="flex gap-2 font-medium leading-none">
-          {trend >= 0 ? (
+          {trend === null ? (
+            <span className="text-muted-foreground">Insufficient monthly data for trend</span>
+          ) : trend >= 0 ? (
             <>
               Trending up by {trend.toFixed(1)}% this month <TrendingUp className="h-4 w-4 text-status-delivered" />
             </>

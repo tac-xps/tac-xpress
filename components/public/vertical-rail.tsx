@@ -89,7 +89,7 @@ export function VerticalRailStep({
       {isActive && (
         <motion.div
           layoutId="active-step-highlight"
-          className="pointer-events-none absolute inset-0 -left-3.5 sm:-left-4 rounded-none bg-primary/[0.08] dark:bg-primary/[0.14] border-l-[3px] border-primary shadow-sm dark:shadow-md"
+          className="pointer-events-none absolute inset-0 -left-3.5 sm:-left-4 rounded-none bg-primary/[0.08] dark:bg-primary/[0.08] border-l-[3px] border-primary shadow-sm dark:shadow-md"
           transition={
             shouldReduceMotion
               ? { duration: 0 }

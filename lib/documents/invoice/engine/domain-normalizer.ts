@@ -5,6 +5,8 @@ import {
   DELHI_CENTRAL_HUB,
   MANIPUR_REGIONAL_HUB,
   SAC_CLASSIFICATIONS,
+  INDIAN_STATE_CODES,
+  getStateCode,
 } from "../domain/master-data"
 import type {
   TaxInvoiceDocument,
@@ -78,12 +80,32 @@ export function normalizeInvoiceDomain(
     gstin: undefined,
   }
 
+  const rawShipment = shipment as any
+  let destState: string | undefined = rawShipment.destinationState?.trim()
+  if (!destState && shipment.destination) {
+    const matchedCode = getStateCode(shipment.destination)
+    if (matchedCode) {
+      destState = shipment.destination.trim()
+    }
+  }
+  if (!destState && shipment.consigneeAddress) {
+    const lowerAddr = shipment.consigneeAddress.toLowerCase()
+    for (const stateName of Object.keys(INDIAN_STATE_CODES)) {
+      if (lowerAddr.includes(stateName)) {
+        destState = stateName.charAt(0).toUpperCase() + stateName.slice(1)
+        break
+      }
+    }
+  }
+  const resolvedState = destState || "Manipur"
+  const resolvedStateCode = getStateCode(resolvedState) || (shipment.consigneePinCode?.startsWith("795") ? "14" : "14")
+
   const deliverTo: PartyInfo = {
     name: shipment.consigneeName || "Consignee On Record",
     addressLine: shipment.consigneeAddress || "Delivery Address On File",
     city: shipment.destination || "Imphal",
-    state: "Manipur",
-    stateCode: "14",
+    state: resolvedState,
+    stateCode: resolvedStateCode,
     pinCode: shipment.consigneePinCode || MANIPUR_REGIONAL_HUB.pinCode,
     phone: shipment.consigneePhone || undefined,
     altPhone: shipment.consigneeAltPhone || undefined,

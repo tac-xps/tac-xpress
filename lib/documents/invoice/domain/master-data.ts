@@ -141,6 +141,17 @@ export const SAC_CLASSIFICATIONS: Record<string, ServiceClassification> = {
  * Default Tax Policy Definitions
  */
 export const TAX_POLICIES: Record<string, TaxPolicy> = {
+  POL_GST_18: {
+    policyId: "POL_GST_18",
+    serviceClassificationCode: "996511",
+    name: "Goods Transportation Agency (GTA) Standard GST 18%",
+    gstRate: 18,
+    taxComponents: { igst: true, cgst: false, sgst: false },
+    reverseChargeApplicable: false,
+    placeOfSupplyRule: "B2B_RECIPIENT_LOCATION",
+    effectiveFrom: "2024-01-01",
+    sourceReference: "Notification No. 11/2017 - Integrated Tax (Rate)",
+  },
   POL_GST_18_INTER: {
     policyId: "POL_GST_18_INTER",
     serviceClassificationCode: "996511",
@@ -164,3 +175,56 @@ export const TAX_POLICIES: Record<string, TaxPolicy> = {
     sourceReference: "Notification No. 11/2017 - Central Tax (Rate)",
   },
 }
+
+/**
+ * Standard 2-digit Indian GST State / Union Territory Codes.
+ */
+export const INDIAN_STATE_CODES: Record<string, string> = {
+  "jammu and kashmir": "01",
+  "himachal pradesh": "02",
+  punjab: "03",
+  chandigarh: "04",
+  uttarakhand: "05",
+  haryana: "06",
+  delhi: "07",
+  rajasthan: "08",
+  "uttar pradesh": "09",
+  bihar: "10",
+  sikkim: "11",
+  "arunachal pradesh": "12",
+  nagaland: "13",
+  manipur: "14",
+  mizoram: "15",
+  tripura: "16",
+  meghalaya: "17",
+  assam: "18",
+  "west bengal": "19",
+  jharkhand: "20",
+  odisha: "21",
+  chhattisgarh: "22",
+  "madhya pradesh": "23",
+  gujarat: "24",
+  "dadra and nagar haveli and daman and diu": "26",
+  maharashtra: "27",
+  karnataka: "29",
+  goa: "30",
+  lakshadweep: "31",
+  kerala: "32",
+  "tamil nadu": "33",
+  puducherry: "34",
+  "andaman and nicobar islands": "35",
+  telangana: "36",
+  "andhra pradesh": "37",
+  ladakh: "38",
+}
+
+/**
+ * Resolves the 2-digit GST state code for a given state name or code.
+ */
+export function getStateCode(stateNameOrCode?: string | null): string | undefined {
+  if (!stateNameOrCode || !stateNameOrCode.trim()) return undefined
+  const cleaned = stateNameOrCode.trim().toLowerCase()
+  if (/^\d{2}$/.test(cleaned)) return cleaned
+  return INDIAN_STATE_CODES[cleaned]
+}
+

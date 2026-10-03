@@ -70,9 +70,14 @@ export function calculateDocumentLayoutBudget(doc: TaxInvoiceDocument): Document
   const partiesHeightMm = 22
   const shipmentSummaryHeightMm = 14
 
-  // Charges table: base 18mm + 4mm per line item
-  const chargeLinesCount = doc.commercial.charges.length
-  const chargesTableHeightMm = Math.max(22, 14 + chargeLinesCount * 4)
+  // Charges table: base 14mm header/totals + dynamic height per charge line.
+  // Standard charge row is 4.5mm. Labels longer than 40 chars wrap onto an extra row (8mm).
+  let calculatedChargesRowsHeightMm = 0
+  for (const charge of doc.commercial.charges) {
+    const isMultiLine = (charge.label?.length ?? 0) > 40
+    calculatedChargesRowsHeightMm += isMultiLine ? 8 : 4.5
+  }
+  const chargesTableHeightMm = Math.max(22, 14 + calculatedChargesRowsHeightMm)
 
   const paymentHeightMm = 14
   const destinationHubHeightMm = 16

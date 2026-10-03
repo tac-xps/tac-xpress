@@ -24,6 +24,7 @@ import {
   createRegistrationChallengeToken,
   verifyRegistrationChallengeToken,
 } from "@/lib/auth/mfa/challenge-token"
+import { consumeAuthToken } from "@/lib/auth/token-consumption"
 import type {
   RegistrationResponseJSON,
   AuthenticationResponseJSON,
@@ -402,13 +403,32 @@ export async function verifyPasskeyLoginAction({
       return { error: "Biometric authentication failed. Credential signature invalid." }
     }
 
-    await db
+    const challengeConsumed = await consumeAuthToken(
+      challenge.expectedChallenge,
+      "webauthn_login_challenge",
+      new Date(Date.now() + 5 * 60 * 1000)
+    )
+    if (!challengeConsumed) {
+      return { error: "Authentication challenge expired or already consumed. Please retry sign in." }
+    }
+
+    const updatedPasskeys = await db
       .update(userPasskeys)
       .set({
         counter: verification.authenticationInfo.newCounter,
         lastUsedAt: new Date(),
       })
-      .where(eq(userPasskeys.id, passkey.id))
+      .where(
+        and(
+          eq(userPasskeys.id, passkey.id),
+          eq(userPasskeys.counter, passkey.counter)
+        )
+      )
+      .returning({ id: userPasskeys.id })
+
+    if (updatedPasskeys.length === 0) {
+      return { error: "Security key assertion was already processed. Please retry." }
+    }
 
     const mfaVerifiedToken = await createMfaVerifiedToken({
       userId: challenge.userId,
@@ -632,13 +652,32 @@ export async function finishPasswordlessPasskeyAction({
       return { error: "Biometric verification failed. Security key rejected." }
     }
 
-    await db
+    const challengeConsumed = await consumeAuthToken(
+      challenge.expectedChallenge,
+      "webauthn_passwordless_challenge",
+      new Date(Date.now() + 5 * 60 * 1000)
+    )
+    if (!challengeConsumed) {
+      return { error: "Authentication challenge expired or already consumed. Please retry." }
+    }
+
+    const updatedPasskeys = await db
       .update(userPasskeys)
       .set({
         counter: verification.authenticationInfo.newCounter,
         lastUsedAt: new Date(),
       })
-      .where(eq(userPasskeys.id, passkey.id))
+      .where(
+        and(
+          eq(userPasskeys.id, passkey.id),
+          eq(userPasskeys.counter, passkey.counter)
+        )
+      )
+      .returning({ id: userPasskeys.id })
+
+    if (updatedPasskeys.length === 0) {
+      return { error: "Security key assertion was already processed. Please retry." }
+    }
 
     const dbUser = await db.query.users.findFirst({
       where: eq(users.id, passkey.userId),

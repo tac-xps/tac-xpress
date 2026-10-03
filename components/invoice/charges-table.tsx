@@ -22,7 +22,7 @@ export function ChargesTable({ doc }: ChargesTableProps) {
           ITEMIZED LOGISTICS CHARGES &amp; STATUTORY GST SCHEDULE
         </span>
         <span className="font-mono text-[7.5px] text-neutral-500">
-          Place of Supply: <strong>Manipur (State Code: {taxDecision.placeOfSupplyStateCode})</strong>
+          Place of Supply: <strong>{doc.shipment.deliverTo.state || "Manipur"} (State Code: {taxDecision.placeOfSupplyStateCode})</strong>
         </span>
       </div>
 

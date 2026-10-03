@@ -1,0 +1,1247 @@
+﻿verify	Set up job	∩╗┐2026-10-03T20:25:15.4668962Z Current runner version: '2.337.0'
+verify	Set up job	2026-10-03T20:25:15.4688562Z ##[group]Runner Image Provisioner
+verify	Set up job	2026-10-03T20:25:15.4689383Z Hosted Compute Agent
+verify	Set up job	2026-10-03T20:25:15.4689841Z Version: 20260901.588
+verify	Set up job	2026-10-03T20:25:15.4690384Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+verify	Set up job	2026-10-03T20:25:15.4690978Z Build Date: 2026-09-01T19:56:44Z
+verify	Set up job	2026-10-03T20:25:15.4691548Z Worker ID: {c8b65222-e438-4eb4-860a-389de4f1d7d5}
+verify	Set up job	2026-10-03T20:25:15.4692136Z Azure Region: centralus
+verify	Set up job	2026-10-03T20:25:15.4692600Z ##[endgroup]
+verify	Set up job	2026-10-03T20:25:15.4693598Z ##[group]Operating System
+verify	Set up job	2026-10-03T20:25:15.4694088Z Ubuntu
+verify	Set up job	2026-10-03T20:25:15.4694581Z 24.04.5
+verify	Set up job	2026-10-03T20:25:15.4695007Z LTS
+verify	Set up job	2026-10-03T20:25:15.4695426Z ##[endgroup]
+verify	Set up job	2026-10-03T20:25:15.4695883Z ##[group]Runner Image
+verify	Set up job	2026-10-03T20:25:15.4696360Z Image: ubuntu-24.04
+verify	Set up job	2026-10-03T20:25:15.4696905Z Version: 20260927.320.1
+verify	Set up job	2026-10-03T20:25:15.4697986Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260927.320/images/ubuntu/Ubuntu2404-Readme.md
+verify	Set up job	2026-10-03T20:25:15.4699524Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260927.320
+verify	Set up job	2026-10-03T20:25:15.4700299Z ##[endgroup]
+verify	Set up job	2026-10-03T20:25:15.4701237Z ##[group]GITHUB_TOKEN Permissions
+verify	Set up job	2026-10-03T20:25:15.4702842Z Contents: read
+verify	Set up job	2026-10-03T20:25:15.4703304Z Metadata: read
+verify	Set up job	2026-10-03T20:25:15.4703796Z ##[endgroup]
+verify	Set up job	2026-10-03T20:25:15.4705334Z Secret source: Actions
+verify	Set up job	2026-10-03T20:25:15.4706137Z Cache mode: write
+verify	Set up job	2026-10-03T20:25:15.4706693Z Prepare workflow directory
+verify	Set up job	2026-10-03T20:25:15.5015767Z Prepare all required actions
+verify	Set up job	2026-10-03T20:25:15.5055952Z Getting action download info
+verify	Set up job	2026-10-03T20:25:15.7665199Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+verify	Set up job	2026-10-03T20:25:15.8618389Z Download action repository 'pnpm/action-setup@v4' (SHA:b906affcce14559ad1aafd4ab0e942779e9f58b1)
+verify	Set up job	2026-10-03T20:25:16.3525016Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+verify	Set up job	2026-10-03T20:25:16.4629855Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+verify	Set up job	2026-10-03T20:25:16.7059712Z Complete job name: verify
+verify	Run actions/checkout@v4	∩╗┐2026-10-03T20:25:16.7711449Z ##[group]Run actions/checkout@v4
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7712322Z with:
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7712821Z   repository: tac-xps/tac-xpress
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7719950Z   token: ***
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7720448Z   ssh-strict: true
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7720967Z   ssh-user: git
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7721472Z   persist-credentials: true
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7722076Z   clean: true
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7722603Z   sparse-checkout-cone-mode: true
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7723228Z   fetch-depth: 1
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7723720Z   fetch-tags: false
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7724223Z   show-progress: true
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7724734Z   lfs: false
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7725230Z   submodules: false
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7725744Z   set-safe-directory: true
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7726339Z   allow-unsafe-pr-checkout: false
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7727207Z env:
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7727805Z   NEXT_PUBLIC_APP_URL: https://quality.invalid
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7728717Z   NEXT_PUBLIC_SUPABASE_URL: https://quality.supabase.co
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7729647Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-public-placeholder
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7730685Z   AUTH_SECRET: ci-only-synthetic-secret-not-for-deployment
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7731519Z   E2E_TEST_BYPASS_ENABLED: false
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7732195Z   NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED: false
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.7732882Z ##[endgroup]
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8591300Z Syncing repository: tac-xps/tac-xpress
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8593484Z ##[group]Getting Git version info
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8594468Z Working directory is '/home/runner/work/tac-xpress/tac-xpress'
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8595893Z [command]/usr/bin/git version
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8690116Z git version 2.55.0
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8710229Z ##[endgroup]
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8716222Z Temporarily overriding HOME='/home/runner/work/_temp/9631f87e-d235-467d-a695-a3bf7edaa450' before making global git config changes
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8719483Z Adding repository directory to the temporary git global config as a safe directory
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8721106Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tac-xpress/tac-xpress
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8760885Z Deleting the contents of '/home/runner/work/tac-xpress/tac-xpress'
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8764709Z ##[group]Initializing the repository
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8768103Z [command]/usr/bin/git init /home/runner/work/tac-xpress/tac-xpress
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8859708Z hint: Using 'master' as the name for the initial branch. This default branch name
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8861392Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8862736Z hint: to use in all of your new repositories, which will suppress this warning,
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8863720Z hint: call:
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8864344Z hint:
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8865288Z hint: 	git config --global init.defaultBranch <name>
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8866417Z hint:
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8867571Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8869421Z hint: 'development'. The just-created branch can be renamed via this command:
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8870816Z hint:
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8871508Z hint: 	git branch -m <name>
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8872257Z hint:
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8873362Z hint: Disable this message with "git config set advice.defaultBranchName false"
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8878490Z Initialized empty Git repository in /home/runner/work/tac-xpress/tac-xpress/.git/
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8888509Z [command]/usr/bin/git remote add origin https://github.com/tac-xps/tac-xpress
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8927753Z ##[endgroup]
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8928975Z ##[group]Disabling automatic garbage collection
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8932619Z [command]/usr/bin/git config --local gc.auto 0
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8956986Z ##[endgroup]
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8958323Z ##[group]Setting up auth
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8964269Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.8991119Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.9289019Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.9316883Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.9484442Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.9514632Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.9661535Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.9689805Z ##[endgroup]
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.9691298Z ##[group]Fetching the repository
+verify	Run actions/checkout@v4	2026-10-03T20:25:16.9699559Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +5efece8c78c0df5179346cf92166e3a29a241be9:refs/remotes/pull/9/merge
+verify	Run actions/checkout@v4	2026-10-03T20:25:22.4010894Z From https://github.com/tac-xps/tac-xpress
+verify	Run actions/checkout@v4	2026-10-03T20:25:22.4011752Z  * [new ref]         5efece8c78c0df5179346cf92166e3a29a241be9 -> pull/9/merge
+verify	Run actions/checkout@v4	2026-10-03T20:25:22.4014045Z ##[endgroup]
+verify	Run actions/checkout@v4	2026-10-03T20:25:22.4014758Z ##[group]Determining the checkout info
+verify	Run actions/checkout@v4	2026-10-03T20:25:22.4016386Z ##[endgroup]
+verify	Run actions/checkout@v4	2026-10-03T20:25:22.4022261Z [command]/usr/bin/git sparse-checkout disable
+verify	Run actions/checkout@v4	2026-10-03T20:25:22.4069264Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+verify	Run actions/checkout@v4	2026-10-03T20:25:22.4092755Z ##[group]Checking out the ref
+verify	Run actions/checkout@v4	2026-10-03T20:25:22.4095744Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/9/merge
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1157973Z Note: switching to 'refs/remotes/pull/9/merge'.
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1159376Z 
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1159722Z You are in 'detached HEAD' state. You can look around, make experimental
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1160337Z changes and commit them, and you can discard any commits you make in this
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1160930Z state without impacting any branches by switching back to a branch.
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1161222Z 
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1161512Z If you want to create a new branch to retain commits you create, you may
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1162059Z do so (now or later) by using -c with the switch command. Example:
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1162371Z 
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1162517Z   git switch -c <new-branch-name>
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1162728Z 
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1162866Z Or undo this operation with:
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1163061Z 
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1163178Z   git switch -
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1163373Z 
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1163636Z Turn off this advice by setting config variable advice.detachedHead to false
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1164017Z 
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1164320Z HEAD is now at 5efece8 Merge df1a4e06664fc73e8422ac8f049ca3479e9df240 into ea32ecd9f2877d315cfb53f7076b62bafe008129
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1185407Z ##[endgroup]
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1224073Z [command]/usr/bin/git log -1 --format=%H
+verify	Run actions/checkout@v4	2026-10-03T20:25:23.1243492Z 5efece8c78c0df5179346cf92166e3a29a241be9
+verify	Run pnpm/action-setup@v4	∩╗┐2026-10-03T20:25:23.1426112Z ##[group]Run pnpm/action-setup@v4
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1426365Z with:
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1426560Z   dest: ~/setup-pnpm
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1426751Z   run_install: null
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1426934Z   cache: false
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1427315Z   cache_dependency_path: pnpm-lock.yaml
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1427573Z   package_json_file: package.json
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1427813Z   standalone: false
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1428004Z env:
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1428223Z   NEXT_PUBLIC_APP_URL: https://quality.invalid
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1428517Z   NEXT_PUBLIC_SUPABASE_URL: https://quality.supabase.co
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1428822Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-public-placeholder
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1429163Z   AUTH_SECRET: ci-only-synthetic-secret-not-for-deployment
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1429442Z   E2E_TEST_BYPASS_ENABLED: false
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1429669Z   NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED: false
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.1429892Z ##[endgroup]
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.2567766Z ##[group]Running self-installer...
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.5706884Z (node:2137) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.5708205Z (Use `node --trace-deprecation ...` to show where the warning was created)
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.8052971Z Progress: resolved 1, reused 0, downloaded 0, added 0
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.8119016Z Packages: +1
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:23.8119351Z +
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:24.1088481Z Progress: resolved 1, reused 0, downloaded 1, added 1, done
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:24.1505620Z 
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:24.1506011Z dependencies:
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:24.1506375Z + pnpm 9.4.0 (12.8.1 is available)
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:24.1506612Z 
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:24.1528137Z Done in 750ms
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:24.1636269Z ##[endgroup]
+verify	Run pnpm/action-setup@v4	2026-10-03T20:25:24.1636599Z Installation Completed!
+verify	Run actions/setup-node@v4	∩╗┐2026-10-03T20:25:24.1775981Z ##[group]Run actions/setup-node@v4
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1776226Z with:
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1776402Z   node-version: 24
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1776583Z   cache: pnpm
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1776759Z   always-auth: false
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1776959Z   check-latest: false
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1779193Z   token: ***
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1779371Z env:
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1779578Z   NEXT_PUBLIC_APP_URL: https://quality.invalid
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1779871Z   NEXT_PUBLIC_SUPABASE_URL: https://quality.supabase.co
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1780173Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-public-placeholder
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1780487Z   AUTH_SECRET: ci-only-synthetic-secret-not-for-deployment
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1780770Z   E2E_TEST_BYPASS_ENABLED: false
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1780992Z   NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED: false
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1781413Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.1781658Z ##[endgroup]
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.2956022Z Found in cache @ /opt/hostedtoolcache/node/24.21.0/x64
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.2958619Z (node:2152) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.2959297Z (Use `node --trace-deprecation ...` to show where the warning was created)
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.2960700Z ##[group]Environment details
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.6434352Z node: v24.21.0
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.6434708Z npm: 11.19.0
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.6434959Z yarn: 1.22.22
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.6435835Z ##[endgroup]
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.6458119Z [command]/home/runner/setup-pnpm/node_modules/.bin/pnpm store path --silent
+verify	Run actions/setup-node@v4	2026-10-03T20:25:24.9538819Z /home/runner/setup-pnpm/node_modules/.bin/store/v3
+verify	Run actions/setup-node@v4	2026-10-03T20:25:25.0990979Z Cache hit for: node-cache-Linux-x64-pnpm-a6c1229cd9cbc8e6fd17ba4a93c5aeb3973b63af78486a45dcf2366560f647c8
+verify	Run actions/setup-node@v4	2026-10-03T20:25:25.1104041Z (node:2152) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+verify	Run actions/setup-node@v4	2026-10-03T20:25:26.2536511Z Received 125829120 of 596074204 (21.1%), 119.9 MBs/sec
+verify	Run actions/setup-node@v4	2026-10-03T20:25:27.2539704Z Received 331350016 of 596074204 (55.6%), 157.9 MBs/sec
+verify	Run actions/setup-node@v4	2026-10-03T20:25:28.2554130Z Received 536870912 of 596074204 (90.1%), 170.5 MBs/sec
+verify	Run actions/setup-node@v4	2026-10-03T20:25:28.4984067Z Received 596074204 of 596074204 (100.0%), 175.1 MBs/sec
+verify	Run actions/setup-node@v4	2026-10-03T20:25:28.4986079Z Cache Size: ~568 MB (596074204 B)
+verify	Run actions/setup-node@v4	2026-10-03T20:25:28.5018148Z [command]/usr/bin/tar -xf /home/runner/work/_temp/b5bf822d-33d5-4492-8708-d9dfcbc61075/cache.tzst -P -C /home/runner/work/tac-xpress/tac-xpress --use-compress-program unzstd
+verify	Run actions/setup-node@v4	2026-10-03T20:25:33.3441076Z Cache restored successfully
+verify	Run actions/setup-node@v4	2026-10-03T20:25:33.3647164Z Cache restored from key: node-cache-Linux-x64-pnpm-a6c1229cd9cbc8e6fd17ba4a93c5aeb3973b63af78486a45dcf2366560f647c8
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	∩╗┐2026-10-03T20:25:33.3794066Z ##[group]Run pnpm install --frozen-lockfile --ignore-scripts
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.3794509Z ^[[36;1mpnpm install --frozen-lockfile --ignore-scripts^[[0m
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.4901920Z shell: /usr/bin/bash -e {0}
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.4902179Z env:
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.4902409Z   NEXT_PUBLIC_APP_URL: https://quality.invalid
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.4902728Z   NEXT_PUBLIC_SUPABASE_URL: https://quality.supabase.co
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.4903035Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-public-placeholder
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.4903345Z   AUTH_SECRET: ci-only-synthetic-secret-not-for-deployment
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.4903630Z   E2E_TEST_BYPASS_ENABLED: false
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.4903875Z   NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED: false
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.4904150Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.4904399Z ##[endgroup]
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.8963944Z Lockfile is up to date, resolution step is skipped
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:33.9774951Z Progress: resolved 1, reused 0, downloaded 0, added 0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:34.1164389Z Packages: +1894
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:34.1164825Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:34.9875622Z Progress: resolved 1894, reused 1363, downloaded 0, added 0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:35.9879212Z Progress: resolved 1894, reused 1890, downloaded 0, added 44
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:36.9885037Z Progress: resolved 1894, reused 1890, downloaded 0, added 214
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:37.9889886Z Progress: resolved 1894, reused 1890, downloaded 0, added 438
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:38.9892627Z Progress: resolved 1894, reused 1890, downloaded 0, added 688
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:39.9902250Z Progress: resolved 1894, reused 1890, downloaded 0, added 1321
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:40.9903037Z Progress: resolved 1894, reused 1890, downloaded 0, added 1570
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:41.9906637Z Progress: resolved 1894, reused 1890, downloaded 0, added 1891
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:42.1386682Z Packages are hard linked from the content-addressable store to the virtual store.
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:42.1387966Z   Content-addressable store is at: /home/runner/setup-pnpm/node_modules/.bin/store/v3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:42.1388415Z   Virtual store is at:             node_modules/.pnpm
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:43.2413677Z ΓÇëWARNΓÇë The git-hosted package fetched from "https://codeload.github.com/garrytan/gbrain/tar.gz/bb2e88c42a4969e16df7a43a9eb118aa031e89a4" has to be built but the build scripts were ignored.
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:43.2415780Z Progress: resolved 1894, reused 1890, downloaded 1, added 1891
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:44.8403659Z Progress: resolved 1894, reused 1890, downloaded 1, added 1892
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:45.8416113Z Progress: resolved 1894, reused 1890, downloaded 1, added 1893
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:46.3725303Z Progress: resolved 1894, reused 1890, downloaded 1, added 1894, done
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0966932Z 
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0967637Z dependencies:
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0969623Z + @ai-sdk/openai 3.0.67
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0969997Z + @ai-sdk/react 3.0.204
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0970322Z + @arcjet/next 1.5.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0970548Z + @auth0/nextjs-auth0 4.31.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0970794Z + @base-ui/react 1.5.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0971058Z + @hookform/resolvers 5.4.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0971302Z + @radix-ui/react-avatar 1.1.11
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0971558Z + @radix-ui/react-checkbox 1.3.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0971816Z + @radix-ui/react-dialog 1.1.15
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0972081Z + @radix-ui/react-dropdown-menu 2.1.16
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0972397Z + @radix-ui/react-label 2.1.8
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0972647Z + @radix-ui/react-popover 1.1.16
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0972904Z + @radix-ui/react-scroll-area 1.2.10
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0973171Z + @radix-ui/react-select 2.2.6
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0973421Z + @radix-ui/react-separator 1.1.8
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0973660Z + @radix-ui/react-slot 1.2.5
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0973888Z + @radix-ui/react-tabs 1.1.13
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0974134Z + @radix-ui/react-tooltip 1.2.8
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0974410Z + @radix-ui/react-use-controllable-state 1.2.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0974684Z + @sentry/nextjs 10.57.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0974930Z + @simplewebauthn/browser 14.0.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0975444Z + @simplewebauthn/server 14.0.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0975774Z + @sparticuz/chromium 149.0.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0976005Z + @supabase/ssr 0.10.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0976225Z + @supabase/supabase-js 2.107.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0976494Z + @tanstack/react-query 5.101.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0976806Z + @tanstack/react-table 8.21.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0977211Z + @typesafe-ai/sdk 0.6.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0977497Z + ai 6.0.195
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0977748Z + bcryptjs 3.0.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0978064Z + class-variance-authority 0.7.1
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0978373Z + clsx 2.1.1
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0978599Z + cmdk 1.1.1
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0978825Z + cn 0.4.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0979040Z + date-fns 4.4.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0979283Z + dompurify 3.4.15
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0979512Z + dotenv 17.4.2
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0979746Z + drizzle-orm 0.45.2
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0979987Z + html5-qrcode 2.3.8
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0980247Z + input-otp 1.4.2
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0980470Z + jose 6.2.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0980689Z + jsdom 29.1.1
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0980942Z + libphonenumber-js 1.13.5
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0981213Z + lottie-web 5.13.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0981482Z + lucide-react 1.17.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0981718Z + maplibre-gl 6.10.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0981932Z + motion 12.40.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0982142Z + next 16.3.6
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0982356Z + next-auth 5.0.0-beta.32
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0982626Z + next-safe-action 8.5.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0982858Z + next-themes 0.4.6
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0983073Z + nuqs 2.9.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0983265Z + openai 6.41.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0983466Z + otpauth 9.5.2
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0983756Z + pdf-lib 1.17.1
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0984114Z + postgres 3.4.9
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0984438Z + posthog-js 1.379.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0984691Z + posthog-node 5.38.2
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0984951Z + puppeteer-core 25.1.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0985192Z + qrcode 1.5.4
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0985743Z + qrcode.react 4.2.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0985988Z + radix-ui 1.4.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0986231Z + react 19.2.4
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0986545Z + react-barcode 1.6.1
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0987279Z + react-day-picker 10.0.1
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0987703Z + react-dom 19.2.4
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0987993Z + react-dropzone 15.0.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0988343Z + react-hook-form 7.77.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0988757Z + react-map-gl 8.1.1
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0989268Z + react-phone-number-input 3.4.17
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0989691Z + react-resizable-panels 4.11.2
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0990078Z + react-use-measure 2.1.7
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0990386Z + recharts 3.8.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0990680Z + resend 6.12.4
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0991002Z + server-only 0.0.1
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0991286Z + sonner 2.0.7
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0991580Z + tailwind-merge 3.6.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0991935Z + tw-animate-css 1.4.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0992242Z + vaul 1.1.2
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0992541Z + zod 4.4.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0992714Z 
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0992873Z devDependencies:
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0993217Z + @axe-core/playwright 4.13.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0993590Z + @commitlint/types 21.0.1
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0993985Z + @eslint/eslintrc 3.3.5
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0994354Z + @google/design.md 0.3.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0994717Z + @next/bundle-analyzer 16.3.5
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0995097Z + @playwright/test 1.60.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0995441Z + @redocly/cli 2.51.2
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0995737Z + @storybook/addon-a11y 10.5.5
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0996161Z + @storybook/addon-docs 10.5.5
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.0996570Z + @storybook/addon-onboarding 10.5.5
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1007474Z + @storybook/nextjs 10.5.5
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1008262Z + @storybook/react 10.5.5
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1008681Z + @tailwindcss/postcss 4.3.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1009017Z + @types/jsdom 28.0.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1009351Z + @types/node 20.19.41
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1009684Z + @types/qrcode 1.5.6
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1009976Z + @types/react 19.2.16
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1010271Z + @types/react-dom 19.2.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1010653Z + @vitejs/plugin-react 6.0.2
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1011164Z + @vitest/browser-playwright 4.1.10
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1011428Z + @vitest/coverage-v8 4.1.10
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1011647Z + @zxing/library 0.23.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1011842Z + buffer 6.0.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1012036Z + chromatic 18.8.1
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1012223Z + cross-env 10.1.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1012528Z + drizzle-kit 0.31.10
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1012813Z + eslint 9.39.4
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1013112Z + eslint-config-next 16.3.6
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1013472Z + eslint-plugin-storybook 10.5.5
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1013800Z + gbrain 0.42.5-2.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1014019Z + lint-staged 17.0.7
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1014206Z + madge 8.0.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1014389Z + playwright 1.60.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1014581Z + prettier 3.8.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1014813Z + prettier-plugin-tailwindcss 0.8.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1015052Z + puppeteer 25.1.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1015273Z + shadcn 4.21.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1015586Z + sharp 0.35.4
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1015860Z + storybook 10.5.5
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1016148Z + stylelint 17.12.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1016532Z + stylelint-config-standard 40.0.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1016771Z + supabase 2.117.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1016957Z + tailwindcss 4.3.0
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1017325Z + tailwindcss-animate 1.0.7
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1017550Z + tsx 4.22.4
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1017740Z + typescript 5.9.3
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1017924Z + vite 8.0.16
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1018114Z + vitest 4.1.10
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1018218Z 
+verify	Run pnpm install --frozen-lockfile --ignore-scripts	2026-10-03T20:25:47.1018328Z Done in 13.5s
+verify	Run pnpm verify	∩╗┐2026-10-03T20:25:47.1461637Z ##[group]Run pnpm verify
+verify	Run pnpm verify	2026-10-03T20:25:47.1461901Z ^[[36;1mpnpm verify^[[0m
+verify	Run pnpm verify	2026-10-03T20:25:47.1497615Z shell: /usr/bin/bash -e {0}
+verify	Run pnpm verify	2026-10-03T20:25:47.1497878Z env:
+verify	Run pnpm verify	2026-10-03T20:25:47.1498109Z   NEXT_PUBLIC_APP_URL: https://quality.invalid
+verify	Run pnpm verify	2026-10-03T20:25:47.1498415Z   NEXT_PUBLIC_SUPABASE_URL: https://quality.supabase.co
+verify	Run pnpm verify	2026-10-03T20:25:47.1498723Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-public-placeholder
+verify	Run pnpm verify	2026-10-03T20:25:47.1499175Z   AUTH_SECRET: ci-only-synthetic-secret-not-for-deployment
+verify	Run pnpm verify	2026-10-03T20:25:47.1499468Z   E2E_TEST_BYPASS_ENABLED: false
+verify	Run pnpm verify	2026-10-03T20:25:47.1499708Z   NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED: false
+verify	Run pnpm verify	2026-10-03T20:25:47.1499987Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+verify	Run pnpm verify	2026-10-03T20:25:47.1500252Z ##[endgroup]
+verify	Run pnpm verify	2026-10-03T20:25:47.4569372Z 
+verify	Run pnpm verify	2026-10-03T20:25:47.4570021Z > tac-xpress@0.0.1 verify /home/runner/work/tac-xpress/tac-xpress
+verify	Run pnpm verify	2026-10-03T20:25:47.4570794Z > pnpm typecheck && pnpm lint && pnpm stylelint && pnpm test:unit && pnpm build
+verify	Run pnpm verify	2026-10-03T20:25:47.4571286Z 
+verify	Run pnpm verify	2026-10-03T20:25:47.7614368Z 
+verify	Run pnpm verify	2026-10-03T20:25:47.7615486Z > tac-xpress@0.0.1 typecheck /home/runner/work/tac-xpress/tac-xpress
+verify	Run pnpm verify	2026-10-03T20:25:47.7616083Z > next typegen && tsc --noEmit
+verify	Run pnpm verify	2026-10-03T20:25:47.7616295Z 
+verify	Run pnpm verify	2026-10-03T20:25:48.1556509Z Generating route types...
+verify	Run pnpm verify	2026-10-03T20:25:48.1751117Z Γ£ô Types generated successfully
+verify	Run pnpm verify	2026-10-03T20:26:01.6198074Z 
+verify	Run pnpm verify	2026-10-03T20:26:01.6198920Z > tac-xpress@0.0.1 lint /home/runner/work/tac-xpress/tac-xpress
+verify	Run pnpm verify	2026-10-03T20:26:01.6199487Z > eslint
+verify	Run pnpm verify	2026-10-03T20:26:01.6199652Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9926256Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9926999Z /home/runner/work/tac-xpress/tac-xpress/app/actions/ai-responder.ts
+verify	Run pnpm verify	2026-10-03T20:26:14.9954225Z ##[warning]   74:5  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9963674Z ##[warning]  123:5  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9965407Z ##[warning]  138:7  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9966969Z ##[warning]  152:7  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9967960Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9968334Z /home/runner/work/tac-xpress/tac-xpress/app/actions/dlq-actions.ts
+verify	Run pnpm verify	2026-10-03T20:26:14.9969140Z ##[warning]  140:7  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9970243Z ##[warning]  211:5  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9971118Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9971491Z /home/runner/work/tac-xpress/tac-xpress/app/actions/email-notifications.ts
+verify	Run pnpm verify	2026-10-03T20:26:14.9972286Z ##[warning]  147:7  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9973556Z ##[warning]  177:7  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9974282Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9974593Z /home/runner/work/tac-xpress/tac-xpress/app/actions/scanner-actions.ts
+verify	Run pnpm verify	2026-10-03T20:26:14.9975386Z ##[warning]   55:5  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9976504Z ##[warning]  126:5  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9977475Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9977801Z /home/runner/work/tac-xpress/tac-xpress/app/actions/sla-acknowledge.ts
+verify	Run pnpm verify	2026-10-03T20:26:14.9978561Z ##[warning]  28:5  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9979323Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9979578Z /home/runner/work/tac-xpress/tac-xpress/app/actions/sla.ts
+verify	Run pnpm verify	2026-10-03T20:26:14.9980340Z ##[warning]  26:5  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9981199Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9981541Z /home/runner/work/tac-xpress/tac-xpress/app/actions/whatsapp-proactive.ts
+verify	Run pnpm verify	2026-10-03T20:26:14.9982328Z ##[warning]  36:5  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9983538Z ##[warning]  49:5  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:14.9984264Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9984698Z /home/runner/work/tac-xpress/tac-xpress/app/dashboard/invoices/create/use-wizard-form.ts
+verify	Run pnpm verify	2026-10-03T20:26:14.9985475Z   119:26  warning  Compilation Skipped: Use of incompatible library
+verify	Run pnpm verify	2026-10-03T20:26:14.9986168Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9987556Z This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+verify	Run pnpm verify	2026-10-03T20:26:14.9988638Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9989122Z /home/runner/work/tac-xpress/tac-xpress/app/dashboard/invoices/create/use-wizard-form.ts:119:26
+verify	Run pnpm verify	2026-10-03T20:26:14.9989896Z   117 |   const { watch, trigger } = form
+verify	Run pnpm verify	2026-10-03T20:26:14.9990209Z   118 |
+verify	Run pnpm verify	2026-10-03T20:26:14.9990599Z > 119 |   const consignorPhone = watch("consignorPhone") || ""
+verify	Run pnpm verify	2026-10-03T20:26:14.9991313Z       |                          ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+verify	Run pnpm verify	2026-10-03T20:26:14.9992012Z   120 |   const serviceType = watch("serviceType") || "express_air"
+verify	Run pnpm verify	2026-10-03T20:26:14.9992567Z   121 |   const weightKg = Number(watch("weightKg")) || 1
+verify	Run pnpm verify	2026-10-03T20:26:14.9993154Z   122 |   const dimL = Number(watch("dimensionsL")) || 0  react-hooks/incompatible-library
+verify	Run pnpm verify	2026-10-03T20:26:14.9993586Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9994003Z /home/runner/work/tac-xpress/tac-xpress/app/dashboard/invoices/edit-invoice-dialog.tsx
+verify	Run pnpm verify	2026-10-03T20:26:14.9994746Z   177:19  warning  Compilation Skipped: Use of incompatible library
+verify	Run pnpm verify	2026-10-03T20:26:14.9995074Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9996373Z This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+verify	Run pnpm verify	2026-10-03T20:26:14.9997804Z 
+verify	Run pnpm verify	2026-10-03T20:26:14.9998307Z /home/runner/work/tac-xpress/tac-xpress/app/dashboard/invoices/edit-invoice-dialog.tsx:177:19
+verify	Run pnpm verify	2026-10-03T20:26:14.9998881Z   175 |
+verify	Run pnpm verify	2026-10-03T20:26:14.9999158Z   176 |   // Live calculations
+verify	Run pnpm verify	2026-10-03T20:26:14.9999523Z > 177 |   const watched = form.watch()
+verify	Run pnpm verify	2026-10-03T20:26:15.0000160Z       |                   ^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+verify	Run pnpm verify	2026-10-03T20:26:15.0000714Z   178 |   const subtotal =
+verify	Run pnpm verify	2026-10-03T20:26:15.0001058Z   179 |     (watched.freightCharge || 0) +
+verify	Run pnpm verify	2026-10-03T20:26:15.0001563Z   180 |     (watched.pickupCharge || 0) +  react-hooks/incompatible-library
+verify	Run pnpm verify	2026-10-03T20:26:15.0001905Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0002336Z /home/runner/work/tac-xpress/tac-xpress/app/dashboard/manifests/edit-manifest-dialog.tsx
+verify	Run pnpm verify	2026-10-03T20:26:15.0003084Z   35:219  warning  Compilation Skipped: Use of incompatible library
+verify	Run pnpm verify	2026-10-03T20:26:15.0003402Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0004685Z This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+verify	Run pnpm verify	2026-10-03T20:26:15.0005795Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0006299Z /home/runner/work/tac-xpress/tac-xpress/app/dashboard/manifests/edit-manifest-dialog.tsx:35:219
+verify	Run pnpm verify	2026-10-03T20:26:15.0006873Z   33 |     </div>
+verify	Run pnpm verify	2026-10-03T20:26:15.0009123Z   34 |     <FormField control={form.control} name="status" render={({ field }) => <FormItem><FormLabel>Status</FormLabel><Select value={field.value} onValueChange={field.onChange} disabled={locked}><FormControl><SelectTrigger className="w-full"><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="draft">Draft</SelectItem><SelectItem value="finalized">Finalize and dispatch</SelectItem></SelectContent></Select><FormMessage /></FormItem>} />
+verify	Run pnpm verify	2026-10-03T20:26:15.0013078Z > 35 |     <div className="flex justify-end gap-3"><Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Close</Button>{!locked && <Button type="submit" disabled={isExecuting}>{isExecuting ? "SavingΓÇª" : form.watch("status") === "finalized" ? "Finalize and dispatch" : "Save changes"}</Button>}</div>
+verify	Run pnpm verify	2026-10-03T20:26:15.0015180Z      |                                                                                                                                                                                                                           ^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+verify	Run pnpm verify	2026-10-03T20:26:15.0016359Z   36 |   </form></Form></DialogContent></Dialog>
+verify	Run pnpm verify	2026-10-03T20:26:15.0016828Z   37 | }
+verify	Run pnpm verify	2026-10-03T20:26:15.0017251Z   38 |  react-hooks/incompatible-library
+verify	Run pnpm verify	2026-10-03T20:26:15.0017515Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0017981Z /home/runner/work/tac-xpress/tac-xpress/app/dashboard/manifests/use-create-manifest-form.ts
+verify	Run pnpm verify	2026-10-03T20:26:15.0018774Z   96:25  warning  Compilation Skipped: Use of incompatible library
+verify	Run pnpm verify	2026-10-03T20:26:15.0019101Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0020380Z This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+verify	Run pnpm verify	2026-10-03T20:26:15.0021402Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0021864Z /home/runner/work/tac-xpress/tac-xpress/app/dashboard/manifests/use-create-manifest-form.ts:96:25
+verify	Run pnpm verify	2026-10-03T20:26:15.0022416Z   94 |   }
+verify	Run pnpm verify	2026-10-03T20:26:15.0022647Z   95 |
+verify	Run pnpm verify	2026-10-03T20:26:15.0023061Z > 96 |   const selectedCount = form.watch("shipmentIds")?.length || 0
+verify	Run pnpm verify	2026-10-03T20:26:15.0023590Z      |                         ^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+verify	Run pnpm verify	2026-10-03T20:26:15.0024108Z   97 |   const totalPages = Math.max(1, Math.ceil(shipments.length / itemsPerPage))
+verify	Run pnpm verify	2026-10-03T20:26:15.0024502Z   98 |   const paginatedShipments = shipments.slice(
+verify	Run pnpm verify	2026-10-03T20:26:15.0024875Z   99 |     (currentPage - 1) * itemsPerPage,  react-hooks/incompatible-library
+verify	Run pnpm verify	2026-10-03T20:26:15.0025105Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0025335Z /home/runner/work/tac-xpress/tac-xpress/app/dashboard/messages/data-table.tsx
+verify	Run pnpm verify	2026-10-03T20:26:15.0025796Z   56:17  warning  Compilation Skipped: Use of incompatible library
+verify	Run pnpm verify	2026-10-03T20:26:15.0026010Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0026804Z This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+verify	Run pnpm verify	2026-10-03T20:26:15.0027659Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0027938Z /home/runner/work/tac-xpress/tac-xpress/app/dashboard/messages/data-table.tsx:56:17
+verify	Run pnpm verify	2026-10-03T20:26:15.0028369Z   54 |   const [globalFilter, setGlobalFilter] = React.useState("")
+verify	Run pnpm verify	2026-10-03T20:26:15.0028657Z   55 |
+verify	Run pnpm verify	2026-10-03T20:26:15.0028890Z > 56 |   const table = useReactTable({
+verify	Run pnpm verify	2026-10-03T20:26:15.0029315Z      |                 ^^^^^^^^^^^^^ TanStack Table's `useReactTable()` API returns functions that cannot be memoized safely
+verify	Run pnpm verify	2026-10-03T20:26:15.0029689Z   57 |     data,
+verify	Run pnpm verify	2026-10-03T20:26:15.0029883Z   58 |     columns,
+verify	Run pnpm verify	2026-10-03T20:26:15.0030199Z   59 |     getCoreRowModel: getCoreRowModel(),  react-hooks/incompatible-library
+verify	Run pnpm verify	2026-10-03T20:26:15.0030453Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0030618Z /home/runner/work/tac-xpress/tac-xpress/auth.config.ts
+verify	Run pnpm verify	2026-10-03T20:26:15.0031294Z ##[warning]  15:9  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0032377Z ##[warning]  31:9  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0032930Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0033096Z /home/runner/work/tac-xpress/tac-xpress/auth.ts
+verify	Run pnpm verify	2026-10-03T20:26:15.0033605Z ##[warning]  114:11  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0034117Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0034378Z /home/runner/work/tac-xpress/tac-xpress/components/logistics/quick-status-update.tsx
+verify	Run pnpm verify	2026-10-03T20:26:15.0035065Z ##[warning]  66:9  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0035572Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0035763Z /home/runner/work/tac-xpress/tac-xpress/components/nav-user.tsx
+verify	Run pnpm verify	2026-10-03T20:26:15.0037642Z ##[warning]  121:15  warning  Do not use `window.location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
+verify	Run pnpm verify	2026-10-03T20:26:15.0039013Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0039282Z /home/runner/work/tac-xpress/tac-xpress/components/operations/use-scanner-station.ts
+verify	Run pnpm verify	2026-10-03T20:26:15.0041085Z ##[warning]  54:15  warning  The ref value 'request.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'request.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+verify	Run pnpm verify	2026-10-03T20:26:15.0042155Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0042376Z /home/runner/work/tac-xpress/tac-xpress/components/theme-provider.tsx
+verify	Run pnpm verify	2026-10-03T20:26:15.0042888Z ##[warning]  7:16  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0043704Z ##[warning]  8:3   warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0044335Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0044533Z /home/runner/work/tac-xpress/tac-xpress/eslint.config.mjs
+verify	Run pnpm verify	2026-10-03T20:26:15.0045261Z ##[warning]  5:1  warning  Assign array to a variable before exporting as module default  import/no-anonymous-default-export
+verify	Run pnpm verify	2026-10-03T20:26:15.0045907Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0046108Z /home/runner/work/tac-xpress/tac-xpress/hooks/use-data-table.ts
+verify	Run pnpm verify	2026-10-03T20:26:15.0046534Z   89:17  warning  Compilation Skipped: Use of incompatible library
+verify	Run pnpm verify	2026-10-03T20:26:15.0046739Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0047627Z This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+verify	Run pnpm verify	2026-10-03T20:26:15.0048308Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0048534Z /home/runner/work/tac-xpress/tac-xpress/hooks/use-data-table.ts:89:17
+verify	Run pnpm verify	2026-10-03T20:26:15.0048835Z   87 |   }, [sorting])
+verify	Run pnpm verify	2026-10-03T20:26:15.0049033Z   88 |
+verify	Run pnpm verify	2026-10-03T20:26:15.0049247Z > 89 |   const table = useReactTable({
+verify	Run pnpm verify	2026-10-03T20:26:15.0049662Z      |                 ^^^^^^^^^^^^^ TanStack Table's `useReactTable()` API returns functions that cannot be memoized safely
+verify	Run pnpm verify	2026-10-03T20:26:15.0050040Z   90 |     data,
+verify	Run pnpm verify	2026-10-03T20:26:15.0050224Z   91 |     columns,
+verify	Run pnpm verify	2026-10-03T20:26:15.0050473Z   92 |     pageCount,  react-hooks/incompatible-library
+verify	Run pnpm verify	2026-10-03T20:26:15.0050658Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0050817Z /home/runner/work/tac-xpress/tac-xpress/lib/audit.ts
+verify	Run pnpm verify	2026-10-03T20:26:15.0051359Z ##[warning]  117:5  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0051905Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0052072Z /home/runner/work/tac-xpress/tac-xpress/lib/db/index.ts
+verify	Run pnpm verify	2026-10-03T20:26:15.0052539Z   33:3  warning  Unused eslint-disable directive (no problems were reported from 'no-var')
+verify	Run pnpm verify	2026-10-03T20:26:15.0052806Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0053002Z /home/runner/work/tac-xpress/tac-xpress/lib/jev/reply-guardrail.ts
+verify	Run pnpm verify	2026-10-03T20:26:15.0053547Z ##[warning]  145:7  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0054311Z ##[warning]  190:7  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0054930Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0055141Z /home/runner/work/tac-xpress/tac-xpress/lib/jev/whatsapp-questions.ts
+verify	Run pnpm verify	2026-10-03T20:26:15.0055642Z ##[warning]  180:7  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0056144Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0056306Z /home/runner/work/tac-xpress/tac-xpress/lib/queue.ts
+verify	Run pnpm verify	2026-10-03T20:26:15.0056756Z ##[warning]  25:5   warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0057651Z ##[warning]  54:7   warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0058442Z ##[warning]  61:11  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0059229Z ##[warning]  66:11  warning  Unexpected console statement  no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0059726Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0060011Z /home/runner/work/tac-xpress/tac-xpress/lint-staged.config.mjs
+verify	Run pnpm verify	2026-10-03T20:26:15.0060717Z ##[warning]  1:1  warning  Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+verify	Run pnpm verify	2026-10-03T20:26:15.0061368Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0061563Z /home/runner/work/tac-xpress/tac-xpress/prettier.config.mjs
+verify	Run pnpm verify	2026-10-03T20:26:15.0062253Z ##[warning]  2:1  warning  Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+verify	Run pnpm verify	2026-10-03T20:26:15.0062989Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0063199Z /home/runner/work/tac-xpress/tac-xpress/providers/posthog-provider.tsx
+verify	Run pnpm verify	2026-10-03T20:26:15.0064277Z ##[warning]  59:6  warning  React Hook useEffect has a missing dependency: 'bootstrappedFeatureFlags'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+verify	Run pnpm verify	2026-10-03T20:26:15.0065058Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0065247Z /home/runner/work/tac-xpress/tac-xpress/stylelint.config.mjs
+verify	Run pnpm verify	2026-10-03T20:26:15.0065931Z ##[warning]  2:1  warning  Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+verify	Run pnpm verify	2026-10-03T20:26:15.0066581Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0066858Z /home/runner/work/tac-xpress/tac-xpress/supabase/functions/generate-invoice-pdf/index.ts
+verify	Run pnpm verify	2026-10-03T20:26:15.0068006Z ##[warning]   52:1  warning  Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+verify	Run pnpm verify	2026-10-03T20:26:15.0069120Z ##[warning]  506:7  warning  Unexpected console statement                                    no-console
+verify	Run pnpm verify	2026-10-03T20:26:15.0069705Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0069910Z /home/runner/work/tac-xpress/tac-xpress/tests/load/k6-tracking.js
+verify	Run pnpm verify	2026-10-03T20:26:15.0070680Z ##[warning]  15:1  warning  Unexpected default export of anonymous function  import/no-anonymous-default-export
+verify	Run pnpm verify	2026-10-03T20:26:15.0071292Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.0071573Z Γ£û 45 problems (0 errors, 45 warnings)
+verify	Run pnpm verify	2026-10-03T20:26:15.0071915Z   0 errors and 1 warning potentially fixable with the `--fix` option.
+verify	Run pnpm verify	2026-10-03T20:26:15.0072121Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.4642277Z 
+verify	Run pnpm verify	2026-10-03T20:26:15.4642936Z > tac-xpress@0.0.1 stylelint /home/runner/work/tac-xpress/tac-xpress
+verify	Run pnpm verify	2026-10-03T20:26:15.4643322Z > stylelint "**/*.css"
+verify	Run pnpm verify	2026-10-03T20:26:15.4643447Z 
+verify	Run pnpm verify	2026-10-03T20:26:16.2376609Z 
+verify	Run pnpm verify	2026-10-03T20:26:16.2377512Z > tac-xpress@0.0.1 test:unit /home/runner/work/tac-xpress/tac-xpress
+verify	Run pnpm verify	2026-10-03T20:26:16.2378038Z > vitest run
+verify	Run pnpm verify	2026-10-03T20:26:16.2378193Z 
+verify	Run pnpm verify	2026-10-03T20:26:16.4914995Z 
+verify	Run pnpm verify	2026-10-03T20:26:16.4918643Z ^[[1m^[[30m^[[46m RUN ^[[49m^[[39m^[[22m ^[[36mv4.1.10 ^[[39m^[[90m/home/runner/work/tac-xpress/tac-xpress^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:16.4919131Z 
+verify	Run pnpm verify	2026-10-03T20:26:16.9966721Z  ^[[32mΓ£ô^[[39m __tests__/cargo-document-route.test.ts ^[[2m(^[[22m^[[2m14 tests^[[22m^[[2m)^[[22m^[[32m 30^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:17.1813979Z (node:2420) ExperimentalWarning: The supports Web Crypto API method is an experimental feature and might change at any time
+verify	Run pnpm verify	2026-10-03T20:26:17.1815025Z (Use `node --trace-warnings ...` to show where the warning was created)
+verify	Run pnpm verify	2026-10-03T20:26:17.1818027Z (node:2420) ExperimentalWarning: The ML-DSA-44 Web Crypto API algorithm is an experimental feature and might change at any time
+verify	Run pnpm verify	2026-10-03T20:26:17.1821008Z  ^[[32mΓ£ô^[[39m __tests__/auth-mfa.test.ts ^[[2m(^[[22m^[[2m17 tests^[[22m^[[2m)^[[22m^[[32m 104^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:17.3168049Z  ^[[32mΓ£ô^[[39m __tests__/ai-support-privacy.test.ts ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[32m 20^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:18.0626468Z  ^[[32mΓ£ô^[[39m __tests__/current-role-guards.test.ts ^[[2m(^[[22m^[[2m7 tests^[[22m^[[2m)^[[22m^[[32m 21^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:18.4428762Z ^[[90mstderr^[[2m | __tests__/request-perimeter.test.ts
+verify	Run pnpm verify	2026-10-03T20:26:18.4459559Z ^[[22m^[[39mWARNING: Not all required options were provided when creating an instance of Auth0Client. Ensure to provide all missing options, either by passing it to the Auth0Client constructor, or by setting the corresponding environment variable.
+verify	Run pnpm verify	2026-10-03T20:26:18.4496253Z Missing: secret: Set AUTH0_SECRET env var or pass secret in options
+verify	Run pnpm verify	2026-10-03T20:26:18.4553080Z Missing: clientAuthentication: Set either AUTH0_CLIENT_SECRET env var or AUTH0_CLIENT_ASSERTION_SIGNING_KEY env var, or pass clientSecret or clientAssertionSigningKey in options
+verify	Run pnpm verify	2026-10-03T20:26:18.4580587Z 
+verify	Run pnpm verify	2026-10-03T20:26:18.4918213Z  ^[[32mΓ£ô^[[39m __tests__/request-perimeter.test.ts ^[[2m(^[[22m^[[2m13 tests^[[22m^[[2m)^[[22m^[[32m 38^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:18.5449812Z  ^[[32mΓ£ô^[[39m __tests__/credential-rate-limit.test.ts ^[[2m(^[[22m^[[2m8 tests^[[22m^[[2m)^[[22m^[[32m 216^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:18.8168262Z  ^[[32mΓ£ô^[[39m __tests__/stem/color-science.test.ts ^[[2m(^[[22m^[[2m9 tests^[[22m^[[2m)^[[22m^[[32m 8^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:19.3399295Z  ^[[32mΓ£ô^[[39m __tests__/whatsapp-webhook.test.ts ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[32m 30^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:19.5378827Z  ^[[32mΓ£ô^[[39m __tests__/auth-access.test.ts ^[[2m(^[[22m^[[2m11 tests^[[22m^[[2m)^[[22m^[[32m 10^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:19.7409358Z  ^[[32mΓ£ô^[[39m __tests__/chat-route.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 26^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:19.9309353Z  ^[[32mΓ£ô^[[39m __tests__/sla-retry.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 11^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:20.1408052Z  ^[[32mΓ£ô^[[39m __tests__/stem/weight-engine.test.ts ^[[2m(^[[22m^[[2m8 tests^[[22m^[[2m)^[[22m^[[32m 6^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:20.4247334Z ^[[90mstderr^[[2m | __tests__/whatsapp-provider.test.ts^[[2m > ^[[22m^[[2mWhatsApp provider delivery^[[2m > ^[[22m^[[2mdoes not automatically resend after an ambiguous timeout
+verify	Run pnpm verify	2026-10-03T20:26:20.4313992Z ^[[22m^[[39m[Retry 1/1] Action 'whatsapp_send_text' failed: timeout
+verify	Run pnpm verify	2026-10-03T20:26:20.4314877Z  ^[[32mΓ£ô^[[39m __tests__/whatsapp-provider.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 18^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:20.4317850Z [Retry] Action 'whatsapp_send_text' exhausted all retries. Sending to DLQ.
+verify	Run pnpm verify	2026-10-03T20:26:20.4320346Z 
+verify	Run pnpm verify	2026-10-03T20:26:20.5257204Z ^[[90mstderr^[[2m | __tests__/cargo-transactions.test.ts^[[2m > ^[[22m^[[2mcargo transactions against embedded PostgreSQL^[[2m > ^[[22m^[[2mrolls back scanner status and its event when the audit fails, then permits a safe retry
+verify	Run pnpm verify	2026-10-03T20:26:20.5259023Z ^[[22m^[[39mError updating shipment status: DrizzleQueryError: Failed query: 
+verify	Run pnpm verify	2026-10-03T20:26:20.5259691Z     insert into public.audit_log
+verify	Run pnpm verify	2026-10-03T20:26:20.5260443Z       (user_email, user_id, action, entity, entity_id, resource_id, metadata, "before", "after", created_at)
+verify	Run pnpm verify	2026-10-03T20:26:20.5261090Z     values
+verify	Run pnpm verify	2026-10-03T20:26:20.5261468Z       ($1, $2, $3, $4,
+verify	Run pnpm verify	2026-10-03T20:26:20.5261886Z        $5, $6, $7::jsonb,
+verify	Run pnpm verify	2026-10-03T20:26:20.5262272Z        $8::jsonb, $9::jsonb,
+verify	Run pnpm verify	2026-10-03T20:26:20.5262826Z        $10::timestamptz)
+verify	Run pnpm verify	2026-10-03T20:26:20.5263307Z   
+verify	Run pnpm verify	2026-10-03T20:26:20.5265164Z params: staff@example.test,11111111-1111-4111-8111-111111111111,scanner_status_transition,shipments,b535359c-4fe8-4b42-a698-fc7b0af06693,b535359c-4fe8-4b42-a698-fc7b0af06693,,{"status":"pending"},{"status":"in-transit","location":"Delhi hub","description":"Loaded for departure"},2026-10-03T20:26:20.514Z
+verify	Run pnpm verify	2026-10-03T20:26:20.5268386Z     at PglitePreparedQuery.queryWithCache ^[[90m(file:///home/runner/work/tac-xpress/tac-xpress/^[[39mnode_modules/^[[4m.pnpm^[[24m/drizzle-orm@0.45.2_@electric-sql+pglite@0.4.3_@opentelemetry+api@1.9.1_postgres@3.4.9/node_modules/^[[4mdrizzle-orm^[[24m/pg-core/session.js:41:15^[[90m)^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:20.5270331Z     at logAuditInTransaction ^[[90m(/home/runner/work/tac-xpress/tac-xpress/^[[39mlib/audit.ts:71:3^[[90m)^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:20.5271434Z     at ^[[90m/home/runner/work/tac-xpress/tac-xpress/^[[39mapp/actions/scanner-actions.ts:112:7
+verify	Run pnpm verify	2026-10-03T20:26:20.5272820Z     at ^[[90m/home/runner/work/tac-xpress/tac-xpress/^[[39mnode_modules/^[[4m.pnpm^[[24m/@electric-sql+pglite@0.4.3/node_modules/^[[4m@electric-sql/pglite^[[24m/dist/index.cjs:11:1757 {
+verify	Run pnpm verify	2026-10-03T20:26:20.5273792Z   query: ^[[32m'\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5274311Z     ^[[32m'    insert into public.audit_log\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5275261Z     ^[[32m'      (user_email, user_id, action, entity, entity_id, resource_id, metadata, "before", "after", created_at)\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5276393Z     ^[[32m'    values\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5276909Z     ^[[32m'      ($1, $2, $3, $4,\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5278491Z     ^[[32m'       $5, $6, $7::jsonb,\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5279215Z     ^[[32m'       $8::jsonb, $9::jsonb,\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5279817Z     ^[[32m'       $10::timestamptz)\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5280576Z     ^[[32m'  '^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5280954Z   params: [
+verify	Run pnpm verify	2026-10-03T20:26:20.5281380Z     ^[[32m'staff@example.test'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5281923Z     ^[[32m'11111111-1111-4111-8111-111111111111'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5282479Z     ^[[32m'scanner_status_transition'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5282968Z     ^[[32m'shipments'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5283494Z     ^[[32m'b535359c-4fe8-4b42-a698-fc7b0af06693'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5284054Z     ^[[32m'b535359c-4fe8-4b42-a698-fc7b0af06693'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5284519Z     ^[[1mnull^[[22m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5284973Z     ^[[32m'{"status":"pending"}'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5285744Z     ^[[32m'{"status":"in-transit","location":"Delhi hub","description":"Loaded for departure"}'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5286511Z     ^[[32m'2026-10-03T20:26:20.514Z'^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:20.5286942Z   ],
+verify	Run pnpm verify	2026-10-03T20:26:20.5287787Z   cause: error: new row for relation "audit_log" violates check constraint "test_audit_failure"
+verify	Run pnpm verify	2026-10-03T20:26:20.5289305Z       at Ie._a ^[[90m(/home/runner/work/tac-xpress/tac-xpress/^[[39mnode_modules/^[[4m.pnpm^[[24m/@electric-sql+pglite@0.4.3/node_modules/^[[4m@electric-sql/pglite^[[24m/dist/index.cjs:4:22154^[[90m)^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:20.5291145Z       at Ie.Xa ^[[90m(/home/runner/work/tac-xpress/tac-xpress/^[[39mnode_modules/^[[4m.pnpm^[[24m/@electric-sql+pglite@0.4.3/node_modules/^[[4m@electric-sql/pglite^[[24m/dist/index.cjs:4:19524^[[90m)^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:20.5292901Z       at Ie.parse ^[[90m(/home/runner/work/tac-xpress/tac-xpress/^[[39mnode_modules/^[[4m.pnpm^[[24m/@electric-sql+pglite@0.4.3/node_modules/^[[4m@electric-sql/pglite^[[24m/dist/index.cjs:4:18257^[[90m)^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:20.5294389Z       at ^[[90m/home/runner/work/tac-xpress/tac-xpress/^[[39mnode_modules/^[[4m.pnpm^[[24m/@electric-sql+pglite@0.4.3/node_modules/^[[4m@electric-sql/pglite^[[24m/dist/index.cjs:13:281718
+verify	Run pnpm verify	2026-10-03T20:26:20.5295320Z       at null.<anonymous> (wasm://wasm/0215749e:1:5647331)
+verify	Run pnpm verify	2026-10-03T20:26:20.5295796Z       at null.<anonymous> (wasm://wasm/0215749e:1:2448890)
+verify	Run pnpm verify	2026-10-03T20:26:20.5296309Z       at null.<anonymous> (wasm://wasm/0215749e:1:2478877)
+verify	Run pnpm verify	2026-10-03T20:26:20.5296766Z       at null.<anonymous> (wasm://wasm/0215749e:1:2479481)
+verify	Run pnpm verify	2026-10-03T20:26:20.5297388Z       at null.<anonymous> (wasm://wasm/0215749e:1:5305185)
+verify	Run pnpm verify	2026-10-03T20:26:20.5297790Z       at null.<anonymous> (wasm://wasm/0215749e:1:3894128) {
+verify	Run pnpm verify	2026-10-03T20:26:20.5298106Z     length: ^[[33m541^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5298366Z     severity: ^[[32m'ERROR'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5298631Z     code: ^[[32m'23514'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5300022Z     detail: ^[[32m'Failing row contains (967e8c12-f9e0-4a67-9ef0-254c3785f00f, staff@example.test, scanner_status_transition, b535359c-4fe8-4b42-a698-fc7b0af06693, null, 2026-10-03 20:26:20.514+00, 11111111-1111-4111-8111-111111111111, shipments, b535359c-4fe8-4b42-a698-fc7b0af06693, {"status": "pending"}, {"status": "in-transit", "location": "Delhi hub", "description":...).'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5301101Z     hint: ^[[90mundefined^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5301375Z     position: ^[[90mundefined^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5301669Z     internalPosition: ^[[90mundefined^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5301975Z     internalQuery: ^[[90mundefined^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5302250Z     where: ^[[90mundefined^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5302511Z     schema: ^[[32m'public'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5302783Z     table: ^[[32m'audit_log'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5303052Z     column: ^[[90mundefined^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5303316Z     dataType: ^[[90mundefined^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5303621Z     constraint: ^[[32m'test_audit_failure'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5303914Z     file: ^[[32m'execMain.c'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5304369Z     line: ^[[32m'2039'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5304652Z     routine: ^[[32m'ExecConstraints'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5304939Z     query: ^[[32m'\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5305249Z       ^[[32m'    insert into public.audit_log\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5305840Z       ^[[32m'      (user_email, user_id, action, entity, entity_id, resource_id, metadata, "before", "after", created_at)\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5306380Z       ^[[32m'    values\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5306647Z       ^[[32m'      ($1, $2, $3, $4,\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5307176Z       ^[[32m'       $5, $6, $7::jsonb,\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5307658Z       ^[[32m'       $8::jsonb, $9::jsonb,\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5308115Z       ^[[32m'       $10::timestamptz)\n'^[[39m +
+verify	Run pnpm verify	2026-10-03T20:26:20.5308456Z       ^[[32m'  '^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5308713Z     params: [
+verify	Run pnpm verify	2026-10-03T20:26:20.5309037Z       ^[[32m'staff@example.test'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5309496Z       ^[[32m'11111111-1111-4111-8111-111111111111'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5309959Z       ^[[32m'scanner_status_transition'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5310375Z       ^[[32m'shipments'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5310836Z       ^[[32m'b535359c-4fe8-4b42-a698-fc7b0af06693'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5311348Z       ^[[32m'b535359c-4fe8-4b42-a698-fc7b0af06693'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5311706Z       ^[[1mnull^[[22m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5312037Z       ^[[32m'{"status":"pending"}'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5312727Z       ^[[32m'{"status":"in-transit","location":"Delhi hub","description":"Loaded for departure"}'^[[39m,
+verify	Run pnpm verify	2026-10-03T20:26:20.5313381Z       ^[[32m'2026-10-03T20:26:20.514Z'^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:20.5313705Z     ],
+verify	Run pnpm verify	2026-10-03T20:26:20.5314227Z     queryOptions: { rowMode: ^[[32m'object'^[[39m, parsers: ^[[36m[Object]^[[39m }
+verify	Run pnpm verify	2026-10-03T20:26:20.5314676Z   }
+verify	Run pnpm verify	2026-10-03T20:26:20.5314892Z }
+verify	Run pnpm verify	2026-10-03T20:26:20.5315024Z 
+verify	Run pnpm verify	2026-10-03T20:26:20.5399384Z ^[[90mstderr^[[2m | __tests__/cargo-transactions.test.ts^[[2m > ^[[22m^[[2mcargo transactions against embedded PostgreSQL^[[2m > ^[[22m^[[2mrolls back scanner status and its event when the audit fails, then permits a safe retry
+verify	Run pnpm verify	2026-10-03T20:26:20.5401429Z ^[[22m^[[39mError updating shipment status: Error: Invalid shipment transition: in-transit to in-transit
+verify	Run pnpm verify	2026-10-03T20:26:20.5402547Z     at ^[[90m/home/runner/work/tac-xpress/tac-xpress/^[[39mapp/actions/scanner-actions.ts:93:15
+verify	Run pnpm verify	2026-10-03T20:26:20.5404039Z     at ^[[90m/home/runner/work/tac-xpress/tac-xpress/^[[39mnode_modules/^[[4m.pnpm^[[24m/@electric-sql+pglite@0.4.3/node_modules/^[[4m@electric-sql/pglite^[[24m/dist/index.cjs:11:1757
+verify	Run pnpm verify	2026-10-03T20:26:20.5404909Z 
+verify	Run pnpm verify	2026-10-03T20:26:20.9931217Z  ^[[32mΓ£ô^[[39m __tests__/jev/reply-guardrail.test.ts ^[[2m(^[[22m^[[2m8 tests^[[22m^[[2m)^[[22m^[[32m 6^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:21.4221630Z  ^[[32mΓ£ô^[[39m __tests__/cargo-transactions.test.ts ^[[2m(^[[22m^[[2m34 tests^[[22m^[[2m)^[[22m^[[33m 3601^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:21.6049472Z  ^[[32mΓ£ô^[[39m __tests__/invoice-system/tax-engine.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 4^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:21.6638370Z  ^[[32mΓ£ô^[[39m __tests__/invoice-system/domain-normalizer.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[32m 10^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:22.0600545Z  ^[[32mΓ£ô^[[39m __tests__/shipments/multi-leg.test.ts ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[32m 5^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:22.1601920Z  ^[[32mΓ£ô^[[39m __tests__/jev/whatsapp-questions.test.ts ^[[2m(^[[22m^[[2m6 tests^[[22m^[[2m)^[[22m^[[32m 7^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:22.3619265Z  ^[[32mΓ£ô^[[39m __tests__/invoice-system/money.test.ts ^[[2m(^[[22m^[[2m8 tests^[[22m^[[2m)^[[22m^[[32m 33^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:22.5419451Z  ^[[32mΓ£ô^[[39m __tests__/invoice-system/item-parser.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[32m 5^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:22.7787006Z  ^[[32mΓ£ô^[[39m __tests__/data-projections.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[32m 11^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:22.9967746Z  ^[[32mΓ£ô^[[39m __tests__/invoice-system/invoice-validator.test.ts ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[32m 11^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:23.2569255Z  ^[[32mΓ£ô^[[39m __tests__/operations-boundaries.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[32m 14^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:23.4354488Z  ^[[32mΓ£ô^[[39m __tests__/jev/triage-questions.test.ts ^[[2m(^[[22m^[[2m6 tests^[[22m^[[2m)^[[22m^[[32m 5^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:23.5489022Z  ^[[32mΓ£ô^[[39m __tests__/server-boundaries.test.ts ^[[2m(^[[22m^[[2m8 tests^[[22m^[[2m)^[[22m^[[32m 62^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:23.5785004Z  ^[[32mΓ£ô^[[39m __tests__/invoice-system/weight-engine.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 4^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:23.7224907Z  ^[[32mΓ£ô^[[39m __tests__/send-invoice-result.test.ts ^[[2m(^[[22m^[[2m7 tests^[[22m^[[2m)^[[22m^[[32m 7^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:23.7338771Z  ^[[32mΓ£ô^[[39m __tests__/invoice-calculations.test.ts ^[[2m(^[[22m^[[2m9 tests^[[22m^[[2m)^[[22m^[[32m 17^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:23.8804749Z  ^[[32mΓ£ô^[[39m tests/unit/idempotency.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 5^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:23.9238824Z  ^[[32mΓ£ô^[[39m __tests__/document-token.test.ts ^[[2m(^[[22m^[[2m7 tests^[[22m^[[2m)^[[22m^[[32m 7^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:24.0732377Z  ^[[32mΓ£ô^[[39m __tests__/auth-callback.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 9^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:24.1666068Z  ^[[32mΓ£ô^[[39m __tests__/portal-identity.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 38^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:24.2376273Z  ^[[32mΓ£ô^[[39m __tests__/invoice-system/layout-engine.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 9^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:24.2712989Z  ^[[32mΓ£ô^[[39m __tests__/mobile-client-auth.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 26^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:24.3578236Z  ^[[32mΓ£ô^[[39m __tests__/read-json.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 32^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:24.4226649Z  ^[[32mΓ£ô^[[39m __tests__/app-url.test.ts ^[[2m(^[[22m^[[2m11 tests^[[22m^[[2m)^[[22m^[[32m 8^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:24.4347777Z  ^[[32mΓ£ô^[[39m __tests__/utils.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 7^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:24.4926713Z  ^[[32mΓ£ô^[[39m __tests__/escape-html.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 2^[[2mms^[[22m^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:24.4965805Z 
+verify	Run pnpm verify	2026-10-03T20:26:24.4971543Z ^[[2m Test Files ^[[22m ^[[1m^[[32m39 passed^[[39m^[[22m^[[90m (39)^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:24.4973100Z ^[[2m      Tests ^[[22m ^[[1m^[[32m258 passed^[[39m^[[22m^[[90m (258)^[[39m
+verify	Run pnpm verify	2026-10-03T20:26:24.4973827Z ^[[2m   Start at ^[[22m 20:26:16
+verify	Run pnpm verify	2026-10-03T20:26:24.4975079Z ^[[2m   Duration ^[[22m 7.99s^[[2m (transform 1.42s, setup 0ms, import 13.23s, tests 4.48s, environment 4ms)^[[22m
+verify	Run pnpm verify	2026-10-03T20:26:24.4977248Z 
+verify	Run pnpm verify	2026-10-03T20:26:24.8573987Z 
+verify	Run pnpm verify	2026-10-03T20:26:24.8574849Z > tac-xpress@0.0.1 build /home/runner/work/tac-xpress/tac-xpress
+verify	Run pnpm verify	2026-10-03T20:26:24.8575814Z > cross-env NODE_OPTIONS=--max-old-space-size=4096 next build
+verify	Run pnpm verify	2026-10-03T20:26:24.8576135Z 
+verify	Run pnpm verify	2026-10-03T20:26:25.1664523Z Γû▓ Next.js 16.3.6 (Turbopack)
+verify	Run pnpm verify	2026-10-03T20:26:25.3570627Z Γ£ô Running next.config.ts took 190ms
+verify	Run pnpm verify	2026-10-03T20:26:25.3572372Z ΓÜá No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+verify	Run pnpm verify	2026-10-03T20:26:25.3814608Z Attention: Next.js now collects completely anonymous telemetry regarding usage.
+verify	Run pnpm verify	2026-10-03T20:26:25.3815618Z This information is used to shape Next.js' roadmap and prioritize features.
+verify	Run pnpm verify	2026-10-03T20:26:25.3816831Z You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+verify	Run pnpm verify	2026-10-03T20:26:25.3817866Z https://nextjs.org/telemetry
+verify	Run pnpm verify	2026-10-03T20:26:25.3818168Z 
+verify	Run pnpm verify	2026-10-03T20:26:25.3952001Z - Experiments (use with caution):
+verify	Run pnpm verify	2026-10-03T20:26:25.3953165Z   ┬╖ clientTraceMetadata
+verify	Run pnpm verify	2026-10-03T20:26:25.3954253Z   ┬╖ optimizePackageImports
+verify	Run pnpm verify	2026-10-03T20:26:25.3954780Z 
+verify	Run pnpm verify	2026-10-03T20:26:25.4215589Z   Creating an optimized production build ...
+verify	Run pnpm verify	2026-10-03T20:26:54.0238776Z Γ£ô Compiled successfully in 27.8s
+verify	Run pnpm verify	2026-10-03T20:26:54.0268441Z   Running next.config.js provided runAfterProductionCompile ...
+verify	Run pnpm verify	2026-10-03T20:26:54.2370592Z [@sentry/nextjs - After Production Compile] Info: Sending telemetry data on issues and performance to Sentry. To disable telemetry, set `options.telemetry` to `false`.
+verify	Run pnpm verify	2026-10-03T20:26:54.3999330Z [@sentry/nextjs - After Production Compile] Warning: No auth token provided. Will not create release. Please set the `authToken` option. You can find information on how to generate a Sentry auth token here: https://docs.sentry.io/api/auth/
+verify	Run pnpm verify	2026-10-03T20:26:54.4028993Z [@sentry/nextjs - After Production Compile] Warning: No auth token provided. Will not upload source maps. Please set the `authToken` option. You can find information on how to generate a Sentry auth token here: https://docs.sentry.io/api/auth/
+verify	Run pnpm verify	2026-10-03T20:26:54.5373282Z Γ£ô Completed runAfterProductionCompile in 514ms
+verify	Run pnpm verify	2026-10-03T20:26:54.5548189Z   Running TypeScript ...
+verify	Run pnpm verify	2026-10-03T20:27:09.4102259Z   Finished TypeScript in 14.9s ...
+verify	Run pnpm verify	2026-10-03T20:27:09.4124833Z   Collecting page data using 3 workers ...
+verify	Run pnpm verify	2026-10-03T20:27:11.0769298Z   Generating static pages using 3 workers (0/61) ...
+verify	Run pnpm verify	2026-10-03T20:27:11.3381349Z   Generating static pages using 3 workers (15/61) 
+verify	Run pnpm verify	2026-10-03T20:27:11.4334259Z   Generating static pages using 3 workers (30/61) 
+verify	Run pnpm verify	2026-10-03T20:27:11.5208716Z   Generating static pages using 3 workers (45/61) 
+verify	Run pnpm verify	2026-10-03T20:27:11.6191714Z Γ£ô Generating static pages using 3 workers (61/61) in 542ms
+verify	Run pnpm verify	2026-10-03T20:27:11.6231530Z   Finalizing page optimization ...
+verify	Run pnpm verify	2026-10-03T20:27:11.6374436Z 
+verify	Run pnpm verify	2026-10-03T20:27:11.6398413Z Route (app)
+verify	Run pnpm verify	2026-10-03T20:27:11.6411612Z Γöî ╞Æ /
+verify	Run pnpm verify	2026-10-03T20:27:11.6413616Z Γö£ ╞Æ /_not-found
+verify	Run pnpm verify	2026-10-03T20:27:11.6414298Z Γö£ ╞Æ /about
+verify	Run pnpm verify	2026-10-03T20:27:11.6414857Z Γö£ ╞Æ /api/auth/[...nextauth]
+verify	Run pnpm verify	2026-10-03T20:27:11.6415512Z Γö£ ╞Æ /api/auth/capabilities
+verify	Run pnpm verify	2026-10-03T20:27:11.6416803Z Γö£ ╞Æ /api/cargo-documents/[entity]/[id]
+verify	Run pnpm verify	2026-10-03T20:27:11.6417753Z Γö£ ╞Æ /api/chat
+verify	Run pnpm verify	2026-10-03T20:27:11.6418279Z Γö£ ╞Æ /api/cron/communications
+verify	Run pnpm verify	2026-10-03T20:27:11.6418823Z Γö£ ╞Æ /api/cron/sla-check
+verify	Run pnpm verify	2026-10-03T20:27:11.6419305Z Γö£ ╞Æ /api/customers
+verify	Run pnpm verify	2026-10-03T20:27:11.6419950Z Γö£ ╞Æ /api/documents
+verify	Run pnpm verify	2026-10-03T20:27:11.6420428Z Γö£ ╞Æ /api/documents/download
+verify	Run pnpm verify	2026-10-03T20:27:11.6420881Z Γö£ ╞Æ /api/drivers
+verify	Run pnpm verify	2026-10-03T20:27:11.6421373Z Γö£ ╞Æ /api/fleet/telemetry
+verify	Run pnpm verify	2026-10-03T20:27:11.6421925Z Γö£ ╞Æ /api/health
+verify	Run pnpm verify	2026-10-03T20:27:11.6422381Z Γö£ ╞Æ /api/hubs
+verify	Run pnpm verify	2026-10-03T20:27:11.6422861Z Γö£ ╞Æ /api/manifests/[id]/print
+verify	Run pnpm verify	2026-10-03T20:27:11.6423436Z Γö£ ╞Æ /api/public/invoice-pdf
+verify	Run pnpm verify	2026-10-03T20:27:11.6423937Z Γö£ ╞Æ /api/sentry-example-api
+verify	Run pnpm verify	2026-10-03T20:27:11.6424388Z Γö£ ╞Æ /api/staff-avatar/[id]
+verify	Run pnpm verify	2026-10-03T20:27:11.6424852Z Γö£ ╞Æ /api/stream/tracking
+verify	Run pnpm verify	2026-10-03T20:27:11.6425230Z Γö£ ╞Æ /api/vehicles
+verify	Run pnpm verify	2026-10-03T20:27:11.6425617Z Γö£ ╞Æ /api/webhooks/carrier
+verify	Run pnpm verify	2026-10-03T20:27:11.6426108Z Γö£ ╞Æ /api/webhooks/whatsapp
+verify	Run pnpm verify	2026-10-03T20:27:11.6426483Z Γö£ ╞Æ /auth/callback
+verify	Run pnpm verify	2026-10-03T20:27:11.6426846Z Γö£ ╞Æ /contact
+verify	Run pnpm verify	2026-10-03T20:27:11.6427925Z Γö£ ╞Æ /dashboard
+verify	Run pnpm verify	2026-10-03T20:27:11.6428354Z Γö£ ╞Æ /dashboard/analytics
+verify	Run pnpm verify	2026-10-03T20:27:11.6428784Z Γö£ ╞Æ /dashboard/communications
+verify	Run pnpm verify	2026-10-03T20:27:11.6429185Z Γö£ ╞Æ /dashboard/customers
+verify	Run pnpm verify	2026-10-03T20:27:11.6429701Z Γö£ ╞Æ /dashboard/customers/[id]/ledger
+verify	Run pnpm verify	2026-10-03T20:27:11.6430157Z Γö£ ╞Æ /dashboard/dispatch
+verify	Run pnpm verify	2026-10-03T20:27:11.6430612Z Γö£ ╞Æ /dashboard/feedback
+verify	Run pnpm verify	2026-10-03T20:27:11.6431137Z Γö£ ╞Æ /dashboard/fleet
+verify	Run pnpm verify	2026-10-03T20:27:11.6431521Z Γö£ ╞Æ /dashboard/hubs
+verify	Run pnpm verify	2026-10-03T20:27:11.6431924Z Γö£ ╞Æ /dashboard/integrations
+verify	Run pnpm verify	2026-10-03T20:27:11.6432351Z Γö£ ╞Æ /dashboard/invoices
+verify	Run pnpm verify	2026-10-03T20:27:11.6432932Z Γö£ ╞Æ /dashboard/invoices/create
+verify	Run pnpm verify	2026-10-03T20:27:11.6433404Z Γö£ ╞Æ /dashboard/jobs
+verify	Run pnpm verify	2026-10-03T20:27:11.6433805Z Γö£ ╞Æ /dashboard/manifests
+verify	Run pnpm verify	2026-10-03T20:27:11.6434267Z Γö£ ╞Æ /dashboard/messages
+verify	Run pnpm verify	2026-10-03T20:27:11.6434727Z Γö£ ╞Æ /dashboard/metrics
+verify	Run pnpm verify	2026-10-03T20:27:11.6435254Z Γö£ ╞Æ /dashboard/operations/air-cargo
+verify	Run pnpm verify	2026-10-03T20:27:11.6435816Z Γö£ ╞Æ /dashboard/operations/surface-cargo
+verify	Run pnpm verify	2026-10-03T20:27:11.6436302Z Γö£ ╞Æ /dashboard/pricing
+verify	Run pnpm verify	2026-10-03T20:27:11.6436748Z Γö£ ╞Æ /dashboard/settings/security
+verify	Run pnpm verify	2026-10-03T20:27:11.6437427Z Γö£ ╞Æ /dashboard/shipments
+verify	Run pnpm verify	2026-10-03T20:27:11.6437905Z Γö£ ╞Æ /dashboard/shipments/[id]
+verify	Run pnpm verify	2026-10-03T20:27:11.6438619Z Γö£ ╞Æ /dashboard/staff
+verify	Run pnpm verify	2026-10-03T20:27:11.6439064Z Γö£ ╞Æ /dashboard/tracking
+verify	Run pnpm verify	2026-10-03T20:27:11.6439440Z Γö£ ╞Æ /dashboard/warehouse
+verify	Run pnpm verify	2026-10-03T20:27:11.6440013Z Γö£ ╞Æ /dashboard/warehouse/audit
+verify	Run pnpm verify	2026-10-03T20:27:11.6440538Z Γö£ ╞Æ /docs-preview
+verify	Run pnpm verify	2026-10-03T20:27:11.6440894Z Γö£ ╞Æ /driver
+verify	Run pnpm verify	2026-10-03T20:27:11.6441256Z Γö£ ╞Æ /driver/delivery
+verify	Run pnpm verify	2026-10-03T20:27:11.6441617Z Γö£ ╞Æ /driver/delivery/[id]
+verify	Run pnpm verify	2026-10-03T20:27:11.6442259Z Γö£ ╞Æ /feedback
+verify	Run pnpm verify	2026-10-03T20:27:11.6442598Z Γö£ ╞Æ /invoice/[id]
+verify	Run pnpm verify	2026-10-03T20:27:11.6442943Z Γö£ ╞Æ /invoice/[id]/label
+verify	Run pnpm verify	2026-10-03T20:27:11.6443345Z Γö£ ╞Æ /portal
+verify	Run pnpm verify	2026-10-03T20:27:11.6443759Z Γö£ ╞Æ /portal/invoices
+verify	Run pnpm verify	2026-10-03T20:27:11.6444146Z Γö£ ╞Æ /portal/shipments
+verify	Run pnpm verify	2026-10-03T20:27:11.6444503Z Γö£ ╞Æ /portal/tickets
+verify	Run pnpm verify	2026-10-03T20:27:11.6444921Z Γö£ ╞Æ /portal/track
+verify	Run pnpm verify	2026-10-03T20:27:11.6445307Z Γö£ Γùï /robots.txt
+verify	Run pnpm verify	2026-10-03T20:27:11.6445698Z Γö£ ╞Æ /sentry-example-page
+verify	Run pnpm verify	2026-10-03T20:27:11.6446108Z Γö£ ╞Æ /services
+verify	Run pnpm verify	2026-10-03T20:27:11.6446490Z Γö£ ╞Æ /services/[service]
+verify	Run pnpm verify	2026-10-03T20:27:11.6446933Z Γö£ ╞Æ /shipping-guide
+verify	Run pnpm verify	2026-10-03T20:27:11.6454602Z Γö£ ╞Æ /signin
+verify	Run pnpm verify	2026-10-03T20:27:11.6454882Z Γö£ Γùï /sitemap.xml
+verify	Run pnpm verify	2026-10-03T20:27:11.6455237Z Γö£ ╞Æ /terms
+verify	Run pnpm verify	2026-10-03T20:27:11.6455496Z Γöö ╞Æ /track
+verify	Run pnpm verify	2026-10-03T20:27:11.6455632Z 
+verify	Run pnpm verify	2026-10-03T20:27:11.6455641Z 
+verify	Run pnpm verify	2026-10-03T20:27:11.6455843Z ╞Æ Proxy (Middleware)
+verify	Run pnpm verify	2026-10-03T20:27:11.6456030Z 
+verify	Run pnpm verify	2026-10-03T20:27:11.6456223Z Γùï  (Static)   prerendered as static content
+verify	Run pnpm verify	2026-10-03T20:27:11.6456679Z ╞Æ  (Dynamic)  server-rendered on demand
+verify	Run pnpm verify	2026-10-03T20:27:11.6456870Z 
+verify	Run pnpm audit --prod --audit-level=moderate	∩╗┐2026-10-03T20:27:12.1706918Z ##[group]Run pnpm audit --prod --audit-level=moderate
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.1707621Z ^[[36;1mpnpm audit --prod --audit-level=moderate^[[0m
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.1742494Z shell: /usr/bin/bash -e {0}
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.1742845Z env:
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.1743193Z   NEXT_PUBLIC_APP_URL: https://quality.invalid
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.1743561Z   NEXT_PUBLIC_SUPABASE_URL: https://quality.supabase.co
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.1744002Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-public-placeholder
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.1744397Z   AUTH_SECRET: ci-only-synthetic-secret-not-for-deployment
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.1744803Z   E2E_TEST_BYPASS_ENABLED: false
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.1745105Z   NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED: false
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.1745459Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.1745812Z ##[endgroup]
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.8530617Z 1 vulnerabilities found
+verify	Run pnpm audit --prod --audit-level=moderate	2026-10-03T20:27:12.8531280Z Severity: 1 low
+verify	Run pnpm exec playwright install --with-deps chromium	∩╗┐2026-10-03T20:27:12.8670767Z ##[group]Run pnpm exec playwright install --with-deps chromium
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:12.8671427Z ^[[36;1mpnpm exec playwright install --with-deps chromium^[[0m
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:12.8724583Z shell: /usr/bin/bash -e {0}
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:12.8725320Z env:
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:12.8725841Z   NEXT_PUBLIC_APP_URL: https://quality.invalid
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:12.8726614Z   NEXT_PUBLIC_SUPABASE_URL: https://quality.supabase.co
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:12.8727563Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-public-placeholder
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:12.8728321Z   AUTH_SECRET: ci-only-synthetic-secret-not-for-deployment
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:12.8729040Z   E2E_TEST_BYPASS_ENABLED: false
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:12.8729584Z   NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED: false
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:12.8730264Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:12.8730907Z ##[endgroup]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.5723515Z Installing dependencies...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.5787369Z Switching to root user to install dependencies...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.6494736Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.6868081Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.6876508Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.6950972Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.6960927Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.6973034Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.7776862Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1364 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.7898432Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [304 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.7906705Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [181 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.7920576Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1699 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.7990246Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [341 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8014724Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8018287Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1720 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8098111Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [394 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8103464Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8220153Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5736 B]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8661563Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8671832Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1069 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8718159Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [221 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8736748Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.5 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8749025Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1216 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8796511Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [244 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8801499Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.3 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8815435Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1566 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8898237Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [361 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.8983767Z Get:26 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.6 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.9013262Z Get:27 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [458 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:13.9097582Z Get:28 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [511 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:20.7347370Z Fetched 12.6 MB in 1s (10.4 MB/s)
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.4261148Z Reading package lists...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.4479936Z Reading package lists...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.5712604Z Building dependency tree...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.5717523Z Reading state information...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7065240Z libasound2t64 is already the newest version (1.2.11-1ubuntu0.3).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7066358Z libasound2t64 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7067678Z libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7068713Z libatk-bridge2.0-0t64 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7069620Z libatk1.0-0t64 is already the newest version (2.52.0-1build1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7070595Z libatk1.0-0t64 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7071575Z libatspi2.0-0t64 is already the newest version (2.52.0-1build1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7072644Z libatspi2.0-0t64 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7073469Z libcairo2 is already the newest version (1.18.0-3build1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7074414Z libcairo2 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7075151Z libcups2t64 is already the newest version (2.4.7-1.2ubuntu7.14).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7075722Z libcups2t64 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7076303Z libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7076704Z libdbus-1-3 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7077370Z libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7077921Z libdrm2 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7078378Z libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.9).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7078985Z libglib2.0-0t64 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7079397Z libnspr4 is already the newest version (2:4.35-1.1build1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7080142Z libnspr4 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7080561Z libnss3 is already the newest version (2:3.98-1ubuntu0.2).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7081056Z libnss3 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7081470Z libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7081889Z libpango-1.0-0 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7082306Z libx11-6 is already the newest version (2:1.8.7-1build1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7082681Z libx11-6 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7083224Z libxcb1 is already the newest version (1.15-1ubuntu2).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7083700Z libxcb1 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7084251Z libxcomposite1 is already the newest version (1:0.4.5-1build3).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7084874Z libxcomposite1 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7085360Z libxdamage1 is already the newest version (1:1.1.6-1build1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7085758Z libxdamage1 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7086178Z libxext6 is already the newest version (2:1.3.4-1build2).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7086555Z libxext6 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7086947Z libxfixes3 is already the newest version (1:6.0.0-2build1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7087650Z libxfixes3 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7088315Z libxkbcommon0 is already the newest version (1.6.0-1build1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7088797Z libxkbcommon0 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7089252Z libxrandr2 is already the newest version (2:1.5.2-2build1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7089657Z libxrandr2 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7090036Z xvfb is already the newest version (2:21.1.12-1ubuntu1.8).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7090868Z fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7091786Z libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7092473Z libfontconfig1 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7093226Z libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.1).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7096367Z libfreetype6 set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7096995Z fonts-liberation is already the newest version (1:2.1.5-3).
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7097752Z fonts-liberation set to manually installed.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7098405Z The following additional packages will be installed:
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7099108Z   libgl1-mesa-dri libglx-mesa0 mesa-libgallium xfonts-encodings xfonts-utils
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7099787Z Recommended packages:
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7100322Z   fonts-ipafont-mincho fonts-tlwg-loma
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7226885Z The following NEW packages will be installed:
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7227945Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7233154Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7233895Z   xfonts-utils
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7238082Z The following packages will be upgraded:
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7243197Z   libgbm1 libgl1-mesa-dri libglx-mesa0 mesa-libgallium
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7380098Z 4 upgraded, 9 newly installed, 0 to remove and 21 not upgraded.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7380851Z Need to get 32.1 MB of archives.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7381653Z After this operation, 79.5 MB of additional disk space will be used.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7382315Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.7993323Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.8655693Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.9524737Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:21.9844707Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.0685058Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.3568974Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgl1-mesa-dri amd64 25.2.8-0ubuntu0.24.04.4 [38.0 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.3848142Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libglx-mesa0 amd64 25.2.8-0ubuntu0.24.04.4 [110 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.4128975Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgbm1 amd64 25.2.8-0ubuntu0.24.04.4 [34.2 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.4408400Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 mesa-libgallium amd64 25.2.8-0ubuntu0.24.04.4 [10.8 MB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.5558307Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.5876111Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.6157287Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.6456193Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8581954Z Fetched 32.1 MB in 1s (34.9 MB/s)
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8764060Z Selecting previously unselected package fonts-ipafont-gothic.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8948352Z (Reading database ... 
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8948958Z (Reading database ... 5%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8949396Z (Reading database ... 10%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8949845Z (Reading database ... 15%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8950193Z (Reading database ... 20%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8950558Z (Reading database ... 25%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8950929Z (Reading database ... 30%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8951269Z (Reading database ... 35%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8951630Z (Reading database ... 40%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8951936Z (Reading database ... 45%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8952228Z (Reading database ... 50%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:22.8987562Z (Reading database ... 55%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:23.0058105Z (Reading database ... 60%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:23.2125672Z (Reading database ... 65%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:23.4164657Z (Reading database ... 70%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:23.6055640Z (Reading database ... 75%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:23.7636899Z (Reading database ... 80%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:23.9541552Z (Reading database ... 85%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.1615073Z (Reading database ... 90%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.3148200Z (Reading database ... 95%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.3149210Z (Reading database ... 100%
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.3150015Z (Reading database ... 202296 files and directories currently installed.)
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.3190401Z Preparing to unpack .../00-fonts-ipafont-gothic_00303-21ubuntu1_all.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.3260426Z Unpacking fonts-ipafont-gothic (00303-21ubuntu1) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.5776142Z Selecting previously unselected package fonts-freefont-ttf.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.5883994Z Preparing to unpack .../01-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.5891475Z Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.6749827Z Selecting previously unselected package fonts-tlwg-loma-otf.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.6857960Z Preparing to unpack .../02-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.6866378Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.7013382Z Selecting previously unselected package fonts-unifont.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.7119138Z Preparing to unpack .../03-fonts-unifont_1%3a15.1.01-1build1_all.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.7126791Z Unpacking fonts-unifont (1:15.1.01-1build1) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.9014357Z Selecting previously unselected package fonts-wqy-zenhei.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.9122322Z Preparing to unpack .../04-fonts-wqy-zenhei_0.9.45-8_all.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:24.9196094Z Unpacking fonts-wqy-zenhei (0.9.45-8) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:25.4294497Z Preparing to unpack .../05-libgl1-mesa-dri_25.2.8-0ubuntu0.24.04.4_amd64.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:25.4404769Z Unpacking libgl1-mesa-dri:amd64 (25.2.8-0ubuntu0.24.04.4) over (25.2.8-0ubuntu0.24.04.2) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:25.4765337Z Preparing to unpack .../06-libglx-mesa0_25.2.8-0ubuntu0.24.04.4_amd64.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:25.4795154Z Unpacking libglx-mesa0:amd64 (25.2.8-0ubuntu0.24.04.4) over (25.2.8-0ubuntu0.24.04.2) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:25.5066351Z Preparing to unpack .../07-libgbm1_25.2.8-0ubuntu0.24.04.4_amd64.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:25.5087734Z Unpacking libgbm1:amd64 (25.2.8-0ubuntu0.24.04.4) over (25.2.8-0ubuntu0.24.04.2) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:25.5346094Z Preparing to unpack .../08-mesa-libgallium_25.2.8-0ubuntu0.24.04.4_amd64.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:25.5366257Z Unpacking mesa-libgallium:amd64 (25.2.8-0ubuntu0.24.04.4) over (25.2.8-0ubuntu0.24.04.2) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:25.9927159Z Selecting previously unselected package xfonts-encodings.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.0040060Z Preparing to unpack .../09-xfonts-encodings_1%3a1.0.5-0ubuntu2_all.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.0330054Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu2) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.4731198Z Selecting previously unselected package xfonts-utils.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.4844599Z Preparing to unpack .../10-xfonts-utils_1%3a7.7+6build3_amd64.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.5528476Z Unpacking xfonts-utils (1:7.7+6build3) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.6420087Z Selecting previously unselected package xfonts-cyrillic.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.6528612Z Preparing to unpack .../11-xfonts-cyrillic_1%3a1.0.5+nmu1_all.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.6536484Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.6741483Z Selecting previously unselected package xfonts-scalable.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.6847574Z Preparing to unpack .../12-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.6855718Z Unpacking xfonts-scalable (1:1.0.3-1.3) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7199890Z Setting up mesa-libgallium:amd64 (25.2.8-0ubuntu0.24.04.4) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7219183Z Setting up libgbm1:amd64 (25.2.8-0ubuntu0.24.04.4) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7235531Z Setting up libgl1-mesa-dri:amd64 (25.2.8-0ubuntu0.24.04.4) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7289878Z Setting up fonts-wqy-zenhei (0.9.45-8) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7386329Z Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7402948Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7420568Z Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7436771Z Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7486610Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7499680Z Setting up fonts-unifont (1:15.1.01-1build1) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7518347Z Setting up libglx-mesa0:amd64 (25.2.8-0ubuntu0.24.04.4) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7536657Z Setting up xfonts-utils (1:7.7+6build3) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7572229Z Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7798680Z Setting up xfonts-scalable (1:1.0.3-1.3) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.7993961Z Processing triggers for libc-bin (2.39-0ubuntu8.9) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.9676588Z Processing triggers for man-db (2.12.0-4build2) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.9696570Z Not building database; man-db/auto-update is not 'true'.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:26.9707530Z Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:27.5101259Z 
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:27.5102094Z Running kernel seems to be up-to-date.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:27.5102416Z 
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:27.5102621Z No services need to be restarted.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:27.5102798Z 
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:27.5103126Z No containers need to be restarted.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:27.5103362Z 
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:27.5103603Z No user sessions are running outdated binaries.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:27.5103884Z 
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:27.5104218Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:28.1931065Z Downloading Chrome for Testing 148.0.7778.96 (playwright chromium v1223) from https://cdn.playwright.dev/builds/cft/148.0.7778.96/linux64/chrome-linux64.zip
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:29.1952077Z |                                                                                |   0% of 175.4 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:29.5313704Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                                        |  10% of 175.4 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:29.5875766Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                                |  20% of 175.4 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:29.6474635Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                        |  30% of 175.4 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:29.6965285Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                |  40% of 175.4 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:29.7531390Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                        |  50% of 175.4 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:29.8000861Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                |  60% of 175.4 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:29.8446841Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                        |  70% of 175.4 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:29.8978520Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                |  80% of 175.4 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:29.9565948Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá        |  90% of 175.4 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:30.0102637Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá| 100% of 175.4 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:32.7077992Z Chrome for Testing 148.0.7778.96 (playwright chromium v1223) downloaded to /home/runner/.cache/ms-playwright/chromium-1223
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:32.7080839Z Downloading FFmpeg (playwright ffmpeg v1011) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.6231429Z |                                                                                |   0% of 2.3 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.6479263Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                                        |  10% of 2.3 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.6589716Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                                |  20% of 2.3 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.6651554Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                        |  30% of 2.3 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.6731192Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                |  40% of 2.3 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.6798021Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                        |  50% of 2.3 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.6829358Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                |  60% of 2.3 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.6896313Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                        |  70% of 2.3 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.6911008Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                |  80% of 2.3 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.6922843Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá        |  90% of 2.3 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.6980181Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá| 100% of 2.3 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.7504422Z FFmpeg (playwright ffmpeg v1011) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1011
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:33.7507563Z Downloading Chrome Headless Shell 148.0.7778.96 (playwright chromium-headless-shell v1223) from https://cdn.playwright.dev/builds/cft/148.0.7778.96/linux64/chrome-headless-shell-linux64.zip
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:34.7200219Z |                                                                                |   0% of 113.2 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:35.0458654Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                                        |  10% of 113.2 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:35.0968636Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                                |  20% of 113.2 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:35.1322739Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                        |  30% of 113.2 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:35.1818696Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                |  40% of 113.2 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:35.2065720Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                        |  50% of 113.2 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:35.2315306Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                |  60% of 113.2 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:35.2763503Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                        |  70% of 113.2 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:35.3001059Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                |  80% of 113.2 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:35.3315441Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá        |  90% of 113.2 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:35.3752342Z |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá| 100% of 113.2 MiB
+verify	Run pnpm exec playwright install --with-deps chromium	2026-10-03T20:27:37.3793425Z Chrome Headless Shell 148.0.7778.96 (playwright chromium-headless-shell v1223) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1223
+verify	Prepare isolated browser environment	∩╗┐2026-10-03T20:27:37.4034880Z ##[group]Run touch .env.local
+verify	Prepare isolated browser environment	2026-10-03T20:27:37.4035392Z ^[[36;1mtouch .env.local^[[0m
+verify	Prepare isolated browser environment	2026-10-03T20:27:37.4084100Z shell: /usr/bin/bash -e {0}
+verify	Prepare isolated browser environment	2026-10-03T20:27:37.4084683Z env:
+verify	Prepare isolated browser environment	2026-10-03T20:27:37.4085099Z   NEXT_PUBLIC_APP_URL: https://quality.invalid
+verify	Prepare isolated browser environment	2026-10-03T20:27:37.4085651Z   NEXT_PUBLIC_SUPABASE_URL: https://quality.supabase.co
+verify	Prepare isolated browser environment	2026-10-03T20:27:37.4086325Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-public-placeholder
+verify	Prepare isolated browser environment	2026-10-03T20:27:37.4086949Z   AUTH_SECRET: ci-only-synthetic-secret-not-for-deployment
+verify	Prepare isolated browser environment	2026-10-03T20:27:37.4087704Z   E2E_TEST_BYPASS_ENABLED: false
+verify	Prepare isolated browser environment	2026-10-03T20:27:37.4088156Z   NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED: false
+verify	Prepare isolated browser environment	2026-10-03T20:27:37.4088667Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+verify	Prepare isolated browser environment	2026-10-03T20:27:37.4089252Z ##[endgroup]
+verify	Run pnpm test:e2e --reporter=html	∩╗┐2026-10-03T20:27:37.4182627Z ##[group]Run pnpm test:e2e --reporter=html
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.4182969Z ^[[36;1mpnpm test:e2e --reporter=html^[[0m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.4210659Z shell: /usr/bin/bash -e {0}
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.4211037Z env:
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.4211339Z   NEXT_PUBLIC_APP_URL: https://quality.invalid
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.4211914Z   NEXT_PUBLIC_SUPABASE_URL: https://quality.supabase.co
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.4212299Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-public-placeholder
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.4212678Z   AUTH_SECRET: ci-only-synthetic-secret-not-for-deployment
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.4213072Z   E2E_TEST_BYPASS_ENABLED: false
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.4213416Z   NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED: false
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.4213797Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.4214117Z ##[endgroup]
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.7246636Z 
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.7247656Z > tac-xpress@0.0.1 test:e2e /home/runner/work/tac-xpress/tac-xpress
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.7248188Z > playwright test "--reporter=html"
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:37.7248404Z 
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:38.3438733Z Γùç injected env (0) from .env.local // tip: Γîÿ suppress logs { quiet: true }
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:43.5606790Z [WebServer] WARNING: Not all required options were provided when creating an instance of Auth0Client. Ensure to provide all missing options, either by passing it to the Auth0Client constructor, or by setting the corresponding environment variable.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:43.5608465Z [WebServer] Missing: secret: Set AUTH0_SECRET env var or pass secret in options
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:43.5609413Z [WebServer] Missing: clientAuthentication: Set either AUTH0_CLIENT_SECRET env var or AUTH0_CLIENT_ASSERTION_SIGNING_KEY env var, or pass clientSecret or clientAssertionSigningKey in options
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:43.5827158Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:43.5843191Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:43.5976865Z [WebServer] ^[[33m[auth][warn][debug-enabled]^[[0m Read more: https://warnings.authjs.dev
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:50.6416554Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:51.1709027Z [WebServer] ^[[33m[auth][warn][debug-enabled]^[[0m Read more: https://warnings.authjs.dev
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:51.5398376Z 
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:51.5399006Z Running 72 tests using 1 worker
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:51.9194395Z Γùç injected env (0) from .env.local // tip: Γîÿ suppress logs { quiet: true }
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:55.2663178Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/air-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:55.2669510Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:57.5078135Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:57.6811885Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:57.6861501Z [WebServer] ^[[33m[auth][warn][debug-enabled]^[[0m Read more: https://warnings.authjs.dev
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:59.4717436Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:59.8610354Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:59.8634191Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:59.8645661Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:27:59.8660244Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:01.5511316Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:03.4601337Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:06.0665540Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:07.7038099Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/air-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:07.7039980Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:08.9510688Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:09.7363497Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:10.3944210Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/air-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:10.3945695Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:11.8529326Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:11.8898643Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:12.0967175Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/surface-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:12.0969275Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:13.1697469Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:13.9765373Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/packing-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:13.9767295Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:15.1672197Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:16.0830398Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/about-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:16.0832552Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:17.0393425Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:18.0781876Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/warehouse-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:18.0783188Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:19.2698868Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:21.1258622Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:21.1591813Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/packing-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:21.1594015Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:23.0977569Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:24.0619685Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:25.3397630Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:26.7984438Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:26.9511861Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/air-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:26.9513563Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:28.3362936Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:28.5128718Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:28.6360234Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/air-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:28.6362414Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:29.8838385Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:30.0470822Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:30.2899389Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/surface-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:30.2901146Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:31.2005565Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/packing-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:31.2007811Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:31.3305508Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:32.6780207Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:33.0380762Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/about-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:33.0381916Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:33.9556778Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:34.1898014Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/warehouse-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:34.1900009Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:35.3756524Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:36.8452693Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/packing-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:36.8468522Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:36.9300235Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:38.7649391Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:40.6648289Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:41.8650838Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:43.9928902Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:44.2617395Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/air-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:44.2619512Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:45.5574551Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:46.4859254Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:46.6241601Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/air-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:46.6243018Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:47.7299026Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:48.3144655Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:48.5169173Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/surface-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:48.5172050Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:49.5612739Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:49.9252778Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/packing-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:49.9253917Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:51.1712218Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:51.9352136Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/about-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:51.9367848Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:52.5980616Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:53.1806349Z [WebServer] ^[[36m[browser]^[[39m ^[[33mImage with src "/images/cargo-2026/warehouse-3d.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:53.1808313Z [WebServer] Read more: https://nextjs.org/docs/app/api-reference/components/image#loading^[[39m
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:54.2710981Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:55.9289368Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:57.2197501Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:28:59.7817208Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:29:02.0556862Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:29:03.8718231Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:29:06.0178120Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:29:07.8313173Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:29:09.8380289Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:29:11.3122654Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:29:11.3144525Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:29:11.3157584Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:29:13.2160789Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:29:14.7632466Z [WebServer] Γ£ªAj WARN Arcjet will use 127.0.0.1 when missing public IP address in development mode
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:29:39.7037147Z ┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖ΓÇëELIFECYCLEΓÇë Command failed.
+verify	Run pnpm test:e2e --reporter=html	2026-10-03T20:29:39.8570528Z ##[error]The operation was canceled.
+verify	Complete job	∩╗┐2026-10-03T20:29:39.9123771Z Cleaning up orphan processes
+verify	Complete job	2026-10-03T20:29:39.9613748Z Terminate orphan process: pid (5569) (MainThread)
+verify	Complete job	2026-10-03T20:29:39.9658002Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, pnpm/action-setup@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

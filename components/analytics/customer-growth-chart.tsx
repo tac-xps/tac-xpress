@@ -30,7 +30,7 @@ function formatMonth(value: string) {
   return new Intl.DateTimeFormat("en-IN", {
     month: "short",
     timeZone: "UTC",
-  }).format(new Date(`${value}-01T00:00:00Z`))
+  }).format(new Date(`${value}-15T12:00:00Z`))
 }
 
 function fillMissingMonths(data: Array<{ month: string; customers: number }>) {
@@ -48,8 +48,8 @@ function fillMissingMonths(data: Array<{ month: string; customers: number }>) {
   const earliestStr = sortedMonths[0]
   const latestStr = sortedMonths[sortedMonths.length - 1]
 
-  const earliestDate = new Date(`${earliestStr}-01T00:00:00Z`)
-  const latestDate = new Date(`${latestStr}-01T00:00:00Z`)
+  const earliestDate = new Date(`${earliestStr}-15T12:00:00Z`)
+  const latestDate = new Date(`${latestStr}-15T12:00:00Z`)
 
   const intervalMonths = eachMonthOfInterval({
     start: earliestDate <= latestDate ? earliestDate : latestDate,

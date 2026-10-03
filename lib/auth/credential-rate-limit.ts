@@ -5,6 +5,8 @@ import * as Sentry from "@sentry/nextjs"
 import { CredentialsSignin } from "next-auth"
 import { resolveAuthSecret } from "@/lib/auth/secret"
 
+import { consumeAuthToken } from "@/lib/auth/token-consumption"
+
 class CredentialRateLimitError extends CredentialsSignin {
   code = "rate_limited"
 }
@@ -12,8 +14,6 @@ class CredentialRateLimitError extends CredentialsSignin {
 class CredentialProtectionError extends CredentialsSignin {
   code = "protection_unavailable"
 }
-
-const consumedProofs = new Set<string>()
 
 export function createRateLimitProof(email: string): string {
   const secret = resolveAuthSecret()
@@ -26,7 +26,7 @@ export function createRateLimitProof(email: string): string {
   return `${timestamp}.${signature}`
 }
 
-export function verifyRateLimitProof(proof: unknown, email: string): boolean {
+export async function verifyRateLimitProof(proof: unknown, email: string): Promise<boolean> {
   if (typeof proof !== "string") return false
   const [timestampStr, signature] = proof.split(".")
   if (!timestampStr || !signature) return false
@@ -35,7 +35,6 @@ export function verifyRateLimitProof(proof: unknown, email: string): boolean {
 
   const now = Date.now()
   if (Math.abs(now - timestamp) > 60_000) return false
-  if (consumedProofs.has(signature)) return false
 
   const secret = resolveAuthSecret()
   const payload = `${email.toLowerCase()}:${timestamp}`
@@ -54,11 +53,11 @@ export function verifyRateLimitProof(proof: unknown, email: string): boolean {
     return false
   }
 
-  consumedProofs.add(signature)
-  if (consumedProofs.size > 1000) {
-    consumedProofs.clear()
-  }
-  return true
+  return await consumeAuthToken(
+    signature,
+    "credential_rate_limit_proof",
+    new Date(timestamp + 60_000)
+  )
 }
 
 const limiter = arcjet({

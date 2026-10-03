@@ -58,22 +58,12 @@ export async function verifyMfaChallengeToken(
   }
 }
 
+import { consumeAuthToken } from "@/lib/auth/token-consumption"
+
 export interface MfaVerifiedPayload {
   userId: string
   email: string
   role: string
-}
-
-// In-memory single-use JTI cache with TTL for MFA grants
-const consumedMfaGrants = new Map<string, number>()
-
-function pruneExpiredGrants() {
-  const now = Date.now()
-  for (const [jti, expiresAt] of consumedMfaGrants.entries()) {
-    if (expiresAt <= now) {
-      consumedMfaGrants.delete(jti)
-    }
-  }
 }
 
 /**
@@ -113,12 +103,14 @@ export async function verifyMfaVerifiedToken(
       return null
     }
 
-    pruneExpiredGrants()
-    if (consumedMfaGrants.has(payload.jti)) {
-      return null // Token replay rejected
+    const claimed = await consumeAuthToken(
+      payload.jti as string,
+      "mfa_verified_grant",
+      new Date(Date.now() + 65_000)
+    )
+    if (!claimed) {
+      return null // Token replay rejected across serverless instances
     }
-
-    consumedMfaGrants.set(payload.jti, Date.now() + 65_000)
 
     return {
       userId: payload.sub,

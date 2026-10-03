@@ -548,12 +548,40 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Pro
       route: `${row.origin} → ${row.destination}`,
       volume: toNumber(row.volume),
     })),
-    // NEW
-    dailyVolume: dailyVolumeRows.map((row) => ({
-      date: row.date,
-      air: toNumber(row.air),
-      surface: toNumber(row.surface),
-    })),
+    // Continuous daily volume with missing days zero-filled
+    dailyVolume: (() => {
+      const dailyVolumeMap = new Map<string, { air: number; surface: number }>()
+      for (const row of dailyVolumeRows) {
+        dailyVolumeMap.set(row.date, {
+          air: toNumber(row.air),
+          surface: toNumber(row.surface),
+        })
+      }
+      const intervalEnd =
+        period === "lastmonth"
+          ? subDays(windowEnd, 1)
+          : startOfDay(windowEnd)
+
+      if (windowStart && windowStart <= intervalEnd) {
+        return eachDayOfInterval({
+          start: windowStart,
+          end: intervalEnd,
+        }).map((day) => {
+          const key = format(day, "yyyy-MM-dd")
+          const val = dailyVolumeMap.get(key)
+          return {
+            date: key,
+            air: val?.air ?? 0,
+            surface: val?.surface ?? 0,
+          }
+        })
+      }
+      return dailyVolumeRows.map((row) => ({
+        date: row.date,
+        air: toNumber(row.air),
+        surface: toNumber(row.surface),
+      }))
+    })(),
     statusBreakdown: {
       delivered: toNumber(shipmentSummary?.countDelivered),
       inTransit: toNumber(shipmentSummary?.countInTransit),
