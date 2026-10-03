@@ -3,7 +3,7 @@
 import { auth, signIn } from "@/auth"
 import { db } from "@/lib/db"
 import { userMfa, userPasskeys, users } from "@/lib/db/schema"
-import { eq, and } from "drizzle-orm"
+import { eq, and, sql } from "drizzle-orm"
 import { headers } from "next/headers"
 import {
   generateTotpSetup,
@@ -76,27 +76,42 @@ async function checkMfaLockout(userId: string): Promise<{ locked: boolean; remai
       remainingSeconds: Math.ceil((lockedTime - now) / 1000),
     }
   }
+  // Lockout expired — clear stale attempts so user is not re-locked after
+  // a single failure (R-04).
+  await clearMfaAttempts(userId)
   return { locked: false }
 }
 
 async function recordMfaFailure(userId: string): Promise<{ locked: boolean }> {
-  const mfa = await db.query.userMfa.findFirst({
-    where: eq(userMfa.userId, userId),
-  })
-  const currentAttempts = (mfa?.failedAttempts ?? 0) + 1
-  const isLocked = currentAttempts >= MAX_MFA_ATTEMPTS
-  const lockedUntil = isLocked ? new Date(Date.now() + MFA_LOCKOUT_MS) : null
-
-  await db
+  // Atomic SQL update avoids the read-then-write race condition (R-03).
+  // If lockout has expired, reset attempts to 1 instead of accumulating
+  // from the stale value (R-04).
+  const result = await db
     .update(userMfa)
     .set({
-      failedAttempts: currentAttempts,
-      lockedUntil,
+      failedAttempts: sql`CASE
+        WHEN ${userMfa.lockedUntil} IS NOT NULL AND ${userMfa.lockedUntil} <= now()
+        THEN 1
+        ELSE COALESCE(${userMfa.failedAttempts}, 0) + 1
+      END`,
+      lockedUntil: sql`CASE
+        WHEN (
+          CASE
+            WHEN ${userMfa.lockedUntil} IS NOT NULL AND ${userMfa.lockedUntil} <= now()
+            THEN 1
+            ELSE COALESCE(${userMfa.failedAttempts}, 0) + 1
+          END
+        ) >= ${MAX_MFA_ATTEMPTS}
+        THEN now() + interval '${sql.raw(String(MFA_LOCKOUT_MS / 1000))} seconds'
+        ELSE NULL
+      END`,
       updatedAt: new Date(),
     })
     .where(eq(userMfa.userId, userId))
+    .returning({ attempts: userMfa.failedAttempts })
 
-  return { locked: isLocked }
+  const newAttempts = result[0]?.attempts ?? 0
+  return { locked: newAttempts >= MAX_MFA_ATTEMPTS }
 }
 
 async function clearMfaAttempts(userId: string): Promise<void> {

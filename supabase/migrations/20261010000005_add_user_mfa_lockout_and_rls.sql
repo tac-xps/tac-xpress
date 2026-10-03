@@ -13,7 +13,11 @@ REVOKE ALL ON public.user_mfa FROM anon;
 
 -- Grant access to authenticated users
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.user_passkeys TO authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.user_mfa TO authenticated;
+
+-- MFA table: SELECT-only for authenticated. All mutations flow through
+-- server actions (service_role) to prevent client-side tampering with
+-- failedAttempts, lockedUntil, or TOTP secrets.
+GRANT SELECT ON public.user_mfa TO authenticated;
 
 -- User Passkeys Policies: Users can only see and manage their own passkeys
 DROP POLICY IF EXISTS "Users can view own passkeys" ON public.user_passkeys;
@@ -44,24 +48,15 @@ CREATE POLICY "Users can update own passkeys"
   TO authenticated
   USING (user_id = auth.uid());
 
--- User MFA Policies: Users can only view and modify their own MFA record
+-- User MFA Policies: SELECT-only — no insert/update/delete policies needed.
+-- Drop legacy mutable policies if they exist from earlier migrations.
+DROP POLICY IF EXISTS "Users can update own mfa" ON public.user_mfa;
+DROP POLICY IF EXISTS "Users can insert own mfa" ON public.user_mfa;
+DROP POLICY IF EXISTS "Users can delete own mfa" ON public.user_mfa;
+
 DROP POLICY IF EXISTS "Users can view own mfa" ON public.user_mfa;
 CREATE POLICY "Users can view own mfa"
   ON public.user_mfa
   FOR SELECT
   TO authenticated
   USING (user_id = auth.uid());
-
-DROP POLICY IF EXISTS "Users can update own mfa" ON public.user_mfa;
-CREATE POLICY "Users can update own mfa"
-  ON public.user_mfa
-  FOR UPDATE
-  TO authenticated
-  USING (user_id = auth.uid());
-
-DROP POLICY IF EXISTS "Users can insert own mfa" ON public.user_mfa;
-CREATE POLICY "Users can insert own mfa"
-  ON public.user_mfa
-  FOR INSERT
-  TO authenticated
-  WITH CHECK (user_id = auth.uid());

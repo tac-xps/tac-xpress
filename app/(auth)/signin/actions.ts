@@ -7,10 +7,13 @@ import { createClient } from "@supabase/supabase-js"
 import { db } from "@/lib/db"
 import { users, userMfa, userPasskeys } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
+import { headers } from "next/headers"
 import { isStaffRole } from "@/lib/auth/roles"
 import { createMfaChallengeToken } from "@/lib/auth/mfa/challenge-token"
-import { headers } from "next/headers"
-import { allowCredentialAttempt } from "@/lib/auth/credential-rate-limit"
+import {
+  allowCredentialAttempt,
+  createRateLimitProof,
+} from "@/lib/auth/credential-rate-limit"
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -149,7 +152,7 @@ export async function loginAction(
     await signIn("credentials", {
       email,
       password,
-      rateLimitChecked: "true",
+      rateLimitProof: createRateLimitProof(email),
       redirectTo: "/dashboard",
     })
   } catch (error) {

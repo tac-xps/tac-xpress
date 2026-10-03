@@ -6,8 +6,8 @@ export function SlaPerformanceDetails({ data }: { data: AnalyticsOverview }) {
   const atRisk = data.statusBreakdown.atRisk
   const delivered = data.statusBreakdown.delivered
   const inTransit = data.statusBreakdown.inTransit
-  const airOnTimeRate = data.serviceSla?.air ?? data.onTimePerformance
-  const roadOnTimeRate = data.serviceSla?.road ?? data.onTimePerformance
+  const airOnTimeRate = data.serviceSla?.air ?? null
+  const roadOnTimeRate = data.serviceSla?.road ?? null
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

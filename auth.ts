@@ -7,7 +7,10 @@ import { createClient } from "@supabase/supabase-js"
 import * as Sentry from "@sentry/nextjs"
 import { authConfig } from "./auth.config"
 import { isStaffRole } from "@/lib/auth/roles"
-import { allowCredentialAttempt } from "@/lib/auth/credential-rate-limit"
+import {
+  allowCredentialAttempt,
+  verifyRateLimitProof,
+} from "@/lib/auth/credential-rate-limit"
 import { verifyMfaVerifiedToken } from "@/lib/auth/mfa/challenge-token"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -21,7 +24,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
         mfaToken: { label: "MFA Token", type: "text" },
-        rateLimitChecked: { label: "Rate Limit Checked", type: "text" },
+        rateLimitProof: { label: "Rate Limit Proof", type: "text" },
       },
       async authorize(credentials, request) {
         // 0. Verified MFA Token Flow (completes 2FA / Passkey login)
@@ -48,8 +51,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         ) return null
 
         const email = credentials.email.trim().toLowerCase()
-        const rateLimitChecked = credentials?.rateLimitChecked === "true"
-        if (!rateLimitChecked && !(await allowCredentialAttempt(request, email))) return null
+        const rateLimitVerified = verifyRateLimitProof(credentials?.rateLimitProof, email)
+        if (!rateLimitVerified && !(await allowCredentialAttempt(request, email))) return null
         const bypassPassword = process.env.E2E_TEST_USER_PASSWORD
 
         // 1. E2E Bypass Flow
