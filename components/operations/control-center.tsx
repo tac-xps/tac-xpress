@@ -6,6 +6,7 @@ import {
   MapPin,
   ReceiptText,
   MessageSquare,
+  ChartNoAxesCombined,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { ControlCenterSnapshot } from "@/lib/control-center"
@@ -24,6 +25,11 @@ export function ControlCenterActions() {
       icon: ClipboardList,
     },
     { label: "Scan & update", href: "/dashboard/tracking", icon: MapPin },
+    {
+      label: "Analytics",
+      href: "/dashboard/analytics",
+      icon: ChartNoAxesCombined,
+    },
     {
       label: "Messages & delivery",
       href: "/dashboard/communications",

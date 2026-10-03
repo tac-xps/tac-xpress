@@ -175,7 +175,7 @@ export function DeliveryClient({
               onChange={(e) => {
                 router.push(`/driver/delivery?manifestId=${e.target.value}`)
               }}
-              className="h-9 rounded-md border border-border bg-card px-3 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              className="h-9 rounded-none border border-border bg-card px-3 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             >
               {manifests.map((m) => (
                 <option key={m.id} value={m.id}>
@@ -229,9 +229,9 @@ export function DeliveryClient({
               {summary.completedStops} / {summary.totalStops}
             </div>
             <div className="space-y-1">
-              <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+              <div className="h-1.5 w-full rounded-none bg-muted overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-primary transition-all duration-500"
+                  className="h-full rounded-none bg-primary transition-all duration-500"
                   style={{ width: `${completionPercent}%` }}
                 />
               </div>
@@ -343,7 +343,7 @@ export function DeliveryClient({
             />
           </div>
 
-          <div className="flex items-center border border-border rounded-md overflow-hidden bg-muted/40 p-0.5">
+          <div className="flex items-center border border-border rounded-none overflow-hidden bg-muted/40 p-0.5">
             <button
               type="button"
               onClick={() => setViewMode("list")}
@@ -423,7 +423,7 @@ export function DeliveryClient({
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted font-mono text-xs font-semibold text-muted-foreground">
+                      <span className="flex size-6 shrink-0 items-center justify-center rounded-none bg-muted font-mono text-xs font-semibold text-muted-foreground">
                         {index + 1}
                       </span>
                       <button
@@ -496,7 +496,7 @@ export function DeliveryClient({
                   </div>
 
                   {/* Destination Address */}
-                  <div className="flex items-start justify-between gap-2 rounded-md bg-muted/30 p-2.5 text-xs text-muted-foreground">
+                  <div className="flex items-start justify-between gap-2 rounded-none bg-muted/30 p-2.5 text-xs text-muted-foreground">
                     <div className="flex items-start gap-1.5 min-w-0">
                       <MapPin className="mt-0.5 size-3.5 shrink-0 text-primary" />
                       <span className="line-clamp-2 leading-relaxed text-foreground/90">
@@ -553,7 +553,7 @@ export function DeliveryClient({
             <div className="divide-y divide-border">
               {/* Origin Hub Departure */}
               <div className="flex items-center gap-3 p-4 bg-muted/20">
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-semibold text-xs">
+                <div className="flex size-7 shrink-0 items-center justify-center rounded-none bg-primary text-primary-foreground font-semibold text-xs">
                   <Building2 className="size-3.5" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -581,7 +581,7 @@ export function DeliveryClient({
                   >
                     <div className="flex items-start gap-3 min-w-0">
                       <div
-                        className={`flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                        className={`flex size-7 shrink-0 items-center justify-center rounded-none text-xs font-bold ${
                           isDelivered
                             ? "bg-status-delivered text-white"
                             : "bg-muted text-foreground"
@@ -640,7 +640,7 @@ export function DeliveryClient({
 
               {/* Destination Hub Arrival */}
               <div className="flex items-center gap-3 p-4 bg-muted/20">
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-foreground font-semibold text-xs">
+                <div className="flex size-7 shrink-0 items-center justify-center rounded-none bg-muted text-foreground font-semibold text-xs">
                   <Building2 className="size-3.5 text-muted-foreground" />
                 </div>
                 <div className="min-w-0 flex-1">

@@ -1,9 +1,10 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { CheckCircle2, QrCode } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 
-import { cn } from '@/lib/utils'; // Assuming you have a utility for classnames
+import { cn } from '@/lib/utils';
+import { springs, microGestures } from '@/lib/animations';
 
 // Props interface for type safety and reusability
 export interface PackageTrackerCardProps {
@@ -27,16 +28,17 @@ const PackageImageContainer = ({ children }: { children: React.ReactNode }) => (
     <div
       className={cn(
         'absolute inset-0 z-0 h-full w-full',
-        'bg-[hsl(var(--muted)/0.3)]',
+        'bg-muted/30',
         'bg-[size:80px_80px]',
-        'bg-gradient-to-r from-transparent via-[hsl(var(--muted)/0.3)] to-transparent',
-        'animate-conveyor-belt' // This requires a custom animation
+        'bg-gradient-to-r from-transparent via-muted/30 to-transparent',
+        'animate-conveyor-belt'
       )}
       style={{
         backgroundImage: `
-          repeating-linear-gradient(45deg, transparent, transparent 25px, hsl(var(--muted)/0.2) 25px, hsl(var(--muted)/0.2) 50px),
-          repeating-linear-gradient(-45deg, transparent, transparent 25px, hsl(var(--muted)/0.2) 25px, hsl(var(--muted)/0.2) 50px)
+          repeating-linear-gradient(45deg, transparent, transparent 25px, currentColor 25px, currentColor 50px),
+          repeating-linear-gradient(-45deg, transparent, transparent 25px, currentColor 25px, currentColor 50px)
         `,
+        opacity: 0.05,
       }}
     />
     <div className="z-10">{children}</div>
@@ -56,23 +58,29 @@ export const PackageTrackerCard = ({
   isExpanded,
   className,
 }: PackageTrackerCardProps) => {
+  const shouldReduceMotion = useReducedMotion();
+
   const cardVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 30 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: {
-        type: 'spring' as const,
-        stiffness: 100,
-        damping: 15,
-        staggerChildren: 0.1,
-      },
+      transition: shouldReduceMotion
+        ? { duration: 0 }
+        : {
+            ...springs.gentle,
+            staggerChildren: 0.08,
+          },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 16 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: shouldReduceMotion ? { duration: 0 } : springs.snappy,
+    },
   };
 
   return (
@@ -80,8 +88,9 @@ export const PackageTrackerCard = ({
       variants={cardVariants}
       initial="hidden"
       animate="visible"
+      whileHover={shouldReduceMotion ? undefined : { y: -4, transition: springs.gentle }}
       className={cn(
-        'w-full max-w-sm overflow-hidden rounded-none border border-border bg-card text-card-foreground shadow-card',
+        'w-full max-w-sm overflow-hidden rounded-none border border-border bg-card text-card-foreground shadow-xs transition-shadow duration-300 hover:shadow-lg',
         className
       )}
     >
@@ -89,11 +98,13 @@ export const PackageTrackerCard = ({
       <div className="p-4">
         <motion.button
           variants={itemVariants}
+          whileHover={shouldReduceMotion ? undefined : microGestures.hoverScale}
+          whileTap={shouldReduceMotion ? undefined : microGestures.tap}
           onClick={onTrackClick}
-          className="flex w-full items-center justify-center gap-2 rounded-none border border-border bg-muted/50 px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted"
+          className="flex w-full items-center justify-center gap-2 rounded-none border border-border bg-muted/50 px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
         >
-          <CheckCircle2 className="size-4 text-status-delivered" />
-          Show full tracking
+          <CheckCircle2 className="size-4 shrink-0 text-status-delivered" />
+          <span>Show full tracking</span>
         </motion.button>
       </div>
 
@@ -125,7 +136,7 @@ export const PackageTrackerCard = ({
             className="rounded-none border border-border p-1 bg-card"
           >
             {qrCodeValue ? (
-              <QRCodeCanvas value={qrCodeValue} size={64} bgColor="transparent" fgColor="#000" />
+              <QRCodeCanvas value={qrCodeValue} size={64} bgColor="transparent" fgColor="currentColor" className="text-foreground" />
             ) : (
               <div className="flex h-16 w-16 items-center justify-center bg-muted">
                 <QrCode className="h-8 w-8 text-muted-foreground" />

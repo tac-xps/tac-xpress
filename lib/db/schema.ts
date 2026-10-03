@@ -298,6 +298,8 @@ export const invoices = pgTable(
     advancePaid: integer("advance_paid").default(0),
     balanceDue: integer("balance_due").default(0),
     remarks: text("remarks"),
+    documentSnapshot: jsonb("document_snapshot"),
+    termsVersion: text("terms_version").default("2026.10"),
     termsAccepted: boolean("terms_accepted").default(false),
     prohibitedAccepted: boolean("prohibited_accepted").default(false),
     signatureUrl: text("signature_url"),
@@ -722,6 +724,36 @@ export const deadLetterQueue = pgTable("dead_letter_queue", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 })
 
+// WebAuthn / Windows Hello Passkeys
+export const userPasskeys = pgTable(
+  "user_passkeys",
+  {
+    id: text("id").primaryKey(), // Base64URL credential ID
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    publicKey: text("public_key").notNull(), // Base64URL public key bytes
+    counter: integer("counter").default(0).notNull(), // Anti-replay counter
+    deviceType: text("device_type").default("platform").notNull(), // e.g. "Windows Hello", "Touch ID", "Security Key"
+    transports: jsonb("transports").$type<string[]>(), // ["internal", "hybrid", "usb"]
+    name: text("name").default("My Device").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    lastUsedAt: timestamp("last_used_at"),
+  },
+  (table) => [index("user_passkeys_user_id_idx").on(table.userId)]
+)
+
+// RFC 6238 TOTP & Backup Codes Configuration
+export const userMfa = pgTable("user_mfa", {
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .primaryKey(),
+  totpSecretEncrypted: text("totp_secret_encrypted"), // AES-256-GCM encrypted
+  totpEnabled: boolean("totp_enabled").default(false).notNull(),
+  backupCodesHash: text("backup_codes_hash"), // JSON array of hashed recovery codes
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+
 export type User = typeof users.$inferSelect
 export type Shipment = typeof shipments.$inferSelect
 export type Invoice = typeof invoices.$inferSelect
@@ -734,3 +766,8 @@ export type BackgroundJob = typeof backgroundJobs.$inferSelect
 export type DLQItem = typeof deadLetterQueue.$inferSelect
 export type ShipmentLeg = typeof shipmentLegs.$inferSelect
 export type NewShipmentLeg = typeof shipmentLegs.$inferInsert
+export type UserPasskey = typeof userPasskeys.$inferSelect
+export type NewUserPasskey = typeof userPasskeys.$inferInsert
+export type UserMfa = typeof userMfa.$inferSelect
+export type NewUserMfa = typeof userMfa.$inferInsert
+

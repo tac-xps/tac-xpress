@@ -3,6 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { ShipmentsDataTable } from "@/app/dashboard/shipments/shipment-data-table"
 import { DEFAULT_PAGE_SIZE } from "@/components/ui/page-navigation"
 import { Package, Truck, AlertTriangle, Activity } from "lucide-react"
+import { ShipmentBarInteractive } from "@/components/operations/shipment-bar-interactive"
 
 export interface KpiCard {
   label: string
@@ -90,7 +91,7 @@ export function OperationsDashboardPage({
       {/* ── Hero header ── */}
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-4">
-          <div className={`shrink-0 rounded-xl p-3.5 shadow-xs border border-border/80 ${iconBg}`}>
+          <div className={`shrink-0 rounded-none p-3.5 shadow-xs border border-border/80 ${iconBg}`}>
             {icon}
           </div>
           <div className="space-y-1">
@@ -110,7 +111,7 @@ export function OperationsDashboardPage({
               <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {label}
               </CardTitle>
-              <div className="rounded-md bg-muted/60 p-1.5">
+              <div className="rounded-none bg-muted/60 p-1.5">
                 {kpiIcons[idx] ?? <Activity className="size-4 text-muted-foreground" />}
               </div>
             </CardHeader>
@@ -125,6 +126,9 @@ export function OperationsDashboardPage({
           </Card>
         ))}
       </div>
+
+      {/* ── Daily shipment activity bar chart ── */}
+      <ShipmentBarInteractive rows={rows} />
 
       {/* ── Real-Time Transit Distribution Bar ── */}
       {totalCount > 0 && (
@@ -144,32 +148,32 @@ export function OperationsDashboardPage({
           </CardHeader>
           <CardContent className="space-y-3">
             {/* Segmented Progress Bar */}
-            <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted/40 p-0.5 ring-1 ring-border/50">
+            <div className="flex h-3 w-full overflow-hidden rounded-none bg-muted/40 p-0.5 ring-1 ring-border/50">
               {deliveredPct > 0 && (
                 <div
                   style={{ width: `${deliveredPct}%` }}
-                  className="h-full rounded-full bg-primary transition-all duration-500"
+                  className="h-full rounded-none bg-primary transition-all duration-500"
                   title={`Delivered: ${deliveredCount} (${deliveredPct}%)`}
                 />
               )}
               {inTransitPct > 0 && (
                 <div
                   style={{ width: `${inTransitPct}%` }}
-                  className="h-full rounded-full bg-sky-500 transition-all duration-500"
+                  className="h-full rounded-none bg-sky-500 transition-all duration-500"
                   title={`In-Transit: ${inTransitCount} (${inTransitPct}%)`}
                 />
               )}
               {pendingPct > 0 && (
                 <div
                   style={{ width: `${pendingPct}%` }}
-                  className="h-full rounded-full bg-amber-500 transition-all duration-500"
+                  className="h-full rounded-none bg-amber-500 transition-all duration-500"
                   title={`Pending / Hub: ${pendingCount} (${pendingPct}%)`}
                 />
               )}
               {atRiskPct > 0 && (
                 <div
                   style={{ width: `${atRiskPct}%` }}
-                  className="h-full rounded-full bg-destructive transition-all duration-500"
+                  className="h-full rounded-none bg-destructive transition-all duration-500"
                   title={`SLA At Risk: ${atRiskCount} (${atRiskPct}%)`}
                 />
               )}
@@ -178,23 +182,23 @@ export function OperationsDashboardPage({
             {/* Distribution Legend */}
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
               <span className="flex items-center gap-1.5">
-                <span className="size-2.5 rounded-full bg-primary" />
+                <span className="size-2.5 rounded-none bg-primary" />
                 <span className="font-medium text-foreground">Delivered:</span>
                 <span className="font-mono text-muted-foreground">{deliveredCount} ({deliveredPct}%)</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="size-2.5 rounded-full bg-sky-500" />
+                <span className="size-2.5 rounded-none bg-sky-500" />
                 <span className="font-medium text-foreground">In-Transit:</span>
                 <span className="font-mono text-muted-foreground">{inTransitCount} ({inTransitPct}%)</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="size-2.5 rounded-full bg-amber-500" />
+                <span className="size-2.5 rounded-none bg-amber-500" />
                 <span className="font-medium text-foreground">Pending / Hub:</span>
                 <span className="font-mono text-muted-foreground">{pendingCount} ({pendingPct}%)</span>
               </span>
               {atRiskCount > 0 && (
                 <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-full bg-destructive" />
+                  <span className="size-2.5 rounded-none bg-destructive" />
                   <span className="font-medium text-destructive">SLA At Risk:</span>
                   <span className="font-mono font-bold text-destructive">{atRiskCount} ({atRiskPct}%)</span>
                 </span>
@@ -205,7 +209,7 @@ export function OperationsDashboardPage({
       )}
 
       {/* ── Shipments table ── */}
-      <Card className="overflow-hidden border border-border/80 shadow-xs rounded-xl bg-card">
+      <Card className="overflow-hidden border border-border/80 shadow-xs rounded-none bg-card">
         <CardHeader className="flex flex-col gap-1 border-b border-border/80 bg-muted/20 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle className="text-base font-semibold tracking-tight text-foreground">

@@ -9,6 +9,7 @@ import NextAuth, { type Session } from "next-auth"
 import { authConfig } from "@/auth.config"
 import { isStaffRole } from "@/lib/auth/roles"
 import { verifyDocumentToken } from "@/lib/auth/document-token"
+import { auth0 } from "@/lib/auth0"
 import * as Sentry from "@sentry/nextjs"
 
 const { auth } = NextAuth(authConfig)
@@ -155,6 +156,11 @@ async function enforceRequestProtection(request: NextRequest) {
 }
 
 export async function proxy(request: NextRequest, event: NextFetchEvent) {
+  // Auth0 OAuth Handler (/auth/login, /auth/callback, /auth/logout, /auth/profile)
+  if (request.nextUrl.pathname.startsWith("/auth/")) {
+    return await auth0.middleware(request)
+  }
+
   // Edge Block: Physically hide the test routes if bypass is not explicitly enabled
   if (request.nextUrl.pathname.startsWith("/e2e-auth")) {
     if (

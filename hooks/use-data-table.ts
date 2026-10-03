@@ -1,3 +1,4 @@
+"use no memo";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs"
 import {
   getCoreRowModel,
@@ -117,3 +118,4 @@ export function useDataTable<TData, TValue>({
 
   return { table }
 }
+

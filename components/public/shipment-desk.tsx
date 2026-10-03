@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { MagneticButton } from "./magnetic-button"
-import { TrackForm } from "./track-form"
+import { TrackDialogForm } from "./track-dialog-form"
 import { motion, useReducedMotion } from "motion/react"
 
 export function ShipmentDesk() {
@@ -51,7 +51,7 @@ export function ShipmentDesk() {
           viewport={{ once: true, amount: 0.25 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <TrackForm variant="desk" />
+          <TrackDialogForm variant="desk" />
         </motion.div>
       </div>
     </section>

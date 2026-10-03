@@ -45,8 +45,8 @@ export function SupportChat() {
             aria-label="Open AI assistant"
           >
             <span className="relative flex size-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-foreground opacity-75" />
-              <span className="relative inline-flex size-2 rounded-full bg-primary-foreground" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-primary-foreground opacity-75" />
+              <span className="relative inline-flex size-2 rounded-none bg-primary-foreground" />
             </span>
             <MessageCircle className="size-4" />
             <span className="hidden sm:inline">Ask a question</span>

@@ -71,22 +71,8 @@ export const RouteTruckIcon = ({ className, ...props }: IconProps) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
-    <circle
-      cx="7"
-      cy="18"
-      r="2"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      className="group-hover:fill-primary/20"
-    />
-    <circle
-      cx="17"
-      cy="18"
-      r="2"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      className="group-hover:fill-primary/20"
-    />
+    <rect x="5" y="16" width="4" height="4" stroke="currentColor" strokeWidth="1.5" className="group-hover:fill-primary/20" />
+    <rect x="15" y="16" width="4" height="4" stroke="currentColor" strokeWidth="1.5" className="group-hover:fill-primary/20" />
     <path
       d="M14 13h5.5"
       stroke="currentColor"
@@ -107,16 +93,7 @@ export const MapMarkerIcon = ({ className, ...props }: IconProps) => (
       strokeLinejoin="round"
       className="group-hover:fill-primary/10"
     />
-    <circle
-      cx="12"
-      cy="10"
-      r="3"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="group-hover:fill-primary/30"
-    />
+    <rect x="9" y="7" width="6" height="6" stroke="currentColor" strokeWidth="1.5" className="group-hover:fill-primary/30" />
   </SVGWrapper>
 )
 
@@ -178,14 +155,7 @@ export const CustomArrowRightIcon = ({ className, ...props }: IconProps) => (
 
 export const CustomGlobeIcon = ({ className, ...props }: IconProps) => (
   <SVGWrapper className={className} {...props}>
-    <circle
-      cx="12"
-      cy="12"
-      r="10"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      className="group-hover:stroke-primary/80"
-    />
+    <rect x="2" y="2" width="20" height="20" stroke="currentColor" strokeWidth="1.5" className="group-hover:stroke-primary/80" />
     <path
       d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"
       stroke="currentColor"
@@ -211,16 +181,7 @@ export const TeamUsersIcon = ({ className, ...props }: IconProps) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
-    <circle
-      cx="9"
-      cy="7"
-      r="4"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="group-hover:fill-primary/20"
-    />
+    <rect x="5" y="3" width="8" height="8" stroke="currentColor" strokeWidth="1.5" className="group-hover:fill-primary/20" />
     <path
       d="M22 21v-2a4 4 0 0 0-3-3.87"
       stroke="currentColor"
@@ -313,22 +274,8 @@ export const QuoteCustomIcon = ({ className, ...props }: IconProps) => (
 
 export const SupportLifebuoyIcon = ({ className, ...props }: IconProps) => (
   <SVGWrapper className={className} {...props}>
-    <circle
-      cx="12"
-      cy="12"
-      r="10"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      className="group-hover:fill-primary/10"
-    />
-    <circle
-      cx="12"
-      cy="12"
-      r="4"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      className="group-hover:stroke-primary"
-    />
+    <rect x="2" y="2" width="20" height="20" stroke="currentColor" strokeWidth="1.5" className="group-hover:fill-primary/10" />
+    <rect x="8" y="8" width="8" height="8" stroke="currentColor" strokeWidth="1.5" className="group-hover:stroke-primary" />
     <path
       d="m4.93 4.93 4.24 4.24"
       stroke="currentColor"
@@ -474,19 +421,18 @@ export const MailCustomIcon = ({ className, ...props }: IconProps) => (
       height="16"
       x="2"
       y="4"
-      rx="2"
       stroke="currentColor"
       strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
       className="transition-colors group-hover:fill-primary/10"
     />
     <path
-      d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
+      d="M22 7L12 13L2 7"
       stroke="currentColor"
       strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
       className="transition-colors group-hover:stroke-primary"
     />
   </SVGWrapper>
@@ -494,20 +440,23 @@ export const MailCustomIcon = ({ className, ...props }: IconProps) => (
 
 export const CheckCircleCustomIcon = ({ className, ...props }: IconProps) => (
   <SVGWrapper className={className} {...props}>
-    <circle
-      cx="12"
-      cy="12"
-      r="10"
+    <rect
+      x="2"
+      y="2"
+      width="20"
+      height="20"
       stroke="currentColor"
       strokeWidth="1.5"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
       className="transition-colors group-hover:fill-primary/10"
     />
     <path
-      d="m9 12 2 2 4-4"
+      d="m8 12 3 3 5-5"
       stroke="currentColor"
       strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
       className="transition-colors group-hover:stroke-primary"
     />
   </SVGWrapper>
@@ -515,14 +464,7 @@ export const CheckCircleCustomIcon = ({ className, ...props }: IconProps) => (
 
 export const SearchCustomIcon = ({ className, ...props }: IconProps) => (
   <SVGWrapper className={className} {...props}>
-    <circle
-      cx="11"
-      cy="11"
-      r="8"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      className="transition-colors group-hover:stroke-primary"
-    />
+    <rect x="3" y="3" width="16" height="16" stroke="currentColor" strokeWidth="1.5" className="transition-colors group-hover:stroke-primary" />
     <path
       d="m21 21-4.3-4.3"
       stroke="currentColor"

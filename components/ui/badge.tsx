@@ -25,6 +25,17 @@ const badgeVariants = cva(
           "border-status-pending/20 bg-status-pending/10 text-status-pending",
         error: "border-destructive/20 bg-destructive/10 text-status-failed",
         neutral: "border-border/50 bg-muted text-muted-foreground",
+        // Logistics status variants (calibrated OKLCH + APCA compliance)
+        transit:
+          "border-status-transit/30 bg-status-transit/15 text-status-transit",
+        delivered:
+          "border-status-delivered/30 bg-status-delivered/15 text-status-delivered",
+        pending:
+          "border-status-pending/30 bg-status-pending/15 text-status-pending",
+        failed:
+          "border-status-failed/30 bg-status-failed/15 text-status-failed",
+        corridor:
+          "border-corridor-border bg-corridor-subtle text-corridor",
       },
     },
     defaultVariants: {

@@ -16,7 +16,7 @@ function AppShellSkeleton() {
       <div className="hidden w-[260px] border-r bg-muted/20 md:block" />
       <div className="flex w-full flex-col">
         <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
-          <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="h-8 w-8 rounded-none" />
         </header>
         <main className="flex flex-1 flex-col p-4 md:p-6">
           <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 md:gap-8">

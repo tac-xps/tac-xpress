@@ -48,7 +48,7 @@ export function ServiceComparison() {
         fixed transit time. Confirm the service and terms for your particular
         goods with our team.
       </p>
-      <div className="mt-10 rounded-lg border bg-card">
+      <div className="mt-10 rounded-none border bg-card">
         <Table>
           <caption className="sr-only">
             Air and surface cargo planning comparison

@@ -74,6 +74,7 @@ export function ScannerDialog({ manifestId }: { manifestId: string }) {
     return () => {
       clearTimeout(timer)
       if (scanner) {
+        // eslint-disable-next-line no-console
         scanner.clear().catch(console.error)
       }
     }

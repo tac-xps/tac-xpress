@@ -47,7 +47,7 @@ export function AnimatedParcel({
       {/* Ground Contact Shadow */}
       <motion.div
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-2.5 left-1/2 -translate-x-1/2 h-3.5 w-24 rounded-full bg-primary/20 blur-[2px]"
+        className="pointer-events-none absolute -bottom-2.5 left-1/2 -translate-x-1/2 h-2 w-24 rounded-none bg-primary/20 blur-[1px]"
         initial={shouldReduceMotion ? { opacity: 0.25 } : { opacity: 0, scale: 0.7 }}
         animate={
           shouldReduceMotion
@@ -102,8 +102,8 @@ export function AnimatedParcel({
           fill="none"
           stroke="currentColor"
           strokeWidth={1.25}
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          strokeLinecap="square"
+          strokeLinejoin="miter"
           className="h-32 w-32 text-primary/85 drop-shadow-md transition-colors group-hover:text-primary"
         >
           {/* Subtle Isometric Facet fills for tactile 3D volume */}
@@ -135,9 +135,9 @@ export function AnimatedParcel({
             transition={{ delay: 0.45, duration: 0.5 }}
           />
 
-          {/* Outer isometric cube path */}
+          {/* Outer isometric cube path — sharp angular edges, zero curves */}
           <motion.path
-            d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
+            d="M12 22L21 16.86V7.14L12 2L3 7.14V16.86Z"
             initial={shouldReduceMotion ? { pathLength: 1 } : { pathLength: 0 }}
             animate={{ pathLength: 1 }}
             transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
@@ -169,15 +169,16 @@ export function AnimatedParcel({
             transition={{ duration: 0.5, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
           />
 
-          {/* Tape Glint Particle traveling across the sealed seam */}
+          {/* Tape Glint Particle traveling across the sealed seam — square marker */}
           {!shouldReduceMotion && (
-            <motion.circle
-              r={0.9}
+            <motion.rect
+              width={1.6}
+              height={1.6}
               fill="currentColor"
               className="text-primary-foreground/90 filter drop-shadow-[0_0_2px_currentColor]"
               animate={{
-                cx: [7.5, 16.5, 16.5, 7.5],
-                cy: [4.27, 9.42, 9.42, 4.27],
+                x: [6.7, 15.7, 15.7, 6.7],
+                y: [3.47, 8.62, 8.62, 3.47],
                 opacity: [0, 0.95, 0, 0],
               }}
               transition={{
@@ -201,13 +202,13 @@ export function AnimatedParcel({
             }
             animate={{ scale: 1, opacity: 1, rotate: 0 }}
             transition={{ delay: 0.6, type: "spring", stiffness: 380, damping: 16 }}
-            className="absolute -top-1 -right-1 flex size-7 items-center justify-center rounded-full bg-status-delivered text-status-delivered-foreground shadow-md ring-2 ring-card"
+            className="absolute -top-1 -right-1 flex size-7 items-center justify-center rounded-none bg-status-delivered text-status-delivered-foreground shadow-md ring-2 ring-card"
             title="Shipment Delivered"
           >
             <Check className="size-4 stroke-[2.75]" />
             {!shouldReduceMotion && (
               <motion.span
-                className="absolute inset-0 rounded-full ring-2 ring-status-delivered"
+                className="absolute inset-0 rounded-none ring-2 ring-status-delivered"
                 initial={{ scale: 1, opacity: 0.8 }}
                 animate={{ scale: 1.6, opacity: 0 }}
                 transition={{ delay: 0.8, duration: 1.2, ease: "easeOut" }}
@@ -225,13 +226,13 @@ export function AnimatedParcel({
             }
             animate={{ scale: 1, opacity: 1, rotate: 0 }}
             transition={{ delay: 0.6, type: "spring", stiffness: 380, damping: 16 }}
-            className="absolute -top-1 -right-1 flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md ring-2 ring-card"
+            className="absolute -top-1 -right-1 flex size-7 items-center justify-center rounded-none bg-primary text-primary-foreground shadow-md ring-2 ring-card"
             title="In Transit"
           >
             <Truck className="size-3.5" />
             {!shouldReduceMotion && (
               <motion.span
-                className="absolute inset-0 rounded-full ring-2 ring-primary"
+                className="absolute inset-0 rounded-none ring-2 ring-primary"
                 animate={{ scale: [1, 1.45, 1], opacity: [0.6, 0, 0.6] }}
                 transition={{ repeat: Infinity, duration: 2.6, ease: "easeInOut" }}
               />
@@ -244,7 +245,7 @@ export function AnimatedParcel({
             initial={shouldReduceMotion ? { opacity: 1 } : { scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.6, type: "spring", stiffness: 350, damping: 18 }}
-            className="absolute -top-1 -right-1 flex size-7 items-center justify-center rounded-full bg-muted text-muted-foreground shadow-sm ring-2 ring-card"
+            className="absolute -top-1 -right-1 flex size-7 items-center justify-center rounded-none bg-muted text-muted-foreground shadow-sm ring-2 ring-card"
             title="Status: Pending"
           >
             <Clock className="size-3.5" />

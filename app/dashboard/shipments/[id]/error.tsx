@@ -16,7 +16,7 @@ export default function ShipmentDetailError({
   }, [error])
 
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-4xl flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border bg-muted/20 p-8 text-center">
+    <div className="mx-auto flex min-h-[60vh] max-w-4xl flex-col items-center justify-center gap-4 rounded-none border border-dashed border-border bg-muted/20 p-8 text-center">
       <div className="flex flex-col gap-1">
         <h2 className="text-lg font-semibold text-foreground">
           Could not load this shipment

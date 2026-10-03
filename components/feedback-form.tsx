@@ -76,7 +76,7 @@ export function FeedbackForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {error && <div role="alert" className="font-medium text-destructive">{error}</div>}
         {success && (
-          <div className="border-success/20 bg-success/10 text-success rounded-md border p-4 font-medium">
+          <div className="border-success/20 bg-success/10 text-success rounded-none border p-4 font-medium">
             Thank you for your feedback! We&apos;ve received your message.
           </div>
         )}

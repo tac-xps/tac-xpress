@@ -55,8 +55,10 @@ const STATUS_OPTIONS = [
 
 const STATUS_BADGE: Record<string, string> = {
   pending: "border-status-pending/20 bg-status-pending/10 text-status-pending",
-  "in-transit": "border-primary/20 bg-primary/10 text-status-transit",
-  delivered: "border-primary/20 bg-primary/10 text-status-delivered",
+  "in-transit": "border-status-transit/20 bg-status-transit/10 text-status-transit",
+  delivered: "border-status-delivered/20 bg-status-delivered/10 text-status-delivered",
+  failed: "border-status-failed/20 bg-status-failed/10 text-status-failed",
+  "at-risk": "border-status-failed/20 bg-status-failed/10 text-status-failed",
 }
 
 function StatusBadgePill({ status }: { status: string }) {
@@ -134,7 +136,7 @@ export default function ShipmentsTable({
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden overflow-hidden rounded-lg border bg-card md:block">
+      <div className="hidden overflow-hidden rounded-none border bg-card md:block">
         <Table>
           <TableHeader>
             <TableRow>
@@ -201,12 +203,12 @@ export default function ShipmentsTable({
       {/* Mobile Card View */}
       <div className="space-y-3 md:hidden">
         {filtered.length === 0 ? (
-          <div className="rounded-lg border py-12 text-center text-muted-foreground">
+          <div className="rounded-none border py-12 text-center text-muted-foreground">
             No shipments match your filters.
           </div>
         ) : (
           filtered.map((s) => (
-            <div key={s.id} className="space-y-3 rounded-lg border bg-card p-4">
+            <div key={s.id} className="space-y-3 rounded-none border bg-card p-4">
               <div className="flex items-start justify-between">
                 <span className="font-mono font-medium text-primary">
                   {s.awb_number}

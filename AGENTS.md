@@ -46,3 +46,10 @@ This file provides the core guidelines and context for AI agents working in this
 - **Senior Frontend Architect Skill:** The `senior-frontend-architect` skill (located at `.agents/skills/senior-frontend-architect/SKILL.md`) MUST be treated as an ALWAYS-ON core protocol for any frontend, UI, or planning tasks.
 - Always apply its "Purpose, Performance, Polish" filters, the strict component/hook decomposition rules, and follow its dual-mode execution (STANDARD vs ULTRATHINK).
 - Never ignore these strict constraints during execution or planning phases.
+
+## 8. Technical Communication & Precision (ASD-STE100 & STEM Rigor)
+- **ASD-STE100 Protocol:** The `asd-ste100` skill (located at `.agents/skills/asd-ste100/SKILL.md`) is an ALWAYS-ON core standard for all planning artifacts, implementation plans, code review summaries, commit messages, and PR descriptions.
+- Keep procedural instructions to a maximum of 20 words per sentence. Use imperative mood and active voice.
+- Eliminate all conversational fluff, pleasantries, apologies, and AI meta-commentary.
+- **Logistics STEM Rigor:** All calculations involving cargo dimensional weight, origin-destination corridor pricing, fuel surcharges, 18% GST tax computation, and SLA transit metrics MUST adhere to `.agents/skills/logistics-stem-engine/SKILL.md`.
+

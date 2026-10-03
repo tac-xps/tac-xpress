@@ -74,7 +74,7 @@ export function WarehouseLottieDelivery({ className }: WarehouseLottieDeliveryPr
   return (
     <div
       className={cn(
-        "relative w-full aspect-[5/3] rounded-xl border border-border/60 bg-card/60 backdrop-blur-xs overflow-hidden flex items-center justify-center select-none shadow-xs",
+        "relative w-full aspect-[5/3] rounded-none border border-border/60 bg-card/60 backdrop-blur-xs overflow-hidden flex items-center justify-center select-none shadow-xs",
         className
       )}
     >
@@ -101,7 +101,7 @@ export function WarehouseLottieDelivery({ className }: WarehouseLottieDeliveryPr
           className="absolute inset-0 flex items-center justify-center bg-muted/20 animate-pulse"
           aria-hidden="true"
         >
-          <div className="w-12 h-12 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+          <div className="w-12 h-12 border-2 border-primary/20 border-t-primary animate-spin" />
         </div>
       )}
     </div>

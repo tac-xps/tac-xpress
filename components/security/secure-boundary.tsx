@@ -32,7 +32,7 @@ export function SecureBoundary({
   if (error) {
     if (fallback === "hidden") return null
     return (
-      <div className="flex items-center justify-between gap-3 rounded-lg border border-dashed border-destructive/30 bg-destructive/5 p-4">
+      <div className="flex items-center justify-between gap-3 rounded-none border border-dashed border-destructive/30 bg-destructive/5 p-4">
         <div className="flex items-start gap-3">
           <AlertTriangle className="mt-0.5 h-5 w-5 text-destructive" />
           <div className="space-y-1">
@@ -47,7 +47,7 @@ export function SecureBoundary({
         <button
           type="button"
           onClick={() => refetch()}
-          className="inline-flex items-center gap-1 rounded-md border border-destructive/30 px-2 py-1 text-xs font-medium text-destructive hover:bg-destructive/10"
+          className="inline-flex items-center gap-1 rounded-none border border-destructive/30 px-2 py-1 text-xs font-medium text-destructive hover:bg-destructive/10"
         >
           <RefreshCw className="h-3 w-3" /> Retry
         </button>

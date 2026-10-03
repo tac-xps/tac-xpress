@@ -24,11 +24,11 @@ See [the reference and research notes](../artifacts/cargo-2026/research.md), [th
 
 ## Operations color and material
 
-- Ivory/lilac canvas, white cards, quiet violet-gray borders and deep ink text in the light theme.
-- Near-black violet canvas, lifted dark panels and off-white text with equivalent hierarchy in the dark theme.
-- Dark violet primary actions in light mode; pale violet actions with dark ink in dark mode. Functional shipment status colors remain separate.
-- Semantic CSS variables in `app/globals.css` are authoritative. Never infer status from color alone.
-- Borders and spacing provide structure. Operational tables, forms and metric surfaces remain flat. Allow only bounded static illustration scrims, a subtle image-frame ambient gradient and a one-pixel shipping-step accent rail. Avoid page-wide saturated gradients, glass cards and oversized metric tiles.
+- Crisp white canvas, pure white cards, quiet cool-slate borders and deep slate text in the light theme (Hue 255°).
+- Nordic Deep Slate canvas (L = 0.210), lifted slate cards (L = 0.260) and high-contrast text (|Lc| >= 90) in the dark theme.
+- Vibrant Nordic blue primary actions in dark mode (L = 0.680); deep slate primary actions in light mode. Functional shipment status colors remain separate.
+- Semantic CSS variables in `app/globals.css` are authoritative and calibrated via Evil Martians Harmony and APCA.
+- Borders and spacing provide structure. Operational tables, forms and metric surfaces remain flat. Avoid page-wide saturated gradients, glass cards and oversized metric tiles.
 
 ## Operations typography and space
 

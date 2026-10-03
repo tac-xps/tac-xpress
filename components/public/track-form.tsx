@@ -27,7 +27,7 @@ export function TrackForm({ variant = "inline", className, ...props }: TrackForm
         action="/track"
         method="get"
         aria-label="Track a consignment by AWB number"
-        className={cn("flex max-w-md items-center border border-border bg-card focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all shadow-xs rounded-sm overflow-hidden", className)}
+        className={cn("flex max-w-md items-center border border-border bg-card focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all shadow-xs rounded-none overflow-hidden", className)}
         {...props}
       >
         <div className="pl-3.5 text-muted-foreground" aria-hidden="true">
@@ -117,7 +117,7 @@ export function TrackForm({ variant = "inline", className, ...props }: TrackForm
             pattern="^[A-Za-z0-9\-]{5,40}$"
             autoComplete="off"
             placeholder={placeholder}
-            className="w-full px-4 py-3 font-mono text-sm border focus:outline-none focus-visible:ring-1 transition-colors bg-surface text-foreground placeholder:text-muted-foreground border-border focus:border-primary focus-visible:ring-primary uppercase rounded-sm"
+            className="w-full px-4 py-3 font-mono text-sm border focus:outline-none focus-visible:ring-1 transition-colors bg-surface text-foreground placeholder:text-muted-foreground border-border focus:border-primary focus-visible:ring-primary uppercase rounded-none"
           />
           <p className="mt-2 text-xs font-mono text-muted-foreground">
             Direct lookup for New Delhi ↔ Northeast India consignments.
@@ -128,7 +128,7 @@ export function TrackForm({ variant = "inline", className, ...props }: TrackForm
           <Button
             type="submit"
             size="lg"
-            className="rounded-md h-10 px-5 font-sans text-sm font-medium tracking-wide focus-visible:ring-1 active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:ring-primary"
+            className="rounded-none h-10 px-5 font-sans text-sm font-medium tracking-wide focus-visible:ring-1 active:scale-[0.98] transition-transform bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:ring-primary"
           >
             Track Cargo <ArrowUpRight data-icon="inline-end" className="size-4 ml-1" aria-hidden="true" />
           </Button>

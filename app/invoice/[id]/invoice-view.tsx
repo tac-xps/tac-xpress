@@ -18,14 +18,14 @@ export function InvoiceView({
   appOrigin: string
 }) {
   return (
-    <div className="flex min-h-screen justify-center bg-neutral-100 py-8 print:bg-white print:p-0">
-      <div className="relative">
+    <div className="flex min-h-screen justify-center bg-neutral-100 py-8 print:block print:min-h-0 print:h-auto print:m-0 print:p-0 print:bg-white">
+      <div className="relative print:static print:m-0 print:p-0">
         {!isPreview && (
           <div className="mb-4 flex items-center justify-between gap-3 print:hidden">
             <PrintButton />
             <Link
               href={`/invoice/${invoice.id}/label`}
-              className="inline-flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-800 shadow-sm transition hover:bg-neutral-50 hover:text-black focus:outline-none focus:ring-2 focus:ring-black"
+              className="inline-flex items-center gap-2 rounded-none border border-neutral-300 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-800 shadow-sm transition hover:bg-neutral-50 hover:text-black focus:outline-none focus:ring-2 focus:ring-black"
             >
               <Tag className="size-3.5" />
               View 4″ × 6″ Shipping Label

@@ -1,0 +1,18 @@
+# Tac-Xpress
+
+> Tac-Xpress is an enterprise express logistics platform for India. It specializes in resilient North-East India freight corridors, AI dispatch triage, and multimodal air-surface tracking.
+
+## Core Capabilities
+
+- **Corridor Logistics**: Dedicated express transit connecting Delhi (DEL), Guwahati (GAU), Imphal (IMF), Kolkata (CCU), Mumbai (BOM), and Bengaluru (BLR).
+- **Volumetric Pricing Engine**: Automated IATA dimensional weight calculations (5000 cm³/kg air, 4000 cm³/kg surface) and 18% GST calculation.
+- **Enterprise Authentication**: Zero-cost, phishing-resistant multi-factor authentication with WebAuthn Passkeys (Windows Hello, Touch ID) and RFC 6238 TOTP Authenticator apps.
+- **Real-Time Telemetry**: Real-time shipment tracking, sensor-based weight variance detection, and SLA breach risk scoring.
+- **Design System**: Perceptually uniform OKLCH color system compliant with APCA contrast standards and Tailwind CSS v4.
+
+## Key Links & Endpoints
+
+- [Full LLM Specification](/llms-full.txt): Complete architecture, API routes, data models, and formulas.
+- [Public Tracking](/track): Track air and surface shipments by AWB tracking number.
+- [Corridor Rates](/quote): Calculate volumetric cargo pricing and transit schedules.
+- [Operations Dashboard](/dashboard): Real-time hub analytics, dispatch queue, and SLA breach monitoring.

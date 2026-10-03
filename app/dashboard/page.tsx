@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { shipments, manifests, invoices, tickets } from "@/lib/db/schema"
@@ -7,6 +8,7 @@ import { getDashboardOverview } from "@/lib/dashboard-metrics"
 import { PageHeader } from "@/components/operations/page-header"
 import { OverviewMetrics } from "@/components/operations/overview-metrics"
 import { VolumeChart } from "@/components/operations/volume-chart"
+import { ChartBarInteractive } from "@/components/operations/chart-bar-interactive"
 import { WorkQueue } from "@/components/operations/work-queue"
 import { OpenManifests, HubActivity } from "@/components/operations/overview-records"
 import { Button } from "@/components/ui/button"
@@ -36,6 +38,18 @@ export default async function DashboardPage() {
           <Link href="/dashboard/shipments">Manage shipments</Link>
         </Button>
       </PageHeader>
+      {/* ── Dashboard banner ── */}
+      <div className="w-full overflow-hidden rounded-none border border-border/80 shadow-xs">
+        <Image
+          src="/images/dashboard/banner_dashboard.png"
+          alt="TAC-XPRESS operations dashboard banner"
+          width={1536}
+          height={384}
+          priority
+          className="w-full object-cover"
+          style={{ height: "auto" }}
+        />
+      </div>
       <ControlCenterActions />
       <OverviewMetrics stats={overview.stats} />
       <ControlCenterPanels snapshot={control} />
@@ -50,6 +64,7 @@ export default async function DashboardPage() {
           }}
         />
       </div>
+      <ChartBarInteractive data={overview.salesData} />
       <div className="grid min-w-0 gap-6 xl:grid-cols-[1.6fr_1fr]">
         <OpenManifests data={drafts} />
         <HubActivity hubs={overview.hubsData} />
