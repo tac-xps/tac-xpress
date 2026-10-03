@@ -1,6 +1,9 @@
 name: "Chromatic visual tests"
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -33,5 +36,6 @@ jobs:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           # Publish Storybook on Chromatic free tier with TurboSnap to minimize snapshot quota
           onlyChanged: true
+          autoAcceptChanges: "main"
           exitOnceUploaded: true
           exitZeroOnChanges: true

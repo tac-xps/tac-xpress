@@ -141,6 +141,7 @@ const meta = {
   parameters: {
     layout: "fullscreen",
     nextjs: { appDirectory: true, navigation: { pathname: "/dashboard" } },
+    chromatic: { viewports: [375, 768, 1280] },
   },
 } satisfies Meta<typeof OperationsPreview>
 export default meta
