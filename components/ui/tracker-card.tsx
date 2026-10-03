@@ -95,18 +95,20 @@ export const PackageTrackerCard = ({
       )}
     >
       {/* Top Section */}
-      <div className="p-4">
-        <motion.button
-          variants={itemVariants}
-          whileHover={shouldReduceMotion ? undefined : microGestures.hoverScale}
-          whileTap={shouldReduceMotion ? undefined : microGestures.tap}
-          onClick={onTrackClick}
-          className="flex w-full items-center justify-center gap-2 rounded-none border border-border bg-muted/50 px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
-        >
-          <CheckCircle2 className="size-4 shrink-0 text-status-delivered" />
-          <span>Show full tracking</span>
-        </motion.button>
-      </div>
+      {onTrackClick && (
+        <div className="p-4">
+          <motion.button
+            variants={itemVariants}
+            whileHover={shouldReduceMotion ? undefined : microGestures.hoverScale}
+            whileTap={shouldReduceMotion ? undefined : microGestures.tap}
+            onClick={onTrackClick}
+            className="flex w-full items-center justify-center gap-2 rounded-none border border-border bg-muted/50 px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
+          >
+            <CheckCircle2 className="size-4 shrink-0 text-status-delivered" />
+            <span>Show full tracking</span>
+          </motion.button>
+        </div>
+      )}
 
       {/* Image Section */}
       <motion.div variants={itemVariants}>

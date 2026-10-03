@@ -100,8 +100,8 @@ export function AnalyticsTabsContainer({
               <RevenueKpiStrip data={overview} />
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <RevenueChart data={overview.revenueByMonth} />
-                <CustomerGrowthChart data={overview.customerGrowthByMonth} />
+                <RevenueChart data={overview.revenueByMonth} period={period} />
+                <CustomerGrowthChart data={overview.customerGrowthByMonth} period={period} />
               </div>
 
               <RevenueServiceBreakdown data={overview} />

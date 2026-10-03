@@ -31,8 +31,6 @@ function displayDate(value?: string) {
 // ── Inner dialog body (reused) ──────────────────────────────────────────────
 
 function TrackingDialogBody({ result }: { result: TrackingResult }) {
-  const [cardOpen, setCardOpen] = React.useState(false)
-
   return (
     <div className="flex flex-col">
       {/* Header */}
@@ -57,8 +55,6 @@ function TrackingDialogBody({ result }: { result: TrackingResult }) {
           destinationFlag={<MapPin className="h-4 w-4 text-muted-foreground" />}
           date={`${result.origin} - ${displayDate(result.created_at)}`}
           packageImage={<AnimatedParcel status={result.status} />}
-          isExpanded={cardOpen}
-          onTrackClick={() => setCardOpen((v) => !v)}
           className="max-w-sm w-full"
         />
       </div>

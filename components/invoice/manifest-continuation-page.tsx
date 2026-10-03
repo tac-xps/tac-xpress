@@ -5,17 +5,33 @@ import type { TaxInvoiceDocument } from "@/lib/documents/invoice/domain/types"
 
 interface ManifestContinuationPageProps {
   doc: TaxInvoiceDocument
+  /** Rows for this sheet. Defaults to the full manifest. */
+  items?: TaxInvoiceDocument["shipment"]["manifest"]
+  /** Global index of the first row on this sheet. */
+  startIndex?: number
+  pageNumber?: number
+  totalPages?: number
+  /** Totals row and shipper declaration render on the last sheet only. */
+  isLastSheet?: boolean
 }
 
-export function ManifestContinuationPage({ doc }: ManifestContinuationPageProps) {
+export function ManifestContinuationPage({
+  doc,
+  items,
+  startIndex = 0,
+  pageNumber = 2,
+  totalPages = 2,
+  isLastSheet = true,
+}: ManifestContinuationPageProps) {
   const { commercial, shipment, routing } = doc
   const { manifest, metrics } = shipment
+  const rows = items ?? manifest
 
   return (
     <article
-      data-invoice-document="page-2"
+      data-invoice-document={`page-${pageNumber}`}
       className="invoice-page mx-auto box-border flex min-h-[297mm] w-[210mm] shrink-0 flex-col justify-between bg-white p-[8mm] font-sans text-xs leading-normal text-[#191716] shadow-sm [print-color-adjust:exact] print:shadow-none select-none mt-6 print:mt-0"
-      aria-label={`Consignment Manifest Continuation Page 2 for AWB ${shipment.awbNumber}`}
+      aria-label={`Consignment Manifest Continuation Page ${pageNumber} of ${totalPages} for AWB ${shipment.awbNumber}`}
     >
       <div className="flex flex-col gap-2">
         {/* Page 2 Header */}
@@ -100,9 +116,9 @@ export function ManifestContinuationPage({ doc }: ManifestContinuationPageProps)
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#e2dedc]">
-                {manifest.map((item, idx) => (
-                  <tr key={item.id || idx} className="hover:bg-neutral-50/50">
-                    <td className="py-1 px-2 font-mono text-neutral-500">{idx + 1}</td>
+                {rows.map((item, idx) => (
+                  <tr key={item.id || startIndex + idx} className="hover:bg-neutral-50/50">
+                    <td className="py-1 px-2 font-mono text-neutral-500">{startIndex + idx + 1}</td>
                     <td className="py-1 px-2 font-medium text-[#191716]">
                       {item.description}
                       {item.confidenceReason && (
@@ -133,6 +149,7 @@ export function ManifestContinuationPage({ doc }: ManifestContinuationPageProps)
                   </tr>
                 ))}
               </tbody>
+              {isLastSheet && (
               <tfoot className="border-t-2 border-[#e2dedc] bg-[#f7f5f3]/80 font-mono text-[8px]">
                 <tr>
                   <td colSpan={2} className="py-1.5 px-2 font-bold uppercase text-neutral-700">
@@ -150,11 +167,13 @@ export function ManifestContinuationPage({ doc }: ManifestContinuationPageProps)
                   </td>
                 </tr>
               </tfoot>
+              )}
             </table>
           </div>
         </section>
 
         {/* Shipper Declaration & Inspection Endorsement */}
+        {isLastSheet && (
         <section className="invoice-section mt-2 border border-[#e2dedc] p-2 bg-[#f7f5f3]/40 text-[7.5px] leading-tight text-neutral-600">
           <p className="font-bold text-[#191716] uppercase text-[7px] tracking-wider mb-0.5">
             CONSIGNMENT SECURITY &amp; ACCURACY DECLARATION:
@@ -166,6 +185,7 @@ export function ManifestContinuationPage({ doc }: ManifestContinuationPageProps)
             x-ray scan and inspect all packages prior to linehaul departure.
           </p>
         </section>
+        )}
       </div>
 
       {/* Footer / Dual Endorsement */}
@@ -198,7 +218,7 @@ export function ManifestContinuationPage({ doc }: ManifestContinuationPageProps)
 
         <div className="border-t border-[#e2dedc] pt-1 flex items-center justify-between text-[7px] font-mono text-neutral-400">
           <span>TAC-XPRESS LOGISTICS NETWORK • CONTINUATION MANIFEST</span>
-          <span>PAGE 2 OF 2</span>
+          <span>PAGE {pageNumber} OF {totalPages}</span>
         </div>
       </footer>
     </article>

@@ -21,7 +21,7 @@ You can complete the onboarding using either the interactive CLI or the Greptile
 
 1. **Install the Greptile CLI**:
    ```bash
-   npm i -g greptile@latest
+   pnpm add -g greptile@latest
    ```
 2. **Verify CLI Version**:
    ```bash

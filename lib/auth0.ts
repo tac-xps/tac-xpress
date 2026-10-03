@@ -1,10 +1,15 @@
 import { Auth0Client } from "@auth0/nextjs-auth0/server"
 
+const auth0Secret = process.env.AUTH0_SECRET
+if (process.env.NODE_ENV === "production" && !auth0Secret) {
+  throw new Error("AUTH0_SECRET environment variable is required in production.")
+}
+
 export const auth0 = new Auth0Client({
   domain: process.env.AUTH0_DOMAIN || "dev-mydyvbfsq8sjrz6j.jp.auth0.com",
   clientId: process.env.AUTH0_CLIENT_ID || "EtEfOLGDBkQoZC0v3WZneyyQGh0JwKgL",
   clientSecret: process.env.AUTH0_CLIENT_SECRET,
-  secret: process.env.AUTH0_SECRET || "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  secret: auth0Secret,
   appBaseUrl: process.env.APP_BASE_URL || process.env.AUTH0_BASE_URL || "http://localhost:3000",
 })
 

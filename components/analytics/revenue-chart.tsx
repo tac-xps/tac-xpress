@@ -42,8 +42,10 @@ function formatMonth(value: string) {
 
 export function RevenueChart({
   data,
+  period,
 }: {
   data: Array<{ month: string; amountPaise: number }>
+  period?: string
 }) {
   const chartData = data.map((d) => ({
     month: formatMonth(d.month),
@@ -61,12 +63,23 @@ export function RevenueChart({
     trend = ((currentMonth - previousMonth) / previousMonth) * 100
   }
 
+  const descriptionText =
+    period === "all"
+      ? "All-time billed freight revenue"
+      : period === "lastmonth"
+      ? "Billed revenue for prior month"
+      : period === "month"
+      ? "Billed revenue for current month"
+      : period
+      ? `Billed revenue for selected period (${period})`
+      : "Billed revenue across reporting period"
+
   return (
     <Card className="flex flex-col h-full">
       <CardHeader>
         <CardTitle>Revenue Trend</CardTitle>
         <CardDescription>
-          Showing revenue for the last 6 months
+          {descriptionText}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">

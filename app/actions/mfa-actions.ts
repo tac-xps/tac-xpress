@@ -59,6 +59,49 @@ export async function getMfaSettingsAction() {
   }
 }
 
+// --- Rate Limiting & Attempt Counter for MFA ---
+interface AttemptRecord {
+  failedAttempts: number
+  lockedUntil?: number
+}
+
+const loginAttemptStore = new Map<string, AttemptRecord>()
+const MAX_MFA_ATTEMPTS = 5
+const MFA_LOCKOUT_MS = 5 * 60 * 1000 // 5 minutes
+
+function checkMfaLockout(key: string): { locked: boolean; remainingSeconds?: number } {
+  const record = loginAttemptStore.get(key)
+  if (!record) return { locked: false }
+  if (record.lockedUntil) {
+    const now = Date.now()
+    if (now < record.lockedUntil) {
+      return {
+        locked: true,
+        remainingSeconds: Math.ceil((record.lockedUntil - now) / 1000),
+      }
+    }
+    loginAttemptStore.delete(key)
+  }
+  return { locked: false }
+}
+
+function recordMfaFailure(key: string): { locked: boolean } {
+  const now = Date.now()
+  const record = loginAttemptStore.get(key) || { failedAttempts: 0 }
+  record.failedAttempts += 1
+  if (record.failedAttempts >= MAX_MFA_ATTEMPTS) {
+    record.lockedUntil = now + MFA_LOCKOUT_MS
+    loginAttemptStore.set(key, record)
+    return { locked: true }
+  }
+  loginAttemptStore.set(key, record)
+  return { locked: false }
+}
+
+function clearMfaAttempts(key: string) {
+  loginAttemptStore.delete(key)
+}
+
 export async function startTotpSetupAction() {
   const session = await auth()
   if (!session?.user?.id || !session.user.email) {
@@ -71,14 +114,14 @@ export async function startTotpSetupAction() {
     .insert(userMfa)
     .values({
       userId: session.user.id,
-      totpSecretEncrypted: setup.encryptedSecret,
+      totpPendingSecretEncrypted: setup.encryptedSecret,
       totpEnabled: false,
       updatedAt: new Date(),
     })
     .onConflictDoUpdate({
       target: userMfa.userId,
       set: {
-        totpSecretEncrypted: setup.encryptedSecret,
+        totpPendingSecretEncrypted: setup.encryptedSecret,
         updatedAt: new Date(),
       },
     })
@@ -99,11 +142,15 @@ export async function confirmTotpSetupAction({ code }: { code: string }) {
     where: eq(userMfa.userId, session.user.id),
   })
 
-  if (!mfa?.totpSecretEncrypted) {
+  const pendingSecret =
+    mfa?.totpPendingSecretEncrypted ||
+    (!mfa?.totpEnabled ? mfa?.totpSecretEncrypted : null)
+
+  if (!pendingSecret) {
     return { error: "No pending authenticator setup found. Please start setup again." }
   }
 
-  const isValid = verifyTotpToken(mfa.totpSecretEncrypted, code, true)
+  const isValid = verifyTotpToken(pendingSecret, code, true)
   if (!isValid) {
     return { error: "Invalid code. Verify the 6 digits in your authenticator app and try again." }
   }
@@ -113,6 +160,8 @@ export async function confirmTotpSetupAction({ code }: { code: string }) {
   await db
     .update(userMfa)
     .set({
+      totpSecretEncrypted: pendingSecret,
+      totpPendingSecretEncrypted: null,
       totpEnabled: true,
       backupCodesHash: backupCodes.hashedCodesJson,
       updatedAt: new Date(),
@@ -136,6 +185,7 @@ export async function disableTotpAction() {
     .set({
       totpEnabled: false,
       totpSecretEncrypted: null,
+      totpPendingSecretEncrypted: null,
       backupCodesHash: null,
       updatedAt: new Date(),
     })
@@ -352,6 +402,15 @@ export async function verifyTotpLoginAction({
     return { error: "Verification challenge expired. Please sign in again." }
   }
 
+  const lockout = checkMfaLockout(challenge.userId)
+  if (lockout.locked) {
+    return {
+      error: `Too many failed attempts. Account temporarily locked for ${Math.ceil(
+        (lockout.remainingSeconds || 300) / 60
+      )} minutes.`,
+    }
+  }
+
   const mfa = await db.query.userMfa.findFirst({
     where: eq(userMfa.userId, challenge.userId),
   })
@@ -362,8 +421,16 @@ export async function verifyTotpLoginAction({
 
   const isValid = verifyTotpToken(mfa.totpSecretEncrypted, code, true)
   if (!isValid) {
+    const nowLocked = recordMfaFailure(challenge.userId)
+    if (nowLocked.locked) {
+      return {
+        error: "Too many failed attempts. Account temporarily locked for 5 minutes.",
+      }
+    }
     return { error: "Invalid authenticator code. Check the 6 digits and try again." }
   }
+
+  clearMfaAttempts(challenge.userId)
 
   const mfaVerifiedToken = await createMfaVerifiedToken({
     userId: challenge.userId,
@@ -389,6 +456,15 @@ export async function verifyBackupCodeLoginAction({
     return { error: "Verification challenge expired. Please sign in again." }
   }
 
+  const lockout = checkMfaLockout(challenge.userId)
+  if (lockout.locked) {
+    return {
+      error: `Too many failed attempts. Account temporarily locked for ${Math.ceil(
+        (lockout.remainingSeconds || 300) / 60
+      )} minutes.`,
+    }
+  }
+
   const mfa = await db.query.userMfa.findFirst({
     where: eq(userMfa.userId, challenge.userId),
   })
@@ -399,16 +475,38 @@ export async function verifyBackupCodeLoginAction({
 
   const result = verifyAndBurnBackupCode(code, mfa.backupCodesHash)
   if (!result.valid) {
+    const nowLocked = recordMfaFailure(challenge.userId)
+    if (nowLocked.locked) {
+      return {
+        error: "Too many failed attempts. Account temporarily locked for 5 minutes.",
+      }
+    }
     return { error: "Invalid recovery code. Each code is single-use only." }
   }
 
-  await db
+  // Atomic conditional update to prevent concurrent code reuse race condition
+  const updatedRows = await db
     .update(userMfa)
     .set({
       backupCodesHash: result.remainingHashedCodesJson,
       updatedAt: new Date(),
     })
-    .where(eq(userMfa.userId, challenge.userId))
+    .where(
+      and(
+        eq(userMfa.userId, challenge.userId),
+        eq(userMfa.backupCodesHash, mfa.backupCodesHash)
+      )
+    )
+    .returning({ userId: userMfa.userId })
+
+  if (updatedRows.length === 0) {
+    return {
+      error:
+        "Recovery code could not be processed due to a concurrent update. Please try again.",
+    }
+  }
+
+  clearMfaAttempts(challenge.userId)
 
   const mfaVerifiedToken = await createMfaVerifiedToken({
     userId: challenge.userId,

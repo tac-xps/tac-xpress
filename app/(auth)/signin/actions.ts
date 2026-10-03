@@ -9,6 +9,8 @@ import { users, userMfa, userPasskeys } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { isStaffRole } from "@/lib/auth/roles"
 import { createMfaChallengeToken } from "@/lib/auth/mfa/challenge-token"
+import { headers } from "next/headers"
+import { allowCredentialAttempt } from "@/lib/auth/credential-rate-limit"
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -50,6 +52,28 @@ export async function loginAction(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   ) {
+    // Apply credential rate limiting before calling Supabase authentication
+    const headerList = await headers()
+    const syntheticReq = new Request("https://tacexpress.internal/signin", {
+      headers: headerList,
+    })
+
+    try {
+      await allowCredentialAttempt(syntheticReq, email)
+    } catch (rateErr) {
+      if (rateErr instanceof CredentialsSignin) {
+        if (rateErr.code === "rate_limited") {
+          return { error: "Too many sign-in attempts. Please try again later." }
+        }
+        if (rateErr.code === "protection_unavailable") {
+          return {
+            error: "Sign-in is temporarily unavailable. Please try again shortly.",
+          }
+        }
+      }
+      return { error: "Too many sign-in attempts. Please try again later." }
+    }
+
     // 2. Pre-verify credentials against Supabase before issuing NextAuth session
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,

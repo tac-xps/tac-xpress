@@ -52,20 +52,18 @@ export function ShipmentStatusDonut({
   const chartData = [
     { status: "delivered" as const, count: data.delivered, fill: "var(--color-delivered)" },
     { status: "inTransit" as const, count: data.inTransit, fill: "var(--color-inTransit)" },
-    { status: "atRisk" as const, count: data.atRisk, fill: "var(--color-atRisk)" },
     { status: "pending" as const, count: data.pending, fill: "var(--color-pending)" },
   ].filter((item) => item.count > 0)
 
   const totalShipments = React.useMemo(() => {
-    return data.delivered + data.inTransit + data.pending + data.atRisk
-  }, [data])
+    return data.delivered + data.inTransit + data.pending
+  }, [data.delivered, data.inTransit, data.pending])
 
-  // All statuses for the legend (show even if 0)
+  // Primary lifecycle statuses for the legend
   const legendItems = [
     { key: "delivered" as const, label: "Delivered", count: data.delivered, color: chartConfig.delivered.color },
     { key: "inTransit" as const, label: "In Transit", count: data.inTransit, color: chartConfig.inTransit.color },
     { key: "pending" as const, label: "Pending", count: data.pending, color: chartConfig.pending.color },
-    { key: "atRisk" as const, label: "At Risk", count: data.atRisk, color: chartConfig.atRisk.color },
   ]
 
   return (
@@ -146,6 +144,14 @@ export function ShipmentStatusDonut({
                   </span>
                 </div>
               ))}
+              {data.atRisk > 0 && (
+                <div className="col-span-2 mt-2 flex items-center justify-between border border-destructive/30 bg-destructive/10 px-2.5 py-1.5 text-xs text-destructive">
+                  <span className="font-medium">SLA Risk Watch</span>
+                  <span className="font-mono font-bold tabular-nums">
+                    {data.atRisk} in-transit
+                  </span>
+                </div>
+              )}
             </div>
           </>
         )}

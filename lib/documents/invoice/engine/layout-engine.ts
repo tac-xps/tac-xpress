@@ -19,6 +19,10 @@ export interface DocumentLayoutBudget {
   requiresContinuationPage: boolean
   pageCount: number
   visiblePage1ManifestLimit: number
+  /** Max manifest rows on one continuation sheet. */
+  continuationPageRowLimit: number
+  /** Number of continuation sheets after page 1 (0 when not required). */
+  continuationPageCount: number
   sections: Record<string, SectionBudget>
   typography: {
     heroAwbPx: number
@@ -43,9 +47,18 @@ export interface DocumentLayoutBudget {
  * - Printable Area: 281mm (8mm top & bottom margins).
  * - Safety Reserve: Strictly reserves 11mm buffer (Content Target: 270mm).
  * - Readability Floor: Body ≥ 9px, Legal ≥ 7.5px, QR ≥ 18mm (Default: 20mm).
- * - If manifest items exceed available height, cleanly activates Manifest Continuation Page 2
+ * - If manifest items exceed available height, cleanly activates Manifest Continuation sheets
  *   rather than shrinking text below the readability floor.
+ * - Continuation sheets hold at most CONTINUATION_PAGE_ROW_LIMIT rows each; overflow
+ *   rolls to further sheets so no sheet exceeds the A4 printable height.
  */
+
+/**
+ * Continuation sheet row capacity.
+ * Fixed chrome (header, corridor strip, table head/foot, declaration, footer) ~ 100mm.
+ * Remaining 170mm / 6mm worst-case row (with confidence note) = 28 rows.
+ */
+export const CONTINUATION_PAGE_ROW_LIMIT = 28
 export function calculateDocumentLayoutBudget(doc: TaxInvoiceDocument): DocumentLayoutBudget {
   const printableHeightMm = 281
   const contentTargetMm = 270
@@ -103,6 +116,11 @@ export function calculateDocumentLayoutBudget(doc: TaxInvoiceDocument): Document
   const usedHeightMm = Math.round((fixedAndSemiFixedTotal + calculatedManifestHeightMm) * 10) / 10
   const remainingHeightMm = Math.round((contentTargetMm - usedHeightMm + safetyReserveMm) * 10) / 10
 
+  // Continuation sheets list the complete manifest, chunked by row capacity.
+  const continuationPageCount = requiresContinuationPage
+    ? Math.ceil(manifestItemCount / CONTINUATION_PAGE_ROW_LIMIT)
+    : 0
+
   let riskState: "Safe" | "Tight" | "Overflow"
   if (usedHeightMm <= 265) {
     riskState = "Safe"
@@ -120,8 +138,10 @@ export function calculateDocumentLayoutBudget(doc: TaxInvoiceDocument): Document
     remainingHeightMm,
     riskState,
     requiresContinuationPage,
-    pageCount: requiresContinuationPage ? 2 : 1,
+    pageCount: 1 + continuationPageCount,
     visiblePage1ManifestLimit,
+    continuationPageRowLimit: CONTINUATION_PAGE_ROW_LIMIT,
+    continuationPageCount,
     sections: {
       header: {
         name: "Header & Hero AWB",

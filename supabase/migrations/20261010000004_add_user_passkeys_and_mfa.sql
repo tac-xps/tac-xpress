@@ -17,6 +17,7 @@ CREATE INDEX IF NOT EXISTS user_passkeys_user_id_idx ON public.user_passkeys(use
 CREATE TABLE IF NOT EXISTS public.user_mfa (
   user_id uuid PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
   totp_secret_encrypted text,
+  totp_pending_secret_encrypted text,
   totp_enabled boolean NOT NULL DEFAULT false,
   backup_codes_hash text,
   updated_at timestamp without time zone NOT NULL DEFAULT now()

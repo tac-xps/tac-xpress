@@ -1,10 +1,7 @@
-export async function getInvoiceDetails(input: any) {
-  return {
-    data: {
-      id: "inv-123",
-      amount: 150000,
-      status: "unpaid",
-      // ... basic fields
-    }
-  }
+/**
+ * Storybook stand-in for the "use server" invoice actions module.
+ * Returns no data so stories keep their `initialData` fixtures.
+ */
+export async function getInvoiceDetails(_input: unknown) {
+  return { data: undefined }
 }

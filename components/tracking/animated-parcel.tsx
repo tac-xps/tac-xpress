@@ -202,7 +202,7 @@ export function AnimatedParcel({
             }
             animate={{ scale: 1, opacity: 1, rotate: 0 }}
             transition={{ delay: 0.6, type: "spring", stiffness: 380, damping: 16 }}
-            className="absolute -top-1 -right-1 flex size-7 items-center justify-center rounded-none bg-status-delivered text-status-delivered-foreground shadow-md ring-2 ring-card"
+            className="absolute -top-1 -right-1 flex size-7 items-center justify-center rounded-none bg-status-delivered text-background shadow-md ring-2 ring-card"
             title="Shipment Delivered"
           >
             <Check className="size-4 stroke-[2.75]" />

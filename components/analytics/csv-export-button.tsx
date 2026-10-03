@@ -44,9 +44,13 @@ export function CsvExportButton({
       rows = [
         [
           "On-Time Performance Rate",
-          overview.onTimePerformance !== null ? `${overview.onTimePerformance.toFixed(1)}%` : "100%",
+          overview.onTimePerformance !== null ? `${overview.onTimePerformance.toFixed(1)}%` : "N/A",
           "98.5%",
-          overview.onTimePerformance === null || overview.onTimePerformance >= 98.5 ? "Compliant" : "Breach Alert",
+          overview.onTimePerformance !== null
+            ? overview.onTimePerformance >= 98.5
+              ? "Compliant"
+              : "Breach Alert"
+            : "No Data",
         ],
         ["Delivered Consignments", overview.statusBreakdown.delivered, "N/A", "Complete"],
         ["In-Transit Consignments", overview.statusBreakdown.inTransit, "N/A", "Active"],

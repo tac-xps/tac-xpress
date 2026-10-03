@@ -332,12 +332,12 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Pro
   // When there's no window start (period === "all"), we use sql`true` / sql`false`
   // so that no parameter placeholder is emitted at all.
   const currentStartShipmentsCond = currentWindowStartIso
-    ? sql`${shipments.bookingDate} >= ${currentWindowStartIso}`
-    : sql`true`
+    ? sql`${shipments.bookingDate} >= ${currentWindowStartIso} and ${shipments.bookingDate} < ${currentWindowEndIso}`
+    : sql`${shipments.bookingDate} < ${currentWindowEndIso}`
 
   const currentStartUpdatedAtCond = currentWindowStartIso
-    ? sql`${shipments.updatedAt} >= ${currentWindowStartIso}`
-    : sql`true`
+    ? sql`${shipments.updatedAt} >= ${currentWindowStartIso} and ${shipments.updatedAt} < ${currentWindowEndIso}`
+    : sql`${shipments.updatedAt} < ${currentWindowEndIso}`
 
   const prevStartShipmentsCond = previousWindowStartIso
     ? sql`${shipments.bookingDate} >= ${previousWindowStartIso} and ${shipments.bookingDate} < ${currentWindowStartIso ?? currentWindowEndIso}`
@@ -361,7 +361,7 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Pro
     db
       .select({
         networkVolume: sql<number>`count(*)`,
-        currentNetworkVolume: sql<number>`coalesce(sum(case when ${currentStartShipmentsCond} and ${shipments.bookingDate} <= ${currentWindowEndIso} then 1 else 0 end), 0)`,
+        currentNetworkVolume: sql<number>`coalesce(sum(case when ${currentStartShipmentsCond} then 1 else 0 end), 0)`,
         previousNetworkVolume: sql<number>`coalesce(sum(case when ${prevStartShipmentsCond} then 1 else 0 end), 0)`,
         currentDelivered: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${currentStartUpdatedAtCond} then 1 else 0 end), 0)`,
         previousDelivered: sql<number>`coalesce(sum(case when ${shipments.status} = 'delivered' and ${prevStartUpdatedAtCond} then 1 else 0 end), 0)`,
@@ -396,7 +396,9 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Pro
       })
       .from(shipments)
       .where(
-        sql`${shipments.deletedAt} is null and ${shipments.bookingDate} >= ${sixMonthsStartIso}`
+        currentWindowStartIso
+          ? sql`${shipments.deletedAt} is null and ${shipments.bookingDate} >= ${currentWindowStartIso} and ${shipments.bookingDate} < ${currentWindowEndIso}`
+          : sql`${shipments.deletedAt} is null and ${shipments.bookingDate} < ${currentWindowEndIso}`
       )
       .groupBy(sql`date_trunc('month', ${shipments.bookingDate})`)
       .orderBy(sql`date_trunc('month', ${shipments.bookingDate})`),
@@ -406,7 +408,11 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Pro
         amountPaise: sql<number>`coalesce(sum(${invoices.amount}), 0)`,
       })
       .from(invoices)
-      .where(sql`${invoices.createdAt} >= ${sixMonthsStartIso}`)
+      .where(
+        currentWindowStartIso
+          ? sql`${invoices.createdAt} >= ${currentWindowStartIso} and ${invoices.createdAt} < ${currentWindowEndIso}`
+          : sql`${invoices.createdAt} < ${currentWindowEndIso}`
+      )
       .groupBy(sql`date_trunc('month', ${invoices.createdAt})`)
       .orderBy(sql`date_trunc('month', ${invoices.createdAt})`),
     db
@@ -416,7 +422,9 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Pro
       })
       .from(users)
       .where(
-        sql`${users.role} = 'customer' and ${users.deletedAt} is null and ${users.createdAt} >= ${sixMonthsStartIso}`
+        currentWindowStartIso
+          ? sql`${users.role} = 'customer' and ${users.deletedAt} is null and ${users.createdAt} >= ${currentWindowStartIso} and ${users.createdAt} < ${currentWindowEndIso}`
+          : sql`${users.role} = 'customer' and ${users.deletedAt} is null and ${users.createdAt} < ${currentWindowEndIso}`
       )
       .groupBy(sql`date_trunc('month', ${users.createdAt})`)
       .orderBy(sql`date_trunc('month', ${users.createdAt})`),
@@ -430,12 +438,11 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Pro
       .from(shipments)
       .where(
         currentWindowStartIso
-          ? sql`${shipments.deletedAt} is null and ${shipments.bookingDate} >= ${currentWindowStartIso}`
-          : sql`${shipments.deletedAt} is null`
+          ? sql`${shipments.deletedAt} is null and ${shipments.bookingDate} >= ${currentWindowStartIso} and ${shipments.bookingDate} < ${currentWindowEndIso}`
+          : sql`${shipments.deletedAt} is null and ${shipments.bookingDate} < ${currentWindowEndIso}`
       )
       .groupBy(bookingDay)
-      .orderBy(bookingDay)
-      .limit(365),
+      .orderBy(bookingDay),
     // Top routes (within period)
     db
       .select({
@@ -446,8 +453,8 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Pro
       .from(shipments)
       .where(
         currentWindowStartIso
-          ? sql`${shipments.deletedAt} is null and ${shipments.bookingDate} >= ${currentWindowStartIso}`
-          : isNull(shipments.deletedAt)
+          ? sql`${shipments.deletedAt} is null and ${shipments.bookingDate} >= ${currentWindowStartIso} and ${shipments.bookingDate} < ${currentWindowEndIso}`
+          : sql`${shipments.deletedAt} is null and ${shipments.bookingDate} < ${currentWindowEndIso}`
       )
       .groupBy(shipments.origin, shipments.destination)
       .orderBy(sql`count(*) desc`)

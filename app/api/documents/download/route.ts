@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="invoice-${id}.pdf"`,
         "Content-Length": String(pdf.length),
-        "Cache-Control": "private, max-age=60",
+        "Cache-Control": "private, no-store",
       },
     })
   } catch (error) {

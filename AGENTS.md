@@ -43,13 +43,13 @@ This file provides the core guidelines and context for AI agents working in this
 - **System Map:** See `docs/ARCHITECTURE.md` for a comprehensive breakdown of the WhatsApp Meta API integration, Supabase Auth (Magic Links), Resend Email notification pipeline, and the AI Triage + Auto-Responder engines. Always read this file before modifying support, routing, or messaging logic.
 
 ## 7. Global Frontend Architecture Rules
-- **Senior Frontend Architect Skill:** The `senior-frontend-architect` skill (located at `.agents/skills/senior-frontend-architect/SKILL.md`) MUST be treated as an ALWAYS-ON core protocol for any frontend, UI, or planning tasks.
-- Always apply its "Purpose, Performance, Polish" filters, the strict component/hook decomposition rules, and follow its dual-mode execution (STANDARD vs ULTRATHINK).
+- **Senior Frontend Architecture:** Senior frontend architecture standards MUST be treated as an ALWAYS-ON core protocol for any frontend, UI, or planning tasks.
+- Always apply the "Purpose, Performance, Polish" filters, strict component/hook decomposition rules, and dual-mode execution (STANDARD vs ULTRATHINK).
 - Never ignore these strict constraints during execution or planning phases.
 
 ## 8. Technical Communication & Precision (ASD-STE100 & STEM Rigor)
-- **ASD-STE100 Protocol:** The `asd-ste100` skill (located at `.agents/skills/asd-ste100/SKILL.md`) is an ALWAYS-ON core standard for all planning artifacts, implementation plans, code review summaries, commit messages, and PR descriptions.
+- **ASD-STE100 Protocol:** The ASD-STE100 standard is an ALWAYS-ON core standard for all planning artifacts, implementation plans, code review summaries, commit messages, and PR descriptions.
 - Keep procedural instructions to a maximum of 20 words per sentence. Use imperative mood and active voice.
 - Eliminate all conversational fluff, pleasantries, apologies, and AI meta-commentary.
-- **Logistics STEM Rigor:** All calculations involving cargo dimensional weight, origin-destination corridor pricing, fuel surcharges, 18% GST tax computation, and SLA transit metrics MUST adhere to `.agents/skills/logistics-stem-engine/SKILL.md`.
+- **Logistics STEM Rigor:** All calculations involving cargo dimensional weight, origin-destination corridor pricing, fuel surcharges, 18% GST tax computation, and SLA transit metrics MUST adhere to the logistics STEM engine specifications and pure functions in `lib/stem/` and `lib/documents/invoice/engine/`.
 

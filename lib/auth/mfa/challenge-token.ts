@@ -64,6 +64,18 @@ export interface MfaVerifiedPayload {
   role: string
 }
 
+// In-memory single-use JTI cache with TTL for MFA grants
+const consumedMfaGrants = new Map<string, number>()
+
+function pruneExpiredGrants() {
+  const now = Date.now()
+  for (const [jti, expiresAt] of consumedMfaGrants.entries()) {
+    if (expiresAt <= now) {
+      consumedMfaGrants.delete(jti)
+    }
+  }
+}
+
 /**
  * Creates an ephemeral, single-use verified MFA grant token valid for 60 seconds.
  */
@@ -71,6 +83,7 @@ export async function createMfaVerifiedToken(
   payload: MfaVerifiedPayload
 ): Promise<string> {
   const secret = getJwtSecret()
+  const jti = crypto.randomUUID()
   return await new SignJWT({
     sub: payload.userId,
     email: payload.email,
@@ -78,13 +91,14 @@ export async function createMfaVerifiedToken(
     purpose: "mfa-verified",
   })
     .setProtectedHeader({ alg: "HS256" })
+    .setJti(jti)
     .setIssuedAt()
     .setExpirationTime("60s")
     .sign(secret)
 }
 
 /**
- * Validates the short-lived verified MFA grant token.
+ * Validates the short-lived verified MFA grant token and atomically consumes its JTI.
  */
 export async function verifyMfaVerifiedToken(
   token: string
@@ -95,9 +109,16 @@ export async function verifyMfaVerifiedToken(
       algorithms: ["HS256"],
     })
 
-    if (payload.purpose !== "mfa-verified" || !payload.sub) {
+    if (payload.purpose !== "mfa-verified" || !payload.sub || !payload.jti) {
       return null
     }
+
+    pruneExpiredGrants()
+    if (consumedMfaGrants.has(payload.jti)) {
+      return null // Token replay rejected
+    }
+
+    consumedMfaGrants.set(payload.jti, Date.now() + 65_000)
 
     return {
       userId: payload.sub,

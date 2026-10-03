@@ -749,6 +749,7 @@ export const userMfa = pgTable("user_mfa", {
     .references(() => users.id, { onDelete: "cascade" })
     .primaryKey(),
   totpSecretEncrypted: text("totp_secret_encrypted"), // AES-256-GCM encrypted
+  totpPendingSecretEncrypted: text("totp_pending_secret_encrypted"), // Pending confirmation
   totpEnabled: boolean("totp_enabled").default(false).notNull(),
   backupCodesHash: text("backup_codes_hash"), // JSON array of hashed recovery codes
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

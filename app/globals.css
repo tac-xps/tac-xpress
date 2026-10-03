@@ -36,10 +36,12 @@
   --color-status-transit: var(--status-transit);
   --color-status-delivered: var(--status-delivered);
   --color-status-failed: var(--status-failed);
-  --color-corridor: oklch(var(--corridor-l, 0.60) var(--corridor-c, 0.145) var(--corridor-h, 245) / <alpha-value>);
-  --color-corridor-foreground: oklch(var(--corridor-fg-l, 0.98) var(--corridor-fg-c, 0.01) var(--corridor-h, 245) / <alpha-value>);
-  --color-corridor-subtle: oklch(var(--corridor-subtle-l, 0.96) var(--corridor-subtle-c, 0.02) var(--corridor-h, 245) / <alpha-value>);
-  --color-corridor-border: oklch(var(--corridor-border-l, 0.88) var(--corridor-border-c, 0.05) var(--corridor-h, 245) / <alpha-value>);
+
+  /* Opaque values. Tailwind v4 derives slash-opacity variants via color-mix(). */
+  --color-corridor: oklch(var(--corridor-l, 0.60) var(--corridor-c, 0.145) var(--corridor-h, 245));
+  --color-corridor-foreground: oklch(var(--corridor-fg-l, 0.98) var(--corridor-fg-c, 0.01) var(--corridor-h, 245));
+  --color-corridor-subtle: oklch(var(--corridor-subtle-l, 0.96) var(--corridor-subtle-c, 0.02) var(--corridor-h, 245));
+  --color-corridor-border: oklch(var(--corridor-border-l, 0.88) var(--corridor-border-c, 0.05) var(--corridor-h, 245));
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -74,9 +76,9 @@
   --radius-4xl: 0px;
   --radius: 0px;
 
-  /* Brand colors — calibrated OKLCH with alpha opacity support */
-  --color-brand-blue: oklch(0.48 0.15 255 / <alpha-value>);
-  --color-invoice-navy: oklch(0.20 0.025 255 / <alpha-value>);
+  /* Brand colors — opaque OKLCH; slash-opacity handled by Tailwind color-mix() */
+  --color-brand-blue: oklch(0.48 0.15 255);
+  --color-invoice-navy: oklch(0.20 0.025 255);
 
   /* Semantic named shadows */
   --shadow-card: var(--shadow-card-val);
@@ -122,11 +124,13 @@
   --surface: oklch(0.985 0.004 255);
   --card-accent: oklch(0.480 0.160 255);
 
-  /* ── Status colors (APCA Lc >= 60 & Safe Chroma Clamped) ────────────────── */
-  --status-pending: oklch(0.78 0.12 78);
-  --status-transit: oklch(0.62 0.145 255);
-  --status-delivered: oklch(0.65 0.145 142);
-  --status-failed: oklch(0.62 0.145 28);
+  /* ── Status colors (light) ───────────────────────────────────────────────
+     Used as text over white and over their own /10–/15 tints.
+     L <= 0.52 keeps APCA |Lc| >= 60 against L ~0.97 tinted backgrounds. */
+  --status-pending: oklch(0.52 0.115 65);
+  --status-transit: oklch(0.50 0.150 255);
+  --status-delivered: oklch(0.50 0.130 145);
+  --status-failed: oklch(0.52 0.170 28);
 
   /* ── Dynamic Corridor Theming Defaults (Delhi ↔ Guwahati default hue 255) ── */
   --corridor-h: 255;
@@ -262,17 +266,13 @@
 }
 
 @layer base {
+  /* Zero-Radius Mandate: all corners strictly square. */
   *,
   *::before,
   *::after {
-    @apply border-border outline-ring/50;
-  }
+    border-radius: 0 !important;
 
-  /* ── Zero-Radius Mandate (All corners strictly square) ───────────────────── */
-  *,
-  *::before,
-  *::after {
-    border-radius: 0px !important;
+    @apply border-border outline-ring/50;
   }
 
   html {
@@ -305,7 +305,7 @@
     stroke-width: 1.5px;
   }
 
-  @media (min-width: 768px) {
+  @media (width >= 768px) {
     svg.lucide,
     [data-slot="icon"] {
       stroke-width: 1.25px;

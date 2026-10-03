@@ -23,6 +23,12 @@ export interface NormalizerOptions {
   forceFresh?: boolean
 }
 
+/** Base64 encode ASCII input in both Node and browser runtimes. */
+function toBase64(value: string): string {
+  if (typeof Buffer !== "undefined") return Buffer.from(value).toString("base64")
+  return btoa(value)
+}
+
 /**
  * Domain Normalizer: Transforms raw database records into the decoupled
  * CommercialDocument and ShipmentReference structures of TaxInvoiceDocument.
@@ -49,7 +55,7 @@ export function normalizeInvoiceDomain(
   const origin = options.appOrigin || "https://tacservice.in"
   const verificationToken =
     options.verificationToken ||
-    Buffer.from(`${invoice.id}-${shipment.awbNumber}`).toString("base64").substring(0, 16)
+    toBase64(`${invoice.id}-${shipment.awbNumber}`).substring(0, 16)
 
   // 1. Format Dates
   const invoiceDate = format(new Date(invoice.createdAt), "dd MMM yyyy")
@@ -109,12 +115,28 @@ export function normalizeInvoiceDomain(
       ? SAC_CLASSIFICATIONS.AIR_FREIGHT.code
       : SAC_CLASSIFICATIONS.SURFACE_FREIGHT.code
 
+  const gstRate = invoice.gstRate ?? 18
+  const ancillaryPaise =
+    (invoice.pickupCharge ?? 0) +
+    (invoice.packingCharge ?? 0) +
+    (invoice.docketCharge ?? 0) +
+    (invoice.insuranceCharge ?? 0) +
+    (invoice.otherCharges ?? 0)
+
+  // Taxable base: stored subtotal, else back out GST from the gross amount.
+  const taxableBasePaise =
+    invoice.subtotal && invoice.subtotal > 0
+      ? invoice.subtotal
+      : invoice.amount && invoice.amount > 0
+      ? Math.round((invoice.amount * 100) / (100 + gstRate))
+      : 0
+
+  // Freight is the explicit charge, else the residual after ancillary charges.
+  // Never substitute the full subtotal: it already contains ancillary charges.
   const freightAmountPaise =
     invoice.freightCharge && invoice.freightCharge > 0
       ? invoice.freightCharge
-      : invoice.subtotal && invoice.subtotal > 0
-      ? invoice.subtotal
-      : invoice.amount
+      : Math.max(0, taxableBasePaise - ancillaryPaise)
 
   const rawChargeLines = [
     {
@@ -155,13 +177,21 @@ export function normalizeInvoiceDomain(
     },
   ].filter((line) => line.taxableAmount.paise > 0)
 
+  // Place of supply follows the persisted classification (lib/invoices/persistence:
+  // interstate === igst > 0). Intrastate rows store CGST/SGST with zero IGST.
+  const persistedIntrastate =
+    (invoice.igst ?? 0) === 0 && ((invoice.cgst ?? 0) > 0 || (invoice.sgst ?? 0) > 0)
+  const placeOfSupplyStateCode = persistedIntrastate
+    ? DELHI_CENTRAL_HUB.stateCode
+    : deliverTo.stateCode || "14"
+
   const taxEngineResult = calculateInvoiceTaxes({
     supplierStateCode: DELHI_CENTRAL_HUB.stateCode,
     supplierGSTIN: DELHI_CENTRAL_HUB.gstin,
     recipientStateCode: deliverTo.stateCode || "14",
-    placeOfSupplyStateCode: "14",
+    placeOfSupplyStateCode,
     rawChargeLines,
-    defaultGstRate: invoice.gstRate || 18,
+    defaultGstRate: gstRate,
   })
 
   // 6. Payment Financials Reconciliation

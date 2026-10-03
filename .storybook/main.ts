@@ -54,6 +54,8 @@ const config: StorybookConfig = {
       'next/dist/client/components/unstable-rethrow': require.resolve(
         'next/dist/client/components/unstable-rethrow.browser.js'
       ),
+      // Server action mocks are also enforced by NormalModuleReplacementPlugin below,
+      // because the Next.js tsconfig-paths resolver can rewrite `@/` before alias runs.
       '@/app/actions/tracking': require.resolve('./mocks/tracking.ts'),
       '@/app/dashboard/invoices/actions': require.resolve('./mocks/invoices-actions.ts'),
       '@sparticuz/chromium': false,
@@ -114,6 +116,15 @@ const config: StorybookConfig = {
       new webpack.NormalModuleReplacementPlugin(
         /unstable-rethrow(\.js)?$/,
         require.resolve('next/dist/client/components/unstable-rethrow.browser.js')
+      ),
+      // Never bundle "use server" modules (they pull in lib/db and server-only).
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]app[\\/]dashboard[\\/]invoices[\\/]actions(\.ts)?$/,
+        require.resolve('./mocks/invoices-actions.ts')
+      ),
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]app[\\/]actions[\\/]tracking(\.ts)?$/,
+        require.resolve('./mocks/tracking.ts')
       )
     );
 

@@ -47,34 +47,32 @@ export async function POST(req: Request) {
     )
   }
 
-  // Public endpoint — protected by Arcjet rate limiting only.
-  // No session required: this is the customer-facing support widget.
-
-  let decision
-  if (process.env.NODE_ENV === "test" || (process.env.ARCJET_KEY && process.env.ARCJET_KEY !== "ajkey_placeholder")) {
-    try {
-      decision = await aj.protect(req, { requested: 1 })
-    } catch (error) {
-      console.error("Arcjet error:", error)
-      Sentry.captureException(error, { tags: { area: "chat_rate_limit" } })
-      return NextResponse.json(
-        { error: "Chat is temporarily unavailable (aj error)." },
-        { status: 503 }
-      )
-    }
-    if (decision.isErrored()) {
-      console.error("Arcjet decision error:", decision.reason)
-      return NextResponse.json(
-        { error: "Chat is temporarily unavailable.", reason: decision.reason },
-        { status: 503 }
-      )
-    }
+  // Public endpoint — protected by Arcjet rate limiting.
+  // Fails closed with 503 when rate limiting is unavailable or errors.
+  try {
+    const decision = await aj.protect(req, { requested: 1 })
     if (decision.isDenied()) {
       return NextResponse.json(
         { error: "Too many requests. Please try again shortly." },
         { status: 429 }
       )
     }
+    if (decision.isErrored()) {
+      Sentry.captureMessage(`Arcjet decision error: ${String(decision.reason)}`, {
+        level: "warning",
+        tags: { area: "chat_rate_limit" },
+      })
+      return NextResponse.json(
+        { error: "Chat is temporarily unavailable." },
+        { status: 503 }
+      )
+    }
+  } catch (error) {
+    Sentry.captureException(error, { tags: { area: "chat_rate_limit" } })
+    return NextResponse.json(
+      { error: "Chat is temporarily unavailable." },
+      { status: 503 }
+    )
   }
 
   const body = await readBoundedJson(req)

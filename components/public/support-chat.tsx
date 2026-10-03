@@ -32,9 +32,9 @@ function SquareChatIcon({ className }: { className?: string }) {
       className={className}
       aria-hidden="true"
     >
-      <path d="M21 15H7l-4 4V3h18v12z" />
-      <line x1="7" y1="7" x2="17" y2="7" />
-      <line x1="7" y1="11" x2="13" y2="11" />
+      <path d="M21 3H3v14h4v4h4v-4h10V3z" />
+      <line x1="7" y1="8" x2="17" y2="8" />
+      <line x1="7" y1="12" x2="14" y2="12" />
     </svg>
   )
 }
@@ -70,7 +70,6 @@ export function SupportChat() {
                   transition={{ duration: 0.15 }}
                   className="relative aspect-square size-12 sm:size-14 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground p-0 shadow-lg hover:shadow-xl flex items-center justify-center border border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all cursor-pointer"
                   aria-label="Ask a question"
-                  title="Ask a question"
                 >
                   <span className="absolute top-2.5 right-2.5 flex size-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-primary-foreground opacity-75" />

@@ -64,8 +64,21 @@ export function InvoiceDocument({ doc }: InvoiceDocumentProps) {
         <VerificationPanel doc={doc} pageNumber={1} totalPages={budget.pageCount} />
       </article>
 
-      {/* ── PAGE 2: MANIFEST CONTINUATION SHEET (ACTIVATED FOR EXTREME DENSITY) ── */}
-      {budget.requiresContinuationPage && <ManifestContinuationPage doc={doc} />}
+      {/* ── CONTINUATION SHEETS: complete manifest, chunked to fit A4 ── */}
+      {Array.from({ length: budget.continuationPageCount }, (_, sheetIdx) => {
+        const start = sheetIdx * budget.continuationPageRowLimit
+        return (
+          <ManifestContinuationPage
+            key={`continuation-${sheetIdx}`}
+            doc={doc}
+            startIndex={start}
+            items={doc.shipment.manifest.slice(start, start + budget.continuationPageRowLimit)}
+            pageNumber={sheetIdx + 2}
+            totalPages={budget.pageCount}
+            isLastSheet={sheetIdx === budget.continuationPageCount - 1}
+          />
+        )
+      })}
     </div>
   )
 }
