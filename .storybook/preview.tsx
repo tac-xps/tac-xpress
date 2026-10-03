@@ -102,8 +102,9 @@ const preview: Preview = {
     },
 
     chromatic: {
-      // Capture snapshots at all 4 breakpoints in every story
-      viewports: [375, 768, 1280, 1920],
+      // Default to desktop (1280px) for component primitives to preserve snapshot quota
+      // Scoped responsive viewports ([375, 768, 1280]) are defined on page/layout stories
+      viewports: [1280],
       // Delay snapshot to let fonts and images settle
       delay: 300,
     },

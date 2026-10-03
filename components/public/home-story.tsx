@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { WarehouseLottieDelivery } from "./warehouse-lottie-delivery"
 import { MagneticButton } from "./magnetic-button"
 import { motion, useReducedMotion } from "motion/react"
+import { AnimatedCounter } from "@/components/ui/animated-counter"
 
 interface HomeStoryProps {
   ctaHref?: string
@@ -21,10 +22,17 @@ export function HomeStory({
 
   return (
     <section
-      className="cargo-inverse bg-background"
+      className="relative overflow-hidden bg-background"
       aria-labelledby="about-title"
     >
+      {/* Subtle tinted background wash */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-radial from-primary/5 via-transparent to-transparent"
+        aria-hidden="true"
+      />
+
       <div className="cargo-container cargo-section grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        {/* Left — visual */}
         <motion.div
           className="cargo-story-frame relative overflow-hidden"
           initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, scale: 0.98 }}
@@ -32,25 +40,52 @@ export function HomeStory({
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
+          {/* Accent top border on the media frame */}
+          <div
+            className="absolute top-0 left-0 right-0 h-[3px] z-10 bg-gradient-to-r from-primary via-accent to-secondary"
+            aria-hidden="true"
+          />
           <WarehouseLottieDelivery />
-          <p className="mt-4 font-mono text-xs text-muted-foreground">
+          <p className="mt-4 font-mono text-xs text-muted-foreground/70">
             Connecting communities / Delhi to Northeast India cargo route
           </p>
         </motion.div>
 
+        {/* Right — copy */}
         <motion.div
           initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 16 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.55, delay: shouldReduceMotion ? 0 : 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col"
         >
-          <p className="cargo-eyebrow mb-5 text-muted-foreground">
-            Our route. Our reason.
-          </p>
-          <h2 id="about-title" className="cargo-heading">
-            Connected by more than a destination.
+          {/* Eyebrow — primary accent with left rule */}
+          <div className="mb-6 flex items-center gap-3">
+            <div
+              className="h-4 w-[3px] shrink-0 bg-primary"
+              aria-hidden="true"
+            />
+            <p
+              className="cargo-eyebrow font-mono text-xs font-semibold uppercase tracking-[0.18em] text-primary"
+            >
+              Our route. Our reason.
+            </p>
+          </div>
+
+          {/* Heading — two-tone color */}
+          <h2
+            id="about-title"
+            className="cargo-heading leading-tight"
+          >
+            <span className="text-foreground">Connected by more</span>
+            <br />
+            <span className="text-muted-foreground">
+              than a destination.
+            </span>
           </h2>
-          <p className="mt-7 text-lg leading-relaxed text-muted-foreground">
+
+          {/* Body copy — slightly better contrast */}
+          <p className="mt-7 text-lg leading-relaxed text-foreground/75">
             A shop waiting for stock. A family sending a little piece of home.
             Every consignment connects people as well as places.
           </p>
@@ -60,17 +95,49 @@ export function HomeStory({
             with the details that matter: what you are sending, the route, the
             handling and the handover.
           </p>
+
+          {/* Stats strip */}
+          <div className="mt-8 grid grid-cols-3 gap-0 border border-border/60">
+            <div className="flex flex-col gap-1 px-5 py-4 border-r border-border/60">
+              <span className="font-mono text-xl font-bold text-foreground">
+                <AnimatedCounter value={2000} suffix="+" stiffness={160} damping={26} />
+              </span>
+              <span className="text-xs text-muted-foreground leading-snug">
+                Consignments moved
+              </span>
+            </div>
+            <div className="flex flex-col gap-1 px-5 py-4 border-r border-border/60">
+              <span className="font-mono text-xl font-bold text-foreground">
+                <AnimatedCounter value={48} suffix=" hrs" stiffness={200} damping={28} />
+              </span>
+              <span className="text-xs text-muted-foreground leading-snug">
+                Average transit
+              </span>
+            </div>
+            <div className="flex flex-col gap-1 px-5 py-4">
+              <span className="font-mono text-xl font-bold text-foreground">
+                NEI
+              </span>
+              <span className="text-xs text-muted-foreground leading-snug">
+                Routes covered
+              </span>
+            </div>
+          </div>
+
+          {/* CTA */}
           <div className="mt-8">
             <MagneticButton strength={0.16} className="w-fit">
               <Button
                 asChild
-                variant="outline"
                 size="lg"
-                className="rounded-md border-current bg-transparent font-mono text-xs font-semibold uppercase tracking-wider transition-all hover:bg-foreground hover:text-background active:scale-[0.97]"
+                className="group rounded-none border border-primary/60 bg-primary/10 font-mono text-xs font-semibold uppercase tracking-wider text-primary transition-all hover:bg-primary hover:text-primary-foreground active:scale-[0.97]"
               >
                 <Link href={ctaHref}>
                   <span>{ctaText}</span>
-                  <ArrowUpRight data-icon="inline-end" className="size-3.5 ml-1.5" />
+                  <ArrowUpRight
+                    data-icon="inline-end"
+                    className="size-3.5 ml-1.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  />
                 </Link>
               </Button>
             </MagneticButton>

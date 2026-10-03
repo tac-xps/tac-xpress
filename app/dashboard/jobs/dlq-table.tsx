@@ -216,7 +216,7 @@ export function DlqTable({
               Inspection of the serialized event data that encountered unrecoverable errors.
             </DialogDescription>
           </DialogHeader>
-          <pre className="max-h-[350px] overflow-auto rounded-md bg-muted p-4 font-mono text-xs text-foreground">
+          <pre className="max-h-[350px] overflow-auto rounded-none bg-muted p-4 font-mono text-xs text-foreground">
             {JSON.stringify(selectedPayload?.payload, null, 2)}
           </pre>
         </DialogContent>

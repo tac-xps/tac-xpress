@@ -24,7 +24,7 @@ export default function FeedbackPage() {
               Tac-Xpress experience.
             </p>
           </div>
-          <div className="rounded-xl border bg-card p-6 text-card-foreground shadow-sm md:p-8">
+          <div className="rounded-none border bg-card p-6 text-card-foreground shadow-sm md:p-8">
             <FeedbackForm />
           </div>
         </div>

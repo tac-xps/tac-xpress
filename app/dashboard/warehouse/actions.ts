@@ -81,6 +81,7 @@ export const scanShipmentAction = authActionClient
         },
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Failed to process scan:", error)
       return {
         success: false,

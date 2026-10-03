@@ -1,13 +1,14 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { db } from "@/lib/db"
-import { users } from "@/lib/db/schema"
+import { users, userMfa, userPasskeys } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { createClient } from "@supabase/supabase-js"
 import * as Sentry from "@sentry/nextjs"
 import { authConfig } from "./auth.config"
 import { isStaffRole } from "@/lib/auth/roles"
 import { allowCredentialAttempt } from "@/lib/auth/credential-rate-limit"
+import { verifyMfaVerifiedToken } from "@/lib/auth/mfa/challenge-token"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -19,8 +20,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        mfaToken: { label: "MFA Token", type: "text" },
+        rateLimitChecked: { label: "Rate Limit Checked", type: "text" },
       },
       async authorize(credentials, request) {
+        // 0. Verified MFA Token Flow (completes 2FA / Passkey login)
+        if (typeof credentials?.mfaToken === "string" && credentials.mfaToken.trim()) {
+          const verified = await verifyMfaVerifiedToken(credentials.mfaToken)
+          if (!verified) return null
+
+          const dbUsers = await db.select().from(users).where(eq(users.id, verified.userId))
+          const dbUser = dbUsers[0]
+          if (!dbUser || dbUser.deletedAt || !isStaffRole(dbUser.role)) return null
+
+          return {
+            id: dbUser.id,
+            email: dbUser.email,
+            role: dbUser.role,
+          }
+        }
+
         if (
           typeof credentials?.email !== "string" ||
           typeof credentials?.password !== "string" ||
@@ -29,7 +48,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         ) return null
 
         const email = credentials.email.trim().toLowerCase()
-        if (!(await allowCredentialAttempt(request, email))) return null
+        const rateLimitChecked = credentials?.rateLimitChecked === "true"
+        if (!rateLimitChecked && !(await allowCredentialAttempt(request, email))) return null
         const bypassPassword = process.env.E2E_TEST_USER_PASSWORD
 
         // 1. E2E Bypass Flow
@@ -126,6 +146,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         if (!dbUser || dbUser.deletedAt || !isStaffRole(dbUser.role)) return null
+
+        // Enforce MFA: If user has TOTP or Passkey enrolled, direct password sign-in is forbidden
+        const mfaRecord = db.query?.userMfa
+          ? await db.query.userMfa.findFirst({
+              where: eq(userMfa.userId, dbUser.id),
+            })
+          : null
+        const passkeys = await db
+          .select()
+          .from(userPasskeys)
+          .where(eq(userPasskeys.userId, dbUser.id))
+
+        const hasPasskeys = passkeys.some((pk) => Boolean(pk.publicKey))
+        if (mfaRecord?.totpEnabled || hasPasskeys) {
+          return null
+        }
 
         return {
           id: dbUser.id,

@@ -62,7 +62,7 @@ function InvoiceCard({ invoice }: { invoice: Invoice }) {
       <CardContent className="p-5">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none bg-muted">
               <FileText className="h-5 w-5 text-muted-foreground" />
             </div>
             <div className="space-y-1">
@@ -144,7 +144,7 @@ function InvoiceCard({ invoice }: { invoice: Invoice }) {
 export default function InvoicesList({ invoices }: { invoices: Invoice[] }) {
   if (invoices.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border bg-muted/20 py-16 text-center">
+      <div className="flex flex-col items-center justify-center rounded-none border bg-muted/20 py-16 text-center">
         <FileText className="mb-3 h-10 w-10 text-muted-foreground" />
         <p className="font-medium">No invoices yet</p>
         <p className="mt-1 text-sm text-muted-foreground">

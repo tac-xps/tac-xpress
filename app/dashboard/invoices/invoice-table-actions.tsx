@@ -10,6 +10,7 @@ import {
   Send,
   CheckCircle,
   Trash2,
+  Loader2,
 } from "lucide-react"
 import { InvoicePreviewDialog } from "./invoice-preview-dialog"
 import { Button } from "@/components/ui/button"
@@ -53,6 +54,32 @@ export function InvoiceTableActions({
     "delete" | "paid" | "send" | null
   >(null)
   const [pending, startTransition] = useTransition()
+  const [downloading, setDownloading] = useState(false)
+
+  const handleDownloadPdf = async () => {
+    if (downloading) return
+    setDownloading(true)
+    const toastId = toast.loading("Preparing invoice PDF...")
+    try {
+      const res = await fetch(`/api/documents/download?id=${invoice.id}`)
+      if (!res.ok) throw new Error("Download failed")
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `Invoice-${invoice.id.slice(0, 8).toUpperCase()}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+      toast.success("Invoice PDF downloaded!", { id: toastId })
+    } catch {
+      toast.error("Failed to download invoice PDF", { id: toastId })
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   const phone =
     invoice.shipment?.consignorPhone ||
     invoice.customer?.phone ||
@@ -118,11 +145,19 @@ export function InvoiceTableActions({
             <Tag className="mr-2 h-4 w-4" />
             View shipping label
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <a href={`/api/documents/download?id=${invoice.id}`} download>
-              <Download />
-              Download PDF
-            </a>
+          <DropdownMenuItem
+            disabled={downloading}
+            onSelect={(e) => {
+              e.preventDefault()
+              handleDownloadPdf()
+            }}
+          >
+            {downloading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
+            ) : (
+              <Download className="mr-2 h-4 w-4" />
+            )}
+            <span>{downloading ? "Downloading..." : "Download PDF"}</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={!phone || pending}

@@ -47,28 +47,31 @@ export async function POST(req: Request) {
     )
   }
 
-  // Public endpoint — protected by Arcjet rate limiting only.
-  // No session required: this is the customer-facing support widget.
-
-  let decision
+  // Public endpoint — protected by Arcjet rate limiting.
+  // Fails closed with 503 when rate limiting is unavailable or errors.
   try {
-    decision = await aj.protect(req, { requested: 1 })
+    const decision = await aj.protect(req, { requested: 1 })
+    if (decision.isDenied()) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again shortly." },
+        { status: 429 }
+      )
+    }
+    if (decision.isErrored()) {
+      Sentry.captureMessage(`Arcjet decision error: ${String(decision.reason)}`, {
+        level: "warning",
+        tags: { area: "chat_rate_limit" },
+      })
+      return NextResponse.json(
+        { error: "Chat is temporarily unavailable." },
+        { status: 503 }
+      )
+    }
   } catch (error) {
     Sentry.captureException(error, { tags: { area: "chat_rate_limit" } })
     return NextResponse.json(
       { error: "Chat is temporarily unavailable." },
       { status: 503 }
-    )
-  }
-  if (decision.isErrored())
-    return NextResponse.json(
-      { error: "Chat is temporarily unavailable." },
-      { status: 503 }
-    )
-  if (decision.isDenied()) {
-    return NextResponse.json(
-      { error: "Too many requests. Please try again shortly." },
-      { status: 429 }
     )
   }
 

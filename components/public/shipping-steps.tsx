@@ -129,12 +129,12 @@ export function ShippingSteps() {
                     type="button"
                     onClick={() => scrollToStep(i)}
                     aria-label={`Step ${i + 1}: ${step.title}`}
-                    className="flex w-full items-center gap-3 text-left group/pill cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md py-1.5 px-2 transition-all hover:bg-muted/30"
+                    className="flex w-full items-center gap-3 text-left group/pill cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-none py-1.5 px-2 transition-all hover:bg-muted/30"
                   >
                     {/* Progress bar container */}
-                    <div className="relative h-[3px] flex-1 bg-border/60 rounded-full overflow-hidden">
+                    <div className="relative h-[3px] flex-1 bg-border/60 rounded-none overflow-hidden">
                       <motion.div
-                        className="absolute inset-y-0 left-0 bg-primary rounded-full origin-left"
+                        className="absolute inset-y-0 left-0 bg-primary rounded-none origin-left"
                         initial={false}
                         animate={{
                           width: isCurrent ? "100%" : isPassed ? "100%" : "25%",

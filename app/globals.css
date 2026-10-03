@@ -36,6 +36,12 @@
   --color-status-transit: var(--status-transit);
   --color-status-delivered: var(--status-delivered);
   --color-status-failed: var(--status-failed);
+
+  /* Opaque values. Tailwind v4 derives slash-opacity variants via color-mix(). */
+  --color-corridor: oklch(var(--corridor-l, 0.60) var(--corridor-c, 0.145) var(--corridor-h, 245));
+  --color-corridor-foreground: oklch(var(--corridor-fg-l, 0.98) var(--corridor-fg-c, 0.01) var(--corridor-h, 245));
+  --color-corridor-subtle: oklch(var(--corridor-subtle-l, 0.96) var(--corridor-subtle-c, 0.02) var(--corridor-h, 245));
+  --color-corridor-border: oklch(var(--corridor-border-l, 0.88) var(--corridor-border-c, 0.05) var(--corridor-h, 245));
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -50,36 +56,37 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Typography */
-  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Typography — Preset b67em6gr2W uses Inter for body and Manrope for headings */
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
   --text-micro: 0.625rem; /* 10px */
   --text-micro--line-height: 0.75rem;
   --text-mini: 0.6875rem; /* 11px */
   --text-mini--line-height: 0.875rem;
 
-  /* Nordic Fjord Soft Geometry System */
-  --radius-xs: 0.25rem;   /* 4px  — badges, micro tags */
-  --radius-sm: 0.375rem;  /* 6px  — inputs, select triggers */
-  --radius-md: 0.5rem;    /* 8px  — buttons, controls */
-  --radius-lg: 0.625rem;  /* 10px — nested containers */
-  --radius-xl: 0.875rem;  /* 14px — cards, dialogs, sheets */
-  --radius-2xl: 1rem;     /* 16px — large feature sections */
-  --radius-3xl: 1.25rem;  /* 20px */
-  --radius-4xl: 1.5rem;   /* 24px */
+  /* Geometry System — Strict Zero-Radius Mandate (All corners square) */
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+  --radius: 0px;
 
-  /* Brand colors — fixed values used in printed/exported documents */
-  --color-brand-blue: oklch(45% 0.16 250);
-  --color-invoice-navy: oklch(17% 0.015 250);
+  /* Brand colors — opaque OKLCH; slash-opacity handled by Tailwind color-mix() */
+  --color-brand-blue: oklch(0.48 0.15 255);
+  --color-invoice-navy: oklch(0.20 0.025 255);
 
   /* Semantic named shadows */
   --shadow-card: var(--shadow-card-val);
   --shadow-ambient: var(--shadow-ambient-val);
   --shadow-float: var(--shadow-float-val);
-  --shadow-overlay: 0 16px 40px rgb(18 26 24 / 18%);
+  --shadow-overlay: 0 16px 40px rgb(0 0 0 / 18%);
 
-  /* Composable shadow scale — spruce-neutral, light/dark aware */
+  /* Composable shadow scale — neutral taupe, light/dark aware */
   --shadow-2xs: var(--shadow-2xs);
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
@@ -91,65 +98,70 @@
 
 :root {
   /* ──────────────────────────────────────────────────────────────────────────
-     NORDIC FJORD — LIGHT
-     Stone / Linen / Lichen / Fjord / Spruce / Ochre
+     NORDIC SLATE — LIGHT
+     Evil Martians Harmony & APCA Calibrated
      ────────────────────────────────────────────────────────────────────────── */
-  --background: oklch(0.921 0.008 98.9);          /* #E6E5DF Stone — warm environmental canvas */
-  --foreground: oklch(0.270 0.016 182.8);         /* #1E2927 Spruce Ink — authoritative high-contrast ink (11.9:1) */
-  --card: oklch(0.954 0.008 98.9);               /* #F1F0EA Linen — warm tactile elevated surface */
-  --card-foreground: oklch(0.270 0.016 182.8);
-  --popover: oklch(0.954 0.008 98.9);
-  --popover-foreground: oklch(0.270 0.016 182.8);
-  --primary: oklch(0.464 0.055 205.5);           /* #2F6268 Fjord Teal — balanced Scandinavian active tone (>4.8:1) */
-  --primary-foreground: oklch(0.957 0.011 95.2);  /* #F5F4EE Linen light text (>8.5:1) */
-  --secondary: oklch(0.856 0.016 160.6);         /* #C7D3CC Lichen — quiet natural supporting tone */
-  --secondary-foreground: oklch(0.353 0.033 171.4);
-  --muted: oklch(0.890 0.010 95);                /* Soft stone-tinted neutral */
-  --muted-foreground: oklch(0.480 0.016 174);    /* Subdued spruce (>5.0:1 against Stone & Alert surfaces, WCAG 2.2 AA compliant) */
-  --accent: oklch(0.859 0.026 86.9);             /* #D8D0BE Dried Ochre — warm purposeful accent */
-  --accent-foreground: oklch(0.331 0.018 84.5);
-  --destructive: oklch(0.531 0.127 27.1);        /* #A94A42 Terracotta */
-  --destructive-foreground: oklch(0.963 0.011 76.6);
-  --border: oklch(0.846 0.009 145.5);            /* #C9CEC9 crisp, quiet perimeter */
-  --border-strong: oklch(0.665 0.021 168);       /* #728179 */
-  --input: oklch(0.846 0.009 145.5);
-  --ring: oklch(0.556 0.058 198.6);              /* #477E80 Focus ring */
-  --surface: oklch(0.914 0.012 162);             /* #DCE5E0 Nordic Sage — distinct structural canvas */
-  --card-accent: oklch(0.464 0.055 205.5);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.180 0.025 255);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.180 0.025 255);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.180 0.025 255);
+  --primary: oklch(0.480 0.160 255);
+  --primary-foreground: oklch(0.990 0.005 255);
+  --secondary: oklch(0.955 0.008 255);
+  --secondary-foreground: oklch(0.180 0.025 255);
+  --muted: oklch(0.955 0.008 255);
+  --muted-foreground: oklch(0.500 0.030 255);
+  --accent: oklch(0.955 0.008 255);
+  --accent-foreground: oklch(0.180 0.025 255);
+  --destructive: oklch(0.58 0.145 27.3);
+  --destructive-foreground: oklch(0.986 0.002 67.8);
+  --border: oklch(0.910 0.012 255);
+  --border-strong: oklch(0.740 0.022 255);
+  --input: oklch(0.910 0.012 255);
+  --ring: oklch(0.480 0.160 255);
+  --surface: oklch(0.985 0.004 255);
+  --card-accent: oklch(0.480 0.160 255);
 
-  /* ── Status colors (Natural signal hierarchy) ─────────────────────────── */
-  --status-pending: oklch(0.61 0.09 82);          /* Amber/Ochre */
-  --status-transit: oklch(0.52 0.07 205);         /* Blue-Teal */
-  --status-delivered: oklch(0.50 0.07 145);       /* Botanical Moss */
-  --status-failed: oklch(0.56 0.11 30);          /* Terracotta */
+  /* ── Status colors (light) ───────────────────────────────────────────────
+     Used as text over white and over their own /10–/15 tints.
+     L <= 0.52 keeps APCA |Lc| >= 60 against L ~0.97 tinted backgrounds. */
+  --status-pending: oklch(0.52 0.115 65);
+  --status-transit: oklch(0.50 0.150 255);
+  --status-delivered: oklch(0.50 0.130 145);
+  --status-failed: oklch(0.52 0.170 28);
 
-  /* ── Chart palette (Correctly separated chromatic hues) ───────────────── */
-  --chart-1: oklch(0.464 0.055 205);             /* Fjord */
-  --chart-2: oklch(0.530 0.047 143);             /* Moss */
-  --chart-3: oklch(0.656 0.094 79);              /* Ochre */
-  --chart-4: oklch(0.579 0.058 194);             /* Teal */
-  --chart-5: oklch(0.558 0.104 31);              /* Terracotta */
+  /* ── Dynamic Corridor Theming Defaults (Delhi ↔ Guwahati default hue 255) ── */
+  --corridor-h: 255;
+  --corridor-l: 0.60;
+  --corridor-c: 0.145;
+  --corridor-subtle-l: 0.96;
+  --corridor-subtle-c: 0.02;
+  --corridor-border-l: 0.88;
+  --corridor-border-c: 0.05;
+  --corridor-fg-l: 0.98;
+  --corridor-fg-c: 0.01;
 
-  /* ── Sidebar (Nordic Sage structural identity) ────────────────────────── */
-  --sidebar: oklch(0.914 0.012 162);             /* #DCE5E0 Nordic Sage */
-  --sidebar-foreground: oklch(0.270 0.016 182.8);
-  --sidebar-primary: oklch(0.464 0.055 205.5);
-  --sidebar-primary-foreground: oklch(0.957 0.011 95.2);
-  --sidebar-accent: oklch(0.856 0.016 160.6);
-  --sidebar-accent-foreground: oklch(0.353 0.033 171.4);
-  --sidebar-border: oklch(0.846 0.009 145.5);
-  --sidebar-ring: oklch(0.556 0.058 198.6);
+  /* ── Chart palette (Harmonized Nordic Slate & Accents) ─────────────────── */
+  --chart-1: oklch(0.680 0.150 255);
+  --chart-2: oklch(0.540 0.080 255);
+  --chart-3: oklch(0.440 0.050 255);
+  --chart-4: oklch(0.360 0.040 255);
+  --chart-5: oklch(0.280 0.030 255);
+
+  /* ── Sidebar (Harmonized Nordic Slate Light) ────────────────────────────── */
+  --sidebar: oklch(0.985 0.004 255);
+  --sidebar-foreground: oklch(0.180 0.025 255);
+  --sidebar-primary: oklch(0.480 0.160 255);
+  --sidebar-primary-foreground: oklch(0.990 0.005 255);
+  --sidebar-accent: oklch(0.955 0.008 255);
+  --sidebar-accent-foreground: oklch(0.180 0.025 255);
+  --sidebar-border: oklch(0.910 0.012 255);
+  --sidebar-ring: oklch(0.480 0.160 255);
 
   /* ── Geometry & Motion ─────────────────────────────────────────────────── */
-  --radius-xs: 0.25rem;
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.625rem;
-  --radius-xl: 0.875rem;
-  --radius-2xl: 1rem;
-  --radius-3xl: 1.25rem;
-  --radius-4xl: 1.5rem;
-  --radius: 0.625rem;
+  --radius: 0px;
   --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
   --ease-press: cubic-bezier(0.4, 0, 1, 1);
@@ -161,85 +173,105 @@
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
-  /* ── Neutral spruce elevation ─────────────────────────────────────────── */
-  --shadow-card-val: 0 1px 2px rgb(30 41 39 / 0.045), 0 6px 18px rgb(30 41 39 / 0.035);
-  --shadow-ambient-val: 0 20px 50px -28px rgb(47 98 104 / 0.13);
-  --shadow-float-val: 0 18px 44px -20px rgb(30 41 39 / 0.14);
-  --shadow-2xs: 0 1px 2px rgb(30 41 39 / 0.04);
-  --shadow-xs: 0 1px 3px rgb(30 41 39 / 0.06);
-  --shadow-sm: 0 2px 5px rgb(30 41 39 / 0.07);
-  --shadow-md: 0 6px 14px rgb(30 41 39 / 0.08);
-  --shadow-lg: 0 12px 26px rgb(30 41 39 / 0.10);
-  --shadow-xl: 0 20px 40px rgb(30 41 39 / 0.12);
-  --shadow-2xl: 0 28px 56px rgb(30 41 39 / 0.16);
+  /* ── Neutral elevation ─────────────────────────────────────────────────── */
+  --shadow-card-val: 0 1px 3px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.02);
+  --shadow-ambient-val: 0 20px 40px -20px rgb(0 0 0 / 0.08);
+  --shadow-float-val: 0 12px 32px -12px rgb(0 0 0 / 0.12);
+  --shadow-2xs: 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-xs: 0 1px 3px rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 2px 4px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 8px rgb(0 0 0 / 0.07);
+  --shadow-lg: 0 8px 16px rgb(0 0 0 / 0.08);
+  --shadow-xl: 0 16px 32px rgb(0 0 0 / 0.10);
+  --shadow-2xl: 0 24px 48px rgb(0 0 0 / 0.12);
 }
 
 .dark {
   /* ──────────────────────────────────────────────────────────────────────────
-     NORDIC FJORD — DARK
-     Pine Night / Spruce / Fjord / Ochre
+     NORDIC DEEP SLATE — DARK
+     Elevated Lightness (L=0.275) & Blueish Slate Hue (H=255°)
+     APCA Contrast Certified (|Lc| >= 65 for body, >= 95 for foreground)
      ────────────────────────────────────────────────────────────────────────── */
-  --background: oklch(0.209 0.012 178);          /* #121A18 Pine Night */
-  --foreground: oklch(0.952 0.008 122);          /* #EEF0EA soft daylight white (15.4:1 contrast) */
-  --card: oklch(0.253 0.016 176);                /* #1A2522 tactile spruce depth */
-  --card-foreground: oklch(0.952 0.008 122);
-  --popover: oklch(0.253 0.016 176);
-  --popover-foreground: oklch(0.952 0.008 122);
-  --primary: oklch(0.748 0.055 186);             /* #86B9B2 Luminous Fjord Teal (>7:1 on Pine Night) */
-  --primary-foreground: oklch(0.288 0.033 192);  /* Deep spruce text on teal */
-  --secondary: oklch(0.337 0.022 169);           /* #2C3B35 Lichen Dark */
-  --secondary-foreground: oklch(0.949 0.009 151);
-  --muted: oklch(0.315 0.014 176);
-  --muted-foreground: oklch(0.752 0.016 165);    /* >7.5:1 contrast */
-  --accent: oklch(0.795 0.103 89);               /* #D7B96B Ochre accent */
-  --accent-foreground: oklch(0.266 0.019 89);
-  --destructive: oklch(0.711 0.125 30);          /* #E58272 Terracotta */
-  --destructive-foreground: oklch(0.215 0.025 28);
-  --border: oklch(0.370 0.018 175);              /* #36433F defined edges */
-  --border-strong: oklch(0.548 0.021 166);       /* #66756E */
-  --input: oklch(0.370 0.018 175);
-  --ring: oklch(0.748 0.055 186);
-  --surface: oklch(0.295 0.020 180);             /* #22302D */
-  --card-accent: oklch(0.748 0.055 186);
+  --background: oklch(0.275 0.046 255);
+  --foreground: oklch(0.985 0.008 255);
+  --surface: oklch(0.305 0.048 255);
+  --card: oklch(0.325 0.050 255);
+  --card-foreground: oklch(0.985 0.008 255);
+  --popover: oklch(0.345 0.052 255);
+  --popover-foreground: oklch(0.985 0.008 255);
+  --primary: oklch(0.725 0.145 255);
+  --primary-foreground: oklch(0.160 0.030 255);
+  --secondary: oklch(0.355 0.046 255);
+  --secondary-foreground: oklch(0.985 0.008 255);
+  --muted: oklch(0.345 0.042 255);
+  --muted-foreground: oklch(0.760 0.032 255);
+  --accent: oklch(0.355 0.046 255);
+  --accent-foreground: oklch(0.985 0.008 255);
+  --destructive: oklch(0.70 0.12 25.0);
+  --destructive-foreground: oklch(0.160 0.030 255);
+  --border: oklch(0.980 0.015 255 / 14%);
+  --border-strong: oklch(0.480 0.055 255);
+  --input: oklch(0.980 0.015 255 / 18%);
+  --ring: oklch(0.725 0.145 255);
+  --card-accent: oklch(0.725 0.145 255);
 
-  /* ── Status colors ─────────────────────────────────────────────────────── */
-  --status-pending: oklch(0.79 0.10 89);
-  --status-transit: oklch(0.72 0.07 205);
-  --status-delivered: oklch(0.72 0.08 145);
-  --status-failed: oklch(0.70 0.11 30);
+  /* ── Status colors (APCA Lc >= 60 in Dark Mode & Safe Chroma Clamped) ───── */
+  --status-pending: oklch(0.82 0.11 78);
+  --status-transit: oklch(0.72 0.12 255);
+  --status-delivered: oklch(0.74 0.12 142);
+  --status-failed: oklch(0.72 0.12 28);
 
-  /* ── Chart palette ─────────────────────────────────────────────────────── */
-  --chart-1: oklch(0.748 0.055 186);
-  --chart-2: oklch(0.695 0.065 133);
-  --chart-3: oklch(0.783 0.095 88);
-  --chart-4: oklch(0.707 0.039 184);
-  --chart-5: oklch(0.661 0.101 30);
+  /* ── Dynamic Corridor Theming (Dark Mode Calibration) ───────────────────── */
+  --corridor-h: 255;
+  --corridor-l: 0.72;
+  --corridor-c: 0.12;
+  --corridor-subtle-l: 0.28;
+  --corridor-subtle-c: 0.03;
+  --corridor-border-l: 0.40;
+  --corridor-border-c: 0.05;
+  --corridor-fg-l: 0.15;
+  --corridor-fg-c: 0.02;
 
-  /* ── Sidebar ───────────────────────────────────────────────────────────── */
-  --sidebar: oklch(0.253 0.016 176);
-  --sidebar-foreground: oklch(0.952 0.008 122);
-  --sidebar-primary: oklch(0.748 0.055 186);
-  --sidebar-primary-foreground: oklch(0.288 0.033 192);
-  --sidebar-accent: oklch(0.337 0.022 169);
-  --sidebar-accent-foreground: oklch(0.949 0.009 151);
-  --sidebar-border: oklch(0.370 0.018 175);
-  --sidebar-ring: oklch(0.748 0.055 186);
+  /* ── Chart palette (Nordic Deep Slate Dark) ────────────────────────────── */
+  --chart-1: oklch(0.750 0.140 255);
+  --chart-2: oklch(0.650 0.110 255);
+  --chart-3: oklch(0.550 0.080 255);
+  --chart-4: oklch(0.450 0.050 255);
+  --chart-5: oklch(0.350 0.030 255);
+
+  /* ── Sidebar (Nordic Deep Slate Anchor) ─────────────────────────────────── */
+  --sidebar: oklch(0.285 0.046 255);
+  --sidebar-foreground: oklch(0.985 0.008 255);
+  --sidebar-primary: oklch(0.690 0.160 255);
+  --sidebar-primary-foreground: oklch(0.160 0.030 255);
+  --sidebar-accent: oklch(0.345 0.048 255);
+  --sidebar-accent-foreground: oklch(0.985 0.008 255);
+  --sidebar-border: oklch(0.980 0.015 255 / 12%);
+  --sidebar-ring: oklch(0.690 0.160 255);
+
+  /* ── Geometry & Motion ─────────────────────────────────────────────────── */
+  --radius: 0px;
 
   /* ── Neutral dark elevation ───────────────────────────────────────────── */
-  --shadow-card-val: 0 1px 3px rgb(4 10 9 / 0.32), 0 8px 24px rgb(4 10 9 / 0.22);
-  --shadow-ambient-val: 0 20px 60px -30px rgb(80 150 145 / 0.12);
-  --shadow-float-val: 0 20px 50px -20px rgb(4 10 9 / 0.38);
-  --shadow-2xs: 0 1px 2px rgb(4 10 9 / 0.15);
-  --shadow-xs: 0 1px 3px rgb(4 10 9 / 0.25);
-  --shadow-sm: 0 1px 2px rgb(4 10 9 / 0.35), 0 0 1px rgb(4 10 9 / 0.20);
-  --shadow-md: 0 4px 8px rgb(4 10 9 / 0.35), 0 2px 4px rgb(4 10 9 / 0.20);
-  --shadow-lg: 0 8px 16px rgb(4 10 9 / 0.40), 0 4px 6px rgb(4 10 9 / 0.20);
-  --shadow-xl: 0 16px 32px rgb(4 10 9 / 0.45), 0 8px 12px rgb(4 10 9 / 0.20);
-  --shadow-2xl: 0 28px 56px rgb(4 10 9 / 0.60);
+  --shadow-card-val: 0 1px 3px rgb(0 0 0 / 0.35), 0 8px 24px rgb(0 0 0 / 0.25);
+  --shadow-ambient-val: 0 20px 60px -30px rgb(0 0 0 / 0.50);
+  --shadow-float-val: 0 20px 50px -20px rgb(0 0 0 / 0.55);
+  --shadow-2xs: 0 1px 2px rgb(0 0 0 / 0.20);
+  --shadow-xs: 0 1px 3px rgb(0 0 0 / 0.25);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
+  --shadow-md: 0 4px 8px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 8px 16px rgb(0 0 0 / 0.40);
+  --shadow-xl: 0 16px 32px rgb(0 0 0 / 0.45);
+  --shadow-2xl: 0 28px 56px rgb(0 0 0 / 0.60);
 }
 
 @layer base {
-  * {
+  /* Zero-Radius Mandate: all corners strictly square. */
+  *,
+  *::before,
+  *::after {
+    border-radius: 0 !important;
+
     @apply border-border outline-ring/50;
   }
 
@@ -267,41 +299,40 @@
     outline-offset: 3px;
   }
 
-  /* ── Component Geometry (Nordic Fjord Proportions) ─────────────────────── */
+  /* ── Icon Aesthetics (Evil Icons 1.25px Precision) ─────────────────────── */
+  svg.lucide,
+  [data-slot="icon"] {
+    stroke-width: 1.5px;
+  }
+
+  @media (width >= 768px) {
+    svg.lucide,
+    [data-slot="icon"] {
+      stroke-width: 1.25px;
+    }
+  }
+
+  /* ── Component Defaults ──────────────────────────────────────────────────── */
   [data-slot="button"] {
-    border-radius: var(--radius-md);
     backdrop-filter: none;
   }
 
   [data-slot="input"],
   [data-slot="textarea"],
   [data-slot="select-trigger"] {
-    border-radius: var(--radius-sm);
     backdrop-filter: none;
   }
 
   [data-slot="card"] {
-    border-radius: var(--radius-xl);
     background: var(--card);
     box-shadow: var(--shadow-card);
     backdrop-filter: none;
-  }
-
-  [data-slot="card"] img:first-child {
-    border-start-start-radius: var(--radius-xl);
-    border-start-end-radius: var(--radius-xl);
-  }
-
-  [data-slot="card"] img:last-child {
-    border-end-start-radius: var(--radius-xl);
-    border-end-end-radius: var(--radius-xl);
   }
 
   [data-slot="dialog-content"],
   [data-slot="sheet-content"],
   [data-slot="popover-content"],
   [data-slot="dropdown-menu-content"] {
-    border-radius: var(--radius-xl);
     border-color: var(--border);
     box-shadow: var(--shadow-overlay);
     backdrop-filter: none;
@@ -335,7 +366,6 @@
   }
 
   [data-slot="badge"] {
-    border-radius: 9999px;
     font-size: 0.6875rem;
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -345,31 +375,12 @@
     background: var(--sidebar);
     box-shadow: none;
     backdrop-filter: none;
-    border-radius: 0;
-  }
-
-  [data-slot="sidebar-menu-button"] {
-    border-radius: var(--radius-sm);
   }
 
   [data-slot="sidebar-menu-button"][data-active="true"] {
-    background: color-mix(in oklch, var(--sidebar-primary) 10%, transparent);
-    color: var(--sidebar-primary);
-    box-shadow: inset 3px 0 0 var(--sidebar-primary);
-  }
-
-  [data-slot="tabs-list"] {
-    border-bottom: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: transparent;
-  }
-
-  [data-slot="tabs-trigger"] {
-    border-radius: var(--radius-xs);
-  }
-
-  [data-slot="tabs-trigger"][data-state="active"] {
-    box-shadow: inset 0 -2px 0 var(--primary);
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
+    font-weight: 500;
   }
 
   ::-webkit-scrollbar {
@@ -379,7 +390,7 @@
 
   ::-webkit-scrollbar-thumb {
     border: 2px solid transparent;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     background: color-mix(in oklch, var(--muted-foreground) 35%, transparent);
     background-clip: padding-box;
   }
@@ -486,14 +497,14 @@
 }
 
 .typography code {
-  border-radius: var(--radius-xs);
+  border-radius: 0;
   padding: 0.1rem 0.25rem;
   font-size: 0.875em;
 }
 
 .typography pre {
   overflow-x: auto;
-  border-radius: var(--radius-md);
+  border-radius: 0;
   padding: 1rem;
 }
 
@@ -509,15 +520,15 @@
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   PUBLIC & MARKETING SYSTEM (Nordic Fjord Atmosphere)
+   PUBLIC & MARKETING SYSTEM (Nova Atmosphere)
    ────────────────────────────────────────────────────────────────────────── */
 .cargo-public {
-  --cargo-night: oklch(0.20 0.012 178);
-  --cargo-night-rgb: 18 26 24;
-  --cargo-fjord: oklch(0.46 0.055 205);
-  --cargo-sage: oklch(0.53 0.047 143);
-  --cargo-ochre: oklch(0.66 0.094 79);
-  --cargo-ink: oklch(0.270 0.016 182.8);
+  --cargo-night: oklch(0.275 0.055 255);
+  --cargo-night-rgb: 30 48 72;
+  --cargo-fjord: var(--primary);
+  --cargo-sage: var(--accent);
+  --cargo-ochre: var(--accent);
+  --cargo-ink: var(--foreground);
   --cargo-display-size: clamp(3rem, 6.5vw, 6rem);
   --cargo-heading-size: clamp(2.25rem, 4.5vw, 3.75rem);
   --cargo-gutter: clamp(1.5rem, 5vw, 5rem);
@@ -526,25 +537,27 @@
 }
 
 .cargo-public .cargo-inverse {
-  --background: var(--cargo-night);
-  --foreground: oklch(0.952 0.008 122);
-  --card: oklch(0.253 0.016 176);
-  --card-foreground: oklch(0.952 0.008 122);
-  --popover: oklch(0.253 0.016 176);
-  --popover-foreground: oklch(0.952 0.008 122);
-  --muted: oklch(0.315 0.014 176);
-  --muted-foreground: oklch(0.752 0.016 165);
-  --primary: oklch(0.748 0.055 186);
-  --primary-foreground: oklch(0.288 0.033 192);
-  --secondary: oklch(0.337 0.022 169);
-  --secondary-foreground: oklch(0.949 0.009 151);
-  --accent: oklch(0.795 0.103 89);
-  --accent-foreground: oklch(0.266 0.019 89);
-  --border: oklch(0.370 0.018 175);
-  --border-strong: oklch(0.548 0.021 166);
-  --input: oklch(0.370 0.018 175);
-  --ring: oklch(0.748 0.055 186);
-  --surface: oklch(0.295 0.020 180);
+  --background: oklch(0.275 0.055 255);
+  --foreground: oklch(0.985 0.008 255);
+  --card: oklch(0.325 0.055 255);
+  --card-foreground: oklch(0.985 0.008 255);
+  --popover: oklch(0.345 0.055 255);
+  --popover-foreground: oklch(0.985 0.008 255);
+  --muted: oklch(0.345 0.045 255);
+  --muted-foreground: oklch(0.760 0.030 255);
+  --primary: oklch(0.690 0.160 255);
+  --primary-foreground: oklch(0.160 0.030 255);
+  --secondary: oklch(0.355 0.048 255);
+  --secondary-foreground: oklch(0.985 0.008 255);
+  --accent: oklch(0.355 0.048 255);
+  --accent-foreground: oklch(0.985 0.008 255);
+  --destructive: oklch(0.70 0.12 25.0);
+  --destructive-foreground: oklch(0.160 0.030 255);
+  --border: oklch(0.980 0.015 255 / 14%);
+  --border-strong: oklch(0.480 0.055 255);
+  --input: oklch(0.980 0.015 255 / 18%);
+  --ring: oklch(0.690 0.160 255);
+  --surface: oklch(0.305 0.050 255);
 
   color: var(--foreground);
 }
@@ -554,31 +567,22 @@
 }
 
 .cargo-public .cargo-accent {
-  --background: oklch(0.914 0.012 162);
-  --foreground: oklch(0.270 0.016 183);
-  --muted-foreground: oklch(0.480 0.016 174);
-  --border: oklch(0.846 0.009 146);
+  --background: oklch(0.965 0.008 255);
+  --foreground: oklch(0.180 0.025 255);
+  --muted-foreground: oklch(0.500 0.030 255);
+  --border: oklch(0.910 0.012 255);
 
   color: var(--foreground);
-  background: linear-gradient(
-    160deg,
-    var(--background) 0%,
-    color-mix(in oklch, var(--background) 94%, var(--primary) 6%) 100%
-  );
+  background: var(--background);
 }
 
 .dark .cargo-public .cargo-accent {
-  --background: oklch(0.295 0.020 180);
-  --foreground: oklch(0.952 0.008 122);
-  --muted-foreground: oklch(0.752 0.016 165);
-  --border: oklch(0.370 0.018 175);
+  --background: oklch(0.305 0.048 255);
+  --foreground: oklch(0.985 0.008 255);
+  --muted-foreground: oklch(0.760 0.032 255);
+  --border: oklch(0.980 0.015 255 / 14%);
 
-  background: linear-gradient(
-    160deg,
-    oklch(0.265 0.018 177) 0%,
-    oklch(0.315 0.023 181) 50%,
-    oklch(0.275 0.018 177) 100%
-  );
+  background: var(--background);
 }
 
 /* Rebind existing Tailwind aliases at each public surface boundary. */
@@ -730,12 +734,12 @@
   background:
     radial-gradient(
       ellipse 65% 45% at 52% 20%,
-      color-mix(in oklch, var(--cargo-fjord) 18%, transparent),
+      color-mix(in oklch, var(--primary) 18%, transparent),
       transparent 72%
     ),
     radial-gradient(
       circle at 82% 18%,
-      color-mix(in oklch, var(--cargo-sage) 12%, transparent),
+      color-mix(in oklch, var(--accent) 12%, transparent),
       transparent 55%
     );
   pointer-events: none;
@@ -761,7 +765,7 @@
   overflow: hidden;
 }
 
-/* A bounded Nordic lift around the illustration */
+/* A bounded lift around the illustration */
 .cargo-story-frame {
   isolation: isolate;
 }
@@ -771,7 +775,7 @@
   position: absolute;
   inset: -1.5rem;
   z-index: -1;
-  background: radial-gradient(ellipse at 40% 50%, color-mix(in oklch, var(--cargo-sage) 18%, transparent) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 40% 50%, color-mix(in oklch, var(--primary) 14%, transparent) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -796,7 +800,7 @@
   color: var(--foreground);
   background: var(--card);
   border-color: var(--input);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
 }
 
 .cargo-desk-input::placeholder {
@@ -805,7 +809,7 @@
 
 .cargo-page-media {
   aspect-ratio: 4 / 3;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -823,7 +827,7 @@
   }
 
   .cargo-hero-ambient {
-    background: radial-gradient(ellipse 85% 55% at 50% 25%, color-mix(in oklch, var(--cargo-fjord) 25%, transparent) 0%, transparent 75%);
+    background: radial-gradient(ellipse 85% 55% at 50% 25%, color-mix(in oklch, var(--primary) 20%, transparent) 0%, transparent 75%);
   }
 }
 
@@ -857,5 +861,6 @@
   .maplibregl-popup-close-button,
   .mapboxgl-popup-close-button
 ) {
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
 }
+

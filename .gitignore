@@ -18,6 +18,11 @@
 /build
 /dist
 /.turbo
+/storybook-static/
+build-storybook.log
+chromatic.log
+chromatic-build-*.xml
+chromatic-diagnostics.json
 
 # ==============================================================================
 # TypeScript
@@ -33,6 +38,8 @@ next-env.d.ts
 .env.local
 .env.sentry-build-plugin
 .vscode/mcp.json
+.cursor/
+.mcp.json
 *.pem
 
 # ==============================================================================
@@ -122,3 +129,8 @@ Thumbs.db
 Desktop.ini
 *.tmp
 *.temp
+
+# Auth0 credentials
+.auth0-mcp-state.json
+
+.auth0-mcp-writes.log

@@ -22,6 +22,11 @@ const meta = {
         "warning",
         "error",
         "neutral",
+        "transit",
+        "delivered",
+        "pending",
+        "failed",
+        "corridor",
       ],
     },
   },
@@ -85,3 +90,39 @@ export const NeutralLogistics: Story = {
     variant: "neutral",
   },
 }
+
+export const TransitLogistics: Story = {
+  args: {
+    children: "In Transit",
+    variant: "transit",
+  },
+}
+
+export const DeliveredLogistics: Story = {
+  args: {
+    children: "Delivered",
+    variant: "delivered",
+  },
+}
+
+export const PendingLogistics: Story = {
+  args: {
+    children: "Pending Dispatch",
+    variant: "pending",
+  },
+}
+
+export const FailedLogistics: Story = {
+  args: {
+    children: "Delivery Failed",
+    variant: "failed",
+  },
+}
+
+export const CorridorLogistics: Story = {
+  args: {
+    children: "DEL → IMF Express",
+    variant: "corridor",
+  },
+}
+

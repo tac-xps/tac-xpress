@@ -1,6 +1,9 @@
 name: "Chromatic visual tests"
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -31,6 +34,8 @@ jobs:
         uses: chromaui/action@v11
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          # Fail the workflow if there are unreviewed visual changes
-          exitOnceUploaded: false
-          autoAcceptChanges: false
+          # Publish Storybook on Chromatic free tier with TurboSnap to minimize snapshot quota
+          onlyChanged: true
+          autoAcceptChanges: "main"
+          exitOnceUploaded: true
+          exitZeroOnChanges: true

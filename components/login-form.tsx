@@ -3,12 +3,17 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Fingerprint, Loader2 } from "lucide-react"
 import { useState, useTransition } from "react"
 import Link from "next/link"
 import { loginAction } from "@/app/(auth)/signin/actions"
+import {
+  startPasswordlessPasskeyAction,
+  finishPasswordlessPasskeyAction,
+} from "@/app/actions/mfa-actions"
+import { startAuthentication } from "@simplewebauthn/browser"
+import { MfaChallenge } from "@/components/auth/mfa-challenge"
 import { z } from "zod"
-import { Logo } from "@/components/logo"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -19,7 +24,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { TypographyMuted } from "@/components/ui/typography"
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -33,6 +37,10 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const [showPassword, setShowPassword] = useState(false)
+  const [mfaChallenge, setMfaChallenge] = useState<{
+    challengeToken: string
+    methods: ("totp" | "passkey")[]
+  } | null>(null)
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -50,10 +58,65 @@ export function LoginForm({
       formData.append("password", values.password)
 
       const result = await loginAction({ error: null }, formData)
-      if (result?.error) {
+      if (result && "error" in result && result.error) {
         setError(result.error)
+      } else if (result && "mfaRequired" in result && result.mfaRequired) {
+        setMfaChallenge({
+          challengeToken: result.challengeToken,
+          methods: result.methods,
+        })
       }
     })
+  }
+
+  function handlePasswordlessWindowsHello() {
+    setError(null)
+    startTransition(async () => {
+      try {
+        const res = await startPasswordlessPasskeyAction()
+        if (!res?.options) {
+          setError("Failed to initialize Windows Hello authentication.")
+          return
+        }
+
+        const authResponse = await startAuthentication({
+          optionsJSON: res.options,
+        })
+
+        const verifyRes = await finishPasswordlessPasskeyAction({
+          challengeToken: res.challengeToken,
+          response: authResponse,
+        })
+
+        if (verifyRes && "error" in verifyRes && typeof verifyRes.error === "string") {
+          setError(verifyRes.error)
+        }
+      } catch (err: any) {
+        if (err.name === "NotAllowedError") {
+          setError("Windows Hello authentication was cancelled.")
+        } else {
+          setError(
+            "No registered Windows Hello device found. Please sign in with email and password first to register your device."
+          )
+        }
+      }
+    })
+  }
+
+  // If 2FA is required, show the MFA challenge view
+  if (mfaChallenge) {
+    return (
+      <div className={cn("flex w-full flex-col gap-6", className)} {...props}>
+        <MfaChallenge
+          challengeToken={mfaChallenge.challengeToken}
+          methods={mfaChallenge.methods}
+          onCancel={() => {
+            setMfaChallenge(null)
+            setError(null)
+          }}
+        />
+      </div>
+    )
   }
 
   return (
@@ -136,7 +199,7 @@ export function LoginForm({
               />
 
               {error && (
-                <p role="alert" className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+                <p role="alert" className="rounded-none border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
                   {error}
                 </p>
               )}
@@ -147,6 +210,32 @@ export function LoginForm({
                 disabled={isPending}
               >
                 {isPending ? "Signing in…" : "Sign in to workspace"}
+              </Button>
+
+              <div className="relative my-1 flex items-center justify-center">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or sign in with
+                  </span>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="h-9 w-full flex items-center justify-center gap-2 border-dashed hover:border-solid hover:bg-muted/50"
+                onClick={handlePasswordlessWindowsHello}
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Fingerprint className="size-4 text-primary" />
+                )}
+                <span>Sign in with Windows Hello</span>
               </Button>
 
               <div className="mt-4 text-center">

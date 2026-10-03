@@ -84,6 +84,8 @@ const mockInvoice: Invoice = {
   advancePaid: 247800,
   balanceDue: 0,
   remarks: "Delivered to Singjamei delivery station",
+  documentSnapshot: null,
+  termsVersion: "2026.10",
   termsAccepted: true,
   prohibitedAccepted: true,
   signatureUrl: null,
@@ -159,7 +161,7 @@ export default function DocsPreviewPage() {
               <span className="text-[11px] font-mono text-neutral-500">4:3 Aspect • 203/300 DPI</span>
             </div>
 
-            <div className="rounded-lg border border-neutral-300 bg-white p-4 shadow-md">
+            <div className="rounded-none border border-neutral-300 bg-white p-4 shadow-md">
               <ShippingLabel shipment={labelShipment} />
             </div>
           </section>
@@ -173,7 +175,7 @@ export default function DocsPreviewPage() {
               <span className="text-[11px] font-mono text-neutral-500">210mm × 297mm</span>
             </div>
 
-            <div className="w-full overflow-x-auto rounded-lg border border-neutral-300 bg-white p-4 shadow-md">
+            <div className="w-full overflow-x-auto rounded-none border border-neutral-300 bg-white p-4 shadow-md">
               <InvoiceDocument
                 invoice={mockInvoice}
                 shipment={mockShipment}

@@ -19,6 +19,7 @@ import {
   PackageCheck,
   UserCog,
   MessageCircle,
+  ShieldCheck,
 } from "lucide-react"
 export const workspaceNavigation = [
   {
@@ -78,6 +79,11 @@ export const workspaceNavigation = [
       },
       { title: "Integrations", href: "/dashboard/integrations", icon: Plug },
       { title: "Jobs & DLQ", href: "/dashboard/jobs", icon: ClipboardList },
+      {
+        title: "Security & MFA",
+        href: "/dashboard/settings/security",
+        icon: ShieldCheck,
+      },
     ],
   },
 ]

@@ -24,7 +24,7 @@ export default function Page() {
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-gray-50 p-6 dark:bg-gray-950">
-      <div className="w-full max-w-2xl rounded-2xl bg-white p-8 shadow-xl dark:bg-gray-900">
+      <div className="w-full max-w-2xl rounded-none bg-white p-8 shadow-xl dark:bg-gray-900">
         <div className="mb-8 flex flex-col items-center gap-4 text-center">
           <div className="rounded-none bg-violet-100 p-4 dark:bg-violet-900/30">
             <svg
@@ -52,7 +52,7 @@ export default function Page() {
         </div>
 
         {!isConnected && (
-          <div className="mb-6 rounded-lg bg-red-50 p-4 text-center text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400">
+          <div className="mb-6 rounded-none bg-red-50 p-4 text-center text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400">
             <strong>Warning:</strong> Sentry network requests appear to be
             blocked (perhaps by an ad-blocker). Errors might not reach the
             dashboard.
@@ -67,7 +67,7 @@ export default function Page() {
                 "This error is raised synchronously on the client."
               )
             }}
-            className="group relative flex w-full items-center justify-between overflow-hidden rounded-xl bg-violet-600 px-6 py-4 text-left font-semibold text-white shadow-md transition-all hover:bg-violet-700 active:scale-[0.98]"
+            className="group relative flex w-full items-center justify-between overflow-hidden rounded-none bg-violet-600 px-6 py-4 text-left font-semibold text-white shadow-md transition-all hover:bg-violet-700 active:scale-[0.98]"
           >
             <div>
               <div className="text-lg">Trigger Client Error</div>
@@ -90,7 +90,7 @@ export default function Page() {
                 }
               )
             }}
-            className="group relative flex w-full items-center justify-between overflow-hidden rounded-xl bg-blue-600 px-6 py-4 text-left font-semibold text-white shadow-md transition-all hover:bg-blue-700 active:scale-[0.98]"
+            className="group relative flex w-full items-center justify-between overflow-hidden rounded-none bg-blue-600 px-6 py-4 text-left font-semibold text-white shadow-md transition-all hover:bg-blue-700 active:scale-[0.98]"
           >
             <div>
               <div className="text-lg">Trigger API Route Error</div>
@@ -113,7 +113,7 @@ export default function Page() {
                 }
               )
             }}
-            className="group relative flex w-full items-center justify-between overflow-hidden rounded-xl bg-emerald-600 px-6 py-4 text-left font-semibold text-white shadow-md transition-all hover:bg-emerald-700 active:scale-[0.98]"
+            className="group relative flex w-full items-center justify-between overflow-hidden rounded-none bg-emerald-600 px-6 py-4 text-left font-semibold text-white shadow-md transition-all hover:bg-emerald-700 active:scale-[0.98]"
           >
             <div>
               <div className="text-lg">Trigger Server Action Error</div>

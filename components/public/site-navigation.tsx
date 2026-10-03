@@ -32,7 +32,7 @@ export function SiteNavigation({ overlay = false, inverse = false }: SiteNavigat
         <MagneticButton strength={0.2} className="hidden sm:inline-block">
           <Button
             asChild
-            className="rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs font-semibold uppercase tracking-wider px-4 transition-all duration-150 active:scale-[0.97]"
+            className="rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs font-semibold uppercase tracking-wider px-4 transition-all duration-150 active:scale-[0.97]"
           >
             <Link href="/contact">
               Book a shipment

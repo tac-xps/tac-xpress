@@ -54,6 +54,45 @@ const config: StorybookConfig = {
       'next/dist/client/components/unstable-rethrow': require.resolve(
         'next/dist/client/components/unstable-rethrow.browser.js'
       ),
+      // Server action mocks are also enforced by NormalModuleReplacementPlugin below,
+      // because the Next.js tsconfig-paths resolver can rewrite `@/` before alias runs.
+      '@/app/actions/tracking': require.resolve('./mocks/tracking.ts'),
+      '@/app/dashboard/invoices/actions': require.resolve('./mocks/invoices-actions.ts'),
+      '@sparticuz/chromium': false,
+      'puppeteer-core': false,
+      '@connectrpc/connect-node': false,
+    };
+
+    config.resolve.fallback = {
+      ...(config.resolve.fallback || {}),
+      'stream/promises': false,
+      'stream': false,
+      'path': false,
+      'os': false,
+      'fs': false,
+      'crypto': false,
+      'child_process': false,
+      'zlib': false,
+      'http': false,
+      'https': false,
+      'http2': false,
+      'net': false,
+      'tls': false,
+      'perf_hooks': false,
+      'events': false,
+      'url': false,
+      'util': false,
+      'assert': false,
+      'tty': false,
+      'domain': false,
+      'querystring': false,
+      'punycode': false,
+      'string_decoder': false,
+      'sys': false,
+      'timers': false,
+      'constants': false,
+      'vm': false,
+      'process': false,
     };
 
     config.plugins = config.plugins || [];
@@ -77,6 +116,15 @@ const config: StorybookConfig = {
       new webpack.NormalModuleReplacementPlugin(
         /unstable-rethrow(\.js)?$/,
         require.resolve('next/dist/client/components/unstable-rethrow.browser.js')
+      ),
+      // Never bundle "use server" modules (they pull in lib/db and server-only).
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]app[\\/]dashboard[\\/]invoices[\\/]actions(\.ts)?$/,
+        require.resolve('./mocks/invoices-actions.ts')
+      ),
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]app[\\/]actions[\\/]tracking(\.ts)?$/,
+        require.resolve('./mocks/tracking.ts')
       )
     );
 

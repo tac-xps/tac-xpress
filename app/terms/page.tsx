@@ -30,8 +30,8 @@ export default function TermsAndConditionsPage() {
       <section className="container mx-auto max-w-4xl px-4 pb-12 md:px-8 lg:pb-16">
         <div className="grid gap-8 sm:grid-cols-2">
           {/* Item 1 */}
-          <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-primary/10 text-primary">
               <FileCheck className="h-5 w-5" />
             </div>
             <h3 className="font-bold text-foreground">Accurate Declaration</h3>
@@ -42,8 +42,8 @@ export default function TermsAndConditionsPage() {
           </div>
 
           {/* Item 2 */}
-          <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
+          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-destructive/10 text-destructive">
               <AlertTriangle className="h-5 w-5" />
             </div>
             <h3 className="font-bold text-foreground">Prohibited Goods</h3>
@@ -55,8 +55,8 @@ export default function TermsAndConditionsPage() {
           </div>
 
           {/* Item 3 */}
-          <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
+          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-destructive/10 text-destructive">
               <Box className="h-5 w-5" />
             </div>
             <h3 className="font-bold text-foreground">Right to Inspect</h3>
@@ -67,8 +67,8 @@ export default function TermsAndConditionsPage() {
           </div>
 
           {/* Item 4 */}
-          <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="text-trend-positive flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
+            <div className="text-trend-positive flex h-10 w-10 items-center justify-center rounded-none bg-primary/10">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <h3 className="font-bold text-foreground">Liability & Insurance</h3>
@@ -81,8 +81,8 @@ export default function TermsAndConditionsPage() {
           </div>
 
           {/* Item 5 */}
-          <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-status-pending/10 text-status-pending">
+          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-status-pending/10 text-status-pending">
               <Scale className="h-5 w-5" />
             </div>
             <h3 className="font-bold text-foreground">Force Majeure</h3>
@@ -94,8 +94,8 @@ export default function TermsAndConditionsPage() {
           </div>
 
           {/* Item 6 */}
-          <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-status-pending/10 text-status-pending">
+          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-status-pending/10 text-status-pending">
               <Clock className="h-5 w-5" />
             </div>
             <h3 className="font-bold text-foreground">Demurrage Charges</h3>
@@ -107,8 +107,8 @@ export default function TermsAndConditionsPage() {
           </div>
 
           {/* Item 7 */}
-          <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/10 text-secondary-foreground">
+          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-secondary/10 text-secondary-foreground">
               <FileText className="h-5 w-5" />
             </div>
             <h3 className="font-bold text-foreground">Lien and Disposal</h3>
@@ -121,8 +121,8 @@ export default function TermsAndConditionsPage() {
           </div>
 
           {/* Item 8 */}
-          <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-primary/10 text-primary">
               <Gavel className="h-5 w-5" />
             </div>
             <h3 className="font-bold text-foreground">

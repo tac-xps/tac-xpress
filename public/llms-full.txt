@@ -1,0 +1,122 @@
+# Tac-Xpress Full System & Engineering Specification
+
+> Comprehensive system documentation, architectural contracts, STEM mathematical formulas, and API surfaces for AI agents and automated reasoning engines.
+
+---
+
+## 1. System Architecture
+
+Tac-Xpress is an enterprise logistics and cargo platform built with:
+- **Framework**: Next.js App Router (React Server Components by default) on React 19.
+- **Styling**: Tailwind CSS v4 with OKLCH CSS-first dynamic theme engine (`@theme inline`).
+- **Database & ORM**: PostgreSQL via Supabase and Drizzle ORM.
+- **Authentication**: Zero-cost, privacy-first Multi-Factor Authentication:
+  - FIDO2 / WebAuthn Passkeys (Windows Hello, Touch ID, YubiKey) via `@simplewebauthn`.
+  - RFC 6238 Time-based One-Time Passwords (TOTP Authenticator Apps) via `otpauth`.
+- **Edge Interception**: Next.js `proxy.ts` architecture.
+- **Monitoring**: Sentry error tracking with source maps.
+
+---
+
+## 2. Logistics STEM Mathematical Formulas
+
+### 2.1 Cargo Dimensional Weight (Volumetric Conversion)
+- **Express Air Cargo**:
+  $$\text{Volumetric Weight (kg)} = \left\lceil \frac{\text{Length (cm)} \times \text{Width (cm)} \times \text{Height (cm)}}{5000} \right\rceil$$
+- **Surface / Road Freight**:
+  $$\text{Volumetric Weight (kg)} = \left\lceil \frac{\text{Length (cm)} \times \text{Width (cm)} \times \text{Height (cm)}}{4000} \right\rceil$$
+- **Billable (Charged) Weight**:
+  $$\text{Charged Weight} = \max(\text{Gross Weight (kg)}, \text{Volumetric Weight (kg)})$$
+
+### 2.2 Commercial Pricing Sequence
+1. Base Freight Charge: $B = \max(\text{Charged Weight} \times \text{Corridor Rate}, \text{Minimum Corridor Charge})$
+2. Fuel Surcharge: $F = B \times \text{Fuel Surcharge Percentage}$
+3. Terminal Docket & Handling: $H$
+4. Subtotal: $S = B + F + H$
+5. Goods & Services Tax (18% GTA rate): $\text{GST} = \text{round}(S \times 0.18, 2)$
+6. Final Invoice: $T = S + \text{GST}$
+
+### 2.3 Operational Hub Corridors
+- `DEL`: Indira Gandhi International Airport Hub, New Delhi
+- `GAU`: Lokpriya Gopinath Bordoloi Hub, Guwahati (Gateway to North-East)
+- `IMF`: Bir Tikendrajit Hub, Imphal (Manipur)
+- `CCU`: Netaji Subhash Chandra Bose Hub, Kolkata
+- `BOM`: Chhatrapati Shivaji Maharaj Hub, Mumbai
+- `BLR`: Kempegowda Hub, Bengaluru
+
+### 2.4 SLA Breach Risk Scoring
+$$R = \frac{\text{Elapsed Waypoint Duration}}{\text{Scheduled Leg Duration}} \times \text{Corridor Risk Factor}$$
+- $R \ge 0.85$: Critical SLA alert triggered to operations dispatch.
+- $0.70 \le R < 0.85$: Flagged as "At Risk" in queue telemetry.
+
+### 2.5 Perceptual Color Science & APCA Contrast
+- **Relative Luminance ($Y$)** in linear RGB:
+  $$Y = 0.2126729 \, R_{\text{linear}} + 0.7151522 \, G_{\text{linear}} + 0.0721750 \, B_{\text{linear}}$$
+- **APCA Contrast ($L^c$)**:
+  $$L^c = \left( Y_{\text{txt}}^{0.57} - Y_{\text{bg}}^{0.56} \right) \times 100$$
+- **Operational Contrast Thresholds**:
+  - Status badges, pills, and chips: $|L^c| \ge 60$
+  - Large display headings ($\ge 24\text{px}$): $|L^c| \ge 45$
+  - Standard body text: $|L^c| \ge 75$
+- **OKLCH Safe Chroma Array ($\mathbf{C}_{\text{safe}}$)**:
+  $$\mathbf{C}_{\text{safe}} = [0.011, 0.032, 0.061, 0.091, 0.140, 0.147, 0.130, 0.107, 0.090, 0.073, 0.054]$$
+
+---
+
+## 3. Core API Surfaces & Data Contracts
+
+### 3.1 Rate & Dimension Calculation
+- **Endpoint**: `POST /api/quote`
+- **Request Body**:
+  ```json
+  {
+    "origin": "DEL",
+    "destination": "IMF",
+    "mode": "air",
+    "lengthCm": 60,
+    "widthCm": 40,
+    "heightCm": 35,
+    "actualWeightKg": 12.5
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "volumetricWeightKg": 17,
+    "chargedWeightKg": 17,
+    "baseCharge": 3400.00,
+    "fuelSurcharge": 340.00,
+    "handlingFee": 150.00,
+    "subtotal": 3890.00,
+    "gst": 700.20,
+    "total": 4590.20,
+    "currency": "INR",
+    "estimatedTransitHours": 36
+  }
+  ```
+
+### 3.2 Real-Time Shipment Telemetry
+- **Endpoint**: `GET /api/tracking/{awb}`
+- **Parameters**: `awb` (Air Waybill tracking number, string)
+- **Response**:
+  ```json
+  {
+    "awb": "TAC-849204-DEL-IMF",
+    "status": "in_transit",
+    "currentHub": "GAU",
+    "origin": "DEL",
+    "destination": "IMF",
+    "lastCheckpoint": "Guwahati Hub Inward Scan",
+    "timestamp": "2026-10-03T04:15:00Z",
+    "slaBreachRisk": 0.32,
+    "eta": "2026-10-04T12:00:00Z"
+  }
+  ```
+
+---
+
+## 4. Agent Guidelines & Coding Standards
+
+1. **ASD-STE100 Compliance**: Keep procedural sentences to $\le 20$ words. Use imperative mood and active voice.
+2. **Library Discipline**: Use `@/components/ui/` (Shadcn UI) primitives. Never build custom duplicates when primitives exist.
+3. **Color Tokens**: Never write raw HEX values in components. Use OKLCH tokens defined in `app/globals.css`.

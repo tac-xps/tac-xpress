@@ -1,0 +1,36 @@
+{
+  "strictness": 2,
+  "commentTypes": ["logic", "syntax", "style"],
+  "autoReview": ["open", "push", "rebase"],
+  "reviewDrafts": false,
+  "ignorePatterns": [
+    ".next/**",
+    "node_modules/**",
+    "dist/**",
+    "build/**",
+    "storybook-static/**",
+    "coverage/**",
+    "test-results/**",
+    "playwright-report/**",
+    "artifacts/**",
+    "scratch/**",
+    "supabase/.temp/**",
+    "*.lock",
+    "pnpm-lock.yaml"
+  ],
+  "excludeAuthors": [
+    "dependabot[bot]",
+    "github-actions[bot]"
+  ],
+  "disabledLabels": [
+    "skip-review",
+    "docs-only",
+    "dependencies"
+  ],
+  "summarySettings": {
+    "prSummary": true,
+    "confidenceScore": true,
+    "issueTable": true,
+    "sequenceDiagram": true
+  }
+}
