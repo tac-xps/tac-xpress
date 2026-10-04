@@ -117,29 +117,29 @@ const labelShipment: LabelShipment = {
 export default function DocsPreviewPage() {
   if (process.env.NODE_ENV === "production") notFound()
   return (
-    <main className="min-h-screen bg-neutral-100/90 py-10 px-4 text-neutral-900">
+    <main className="min-h-screen bg-background py-10 px-4 text-foreground">
       <div className="mx-auto max-w-7xl space-y-8">
-        <header className="border-b border-neutral-300 pb-4">
+        <header className="border-b border-border pb-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-neutral-900">
+              <h1 className="text-2xl font-black tracking-tight text-foreground">
                 TAC-XPRESS Document Design Studio
               </h1>
-              <p className="text-sm text-neutral-600">
+              <p className="text-sm text-muted-foreground">
                 Amazon ATS / Easy Ship styled 4&quot; × 6&quot; Thermal Shipping Label and A4 GST Tax Invoice
               </p>
             </div>
             <div className="flex items-center gap-2 font-mono text-xs">
-              <span className="rounded bg-black px-2.5 py-1 text-white font-bold">
+              <span className="rounded bg-foreground px-2.5 py-1 text-background font-bold">
                 DELHI HUB: 110003 (Origin)
               </span>
               <span>&#8594;</span>
-              <span className="rounded bg-neutral-800 px-2.5 py-1 text-white font-bold">
+              <span className="rounded bg-primary px-2.5 py-1 text-primary-foreground font-bold">
                 SINGJAMEI HUB: 795008 (Destination)
               </span>
             </div>
-            <div className="w-full pt-2 flex items-center justify-between border-t border-neutral-200">
-              <span className="text-xs font-medium text-neutral-600">
+            <div className="w-full pt-2 flex items-center justify-between border-t border-border">
+              <span className="text-xs font-medium text-muted-foreground">
                 Pop-up Dialog Previews:
               </span>
               <DocsPreviewDialogTrigger
@@ -155,13 +155,13 @@ export default function DocsPreviewPage() {
           {/* Left Column: 4x3 Thermal Label (4:3 Aspect Ratio) */}
           <section className="lg:col-span-4 flex flex-col items-center gap-4">
             <div className="w-full flex items-center justify-between">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-700">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
                 1. Thermal Shipping Label (4&quot; × 3&quot; Landscape)
               </h2>
-              <span className="text-[11px] font-mono text-neutral-500">4:3 Aspect • 203/300 DPI</span>
+              <span className="text-[11px] font-mono text-muted-foreground">4:3 Aspect • 203/300 DPI</span>
             </div>
 
-            <div className="rounded-none border border-neutral-300 bg-white p-4 shadow-md">
+            <div className="rounded-none border border-border bg-card p-4 shadow-md">
               <ShippingLabel shipment={labelShipment} />
             </div>
           </section>
@@ -169,13 +169,13 @@ export default function DocsPreviewPage() {
           {/* Right Column: A4 GST Tax Invoice */}
           <section className="lg:col-span-8 flex flex-col items-center gap-4">
             <div className="w-full flex items-center justify-between">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-700">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
                 2. Tax Invoice (A4 GST Triplicate)
               </h2>
-              <span className="text-[11px] font-mono text-neutral-500">210mm × 297mm</span>
+              <span className="text-[11px] font-mono text-muted-foreground">210mm × 297mm</span>
             </div>
 
-            <div className="w-full overflow-x-auto rounded-none border border-neutral-300 bg-white p-4 shadow-md">
+            <div className="w-full overflow-x-auto rounded-none border border-border bg-card p-4 shadow-md">
               <InvoiceDocument
                 invoice={mockInvoice}
                 shipment={mockShipment}

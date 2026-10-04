@@ -76,7 +76,7 @@ export function OperationsDashboardPage({
 
   const kpiIcons = [
     <Package key="kpi-0" className="size-4 text-primary" />,
-    <Truck key="kpi-1" className="size-4 text-sky-500" />,
+    <Truck key="kpi-1" className="size-4 text-status-transit" />,
     <AlertTriangle key="kpi-2" className="size-4 text-destructive" />,
   ]
 
@@ -152,21 +152,21 @@ export function OperationsDashboardPage({
               {deliveredPct > 0 && (
                 <div
                   style={{ width: `${deliveredPct}%` }}
-                  className="h-full rounded-none bg-primary transition-all duration-500"
+                  className="h-full rounded-none bg-status-delivered transition-all duration-500"
                   title={`Delivered: ${deliveredCount} (${deliveredPct}%)`}
                 />
               )}
               {inTransitPct > 0 && (
                 <div
                   style={{ width: `${inTransitPct}%` }}
-                  className="h-full rounded-none bg-sky-500 transition-all duration-500"
+                  className="h-full rounded-none bg-status-transit transition-all duration-500"
                   title={`In-Transit: ${inTransitCount} (${inTransitPct}%)`}
                 />
               )}
               {pendingPct > 0 && (
                 <div
                   style={{ width: `${pendingPct}%` }}
-                  className="h-full rounded-none bg-amber-500 transition-all duration-500"
+                  className="h-full rounded-none bg-status-pending transition-all duration-500"
                   title={`Pending / Hub: ${pendingCount} (${pendingPct}%)`}
                 />
               )}
@@ -182,17 +182,17 @@ export function OperationsDashboardPage({
             {/* Distribution Legend */}
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
               <span className="flex items-center gap-1.5">
-                <span className="size-2.5 rounded-none bg-primary" />
+                <span className="size-2.5 rounded-none bg-status-delivered" />
                 <span className="font-medium text-foreground">Delivered:</span>
                 <span className="font-mono text-muted-foreground">{deliveredCount} ({deliveredPct}%)</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="size-2.5 rounded-none bg-sky-500" />
+                <span className="size-2.5 rounded-none bg-status-transit" />
                 <span className="font-medium text-foreground">In-Transit:</span>
                 <span className="font-mono text-muted-foreground">{inTransitCount} ({inTransitPct}%)</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="size-2.5 rounded-none bg-amber-500" />
+                <span className="size-2.5 rounded-none bg-status-pending" />
                 <span className="font-medium text-foreground">Pending / Hub:</span>
                 <span className="font-mono text-muted-foreground">{pendingCount} ({pendingPct}%)</span>
               </span>

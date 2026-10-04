@@ -280,7 +280,7 @@ export function MfaSecuritySettings() {
 
       {successMessage && (
         <Alert>
-          <ShieldCheck className="size-4 text-emerald-600" />
+          <ShieldCheck className="size-4 text-success" />
           <AlertTitle>Security updated</AlertTitle>
           <AlertDescription>{successMessage}</AlertDescription>
         </Alert>
@@ -301,7 +301,7 @@ export function MfaSecuritySettings() {
             </div>
           </div>
           {passkeys.length > 0 ? (
-            <Badge variant="outline" className="border-emerald-500 text-emerald-600">
+            <Badge variant="success">
               {passkeys.length} Registered
             </Badge>
           ) : (
@@ -383,7 +383,7 @@ export function MfaSecuritySettings() {
             </div>
           </div>
           {totpEnabled ? (
-            <Badge variant="outline" className="border-emerald-500 text-emerald-600">
+            <Badge variant="success">
               Active
             </Badge>
           ) : (
@@ -435,7 +435,7 @@ export function MfaSecuritySettings() {
             </div>
 
             <div className="flex flex-col items-center justify-center gap-3 rounded-none bg-background p-4 shadow-sm sm:flex-row">
-              <div className="rounded bg-white p-2">
+              <div className="rounded bg-card p-2">
                 <QRCodeSVG value={setupData.uri} size={150} level="M" />
               </div>
               <div className="flex flex-col gap-2 text-xs">
@@ -451,7 +451,7 @@ export function MfaSecuritySettings() {
                     className="size-7"
                     onClick={() => copyToClipboard(setupData.secret, true)}
                   >
-                    {copiedSecret ? <Check className="size-3.5 text-emerald-600" /> : <Copy className="size-3.5" />}
+                    {copiedSecret ? <Check className="size-3.5 text-success" /> : <Copy className="size-3.5" />}
                   </Button>
                 </div>
               </div>
@@ -504,8 +504,8 @@ export function MfaSecuritySettings() {
 
         {/* Backup Codes Display (Shown immediately after enabling) */}
         {backupCodes && (
-          <div className="flex flex-col gap-3 rounded-none border border-amber-500/30 bg-amber-500/10 p-4">
-            <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+          <div className="flex flex-col gap-3 rounded-none border border-warning/30 bg-warning/10 p-4">
+            <div className="flex items-center gap-2 text-warning">
               <KeyRound className="size-4" />
               <h5 className="text-xs font-semibold">Store your emergency recovery codes</h5>
             </div>
@@ -530,7 +530,7 @@ export function MfaSecuritySettings() {
                 onClick={() => copyToClipboard(backupCodes.join("\n"), false)}
                 className="h-8 text-xs"
               >
-                {copiedBackupCodes ? <Check className="mr-1.5 size-3.5 text-emerald-600" /> : <Copy className="mr-1.5 size-3.5" />}
+                {copiedBackupCodes ? <Check className="mr-1.5 size-3.5 text-success" /> : <Copy className="mr-1.5 size-3.5" />}
                 Copy all codes
               </Button>
               <Button

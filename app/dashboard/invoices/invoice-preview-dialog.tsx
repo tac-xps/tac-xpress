@@ -130,11 +130,11 @@ export function InvoicePreviewDialog({
         {/* Header */}
         <DialogHeader className="flex flex-shrink-0 flex-row items-center justify-between border-b px-6 py-3.5 bg-background">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-none border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="flex size-9 items-center justify-center rounded-none border border-border bg-muted">
               {activeTab === "invoice" ? (
-                <FileText className="size-4.5 text-neutral-700 dark:text-neutral-200" />
+                <FileText className="size-4.5 text-muted-foreground" />
               ) : (
-                <Tag className="size-4.5 text-neutral-700 dark:text-neutral-200" />
+                <Tag className="size-4.5 text-muted-foreground" />
               )}
             </div>
             <div>
@@ -273,7 +273,7 @@ export function InvoicePreviewDialog({
               {/* TAB 1: TAX INVOICE PREVIEW */}
               <TabsContent
                 value="invoice"
-                className="mt-0 flex-1 overflow-auto bg-neutral-100/90 p-4 dark:bg-neutral-950/60 flex justify-center items-start"
+                className="mt-0 flex-1 overflow-auto bg-muted/80 p-4 flex justify-center items-start"
               >
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -282,7 +282,7 @@ export function InvoicePreviewDialog({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.2 }}
-                    className="relative my-2 origin-top shadow-2xl rounded-none overflow-hidden bg-white max-w-full"
+                    className="relative my-2 origin-top shadow-2xl rounded-none overflow-hidden bg-card max-w-full"
                   >
                     <div className="w-[210mm] max-w-full origin-top scale-[0.78] sm:scale-[0.88] md:scale-100">
                       <InvoiceDocument
@@ -297,7 +297,7 @@ export function InvoicePreviewDialog({
               {/* TAB 2: 4:3 THERMAL SHIPPING LABEL PREVIEW */}
               <TabsContent
                 value="label"
-                className="mt-0 flex-1 overflow-auto bg-neutral-100/90 p-6 dark:bg-neutral-950/60 flex flex-col justify-center items-center"
+                className="mt-0 flex-1 overflow-auto bg-muted/80 p-6 flex flex-col justify-center items-center"
               >
                 <AnimatePresence mode="wait">
                   <motion.div

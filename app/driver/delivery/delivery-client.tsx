@@ -583,7 +583,7 @@ export function DeliveryClient({
                       <div
                         className={`flex size-7 shrink-0 items-center justify-center rounded-none text-xs font-bold ${
                           isDelivered
-                            ? "bg-status-delivered text-white"
+                            ? "bg-status-delivered text-primary-foreground"
                             : "bg-muted text-foreground"
                         }`}
                       >

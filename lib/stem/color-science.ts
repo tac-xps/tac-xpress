@@ -1,8 +1,9 @@
 /**
- * Logistics STEM Engine: Perceptual Color Science & APCA Contrast
+ * Logistics STEM Engine: Perceptual Color Science & Dual-Layer Accessibility
  *
  * Implements rigorous mathematical models from:
  * - ITU-R BT.709 Relative Luminance
+ * - WCAG 2.2 Contrast Standards (SC 1.4.3, 1.4.11)
  * - Accessible Perceptual Contrast Algorithm (APCA) Lc
  * - Evil Martians OKLCH Safe Chroma Bounds (C_safe)
  *
@@ -24,18 +25,18 @@ export const OKLCH_SAFE_CHROMA = [
 
 /** Standard hub corridor hue mapping in OKLCH degrees. */
 export const CORRIDOR_HUES: Record<string, number> = {
-  "DEL-IMF": 245, // North-East Express Corridor (Indigo/Violet)
-  "IMF-DEL": 245,
+  "DEL-IMF": 278, // North-East Express Corridor (Mineral Indigo)
+  "IMF-DEL": 278,
   "GAU-CCU": 160, // Assam-Bengal Gateway (Emerald/Teal)
   "CCU-GAU": 160,
-  "BOM-DEL": 200, // Western Trunk Line (Sky Blue)
-  "DEL-BOM": 200,
-  "BLR-IMF": 285, // Southern Peninsula to North-East Line (Purple)
+  "BOM-DEL": 215, // Western Trunk Line (Mineral Fjord)
+  "DEL-BOM": 215,
+  "BLR-IMF": 285, // Southern Peninsula to North-East Line (Deep Violet)
   "IMF-BLR": 285,
-  "GAU-IMF": 180, // Intra-North-East Shuttle (Cyan)
-  "IMF-GAU": 180,
-  "CCU-IMF": 220, // Eastern Trunk Corridor (Deep Blue)
-  "IMF-CCU": 220,
+  "GAU-IMF": 215, // Intra-North-East Shuttle (Fjord)
+  "IMF-GAU": 215,
+  "CCU-IMF": 215, // Eastern Trunk Corridor (Fjord)
+  "IMF-CCU": 215,
 }
 
 /**
@@ -57,25 +58,70 @@ export function getRelativeLuminance(r8: number, g8: number, b8: number): number
 }
 
 /**
- * Calculates APCA estimated lightness contrast Lc between text and background.
+ * Computes WCAG 2.2 contrast ratio between two linear luminance values.
+ * Returns ratio from 1.0 to 21.0.
+ */
+export function getWcagContrast(y1: number, y2: number): number {
+  const lighter = Math.max(y1, y2)
+  const darker = Math.min(y1, y2)
+  return (lighter + 0.05) / (darker + 0.05)
+}
+
+/** WCAG 2.2 threshold requirements. */
+export const WCAG_THRESHOLDS = {
+  normalTextAA: 4.5,
+  largeTextAA: 3.0,
+  uiComponentsAA: 3.0,
+  normalTextAAA: 7.0,
+  largeTextAAA: 4.5,
+} as const
+
+export type WcagRole = keyof typeof WCAG_THRESHOLDS
+
+/**
+ * Evaluates whether two luminances pass the contractual WCAG 2.2 requirement.
+ */
+export function isWcagCompliant(y1: number, y2: number, role: WcagRole = "normalTextAA"): boolean {
+  return getWcagContrast(y1, y2) >= WCAG_THRESHOLDS[role]
+}
+
+/**
+ * Calculates APCA estimated lightness contrast Lc between text and background
+ * using the SAPC-APCA 0.0.98G standard algorithm.
  * Returns signed Lc value.
  */
 export function getApcaContrast(textY: number, bgY: number): number {
-  const textClamped = Math.max(textY, 0.0005)
-  const bgClamped = Math.max(bgY, 0.0005)
+  // Soft clamp for deep black / flare
+  const yt = textY < 0.022 ? textY + Math.pow(0.022 - textY, 1.414) : textY
+  const yb = bgY < 0.022 ? bgY + Math.pow(0.022 - bgY, 1.414) : bgY
 
-  const textMod = Math.pow(textClamped, 0.57)
-  const bgMod = Math.pow(bgClamped, 0.56)
+  if (Math.abs(yb - yt) < 0.0005) return 0
 
-  // Returns positive when text is lighter than background, negative when darker
-  return (textMod - bgMod) * 100
+  if (yb > yt) {
+    // Dark text on light background
+    const s = (Math.pow(yb, 0.56) - Math.pow(yt, 0.57)) * 1.14
+    return s < 0.1 ? 0 : (s - 0.027) * 100
+  } else {
+    // Light text on dark background
+    const s = (Math.pow(yb, 0.65) - Math.pow(yt, 0.62)) * 1.14
+    return s > -0.1 ? 0 : (s + 0.027) * 100
+  }
 }
 
-/** APCA contrast thresholds for different UI components. */
+/**
+ * APCA contrast thresholds (Readability Quality Gate).
+ * Lc 90: Preferred body text
+ * Lc 75: Minimum body text (14-16px normal weight)
+ * Lc 60: Content text / badges / chips / table headers
+ * Lc 45: Large headings (>= 18pt / 24px bold)
+ * Lc 30: UI boundaries, icons, inactive indicators
+ */
 export const APCA_THRESHOLDS = {
-  badge: 60,  // Status badges, pills, and chips
-  large: 45,  // Large text and display headings (≥ 24px)
-  body: 75,   // Standard reading body copy (≥ 14px)
+  preferred_body: 90,
+  body: 75,
+  badge: 60,
+  large: 45,
+  graphics: 30,
 } as const
 
 export type ApcaRole = keyof typeof APCA_THRESHOLDS
@@ -113,7 +159,7 @@ export function clampSafeChroma(lightness: number, requestedChroma: number): num
  */
 export function getCorridorHue(origin?: string | null, destination?: string | null): number {
   if (!origin || !destination) {
-    return 245 // Default Tac-Xpress brand hue
+    return 278 // Default Tac-Xpress Mineral Indigo hue
   }
 
   const origNorm = origin.trim().toUpperCase()

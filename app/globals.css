@@ -9,7 +9,7 @@
 @plugin "tailwindcss-animate";
 
 @theme inline {
-  /* Semantic color tokens — resolved from :root / .dark at runtime */
+  /* ═══ Layer 1 & 2: Semantic Color Tokens ═══ */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -19,6 +19,8 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-wash: var(--primary-wash);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -27,26 +29,71 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-wash: var(--destructive-wash);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-surface: var(--surface);
-  --color-status-pending: var(--status-pending);
-  --color-status-transit: var(--status-transit);
-  --color-status-delivered: var(--status-delivered);
-  --color-status-failed: var(--status-failed);
 
-  /* Opaque values. Tailwind v4 derives slash-opacity variants via color-mix(). */
-  --color-corridor: oklch(var(--corridor-l, 0.60) var(--corridor-c, 0.145) var(--corridor-h, 245));
-  --color-corridor-foreground: oklch(var(--corridor-fg-l, 0.98) var(--corridor-fg-c, 0.01) var(--corridor-h, 245));
-  --color-corridor-subtle: oklch(var(--corridor-subtle-l, 0.96) var(--corridor-subtle-c, 0.02) var(--corridor-h, 245));
-  --color-corridor-border: oklch(var(--corridor-border-l, 0.88) var(--corridor-border-c, 0.05) var(--corridor-h, 245));
+  /* Semantic State Tokens (Quiet Infrastructure) */
+  --color-info: var(--info);
+  --color-info-wash: var(--info-wash);
+  --color-success: var(--success);
+  --color-success-wash: var(--success-wash);
+  --color-warning: var(--warning);
+  --color-warning-wash: var(--warning-wash);
+
+  /* Status Colors */
+  --color-status-pending: var(--status-pending);
+  --color-status-pending-wash: var(--status-pending-wash);
+  --color-status-transit: var(--status-transit);
+  --color-status-transit-wash: var(--status-transit-wash);
+  --color-status-delivered: var(--status-delivered);
+  --color-status-delivered-wash: var(--status-delivered-wash);
+  --color-status-failed: var(--status-failed);
+  --color-status-failed-wash: var(--status-failed-wash);
+
+  /* Mineral Primitives (Layer 1) */
+  --color-mn-cloud: var(--mn-cloud);
+  --color-mn-paper: var(--mn-paper);
+  --color-mn-mist: var(--mn-mist);
+  --color-mn-stone: var(--mn-stone);
+  --color-mn-stone-strong: var(--mn-stone-strong);
+  --color-mn-ink: var(--mn-ink);
+  --color-mn-slate: var(--mn-slate);
+  --color-mn-bone: var(--mn-cloud);
+  --color-mn-oat: var(--mn-mist);
+  --color-mn-indigo: var(--mn-indigo);
+  --color-mn-indigo-hover: var(--mn-indigo-hover);
+  --color-mn-indigo-wash: var(--mn-indigo-wash);
+  --color-mn-fjord: var(--mn-fjord);
+  --color-mn-fjord-wash: var(--mn-fjord-wash);
+  --color-mn-moss: var(--mn-moss);
+  --color-mn-moss-wash: var(--mn-moss-wash);
+  --color-mn-ochre: var(--mn-ochre);
+  --color-mn-ochre-wash: var(--mn-ochre-wash);
+  --color-mn-clay: var(--mn-clay);
+  --color-mn-clay-wash: var(--mn-clay-wash);
+  --color-mn-basalt: var(--mn-basalt);
+  --color-mn-basalt-surface: var(--mn-basalt-surface);
+  --color-mn-basalt-card: var(--mn-basalt-card);
+  --color-mn-basalt-popover: var(--mn-basalt-popover);
+
+  /* Corridor Engine Tokens */
+  --color-corridor: oklch(var(--corridor-l, 0.51) var(--corridor-c, 0.075) var(--corridor-h, 278));
+  --color-corridor-foreground: oklch(var(--corridor-fg-l, 0.99) var(--corridor-fg-c, 0.005) var(--corridor-h, 278));
+  --color-corridor-subtle: oklch(var(--corridor-subtle-l, 0.945) var(--corridor-subtle-c, 0.02) var(--corridor-h, 278));
+  --color-corridor-border: oklch(var(--corridor-border-l, 0.88) var(--corridor-border-c, 0.03) var(--corridor-h, 278));
+
+  /* 5-Color Categorical Mineral Chart Palette */
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+
+  /* Sidebar Tokens */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -56,111 +103,159 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Typography — Preset b67em6gr2W uses Inter for body and Manrope for headings */
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
-  --text-micro: 0.625rem; /* 10px */
-  --text-micro--line-height: 0.75rem;
-  --text-mini: 0.6875rem; /* 11px */
-  --text-mini--line-height: 0.875rem;
-
-  /* Geometry System — Strict Zero-Radius Mandate (All corners square) */
-  --radius-xs: 0px;
-  --radius-sm: 0px;
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-xl: 0px;
-  --radius-2xl: 0px;
-  --radius-3xl: 0px;
-  --radius-4xl: 0px;
-  --radius: 0px;
-
-  /* Brand colors — opaque OKLCH; slash-opacity handled by Tailwind color-mix() */
+  /* Brand Colors */
+  --color-tx-brand-blue: oklch(0.48 0.15 255);
   --color-brand-blue: oklch(0.48 0.15 255);
   --color-invoice-navy: oklch(0.20 0.025 255);
 
-  /* Semantic named shadows */
+  /* Typography Scale */
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  --text-display-xl: clamp(2.5rem, 5vw, 4rem);
+  --text-display-l: clamp(2rem, 3.8vw, 3rem);
+  --text-heading: clamp(1.5rem, 2.5vw, 2rem);
+  --text-title: clamp(1.25rem, 1.8vw, 1.5rem);
+  --text-body-lg: 1.125rem;
+  --text-body: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-caption: 0.75rem;
+  --text-micro: 0.625rem;
+  --text-mini: 0.6875rem;
+
+  /* Geometry Hierarchy */
+  --radius-none: 0px;
+  --radius-control: 3px;
+  --radius-overlay: 6px;
+  --radius-full: 9999px;
+  --radius-xs: 0px;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
+  --radius-2xl: 6px;
+  --radius: 0px;
+
+  /* Controlled Elevation Shadows */
   --shadow-card: var(--shadow-card-val);
   --shadow-ambient: var(--shadow-ambient-val);
   --shadow-float: var(--shadow-float-val);
-  --shadow-overlay: 0 16px 40px rgb(0 0 0 / 18%);
-
-  /* Composable shadow scale — neutral taupe, light/dark aware */
-  --shadow-2xs: var(--shadow-2xs);
-  --shadow-xs: var(--shadow-xs);
-  --shadow-sm: var(--shadow-sm);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
-  --shadow-xl: var(--shadow-xl);
-  --shadow-2xl: var(--shadow-2xl);
+  --shadow-overlay: var(--shadow-overlay-val);
+  --shadow-2xs: var(--shadow-2xs-val);
+  --shadow-xs: var(--shadow-xs-val);
+  --shadow-sm: var(--shadow-sm-val);
+  --shadow-md: var(--shadow-md-val);
+  --shadow-lg: var(--shadow-lg-val);
+  --shadow-xl: var(--shadow-xl-val);
+  --shadow-2xl: var(--shadow-2xl-val);
 }
 
 :root {
+  color-scheme: light;
+
   /* ──────────────────────────────────────────────────────────────────────────
-     NORDIC SLATE — LIGHT
-     Evil Martians Harmony & APCA Calibrated
+     NORDIC MINERAL / CLOUD WHITE & BLUE BASALT — LIGHT (Cloud White)
+     Airy Structural White + Evil Martians OKLCH + WCAG 2.2 SC 1.4.3 & 1.4.11 Pass
      ────────────────────────────────────────────────────────────────────────── */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.180 0.025 255);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.180 0.025 255);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.180 0.025 255);
-  --primary: oklch(0.480 0.160 255);
-  --primary-foreground: oklch(0.990 0.005 255);
-  --secondary: oklch(0.955 0.008 255);
-  --secondary-foreground: oklch(0.180 0.025 255);
-  --muted: oklch(0.955 0.008 255);
-  --muted-foreground: oklch(0.500 0.030 255);
-  --accent: oklch(0.955 0.008 255);
-  --accent-foreground: oklch(0.180 0.025 255);
-  --destructive: oklch(0.58 0.145 27.3);
-  --destructive-foreground: oklch(0.986 0.002 67.8);
-  --border: oklch(0.910 0.012 255);
-  --border-strong: oklch(0.740 0.022 255);
-  --input: oklch(0.910 0.012 255);
-  --ring: oklch(0.480 0.160 255);
-  --surface: oklch(0.985 0.004 255);
-  --card-accent: oklch(0.480 0.160 255);
+  --mn-cloud: oklch(0.985 0.006 95);         /* Canvas: Soft architectural cloud white (approx #FBFAF6) */
+  --mn-paper: oklch(0.995 0.003 95);         /* Surface: Crisp paper card (approx #FEFDFB) */
+  --mn-mist: oklch(0.955 0.008 95);          /* Secondary / Muted: Subtle cool mist (approx #F2F0EA) */
+  --mn-stone: oklch(0.900 0.010 95);         /* Structural Border: Hairline stone (approx #E0DED7) */
+  --mn-stone-strong: oklch(0.630 0.015 250); /* Control Border: Blue-slate boundary (3.35:1 on cloud) */
+  --mn-ink: oklch(0.230 0.012 250);          /* Primary Text: Blue-neutral dense ink (16.2:1, Lc 98.6) */
+  --mn-slate: oklch(0.470 0.012 250);        /* Secondary Text: Restrained blue-slate (6.5:1, Lc 77.1) */
 
-  /* ── Status colors (light) ───────────────────────────────────────────────
-     Used as text over white and over their own /10–/15 tints.
-     L <= 0.52 keeps APCA |Lc| >= 60 against L ~0.97 tinted backgrounds. */
-  --status-pending: oklch(0.52 0.115 65);
-  --status-transit: oklch(0.50 0.150 255);
-  --status-delivered: oklch(0.50 0.130 145);
-  --status-failed: oklch(0.52 0.170 28);
+  /* Backwards compatibility aliases */
+  --mn-bone: var(--mn-cloud);
+  --mn-oat: var(--mn-mist);
 
-  /* ── Dynamic Corridor Theming Defaults (Delhi ↔ Guwahati default hue 255) ── */
-  --corridor-h: 255;
-  --corridor-l: 0.60;
-  --corridor-c: 0.145;
-  --corridor-subtle-l: 0.96;
+  /* Minerals */
+  --mn-indigo: oklch(0.510 0.140 278);       /* UI Primary: Quiet indigo (5.9:1 on white button) */
+  --mn-indigo-hover: oklch(0.440 0.140 278); /* UI Primary Hover */
+  --mn-indigo-wash: oklch(0.940 0.028 278);  /* Primary Wash (5.0:1 with text) */
+  --mn-fjord: oklch(0.500 0.075 215);        /* Info / Transit: Quiet northern fjord (5.0:1 on wash) */
+  --mn-fjord-wash: oklch(0.945 0.018 215);   /* Fjord Wash */
+  --mn-moss: oklch(0.490 0.060 138);         /* Success / Delivered: Calming muted moss (5.1:1 on wash) */
+  --mn-moss-wash: oklch(0.940 0.016 138);    /* Moss Wash */
+  --mn-ochre: oklch(0.530 0.105 68);         /* Warning / Pending: Warm ochre amber (4.7:1 on wash) */
+  --mn-ochre-wash: oklch(0.952 0.026 78);    /* Ochre Wash */
+  --mn-clay: oklch(0.500 0.110 32);          /* Destructive / Failed: Terracotta clay (5.4:1 on wash) */
+  --mn-clay-wash: oklch(0.950 0.016 35);     /* Clay Wash */
+
+  /* Semantic System Mapping */
+  --background: var(--mn-cloud);
+  --foreground: var(--mn-ink);
+  --card: var(--mn-paper);
+  --card-foreground: var(--mn-ink);
+  --popover: var(--mn-paper);
+  --popover-foreground: var(--mn-ink);
+  --primary: var(--mn-indigo);
+  --primary-foreground: oklch(0.995 0.003 95);
+  --primary-hover: var(--mn-indigo-hover);
+  --primary-wash: var(--mn-indigo-wash);
+  --secondary: var(--mn-mist);
+  --secondary-foreground: var(--mn-ink);
+  --muted: var(--mn-mist);
+  --muted-foreground: var(--mn-slate);
+  --accent: var(--mn-mist);
+  --accent-foreground: var(--mn-ink);
+  --destructive: var(--mn-clay);
+  --destructive-foreground: oklch(0.995 0.003 95);
+  --destructive-wash: var(--mn-clay-wash);
+  --border: var(--mn-stone);
+  --border-strong: var(--mn-stone-strong);
+  --input: var(--mn-stone-strong);
+  --ring: var(--mn-indigo);
+  --surface: var(--mn-paper);
+  --card-accent: var(--mn-indigo);
+  --info: var(--mn-fjord);
+  --info-wash: var(--mn-fjord-wash);
+  --success: var(--mn-moss);
+  --success-wash: var(--mn-moss-wash);
+  --warning: var(--mn-ochre);
+  --warning-wash: var(--mn-ochre-wash);
+
+  /* Status Colors */
+  --status-pending: var(--mn-ochre);
+  --status-pending-wash: var(--mn-ochre-wash);
+  --status-transit: var(--mn-fjord);
+  --status-transit-wash: var(--mn-fjord-wash);
+  --status-delivered: var(--mn-moss);
+  --status-delivered-wash: var(--mn-moss-wash);
+  --status-failed: var(--mn-clay);
+  --status-failed-wash: var(--mn-clay-wash);
+
+  /* Dynamic Corridor Defaults (Mineral Indigo H 278) */
+  --corridor-h: 278;
+  --corridor-l: 0.51;
+  --corridor-c: 0.075;
+  --corridor-subtle-l: 0.945;
   --corridor-subtle-c: 0.02;
   --corridor-border-l: 0.88;
-  --corridor-border-c: 0.05;
-  --corridor-fg-l: 0.98;
-  --corridor-fg-c: 0.01;
+  --corridor-border-c: 0.03;
+  --corridor-fg-l: 0.99;
+  --corridor-fg-c: 0.005;
 
-  /* ── Chart palette (Harmonized Nordic Slate & Accents) ─────────────────── */
-  --chart-1: oklch(0.680 0.150 255);
-  --chart-2: oklch(0.540 0.080 255);
-  --chart-3: oklch(0.440 0.050 255);
-  --chart-4: oklch(0.360 0.040 255);
-  --chart-5: oklch(0.280 0.030 255);
+  /* 5-Color Categorical Mineral Chart Palette */
+  --chart-1: oklch(0.510 0.140 278);
+  --chart-2: oklch(0.490 0.060 138);
+  --chart-3: oklch(0.530 0.105 68);
+  --chart-4: oklch(0.500 0.110 32);
+  --chart-5: oklch(0.500 0.075 215);
 
-  /* ── Sidebar (Harmonized Nordic Slate Light) ────────────────────────────── */
-  --sidebar: oklch(0.985 0.004 255);
-  --sidebar-foreground: oklch(0.180 0.025 255);
-  --sidebar-primary: oklch(0.480 0.160 255);
-  --sidebar-primary-foreground: oklch(0.990 0.005 255);
-  --sidebar-accent: oklch(0.955 0.008 255);
-  --sidebar-accent-foreground: oklch(0.180 0.025 255);
-  --sidebar-border: oklch(0.910 0.012 255);
-  --sidebar-ring: oklch(0.480 0.160 255);
+  /* Sidebar */
+  --sidebar: var(--mn-paper);
+  --sidebar-foreground: var(--mn-ink);
+  --sidebar-primary: var(--mn-indigo);
+  --sidebar-primary-foreground: oklch(0.995 0.003 95);
+  --sidebar-accent: var(--mn-mist);
+  --sidebar-accent-foreground: var(--mn-ink);
+  --sidebar-border: var(--mn-stone);
+  --sidebar-ring: var(--mn-indigo);
 
-  /* ── Geometry & Motion ─────────────────────────────────────────────────── */
+  /* Geometry & Motion */
+  --radius-control: 3px;
+  --radius-overlay: 6px;
   --radius: 0px;
   --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
@@ -173,106 +268,145 @@
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
-  /* ── Neutral elevation ─────────────────────────────────────────────────── */
-  --shadow-card-val: 0 1px 3px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.02);
-  --shadow-ambient-val: 0 20px 40px -20px rgb(0 0 0 / 0.08);
-  --shadow-float-val: 0 12px 32px -12px rgb(0 0 0 / 0.12);
-  --shadow-2xs: 0 1px 2px rgb(0 0 0 / 0.04);
-  --shadow-xs: 0 1px 3px rgb(0 0 0 / 0.05);
-  --shadow-sm: 0 2px 4px rgb(0 0 0 / 0.06);
-  --shadow-md: 0 4px 8px rgb(0 0 0 / 0.07);
-  --shadow-lg: 0 8px 16px rgb(0 0 0 / 0.08);
-  --shadow-xl: 0 16px 32px rgb(0 0 0 / 0.10);
-  --shadow-2xl: 0 24px 48px rgb(0 0 0 / 0.12);
+  /* Restrained Blue-Neutral Elevation */
+  --mn-shadow-light: oklch(0.230 0.012 250);
+  --shadow-card-val: 0 1px 3px oklch(0.230 0.012 250 / 0.04), 0 1px 2px oklch(0.230 0.012 250 / 0.02);
+  --shadow-ambient-val: 0 20px 40px -20px oklch(0.230 0.012 250 / 0.06);
+  --shadow-float-val: 0 12px 32px -12px oklch(0.230 0.012 250 / 0.08);
+  --shadow-overlay-val: 0 16px 40px oklch(0.230 0.012 250 / 0.10);
+  --shadow-2xs-val: 0 1px 2px oklch(0.230 0.012 250 / 0.03);
+  --shadow-xs-val: 0 1px 2px oklch(0.230 0.012 250 / 0.04);
+  --shadow-sm-val: 0 2px 6px oklch(0.230 0.012 250 / 0.05);
+  --shadow-md-val: 0 4px 12px oklch(0.230 0.012 250 / 0.06);
+  --shadow-lg-val: 0 12px 28px oklch(0.230 0.012 250 / 0.07);
+  --shadow-xl-val: 0 16px 40px oklch(0.230 0.012 250 / 0.08);
+  --shadow-2xl-val: 0 24px 48px oklch(0.230 0.012 250 / 0.10);
 }
 
 .dark {
+  color-scheme: dark;
+
   /* ──────────────────────────────────────────────────────────────────────────
-     NORDIC DEEP SLATE — DARK
-     Elevated Lightness (L=0.275) & Blueish Slate Hue (H=255°)
-     APCA Contrast Certified (|Lc| >= 65 for body, >= 95 for foreground)
+     NORDIC MINERAL / CLOUD WHITE & BLUE BASALT — DARK (Blue Basalt H 255)
+     Technical Blue Basalt Depth + WCAG 2.2 Contractual Pass + Lc >= 60
      ────────────────────────────────────────────────────────────────────────── */
-  --background: oklch(0.275 0.046 255);
-  --foreground: oklch(0.985 0.008 255);
-  --surface: oklch(0.305 0.048 255);
-  --card: oklch(0.325 0.050 255);
-  --card-foreground: oklch(0.985 0.008 255);
-  --popover: oklch(0.345 0.052 255);
-  --popover-foreground: oklch(0.985 0.008 255);
-  --primary: oklch(0.755 0.130 255);
-  --primary-foreground: oklch(0.160 0.030 255);
-  --secondary: oklch(0.355 0.046 255);
-  --secondary-foreground: oklch(0.985 0.008 255);
-  --muted: oklch(0.345 0.042 255);
-  --muted-foreground: oklch(0.760 0.032 255);
-  --accent: oklch(0.355 0.046 255);
-  --accent-foreground: oklch(0.985 0.008 255);
-  --destructive: oklch(0.70 0.12 25.0);
-  --destructive-foreground: oklch(0.160 0.030 255);
-  --border: oklch(0.980 0.015 255 / 14%);
-  --border-strong: oklch(0.480 0.055 255);
-  --input: oklch(0.980 0.015 255 / 18%);
-  --ring: oklch(0.755 0.130 255);
-  --card-accent: oklch(0.755 0.130 255);
+  --mn-basalt: oklch(0.240 0.030 255);         /* Background: Blue Basalt (approx #15202D) */
+  --mn-basalt-surface: oklch(0.270 0.030 255); /* Surface: Lifted Blue Basalt (approx #1C2735) */
+  --mn-basalt-card: oklch(0.290 0.035 255);    /* Card: Subtle blue elevation (approx #1F2C3D) */
+  --mn-basalt-popover: oklch(0.320 0.035 255); /* Popover: Distinct blue tier (approx #273445) */
+  --mn-dark-fg: oklch(0.940 0.012 95);         /* Cloud White Foreground (13.8:1 on basalt) */
+  --mn-dark-muted: oklch(0.760 0.018 240);     /* Cool Blue-Gray Muted Text (7.7:1 on basalt) */
+  --mn-dark-border: oklch(0.420 0.020 250);    /* Structural Border */
+  --mn-dark-border-strong: oklch(0.580 0.018 245); /* Control Boundary (3.3:1 on card, SC 1.4.11) */
+  --mn-dark-indigo: oklch(0.730 0.105 278);    /* Primary Action */
+  --mn-dark-indigo-hover: oklch(0.770 0.095 278);
+  --mn-dark-indigo-wash: oklch(0.300 0.040 278);
+  --mn-dark-indigo-fg: oklch(0.200 0.025 255); /* Dark ink on light primary button (7.4:1) */
+  --mn-dark-fjord: oklch(0.740 0.065 215);     /* Transit Status (6.0:1 on wash) */
+  --mn-dark-fjord-wash: oklch(0.300 0.030 215);
+  --mn-dark-moss: oklch(0.740 0.065 138);      /* Delivered Status (6.0:1 on wash) */
+  --mn-dark-moss-wash: oklch(0.300 0.030 138);
+  --mn-dark-ochre: oklch(0.760 0.090 72);      /* Pending Status (6.1:1 on wash) */
+  --mn-dark-ochre-wash: oklch(0.310 0.040 72);
+  --mn-dark-clay: oklch(0.730 0.095 32);       /* Failed Status (5.6:1 on wash) */
+  --mn-dark-clay-wash: oklch(0.300 0.040 32);
 
-  /* ── Status colors (APCA Lc >= 60 in Dark Mode & Safe Chroma Clamped) ───── */
-  --status-pending: oklch(0.82 0.11 78);
-  --status-transit: oklch(0.72 0.12 255);
-  --status-delivered: oklch(0.74 0.12 142);
-  --status-failed: oklch(0.72 0.12 28);
+  /* Semantic System Mapping Dark */
+  --background: var(--mn-basalt);
+  --surface: var(--mn-basalt-surface);
+  --card: var(--mn-basalt-card);
+  --card-foreground: var(--mn-dark-fg);
+  --popover: var(--mn-basalt-popover);
+  --popover-foreground: var(--mn-dark-fg);
+  --foreground: var(--mn-dark-fg);
+  --muted: var(--mn-basalt-surface);
+  --muted-foreground: var(--mn-dark-muted);
+  --secondary: var(--mn-basalt-surface);
+  --secondary-foreground: var(--mn-dark-fg);
+  --accent: var(--mn-basalt-surface);
+  --accent-foreground: var(--mn-dark-fg);
+  --destructive: var(--mn-dark-clay);
+  --destructive-foreground: var(--mn-dark-indigo-fg);
+  --destructive-wash: var(--mn-dark-clay-wash);
+  --border: var(--mn-dark-border);
+  --border-strong: var(--mn-dark-border-strong);
+  --input: var(--mn-dark-border-strong);
+  --primary: var(--mn-dark-indigo);
+  --primary-foreground: var(--mn-dark-indigo-fg);
+  --primary-hover: var(--mn-dark-indigo-hover);
+  --primary-wash: var(--mn-dark-indigo-wash);
+  --ring: var(--mn-dark-indigo);
+  --card-accent: var(--mn-dark-indigo);
+  --info: var(--mn-dark-fjord);
+  --info-wash: var(--mn-dark-fjord-wash);
+  --success: var(--mn-dark-moss);
+  --success-wash: var(--mn-dark-moss-wash);
+  --warning: var(--mn-dark-ochre);
+  --warning-wash: var(--mn-dark-ochre-wash);
 
-  /* ── Dynamic Corridor Theming (Dark Mode Calibration) ───────────────────── */
-  --corridor-h: 255;
-  --corridor-l: 0.72;
-  --corridor-c: 0.12;
-  --corridor-subtle-l: 0.28;
+  /* Status Colors Dark */
+  --status-pending: var(--mn-dark-ochre);
+  --status-pending-wash: var(--mn-dark-ochre-wash);
+  --status-transit: var(--mn-dark-fjord);
+  --status-transit-wash: var(--mn-dark-fjord-wash);
+  --status-delivered: var(--mn-dark-moss);
+  --status-delivered-wash: var(--mn-dark-moss-wash);
+  --status-failed: var(--mn-dark-clay);
+  --status-failed-wash: var(--mn-dark-clay-wash);
+
+  /* Dynamic Corridor Theming Dark */
+  --corridor-h: 278;
+  --corridor-l: 0.73;
+  --corridor-c: 0.075;
+  --corridor-subtle-l: 0.30;
   --corridor-subtle-c: 0.03;
-  --corridor-border-l: 0.40;
+  --corridor-border-l: 0.45;
   --corridor-border-c: 0.05;
-  --corridor-fg-l: 0.15;
+  --corridor-fg-l: 0.18;
   --corridor-fg-c: 0.02;
 
-  /* ── Chart palette (Nordic Deep Slate Dark) ────────────────────────────── */
-  --chart-1: oklch(0.750 0.140 255);
-  --chart-2: oklch(0.650 0.110 255);
-  --chart-3: oklch(0.550 0.080 255);
-  --chart-4: oklch(0.450 0.050 255);
-  --chart-5: oklch(0.350 0.030 255);
+  /* 5-Color Categorical Mineral Chart Palette Dark */
+  --chart-1: var(--mn-dark-indigo);
+  --chart-2: var(--mn-dark-moss);
+  --chart-3: var(--mn-dark-ochre);
+  --chart-4: var(--mn-dark-clay);
+  --chart-5: var(--mn-dark-fjord);
 
-  /* ── Sidebar (Nordic Deep Slate Anchor) ─────────────────────────────────── */
-  --sidebar: oklch(0.285 0.046 255);
-  --sidebar-foreground: oklch(0.985 0.008 255);
-  --sidebar-primary: oklch(0.690 0.160 255);
-  --sidebar-primary-foreground: oklch(0.160 0.030 255);
-  --sidebar-accent: oklch(0.345 0.048 255);
-  --sidebar-accent-foreground: oklch(0.985 0.008 255);
-  --sidebar-border: oklch(0.980 0.015 255 / 12%);
-  --sidebar-ring: oklch(0.690 0.160 255);
+  /* Sidebar Dark */
+  --sidebar: var(--mn-basalt-surface);
+  --sidebar-foreground: var(--mn-dark-fg);
+  --sidebar-primary: var(--mn-dark-indigo);
+  --sidebar-primary-foreground: var(--mn-dark-indigo-fg);
+  --sidebar-accent: var(--mn-basalt-card);
+  --sidebar-accent-foreground: var(--mn-dark-fg);
+  --sidebar-border: var(--mn-dark-border);
+  --sidebar-ring: var(--mn-dark-indigo);
 
-  /* ── Geometry & Motion ─────────────────────────────────────────────────── */
-  --radius: 0px;
-
-  /* ── Neutral dark elevation ───────────────────────────────────────────── */
-  --shadow-card-val: 0 1px 3px rgb(0 0 0 / 0.35), 0 8px 24px rgb(0 0 0 / 0.25);
-  --shadow-ambient-val: 0 20px 60px -30px rgb(0 0 0 / 0.50);
-  --shadow-float-val: 0 20px 50px -20px rgb(0 0 0 / 0.55);
-  --shadow-2xs: 0 1px 2px rgb(0 0 0 / 0.20);
-  --shadow-xs: 0 1px 3px rgb(0 0 0 / 0.25);
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
-  --shadow-md: 0 4px 8px rgb(0 0 0 / 0.35);
-  --shadow-lg: 0 8px 16px rgb(0 0 0 / 0.40);
-  --shadow-xl: 0 16px 32px rgb(0 0 0 / 0.45);
-  --shadow-2xl: 0 28px 56px rgb(0 0 0 / 0.60);
+  /* Blue-Basalt Dark Elevation (No pure black RGB shadows) */
+  --mn-shadow-dark: oklch(0.120 0.025 255);
+  --shadow-card-val: 0 1px 3px oklch(0.120 0.025 255 / 0.15), 0 1px 2px oklch(0.120 0.025 255 / 0.10);
+  --shadow-ambient-val: 0 16px 36px -16px oklch(0.120 0.025 255 / 0.25);
+  --shadow-float-val: 0 12px 28px -10px oklch(0.120 0.025 255 / 0.30);
+  --shadow-overlay-val: 0 16px 40px oklch(0.120 0.025 255 / 0.35);
+  --shadow-2xs-val: 0 1px 2px oklch(0.120 0.025 255 / 0.10);
+  --shadow-xs-val: 0 1px 2px oklch(0.120 0.025 255 / 0.12);
+  --shadow-sm-val: 0 2px 4px oklch(0.120 0.025 255 / 0.15);
+  --shadow-md-val: 0 4px 8px oklch(0.120 0.025 255 / 0.18);
+  --shadow-lg-val: 0 8px 16px oklch(0.120 0.025 255 / 0.22);
+  --shadow-xl-val: 0 16px 28px oklch(0.120 0.025 255 / 0.26);
+  --shadow-2xl-val: 0 24px 44px oklch(0.120 0.025 255 / 0.30);
 }
 
 @layer base {
-  /* Zero-Radius Mandate: all corners strictly square. */
+  /* Geometry Hierarchy:
+     Layout containers and cards retain orthogonal physical geometry (0px).
+     Interactive controls (buttons, inputs, native selects, chips) use tactile 3px.
+     Floating overlays (dialogs, popovers, dropdowns, tooltips) use 6px.
+  */
   *,
   *::before,
   *::after {
-    border-radius: 0 !important;
-
-    @apply border-border outline-ring/50;
+    border-color: var(--border);
   }
 
   html {
@@ -294,9 +428,11 @@
     background: color-mix(in oklch, var(--primary) 24%, transparent);
   }
 
+  /* Two-Tone High-Visibility Focus System (WCAG 2.2 AAA Target) */
   :focus-visible {
     outline: 2px solid var(--ring);
-    outline-offset: 3px;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px color-mix(in oklch, var(--ring) 20%, transparent);
   }
 
   /* ── Icon Aesthetics (Evil Icons 1.25px Precision) ─────────────────────── */
@@ -314,16 +450,20 @@
 
   /* ── Component Defaults ──────────────────────────────────────────────────── */
   [data-slot="button"] {
+    border-radius: var(--radius-control);
     backdrop-filter: none;
   }
 
   [data-slot="input"],
   [data-slot="textarea"],
-  [data-slot="select-trigger"] {
+  [data-slot="select-trigger"],
+  [data-slot="input-group"] {
+    border-radius: var(--radius-control);
     backdrop-filter: none;
   }
 
   [data-slot="card"] {
+    border-radius: var(--radius-none);
     background: var(--card);
     box-shadow: var(--shadow-card);
     backdrop-filter: none;
@@ -332,7 +472,10 @@
   [data-slot="dialog-content"],
   [data-slot="sheet-content"],
   [data-slot="popover-content"],
-  [data-slot="dropdown-menu-content"] {
+  [data-slot="dropdown-menu-content"],
+  [data-slot="alert-dialog-content"],
+  [data-slot="tooltip-content"] {
+    border-radius: var(--radius-overlay);
     border-color: var(--border);
     box-shadow: var(--shadow-overlay);
     backdrop-filter: none;
@@ -366,6 +509,7 @@
   }
 
   [data-slot="badge"] {
+    border-radius: var(--radius-control);
     font-size: 0.6875rem;
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -390,7 +534,7 @@
 
   ::-webkit-scrollbar-thumb {
     border: 2px solid transparent;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-control);
     background: color-mix(in oklch, var(--muted-foreground) 35%, transparent);
     background-clip: padding-box;
   }
@@ -404,11 +548,18 @@
   background: var(--background);
 }
 
+@utility surface-panel {
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-overlay);
+}
+
 @utility glass-panel {
   border: 1px solid var(--border);
   background: var(--card);
   box-shadow: var(--shadow-card);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-overlay);
 }
 
 @utility layout-container {
@@ -463,7 +614,7 @@
     linear-gradient(color-mix(in oklch, var(--border) 55%, transparent) 1px, transparent 1px),
     linear-gradient(90deg, color-mix(in oklch, var(--border) 55%, transparent) 1px, transparent 1px);
   background-size: 1.5rem 1.5rem;
-  mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 68%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, oklch(0 0 0) 18%, oklch(0 0 0) 68%, transparent 100%);
 }
 
 .typography {
@@ -519,16 +670,19 @@
   }
 }
 
+@utility tabular-data {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
 /* ──────────────────────────────────────────────────────────────────────────
-   PUBLIC & MARKETING SYSTEM (Nova Atmosphere)
+   PUBLIC & MARKETING SYSTEM (Quiet Infrastructure Atmosphere)
    ────────────────────────────────────────────────────────────────────────── */
 .cargo-public {
-  --cargo-night: oklch(0.275 0.055 255);
-  --cargo-night-rgb: 30 48 72;
-  --cargo-fjord: var(--primary);
-  --cargo-sage: var(--accent);
-  --cargo-ochre: var(--accent);
-  --cargo-ink: var(--foreground);
+  --cargo-night: var(--mn-basalt);
+  --cargo-fjord: var(--mn-fjord);
+  --cargo-sage: var(--mn-moss);
+  --cargo-ochre: var(--mn-ochre);
+  --cargo-ink: var(--mn-ink);
   --cargo-display-size: clamp(3rem, 6.5vw, 6rem);
   --cargo-heading-size: clamp(2.25rem, 4.5vw, 3.75rem);
   --cargo-gutter: clamp(1.5rem, 5vw, 5rem);
@@ -537,50 +691,50 @@
 }
 
 .cargo-public .cargo-inverse {
-  --background: oklch(0.275 0.055 255);
-  --foreground: oklch(0.985 0.008 255);
-  --card: oklch(0.325 0.055 255);
-  --card-foreground: oklch(0.985 0.008 255);
-  --popover: oklch(0.345 0.055 255);
-  --popover-foreground: oklch(0.985 0.008 255);
-  --muted: oklch(0.345 0.045 255);
-  --muted-foreground: oklch(0.760 0.030 255);
-  --primary: oklch(0.690 0.160 255);
-  --primary-foreground: oklch(0.160 0.030 255);
-  --secondary: oklch(0.355 0.048 255);
-  --secondary-foreground: oklch(0.985 0.008 255);
-  --accent: oklch(0.355 0.048 255);
-  --accent-foreground: oklch(0.985 0.008 255);
-  --destructive: oklch(0.70 0.12 25.0);
-  --destructive-foreground: oklch(0.160 0.030 255);
-  --border: oklch(0.980 0.015 255 / 14%);
-  --border-strong: oklch(0.480 0.055 255);
-  --input: oklch(0.980 0.015 255 / 18%);
-  --ring: oklch(0.690 0.160 255);
-  --surface: oklch(0.305 0.050 255);
+  --background: var(--mn-basalt);
+  --foreground: var(--mn-dark-fg);
+  --card: var(--mn-basalt-card);
+  --card-foreground: var(--mn-dark-fg);
+  --popover: var(--mn-basalt-popover);
+  --popover-foreground: var(--mn-dark-fg);
+  --muted: var(--mn-basalt-surface);
+  --muted-foreground: var(--mn-dark-muted);
+  --primary: var(--mn-dark-indigo);
+  --primary-foreground: var(--mn-dark-indigo-fg);
+  --secondary: var(--mn-basalt-surface);
+  --secondary-foreground: var(--mn-dark-fg);
+  --accent: var(--mn-basalt-surface);
+  --accent-foreground: var(--mn-dark-fg);
+  --destructive: var(--mn-dark-clay);
+  --destructive-foreground: var(--mn-dark-indigo-fg);
+  --border: var(--mn-dark-border);
+  --border-strong: var(--mn-dark-border-strong);
+  --input: var(--mn-dark-border-strong);
+  --ring: var(--mn-dark-indigo);
+  --surface: var(--mn-basalt-surface);
 
   color: var(--foreground);
 }
 
 .cargo-public .cargo-inverse .cargo-display {
-  text-shadow: 0 4px 24px rgb(0 0 0 / 0.4);
+  text-shadow: 0 4px 24px color-mix(in oklch, var(--mn-shadow-dark) 50%, transparent);
 }
 
 .cargo-public .cargo-accent {
-  --background: oklch(0.965 0.008 255);
-  --foreground: oklch(0.180 0.025 255);
-  --muted-foreground: oklch(0.500 0.030 255);
-  --border: oklch(0.910 0.012 255);
+  --background: var(--mn-mist);
+  --foreground: var(--mn-ink);
+  --muted-foreground: var(--mn-slate);
+  --border: var(--mn-stone);
 
   color: var(--foreground);
   background: var(--background);
 }
 
 .dark .cargo-public .cargo-accent {
-  --background: oklch(0.305 0.048 255);
-  --foreground: oklch(0.985 0.008 255);
-  --muted-foreground: oklch(0.760 0.032 255);
-  --border: oklch(0.980 0.015 255 / 14%);
+  --background: var(--mn-basalt-card);
+  --foreground: var(--mn-dark-fg);
+  --muted-foreground: var(--mn-dark-muted);
+  --border: var(--mn-dark-border);
 
   background: var(--background);
 }
@@ -708,15 +862,15 @@
   background:
     linear-gradient(
       90deg,
-      rgb(var(--cargo-night-rgb) / 0.78) 0%,
-      rgb(var(--cargo-night-rgb) / 0.48) 52%,
-      rgb(var(--cargo-night-rgb) / 0.10) 100%
+      color-mix(in oklch, var(--cargo-night) 78%, transparent) 0%,
+      color-mix(in oklch, var(--cargo-night) 48%, transparent) 52%,
+      color-mix(in oklch, var(--cargo-night) 10%, transparent) 100%
     ),
     linear-gradient(
       180deg,
-      rgb(var(--cargo-night-rgb) / 0.22) 0%,
+      color-mix(in oklch, var(--cargo-night) 22%, transparent) 0%,
       transparent 45%,
-      rgb(var(--cargo-night-rgb) / 0.72) 100%
+      color-mix(in oklch, var(--cargo-night) 72%, transparent) 100%
     );
 }
 
@@ -755,7 +909,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgb(var(--cargo-night-rgb) / 0.35) 0%, transparent 45%);
+  background: linear-gradient(to top, color-mix(in oklch, var(--cargo-night) 35%, transparent) 0%, transparent 45%);
   pointer-events: none;
 }
 
@@ -783,7 +937,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgb(var(--cargo-night-rgb) / 0.50) 0%, transparent 45%);
+  background: linear-gradient(to top, color-mix(in oklch, var(--cargo-night) 50%, transparent) 0%, transparent 45%);
   pointer-events: none;
 }
 
@@ -823,7 +977,7 @@
   }
 
   .cargo-hero-shade {
-    background: linear-gradient(rgb(var(--cargo-night-rgb) / 0.70), rgb(var(--cargo-night-rgb) / 0.50));
+    background: linear-gradient(color-mix(in oklch, var(--cargo-night) 70%, transparent), color-mix(in oklch, var(--cargo-night) 50%, transparent));
   }
 
   .cargo-hero-ambient {

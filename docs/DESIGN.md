@@ -22,13 +22,65 @@ The public frontend retains the user's Cargo Home 4 composition: cinematic trans
 
 See [the reference and research notes](../artifacts/cargo-2026/research.md), [the implementation plan](../implementation_plan.md), and [the image manifest](../artifacts/cargo-2026/image-manifest.json).
 
-## Operations color and material
+## Nordic Mineral — Cloud White / Blue Basalt specification
 
-- Crisp white canvas, pure white cards, quiet cool-slate borders and deep slate text in the light theme (Hue 255°).
-- Nordic Deep Slate canvas (L = 0.210), lifted slate cards (L = 0.260) and high-contrast text (|Lc| >= 90) in the dark theme.
-- Vibrant Nordic blue primary actions in dark mode (L = 0.680); deep slate primary actions in light mode. Functional shipment status colors remain separate.
-- Semantic CSS variables in `app/globals.css` are authoritative and calibrated via Evil Martians Harmony and APCA.
-- Borders and spacing provide structure. Operational tables, forms and metric surfaces remain flat. Avoid page-wide saturated gradients, glass cards and oversized metric tiles.
+The visual system implements the "Nordic Mineral — Cloud White / Blue Basalt" architecture. An airy structural white canvas inspired by Pantone's 2026 Cloud Dancer pairs with a technical medium-deep Blue Basalt dark mode.
+
+### Material and surface hierarchy
+
+- Light canvas uses soft architectural Cloud White (`--mn-cloud: oklch(0.985 0.006 95)`).
+- Card surfaces use Crisp Paper (`--mn-paper: oklch(0.995 0.003 95)`).
+- Secondary muted containers use Cool Mist (`--mn-mist: oklch(0.955 0.008 95)`).
+- Structural borders use Hairline Stone (`--mn-stone: oklch(0.900 0.010 95)`).
+- Form and input boundaries use Stone Strong (`--mn-stone-strong: oklch(0.630 0.015 250)`).
+- Text primary uses dense blue-neutral Ink (`--mn-ink: oklch(0.230 0.012 250)`).
+- Text secondary uses restrained blue-slate (`--mn-slate: oklch(0.470 0.012 250)`).
+- Dark canvas uses Blue Basalt (`--background: oklch(0.240 0.030 255)`).
+- Dark surface containers use Lifted Basalt (`--surface: oklch(0.270 0.030 255)`).
+- Dark card containers use Elevated Basalt Card (`--card: oklch(0.290 0.035 255)`).
+- Dark popover containers use Distinct Popover Basalt (`--popover: oklch(0.320 0.035 255)`).
+- Dark strong borders use Stone 580 (`oklch(0.580 0.018 245)`), exceeding 3.0:1 non-text contrast against cards.
+
+### Color discipline and semantic separation
+
+- Primary UI accent uses Mineral Indigo H 278 (`oklch(0.510 0.140 278)` in light, `oklch(0.730 0.105 278)` in dark).
+- Brand Blue (`--tx-brand-blue: oklch(0.48 0.15 255)`) remains reserved strictly for the TAC-XPRESS logo.
+- Interactive highlights use Mist wash (`--accent`), separating interaction from semantic status.
+- Cargo in-transit uses Fjord H 215 (`oklch(0.500 0.075 215)` in light, `oklch(0.740 0.065 215)` in dark).
+- Delivered cargo uses Botanical Moss H 138 (`oklch(0.490 0.060 138)` in light, `oklch(0.740 0.065 138)` in dark).
+- Warning and pending reviews use Ochre H 68/72 (`oklch(0.530 0.105 68)` in light, `oklch(0.760 0.090 72)` in dark).
+- Exceptions and cancellations use Clay H 32 (`oklch(0.500 0.110 32)` in light, `oklch(0.730 0.095 32)` in dark).
+
+### Elevation and shadows
+
+- Light mode uses restrained blue-neutral shadows tinted with ink (`oklch(0.230 0.012 250 / ...)`).
+- Dark mode eliminates pure black RGB shadows and uses Blue-Basalt dark shadow tokens (`--mn-shadow-dark: oklch(0.120 0.025 255)`).
+- Dark hierarchy relies on surface lightness progression rather than heavy black shadows.
+
+### Categorical data visualization palette
+
+1. Series 1: Mineral Indigo (`oklch(0.510 0.140 278)`)
+2. Series 2: Moss (`oklch(0.490 0.060 138)`)
+3. Series 3: Ochre (`oklch(0.530 0.105 68)`)
+4. Series 4: Clay (`oklch(0.500 0.110 32)`)
+5. Series 5: Fjord (`oklch(0.500 0.075 215)`)
+
+### Geometry hierarchy
+
+- Architectural containers, cards, tables, and panels use 0px (`rounded-none`).
+- Interactive controls (buttons, inputs, selects, tabs, chips) use 3px (`--radius-control: 3px`).
+- Overlays (dialogs, popovers, dropdown menus, tooltips) use 6px (`--radius-overlay: 6px`).
+- All active controls use a two-tone focus ring with 4px soft bloom.
+
+### Dual-layer accessibility standards
+
+- Layer 1 (WCAG 2.2 AA): Body text contrast >= 4.5:1. Large text >= 3.0:1. UI boundaries >= 3.0:1.
+- Layer 2 (SAPC-APCA 0.0.98G): Preferred body text |Lc| >= 90. Minimum body text |Lc| >= 75. Badges and content |Lc| >= 60.
+
+### Enforcement pipeline
+
+- Stylelint rejects raw hex codes, RGB/RGBA functions, and named colors in CSS (`pnpm run stylelint`).
+- Design Token Audit scans TSX files to block Tailwind spectrum classes (`pnpm run audit:tokens`).
 
 ## Operations typography and space
 

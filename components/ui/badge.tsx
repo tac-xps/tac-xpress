@@ -20,20 +20,21 @@ const badgeVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         // Semantic status variants for shipment/operational statuses
         success:
-          "border-status-delivered/25 bg-status-delivered/12 text-status-delivered",
+          "border-status-delivered-wash bg-status-delivered-wash text-status-delivered dark:border-status-delivered-wash/40 dark:bg-status-delivered-wash/40",
         warning:
-          "border-status-pending/20 bg-status-pending/10 text-status-pending",
-        error: "border-destructive/20 bg-destructive/10 text-status-failed",
-        neutral: "border-border/50 bg-muted text-muted-foreground",
+          "border-status-pending-wash bg-status-pending-wash text-status-pending dark:border-status-pending-wash/40 dark:bg-status-pending-wash/40",
+        error:
+          "border-status-failed-wash bg-status-failed-wash text-status-failed dark:border-status-failed-wash/40 dark:bg-status-failed-wash/40",
+        neutral: "border-border/60 bg-muted text-muted-foreground",
         // Logistics status variants (calibrated OKLCH + APCA compliance)
         transit:
-          "border-status-transit/30 bg-status-transit/15 text-status-transit",
+          "border-status-transit-wash bg-status-transit-wash text-status-transit dark:border-status-transit-wash/40 dark:bg-status-transit-wash/40",
         delivered:
-          "border-status-delivered/30 bg-status-delivered/15 text-status-delivered",
+          "border-status-delivered-wash bg-status-delivered-wash text-status-delivered dark:border-status-delivered-wash/40 dark:bg-status-delivered-wash/40",
         pending:
-          "border-status-pending/30 bg-status-pending/15 text-status-pending",
+          "border-status-pending-wash bg-status-pending-wash text-status-pending dark:border-status-pending-wash/40 dark:bg-status-pending-wash/40",
         failed:
-          "border-status-failed/30 bg-status-failed/15 text-status-failed",
+          "border-status-failed-wash bg-status-failed-wash text-status-failed dark:border-status-failed-wash/40 dark:bg-status-failed-wash/40",
         corridor:
           "border-corridor-border bg-corridor-subtle text-corridor",
       },
