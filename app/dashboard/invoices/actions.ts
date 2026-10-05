@@ -19,6 +19,7 @@ import { db } from "@/lib/db"
 import { invoices, shipments, users, trackingEvents } from "@/lib/db/schema"
 import { authActionClient } from "@/lib/safe-action"
 import { invoiceWizardSchema } from "@/lib/schemas/invoice-wizard"
+import { normalizeInvoiceDomain } from "@/lib/documents/invoice/engine/domain-normalizer"
 import { normalizeWhatsAppPhone, sendWhatsAppTemplateMessage } from "@/lib/whatsapp/service"
 import { capturePostHogEvent } from "@/lib/posthog-server"
 const GENERIC_INVOICE_ERROR =
@@ -597,11 +598,12 @@ export const createWizardInvoiceAction = authActionClient
                 consigneePhone: parsedInput.consigneePhone,
                 consigneeAltPhone: parsedInput.consigneeAltPhone,
                 consigneeEmail: parsedInput.consigneeEmail,
-                consigneeAddress:
-                  parsedInput.destinationState &&
-                  !parsedInput.consigneeAddress?.toLowerCase().includes(parsedInput.destinationState.trim().toLowerCase())
-                    ? `${parsedInput.consigneeAddress}, ${parsedInput.destinationState.trim()}`
-                    : parsedInput.consigneeAddress,
+                consigneeAddress: parsedInput.consigneeAddress?.trim()
+                  ? parsedInput.destinationState?.trim() &&
+                    !parsedInput.consigneeAddress.toLowerCase().includes(parsedInput.destinationState.trim().toLowerCase())
+                    ? `${parsedInput.consigneeAddress.trim()}, ${parsedInput.destinationState.trim()}`
+                    : parsedInput.consigneeAddress.trim()
+                  : parsedInput.consigneeAddress || null,
                 consigneePinCode: parsedInput.consigneePinCode,
                 contentDescription: parsedInput.contentDescription,
                 natureOfGoods: parsedInput.natureOfGoods,
@@ -647,9 +649,20 @@ export const createWizardInvoiceAction = authActionClient
               createdAt: new Date(),
             }
 
+            const snapshot = normalizeInvoiceDomain(
+              invoiceValues as any,
+              {
+                ...newShipment,
+                destinationState: parsedInput.destinationState,
+              } as any
+            )
+
             const [newInvoice] = await tx
               .insert(invoices)
-              .values(invoiceValues)
+              .values({
+                ...invoiceValues,
+                documentSnapshot: snapshot as any,
+              })
               .returning()
 
             await tx.insert(trackingEvents).values({ shipmentId: newShipment.id, status: "pending", location: newShipment.origin, description: "Shipment booked", isPublic: true })
