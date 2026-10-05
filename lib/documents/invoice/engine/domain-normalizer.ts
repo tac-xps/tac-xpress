@@ -1,5 +1,6 @@
 import { format } from "date-fns"
 import type { Invoice, Shipment } from "@/lib/db/schema"
+import { getAppUrl } from "@/lib/config/app-url"
 import { money, toRupees, subtractMoney, zeroMoney } from "../domain/money"
 import {
   DELHI_CENTRAL_HUB,
@@ -93,7 +94,14 @@ export function normalizeInvoiceDomain(
     }
   }
 
-  const origin = options.appOrigin || "https://tacservice.in"
+  let origin = options.appOrigin
+  if (!origin) {
+    try {
+      origin = getAppUrl()
+    } catch {
+      origin = "https://tacservice.in"
+    }
+  }
   const verificationToken =
     options.verificationToken ||
     toBase64(`${invoice.id}-${shipment.awbNumber}`).substring(0, 16)

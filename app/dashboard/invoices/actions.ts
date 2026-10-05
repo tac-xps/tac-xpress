@@ -654,7 +654,8 @@ export const createWizardInvoiceAction = authActionClient
               {
                 ...newShipment,
                 destinationState: parsedInput.destinationState,
-              } as any
+              } as any,
+              { appOrigin: getAppUrl() }
             )
 
             const [newInvoice] = await tx
