@@ -53,7 +53,6 @@ export async function updateStoredInvoice(
         advancePaid,
         balanceDue: current.amount - advancePaid,
         status: advancePaid === current.amount ? "paid" : "unpaid",
-        documentSnapshot: null,
       }
     } else {
       const charges = Object.fromEntries(
@@ -74,7 +73,6 @@ export async function updateStoredInvoice(
         gstRate,
         paymentMode: fields.paymentMode ?? current.paymentMode,
         remarks: fields.remarks ?? current.remarks,
-        documentSnapshot: null,
       }
     }
     const [updated] = await tx
@@ -140,7 +138,7 @@ export async function voidStoredInvoice(id: string, actor: Actor) {
       )
     await tx
       .update(invoices)
-      .set({ status: "void", documentSnapshot: null, updatedAt: new Date() })
+      .set({ status: "void", updatedAt: new Date() })
       .where(eq(invoices.id, id))
     await logAuditInTransaction(tx, {
       action: "invoice.voided",

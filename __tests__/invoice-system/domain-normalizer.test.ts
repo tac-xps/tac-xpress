@@ -98,15 +98,27 @@ describe("Domain Normalizer", () => {
     expect(getStateFromPinCode("826001")).toEqual({ state: "Jharkhand", stateCode: "20" })
     expect(getStateFromPinCode("800001")).toEqual({ state: "Bihar", stateCode: "10" })
 
-    // Sikkim, Ladakh, Chandigarh, Uttarakhand, DNH/DD, Puducherry, Lakshadweep
-    expect(getStateFromPinCode("737101")).toEqual({ state: "Sikkim", stateCode: "11" })
-    expect(getStateFromPinCode("194101")).toEqual({ state: "Ladakh", stateCode: "38" })
-    expect(getStateFromPinCode("160001")).toEqual({ state: "Chandigarh", stateCode: "04" })
-    expect(getStateFromPinCode("248001")).toEqual({ state: "Uttarakhand", stateCode: "05" })
+    // Gujarat vs DNH/DD
+    expect(getStateFromPinCode("396001")).toEqual({ state: "Gujarat", stateCode: "24" }) // Valsad, Gujarat
+    expect(getStateFromPinCode("396191")).toEqual({ state: "Gujarat", stateCode: "24" }) // Vapi, Gujarat
     expect(getStateFromPinCode("396210")).toEqual({
       state: "Dadra and Nagar Haveli and Daman and Diu",
       stateCode: "26",
     })
+    expect(getStateFromPinCode("396230")).toEqual({
+      state: "Dadra and Nagar Haveli and Daman and Diu",
+      stateCode: "26",
+    })
+    expect(getStateFromPinCode("362520")).toEqual({
+      state: "Dadra and Nagar Haveli and Daman and Diu",
+      stateCode: "26",
+    })
+
+    // Sikkim, Ladakh, Chandigarh, Uttarakhand, Puducherry, Lakshadweep
+    expect(getStateFromPinCode("737101")).toEqual({ state: "Sikkim", stateCode: "11" })
+    expect(getStateFromPinCode("194101")).toEqual({ state: "Ladakh", stateCode: "38" })
+    expect(getStateFromPinCode("160001")).toEqual({ state: "Chandigarh", stateCode: "04" })
+    expect(getStateFromPinCode("248001")).toEqual({ state: "Uttarakhand", stateCode: "05" })
     expect(getStateFromPinCode("605001")).toEqual({ state: "Puducherry", stateCode: "34" })
     expect(getStateFromPinCode("682555")).toEqual({ state: "Lakshadweep", stateCode: "31" })
     expect(getStateFromPinCode("744101")).toEqual({

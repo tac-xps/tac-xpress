@@ -27,7 +27,15 @@ export function getStateFromPinCode(pinCode?: string | null): { state: string; s
   if (p3 === "744") return { state: "Andaman and Nicobar Islands", stateCode: "35" }
   if (p3 === "605") return { state: "Puducherry", stateCode: "34" }
   if (pin.startsWith("68255")) return { state: "Lakshadweep", stateCode: "31" }
-  if (p3 === "396") return { state: "Dadra and Nagar Haveli and Daman and Diu", stateCode: "26" }
+  if (
+    pin.startsWith("39621") ||
+    pin.startsWith("39622") ||
+    pin.startsWith("39623") ||
+    pin.startsWith("39624") ||
+    pin.startsWith("362520")
+  ) {
+    return { state: "Dadra and Nagar Haveli and Daman and Diu", stateCode: "26" }
+  }
 
   // Uttarakhand (carved out from UP 20-28: 246, 248, 249, 262, 263)
   if (p3 === "246" || p3 === "248" || p3 === "249" || p3 === "262" || p3 === "263") {
