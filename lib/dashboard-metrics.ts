@@ -7,6 +7,7 @@ import {
   subMonths,
 } from "date-fns"
 import { isNull, sql } from "drizzle-orm"
+import { unstable_cache } from "next/cache"
 import { db } from "@/lib/db"
 import {
   hubs,
@@ -145,7 +146,7 @@ function formatCompactNumber(value: number) {
   }).format(value)
 }
 
-export async function getDashboardOverview() {
+async function fetchDashboardOverview() {
   const now = new Date()
   const currentMonthStart = startOfMonth(now)
   const previousMonthStart = startOfMonth(subMonths(now, 1))
@@ -314,6 +315,12 @@ export async function getDashboardOverview() {
     operationsSummary,
   }
 }
+
+export const getDashboardOverview = unstable_cache(
+  fetchDashboardOverview,
+  ["dashboard-overview-metrics"],
+  { revalidate: 30, tags: ["dashboard-metrics"] }
+)
 
 export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Promise<AnalyticsOverview> {
   const now = new Date()

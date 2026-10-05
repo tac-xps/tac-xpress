@@ -45,6 +45,7 @@ const nextConfig: NextConfig = {
       "lucide-react",
       "recharts",
       "motion",
+      "date-fns",
     ],
   },
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
@@ -127,22 +128,6 @@ const nextConfig: NextConfig = {
       },
     ]
   },
-
-  webpack: (config, { isServer, dev }) => {
-    if (!isServer && !dev) {
-      config.optimization.splitChunks = {
-        chunks: "all",
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: "vendors",
-            chunks: "all" as const,
-          },
-        },
-      }
-    }
-    return config
-  },
   turbopack: {},
 }
 
@@ -152,8 +137,8 @@ const analyzer = withBundleAnalyzer({
 
 const finalConfig = analyzer(nextConfig)
 
-// Wrap config with bundle analyzer, then Sentry (only in production to prevent Turbopack hangs)
-export default process.env.NODE_ENV === "development"
+// Wrap config with bundle analyzer, then Sentry when auth token is configured
+export default process.env.NODE_ENV === "development" || !process.env.SENTRY_AUTH_TOKEN
   ? finalConfig
   : withSentryConfig(finalConfig, {
       org: process.env.SENTRY_ORG,

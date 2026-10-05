@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { DM_Sans, IBM_Plex_Mono, Inter, Manrope } from "next/font/google"
+import { IBM_Plex_Mono, Inter, Manrope } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -11,17 +11,10 @@ import { QueryProvider } from "@/providers/query-provider"
 import { PostHogProvider } from "@/providers/posthog-provider"
 import { Toaster } from "sonner"
 import * as Sentry from "@sentry/nextjs"
-import PostHogClient from "@/lib/posthog"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 
-const manropeHeading = Manrope({subsets:['latin'],variable:'--font-heading'});
-
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
-
-const fontSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-})
+const manropeHeading = Manrope({ subsets: ["latin"], variable: "--font-heading" })
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
 const fontMono = IBM_Plex_Mono({
   weight: ["400", "500", "600", "700"],
@@ -44,23 +37,11 @@ export default async function RootLayout({
 }>) {
   const session = await auth()
 
-  let bootstrappedFeatureFlags: Record<string, string | boolean> | undefined =
-    undefined
-
   if (session?.user) {
     Sentry.setUser({
       id: session.user.id,
       email: session.user.email ?? undefined,
     })
-
-    const posthog = PostHogClient()
-    if (posthog && session.user.id) {
-      try {
-        bootstrappedFeatureFlags = await posthog.getAllFlags(session.user.id)
-      } catch (e) {
-        // Fallback silently if posthog fails
-      }
-    }
   }
 
   return (
@@ -73,7 +54,7 @@ export default async function RootLayout({
           fontMono.variable,
         )}
       >
-        <PostHogProvider bootstrappedFeatureFlags={bootstrappedFeatureFlags}>
+        <PostHogProvider>
           <QueryProvider>
             <AuthProvider session={session}>
               <ThemeProvider>

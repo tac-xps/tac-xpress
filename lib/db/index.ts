@@ -52,6 +52,7 @@ function createDb(): DbInstance {
     postgres(connectionString, {
       prepare: false,
       ssl: isLocalhost ? false : "require",
+      max: process.env.NODE_ENV === "production" ? 10 : 5,
       // Bound every wait so a stalled database can never hang a request forever.
       // Without these, a connect or query that never returns leaves server
       // components awaiting indefinitely and the page never finishes rendering.
@@ -62,9 +63,7 @@ function createDb(): DbInstance {
       },
     })
 
-  if (process.env.NODE_ENV !== "production") {
-    globalThis._postgresClient = client
-  }
+  globalThis._postgresClient = client
 
   return drizzle(client, { schema })
 }

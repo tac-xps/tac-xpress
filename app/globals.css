@@ -1,7 +1,6 @@
 /* stylelint-disable import-notation */
 @import "tailwindcss";
 @import "shadcn/tailwind.css";
-@import "tw-animate-css";
 /* stylelint-enable import-notation */
 
 @custom-variant dark (&:is(.dark *));

@@ -228,7 +228,7 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
 
 export const config = {
   matcher: [
-    // Exclude auth, cron, webhooks, public API routes, PostHog ingest, and Next.js internals from middleware
-    "/((?!api/auth|api/cron|api/webhooks|api/public|ingest|_next/static|_next/image|favicon.ico|monitoring).*)",
+    // Exclude static assets, auth, cron, webhooks, public API routes, PostHog ingest, and Next.js internals from middleware
+    "/((?!api/auth|api/cron|api/webhooks|api/public|ingest|_next/static|_next/image|favicon.ico|monitoring|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|woff|woff2|ttf|eot)$).*)",
   ],
 }
