@@ -194,6 +194,9 @@ export const shipments = pgTable(
   (table) => [
     index("shipments_customer_id_idx").on(table.customerId),
     index("shipments_status_idx").on(table.status),
+    index("shipments_booking_date_idx").on(table.bookingDate),
+    index("shipments_status_booking_date_idx").on(table.status, table.bookingDate),
+    index("shipments_created_at_idx").on(table.createdAt),
     check("shipments_weight_kg_positive", sql`${table.weightKg} > 0`),
   ]
 )
@@ -244,6 +247,8 @@ export const tickets = pgTable(
     index("tickets_customer_id_idx").on(table.customerId),
     index("tickets_customer_email_idx").on(table.customerEmail),
     index("tickets_status_idx").on(table.status),
+    index("tickets_created_at_idx").on(table.createdAt),
+    index("tickets_status_created_at_idx").on(table.status, table.createdAt),
   ]
 )
 
@@ -316,6 +321,7 @@ export const invoices = pgTable(
     index("invoices_shipment_id_idx").on(table.shipmentId),
     index("invoices_customer_id_idx").on(table.customerId),
     index("invoices_status_idx").on(table.status),
+    index("invoices_created_at_idx").on(table.createdAt),
   ]
 )
 
@@ -717,17 +723,24 @@ export const backgroundJobs = pgTable(
   },
   (table) => [
     unique("background_jobs_kind_dedupe_key_unique").on(table.kind, table.dedupeKey),
+    index("background_jobs_status_available_at_idx").on(table.status, table.availableAt),
   ]
 )
 
-export const deadLetterQueue = pgTable("dead_letter_queue", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  action: text("action").notNull(),
-  payload: jsonb("payload"),
-  error: text("error"),
-  retryCount: integer("retry_count").notNull().default(0),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-})
+export const deadLetterQueue = pgTable(
+  "dead_letter_queue",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    action: text("action").notNull(),
+    payload: jsonb("payload"),
+    error: text("error"),
+    retryCount: integer("retry_count").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("dead_letter_queue_created_at_idx").on(table.createdAt),
+  ]
+)
 
 // WebAuthn / Windows Hello Passkeys
 export const userPasskeys = pgTable(

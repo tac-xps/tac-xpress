@@ -322,7 +322,7 @@ export const getDashboardOverview = unstable_cache(
   { revalidate: 30, tags: ["dashboard-metrics"] }
 )
 
-export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Promise<AnalyticsOverview> {
+async function fetchAnalyticsOverview(period: AnalyticsPeriod = "30d"): Promise<AnalyticsOverview> {
   const now = new Date()
   const { start: windowStart, end: windowEnd } = buildPeriodWindow(period, now)
   const previousWindowStart = windowStart ? startOfDay(subDays(windowStart, windowStart ? Math.ceil((windowEnd.getTime() - windowStart.getTime()) / (1000 * 60 * 60 * 24)) : 30)) : null
@@ -601,4 +601,12 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Pro
     },
     period,
   }
+}
+
+export function getAnalyticsOverview(period: AnalyticsPeriod = "30d"): Promise<AnalyticsOverview> {
+  return unstable_cache(
+    () => fetchAnalyticsOverview(period),
+    [`analytics-overview-${period}`],
+    { revalidate: 60, tags: ["analytics-metrics"] }
+  )()
 }
