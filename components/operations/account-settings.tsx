@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { StaffDirectory } from "./staff-directory"
 import { useAccountSettings } from "./use-account-settings"
+import { MfaSecuritySettings } from "./mfa-security-settings"
 export function AccountSettings({
   open,
   onOpenChange,
@@ -29,7 +30,7 @@ export function AccountSettings({
         <DialogHeader>
           <DialogTitle>Account & preferences</DialogTitle>
           <DialogDescription>
-            Manage your staff profile and workspace appearance.
+            Manage your staff profile, security credentials, and workspace appearance.
           </DialogDescription>
         </DialogHeader>
         {account.error && (
@@ -94,6 +95,8 @@ export function AccountSettings({
             </Button>
           </form>
         )}
+        <Separator />
+        <MfaSecuritySettings />
         <Separator />
         <div className="flex items-center justify-between gap-4">
           <span className="text-sm">Workspace appearance</span>

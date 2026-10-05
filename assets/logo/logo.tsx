@@ -7,13 +7,13 @@ import { cn } from "@/lib/utils"
 const LogoIcon = ({ className }: { className?: string }) => (
   <div
     className={cn(
-      "relative flex shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-primary to-blue-400 shadow-md ring-1 shadow-primary/30 ring-white/20 dark:ring-white/10",
+      "relative flex shrink-0 items-center justify-center overflow-hidden rounded-none bg-gradient-to-br from-primary to-blue-400 shadow-md ring-1 shadow-primary/30 ring-white/20 dark:ring-white/10",
       "transition-all duration-300 ease-out group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-primary/40",
       className
     )}
   >
     {/* Inner glow effect for premium depth */}
-    <div className="absolute inset-0 z-0 rounded-lg mix-blend-overlay ring-1 ring-white/20 ring-inset"></div>
+    <div className="absolute inset-0 z-0 rounded-none mix-blend-overlay ring-1 ring-white/20 ring-inset"></div>
 
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -37,23 +37,23 @@ const LogoIcon = ({ className }: { className?: string }) => (
         fill="url(#dashboard-logo-grad)"
         stroke="currentColor"
         strokeWidth="1.5"
-        strokeLinejoin="round"
+        strokeLinejoin="miter"
       />
       <path
         d="M2 17L12 22L22 17"
         fill="none"
         stroke="currentColor"
         strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
       />
       <path
         d="M2 12L12 17L22 12"
         fill="none"
         stroke="currentColor"
         strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
       />
     </svg>
   </div>

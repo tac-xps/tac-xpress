@@ -31,6 +31,13 @@ Sentry.init({
   // Environment & release tagging
   environment: process.env.NODE_ENV ?? "development",
 
+  ignoreErrors: [
+    "ResizeObserver loop completed with undelivered notifications",
+    "The destination stream closed early.",
+    "AbortError",
+    "The user aborted a request",
+  ],
+
   beforeSend(event) {
     const url = event.request?.url ?? ""
 
@@ -84,6 +91,6 @@ Sentry.init({
       event.tags = { ...event.tags, area: "auth", type: "auth" }
     }
 
-    return event
+    return event;
   },
 })

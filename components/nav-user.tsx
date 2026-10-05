@@ -20,11 +20,13 @@ import {
   RocketIcon,
 } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 import { useEffect, useState } from "react"
 import { supabaseBrowser } from "@/lib/supabase/clients"
 
 export function NavUser() {
+  const router = useRouter()
   const [user, setUser] = useState<{
     name: string
     email: string
@@ -118,7 +120,8 @@ export function NavUser() {
             onClick={async () => {
               const supabase = supabaseBrowser()
               await supabase.auth.signOut()
-              window.location.href = "/login"
+              router.push("/signin")
+              router.refresh()
             }}
           >
             <LogOutIcon />

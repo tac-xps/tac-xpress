@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import dynamic from "next/dynamic"
-import { MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -12,8 +11,33 @@ import {
   SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { MagneticButton } from "./magnetic-button"
 import { motion, useReducedMotion } from "motion/react"
+
+function SquareChatIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M21 3H3v14h4v4h4v-4h10V3z" />
+      <line x1="7" y1="8" x2="17" y2="8" />
+      <line x1="7" y1="12" x2="14" y2="12" />
+    </svg>
+  )
+}
 
 const Conversation = dynamic(() => import("./support-conversation"), {
   ssr: false,
@@ -32,27 +56,40 @@ export function SupportChat() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <MagneticButton
-        strength={0.2}
-        className="fixed right-4 bottom-4 z-40 sm:right-6 sm:bottom-6"
-      >
-        <SheetTrigger asChild>
-          <MotionButton
-            whileHover={shouldReduceMotion ? {} : { scale: 1.04 }}
-            whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
-            transition={{ duration: 0.15 }}
-            className="rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs font-semibold uppercase tracking-wider px-4 py-2.5 h-11 shadow-md flex items-center gap-2 border border-primary/40"
-            aria-label="Open AI assistant"
+      <TooltipProvider delayDuration={150}>
+        <Tooltip>
+          <MagneticButton
+            strength={0.2}
+            className="fixed right-4 bottom-4 z-40 sm:right-6 sm:bottom-6"
           >
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-foreground opacity-75" />
-              <span className="relative inline-flex size-2 rounded-full bg-primary-foreground" />
-            </span>
-            <MessageCircle className="size-4" />
-            <span className="hidden sm:inline">Ask a question</span>
-          </MotionButton>
-        </SheetTrigger>
-      </MagneticButton>
+            <TooltipTrigger asChild>
+              <SheetTrigger asChild>
+                <MotionButton
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
+                  whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="relative aspect-square size-12 sm:size-14 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground p-0 shadow-lg hover:shadow-xl flex items-center justify-center border border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all cursor-pointer"
+                  aria-label="Open AI assistant"
+                >
+                  <span className="absolute top-2.5 right-2.5 flex size-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-primary-foreground opacity-75" />
+                    <span className="relative inline-flex size-2 rounded-none bg-primary-foreground" />
+                  </span>
+                  <SquareChatIcon className="size-5 sm:size-6" />
+                  <span className="sr-only">Open AI assistant</span>
+                </MotionButton>
+              </SheetTrigger>
+            </TooltipTrigger>
+            <TooltipContent
+              side="left"
+              sideOffset={12}
+              className="rounded-none bg-popover text-popover-foreground border px-3 py-1.5 font-mono text-xs uppercase tracking-wider shadow-md"
+            >
+              Ask a question
+            </TooltipContent>
+          </MagneticButton>
+        </Tooltip>
+      </TooltipProvider>
 
       <SheetContent className="cargo-public gap-0 bg-card data-[side=right]:w-full sm:max-w-md">
         <SheetHeader className="border-b p-6 pr-14">

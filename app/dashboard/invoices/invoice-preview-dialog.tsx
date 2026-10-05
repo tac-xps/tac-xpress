@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { InvoiceDocument } from "@/components/invoice-document"
 import { ShippingLabel } from "@/components/documents/shipping-label"
-import { getInvoiceDetails } from "./actions"
+import { getInvoiceDetails } from "@/app/dashboard/invoices/actions"
 import { useAction } from "next-safe-action/hooks"
 import {
   FileText,
@@ -26,6 +26,7 @@ import {
   AlertCircle,
 } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
+import { toast } from "sonner"
 import { formatInvoiceCurrency } from "./invoice-types"
 
 interface InvoicePreviewDialogProps {
@@ -80,6 +81,34 @@ export function InvoicePreviewDialog({
     }
   }, [open, invoiceId, shipmentId, data, execute])
 
+  const [downloading, setDownloading] = useState(false)
+
+  const handleDownload = async () => {
+    if (!invoiceId || downloading) return
+    setDownloading(true)
+    const toastId = toast.loading("Preparing invoice PDF...")
+    try {
+      const response = await fetch(`/api/documents/download?id=${invoiceId}`)
+      if (!response.ok) {
+        throw new Error("Failed to download PDF")
+      }
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = `Invoice-${shortId || invoiceId.slice(0, 8).toUpperCase()}.pdf`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+      toast.success("Invoice PDF downloaded!", { id: toastId })
+    } catch {
+      toast.error("Failed to download invoice PDF", { id: toastId })
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   const handlePrint = () => {
     const targetUrl =
       activeTab === "label"
@@ -101,11 +130,11 @@ export function InvoicePreviewDialog({
         {/* Header */}
         <DialogHeader className="flex flex-shrink-0 flex-row items-center justify-between border-b px-6 py-3.5 bg-background">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-md border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="flex size-9 items-center justify-center rounded-none border border-border bg-muted">
               {activeTab === "invoice" ? (
-                <FileText className="size-4.5 text-neutral-700 dark:text-neutral-200" />
+                <FileText className="size-4.5 text-muted-foreground" />
               ) : (
-                <Tag className="size-4.5 text-neutral-700 dark:text-neutral-200" />
+                <Tag className="size-4.5 text-muted-foreground" />
               )}
             </div>
             <div>
@@ -152,13 +181,16 @@ export function InvoicePreviewDialog({
             <Button
               variant="outline"
               size="sm"
-              asChild
+              onClick={handleDownload}
+              disabled={downloading}
               className="h-8 gap-1.5 text-xs font-medium"
             >
-              <a href={`/api/documents/download?id=${invoiceId}`} download>
+              {downloading ? (
+                <Loader2 className="size-3.5 animate-spin text-primary" />
+              ) : (
                 <Download className="size-3.5" />
-                <span>Download</span>
-              </a>
+              )}
+              <span>{downloading ? "Downloading..." : "Download"}</span>
             </Button>
 
             <Button
@@ -241,7 +273,7 @@ export function InvoicePreviewDialog({
               {/* TAB 1: TAX INVOICE PREVIEW */}
               <TabsContent
                 value="invoice"
-                className="mt-0 flex-1 overflow-auto bg-neutral-100/90 p-4 dark:bg-neutral-950/60 flex justify-center items-start"
+                className="mt-0 flex-1 overflow-auto bg-muted/80 p-4 flex justify-center items-start"
               >
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -250,7 +282,7 @@ export function InvoicePreviewDialog({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.2 }}
-                    className="relative my-2 origin-top shadow-2xl rounded-sm overflow-hidden bg-white max-w-full"
+                    className="relative my-2 origin-top shadow-2xl rounded-none overflow-hidden bg-card max-w-full"
                   >
                     <div className="w-[210mm] max-w-full origin-top scale-[0.78] sm:scale-[0.88] md:scale-100">
                       <InvoiceDocument
@@ -265,7 +297,7 @@ export function InvoicePreviewDialog({
               {/* TAB 2: 4:3 THERMAL SHIPPING LABEL PREVIEW */}
               <TabsContent
                 value="label"
-                className="mt-0 flex-1 overflow-auto bg-neutral-100/90 p-6 dark:bg-neutral-950/60 flex flex-col justify-center items-center"
+                className="mt-0 flex-1 overflow-auto bg-muted/80 p-6 flex flex-col justify-center items-center"
               >
                 <AnimatePresence mode="wait">
                   <motion.div

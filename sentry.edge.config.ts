@@ -17,4 +17,11 @@ Sentry.init({
   // Do not send user PII by default; enable only for explicitly allowlisted events.
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
   sendDefaultPii: false,
+
+  ignoreErrors: [
+    "The destination stream closed early.",
+    "Invalid login credentials",
+    "NEXT_REDIRECT",
+    "NEXT_NOT_FOUND",
+  ],
 });

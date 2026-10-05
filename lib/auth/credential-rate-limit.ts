@@ -1,7 +1,11 @@
 import "server-only"
+import crypto from "node:crypto"
 import arcjet, { slidingWindow } from "@arcjet/next"
 import * as Sentry from "@sentry/nextjs"
 import { CredentialsSignin } from "next-auth"
+import { resolveAuthSecret } from "@/lib/auth/secret"
+
+import { consumeAuthToken } from "@/lib/auth/token-consumption"
 
 class CredentialRateLimitError extends CredentialsSignin {
   code = "rate_limited"
@@ -11,6 +15,51 @@ class CredentialProtectionError extends CredentialsSignin {
   code = "protection_unavailable"
 }
 
+export function createRateLimitProof(email: string): string {
+  const secret = resolveAuthSecret()
+  const timestamp = Date.now()
+  const payload = `${email.toLowerCase()}:${timestamp}`
+  const signature = crypto
+    .createHmac("sha256", secret)
+    .update(payload)
+    .digest("hex")
+  return `${timestamp}.${signature}`
+}
+
+export async function verifyRateLimitProof(proof: unknown, email: string): Promise<boolean> {
+  if (typeof proof !== "string") return false
+  const [timestampStr, signature] = proof.split(".")
+  if (!timestampStr || !signature) return false
+  const timestamp = Number(timestampStr)
+  if (!Number.isFinite(timestamp)) return false
+
+  const now = Date.now()
+  if (Math.abs(now - timestamp) > 60_000) return false
+
+  const secret = resolveAuthSecret()
+  const payload = `${email.toLowerCase()}:${timestamp}`
+  const expectedSignature = crypto
+    .createHmac("sha256", secret)
+    .update(payload)
+    .digest("hex")
+
+  try {
+    const sigBuf = Buffer.from(signature, "hex")
+    const expBuf = Buffer.from(expectedSignature, "hex")
+    if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
+      return false
+    }
+  } catch {
+    return false
+  }
+
+  return await consumeAuthToken(
+    signature,
+    "credential_rate_limit_proof",
+    new Date(timestamp + 60_000)
+  )
+}
+
 const limiter = arcjet({
   key: process.env.ARCJET_KEY || "ajkey_placeholder",
   // `email` is reserved by Arcjet's email-validation rule and is not a
@@ -18,6 +67,7 @@ const limiter = arcjet({
   characteristics: ["credentialKey"],
   rules: [slidingWindow({ mode: "LIVE", interval: "15m", max: 10 })],
 })
+
 export async function allowCredentialAttempt(request: Request, email: string) {
   if (
     process.env.NODE_ENV === "development" &&

@@ -68,7 +68,8 @@ export default async function RootLayout({
       <body
         className={cn(
           "antialiased font-sans",
-          fontSans.variable,
+          inter.variable,
+          manropeHeading.variable,
           fontMono.variable,
         )}
       >

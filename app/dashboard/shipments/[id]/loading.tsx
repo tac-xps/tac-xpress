@@ -12,12 +12,12 @@ export default function ShipmentDetailLoading() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <Skeleton className="h-32 rounded-lg" />
-        <Skeleton className="h-32 rounded-lg" />
+        <Skeleton className="h-32 rounded-none" />
+        <Skeleton className="h-32 rounded-none" />
       </div>
 
-      <Skeleton className="h-28 rounded-lg" />
-      <Skeleton className="h-64 rounded-lg" />
+      <Skeleton className="h-28 rounded-none" />
+      <Skeleton className="h-64 rounded-none" />
     </div>
   )
 }

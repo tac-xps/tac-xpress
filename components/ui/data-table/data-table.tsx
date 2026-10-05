@@ -40,7 +40,7 @@ export function DataTable<TData>({
       <div
         className={cn(
           "overflow-hidden bg-card",
-          bordered && "rounded-xl border border-border/80 shadow-xs"
+          bordered && "rounded-none border border-border/80 shadow-xs"
         )}
       >
         <Table>

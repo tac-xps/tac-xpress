@@ -20,25 +20,33 @@ import {
 
 export const description = "A donut chart with text"
 
+const STATUS_COLORS: Record<string, string> = {
+  on_time: "var(--status-delivered)",
+  delayed_minor: "var(--status-pending)",
+  delayed_major: "var(--chart-4)",
+  exception: "var(--status-failed)",
+  returned: "var(--chart-5)",
+}
+
 const chartConfig = {
   volume: {
     label: "Shipments",
   },
   on_time: {
     label: "On-Time",
-    color: "var(--chart-1)",
+    color: "var(--status-delivered)",
   },
   delayed_minor: {
     label: "Delayed < 1hr",
-    color: "var(--chart-2)",
+    color: "var(--status-pending)",
   },
   delayed_major: {
     label: "Delayed > 1hr",
-    color: "var(--chart-3)",
+    color: "var(--chart-4)",
   },
   exception: {
     label: "Exception",
-    color: "var(--chart-4)",
+    color: "var(--status-failed)",
   },
   returned: {
     label: "Returned",
@@ -51,9 +59,16 @@ export function DailyDeliveryStatusChart({
 }: {
   data: { status: string; volume: number; fill: string }[]
 }) {
-  const totalShipments = React.useMemo(() => {
-    return data.reduce((acc, curr) => acc + curr.volume, 0)
+  const normalizedData = React.useMemo(() => {
+    return data.map((item) => ({
+      ...item,
+      fill: STATUS_COLORS[item.status] || item.fill || "var(--chart-1)",
+    }))
   }, [data])
+
+  const totalShipments = React.useMemo(() => {
+    return normalizedData.reduce((acc, curr) => acc + curr.volume, 0)
+  }, [normalizedData])
 
   return (
     <Card className="flex h-full flex-col shadow-none">
@@ -74,7 +89,7 @@ export function DailyDeliveryStatusChart({
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              data={data}
+              data={normalizedData}
               dataKey="volume"
               nameKey="status"
               innerRadius={60}

@@ -14,11 +14,12 @@ import { chargedWeight } from "@/lib/shipment-weight"
 import { calculateInvoice, toPaise } from "@/lib/invoices/calculations"
 import { createStoredInvoice, updateStoredInvoice, voidStoredInvoice } from "@/lib/invoices/persistence"
 import { requireDashboardSession } from "@/lib/auth/guards"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { db } from "@/lib/db"
 import { invoices, shipments, users, trackingEvents } from "@/lib/db/schema"
 import { authActionClient } from "@/lib/safe-action"
 import { invoiceWizardSchema } from "@/lib/schemas/invoice-wizard"
+import { normalizeInvoiceDomain } from "@/lib/documents/invoice/engine/domain-normalizer"
 import { normalizeWhatsAppPhone, sendWhatsAppTemplateMessage } from "@/lib/whatsapp/service"
 import { capturePostHogEvent } from "@/lib/posthog-server"
 const GENERIC_INVOICE_ERROR =
@@ -597,7 +598,12 @@ export const createWizardInvoiceAction = authActionClient
                 consigneePhone: parsedInput.consigneePhone,
                 consigneeAltPhone: parsedInput.consigneeAltPhone,
                 consigneeEmail: parsedInput.consigneeEmail,
-                consigneeAddress: parsedInput.consigneeAddress,
+                consigneeAddress: parsedInput.consigneeAddress?.trim()
+                  ? parsedInput.destinationState?.trim() &&
+                    !parsedInput.consigneeAddress.toLowerCase().includes(parsedInput.destinationState.trim().toLowerCase())
+                    ? `${parsedInput.consigneeAddress.trim()}, ${parsedInput.destinationState.trim()}`
+                    : parsedInput.consigneeAddress.trim()
+                  : parsedInput.consigneeAddress || null,
                 consigneePinCode: parsedInput.consigneePinCode,
                 contentDescription: parsedInput.contentDescription,
                 natureOfGoods: parsedInput.natureOfGoods,
@@ -623,25 +629,56 @@ export const createWizardInvoiceAction = authActionClient
 
             const totals = calculateInvoice({ freightCharge: freightChargePaise, pickupCharge: pickupChargePaise, packingCharge: packingChargePaise, docketCharge: docketChargePaise, insuranceCharge: insuranceChargePaise, otherCharges: otherChargesPaise, gstRate: parsedInput.gstRate, interstate: !!parsedInput.originState && !!parsedInput.destinationState && parsedInput.originState.trim().toLowerCase() !== parsedInput.destinationState.trim().toLowerCase(), advancePaid: toPaise(parsedInput.advancePaid) })
 
+            const invoiceValues = {
+              id: invoiceId,
+              shipmentId: newShipment.id,
+              customerId: consignorUser?.id || null,
+              ...totals,
+              freightCharge: freightChargePaise,
+              pickupCharge: pickupChargePaise,
+              packingCharge: packingChargePaise,
+              docketCharge: docketChargePaise,
+              insuranceCharge: insuranceChargePaise,
+              otherCharges: otherChargesPaise,
+              gstRate: parsedInput.gstRate,
+              paymentMode: parsedInput.paymentMode,
+              remarks: parsedInput.remarks,
+              termsAccepted: parsedInput.termsAccepted,
+              prohibitedAccepted: parsedInput.prohibitedAccepted,
+              pdfUrl: `/invoice/${invoiceId}`,
+              createdAt: new Date(),
+            }
+
+            let appOrigin: string | undefined
+            try {
+              appOrigin = getAppUrl()
+            } catch {
+              try {
+                const headerList = await headers()
+                const host = headerList.get("x-forwarded-host") || headerList.get("host")
+                const proto = headerList.get("x-forwarded-proto") || "https"
+                if (host) {
+                  appOrigin = `${proto}://${host}`
+                }
+              } catch {
+                appOrigin = undefined
+              }
+            }
+
+            const snapshot = normalizeInvoiceDomain(
+              invoiceValues as any,
+              {
+                ...newShipment,
+                destinationState: parsedInput.destinationState,
+              } as any,
+              { appOrigin }
+            )
+
             const [newInvoice] = await tx
               .insert(invoices)
               .values({
-                id: invoiceId,
-                shipmentId: newShipment.id,
-                customerId: consignorUser?.id || null,
-                ...totals,
-                freightCharge: freightChargePaise,
-                pickupCharge: pickupChargePaise,
-                packingCharge: packingChargePaise,
-                docketCharge: docketChargePaise,
-                insuranceCharge: insuranceChargePaise,
-                otherCharges: otherChargesPaise,
-                gstRate: parsedInput.gstRate,
-                paymentMode: parsedInput.paymentMode,
-                remarks: parsedInput.remarks,
-                termsAccepted: parsedInput.termsAccepted,
-                prohibitedAccepted: parsedInput.prohibitedAccepted,
-                pdfUrl: `/invoice/${invoiceId}`,
+                ...invoiceValues,
+                documentSnapshot: snapshot as any,
               })
               .returning()
 

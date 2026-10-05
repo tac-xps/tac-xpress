@@ -37,5 +37,8 @@ export default {
     'alpha-value-notation': null,
     // Font family names like "DM Sans" and "IBM Plex Mono" are proper nouns
     'value-keyword-case': null,
+    // ═══ Nordic Mineral / OKLCH Color Engine Rules ═══
+    'color-no-hex': true,
+    'color-named': 'never',
   },
 }

@@ -1,4 +1,6 @@
+
 "use client"
+"use no memo";
 import { useAction } from "next-safe-action/hooks"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -33,4 +35,6 @@ export function EditManifestDialog({ manifest, open, onOpenChange }: { manifest:
     <div className="flex justify-end gap-3"><Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Close</Button>{!locked && <Button type="submit" disabled={isExecuting}>{isExecuting ? "Saving…" : form.watch("status") === "finalized" ? "Finalize and dispatch" : "Save changes"}</Button>}</div>
   </form></Form></DialogContent></Dialog>
 }
+
+
 

@@ -18,6 +18,8 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { motion, useReducedMotion } from "motion/react"
+import { springs } from "@/lib/animations"
 import { workspaceNavigation, isWorkspaceRouteActive } from "./navigation"
 
 export function AppSidebar({
@@ -26,6 +28,7 @@ export function AppSidebar({
 }: React.ComponentProps<typeof Sidebar> & { userRole?: string }) {
   const pathname = usePathname()
   const { setOpenMobile } = useSidebar()
+  const shouldReduceMotion = useReducedMotion()
   return (
     <Sidebar
       id="tour-sidebar"
@@ -63,29 +66,37 @@ export function AppSidebar({
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {group.items.map(({ title, href, icon: Icon }) => (
-                    <SidebarMenuItem key={href}>
-                      <SidebarMenuButton
-                        asChild
-                        tooltip={title}
-                        isActive={isWorkspaceRouteActive(pathname, href)}
-                        className="h-9 font-normal data-[active=true]:font-medium"
-                      >
-                        <Link
-                          href={href}
-                          aria-current={
-                            isWorkspaceRouteActive(pathname, href)
-                              ? "page"
-                              : undefined
-                          }
-                          onClick={() => setOpenMobile(false)}
+                  {group.items.map(({ title, href, icon: Icon }) => {
+                    const isActive = isWorkspaceRouteActive(pathname, href)
+                    return (
+                      <SidebarMenuItem key={href} className="relative">
+                        <SidebarMenuButton
+                          asChild
+                          tooltip={title}
+                          isActive={isActive}
+                          className="relative z-10 h-9 font-normal data-[active=true]:font-medium transition-colors"
                         >
-                          <Icon />
-                          <span>{title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
+                          <Link
+                            href={href}
+                            aria-current={isActive ? "page" : undefined}
+                            onClick={() => setOpenMobile(false)}
+                            className="group/item flex items-center gap-2"
+                          >
+                            <Icon className="size-4 shrink-0 transition-transform duration-150 group-hover/item:scale-110 group-hover/item:translate-x-0.5" />
+                            <span>{title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                        {isActive && (
+                          <motion.span
+                            layoutId="active-sidebar-pill"
+                            className="absolute inset-0 rounded-none bg-accent/80 pointer-events-none z-0"
+                            transition={shouldReduceMotion ? { duration: 0 } : springs.smooth}
+                            aria-hidden="true"
+                          />
+                        )}
+                      </SidebarMenuItem>
+                    )
+                  })}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>

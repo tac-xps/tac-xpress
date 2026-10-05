@@ -7,6 +7,7 @@ const meta = {
   parameters: {
     layout: "fullscreen",
     nextjs: { appDirectory: true, navigation: { pathname: "/" } },
+    chromatic: { viewports: [375, 768, 1280] },
   },
 } satisfies Meta<typeof SiteFooter>
 

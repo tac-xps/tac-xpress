@@ -1,6 +1,9 @@
 name: "Chromatic visual tests"
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -31,6 +34,6 @@ jobs:
         uses: chromaui/action@v11
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          # Fail the workflow if there are unreviewed visual changes
-          exitOnceUploaded: false
-          autoAcceptChanges: false
+          # TurboSnap minimizes snapshot quota; visual changes gate the PR.
+          onlyChanged: true
+          autoAcceptChanges: "main"

@@ -8,8 +8,8 @@ export function DashboardIcon(props: SVGProps<SVGSVGElement>) {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
       {...props}
     >
       <rect
@@ -17,7 +17,6 @@ export function DashboardIcon(props: SVGProps<SVGSVGElement>) {
         y="3"
         width="7"
         height="9"
-        rx="2"
         fill="currentColor"
         fillOpacity={0.2}
       />
@@ -26,7 +25,6 @@ export function DashboardIcon(props: SVGProps<SVGSVGElement>) {
         y="3"
         width="7"
         height="5"
-        rx="1.5"
         fill="currentColor"
         fillOpacity={0.2}
       />
@@ -35,7 +33,6 @@ export function DashboardIcon(props: SVGProps<SVGSVGElement>) {
         y="12"
         width="7"
         height="9"
-        rx="2"
         fill="currentColor"
         fillOpacity={0.2}
       />
@@ -44,7 +41,6 @@ export function DashboardIcon(props: SVGProps<SVGSVGElement>) {
         y="16"
         width="7"
         height="5"
-        rx="1.5"
         fill="currentColor"
         fillOpacity={0.2}
       />
@@ -65,7 +61,7 @@ export function AnalyticsIcon(props: SVGProps<SVGSVGElement>) {
     >
       <path d="M3 3v18h18" strokeOpacity={0.4} />
       <path d="M7 14l4-4 4 4 6-6" />
-      <circle cx="21" cy="8" r="2" fill="currentColor" fillOpacity={0.3} />
+      <rect x="19" y="6" width="4" height="4" fill="currentColor" fillOpacity={0.3} />
       <path
         d="M7 14l4-4 4 4 6-6V21H7z"
         fill="currentColor"
@@ -94,22 +90,8 @@ export function MetricsIcon(props: SVGProps<SVGSVGElement>) {
         fillOpacity={0.1}
         stroke="none"
       />
-      <circle
-        cx="10"
-        cy="4"
-        r="2"
-        fill="currentColor"
-        fillOpacity={0.3}
-        stroke="none"
-      />
-      <circle
-        cx="14"
-        cy="20"
-        r="2"
-        fill="currentColor"
-        fillOpacity={0.3}
-        stroke="none"
-      />
+      <rect x="8" y="2" width="4" height="4" fill="currentColor" fillOpacity={0.3} stroke="none" />
+      <rect x="12" y="18" width="4" height="4" fill="currentColor" fillOpacity={0.3} stroke="none" />
     </svg>
   )
 }
@@ -205,20 +187,8 @@ export function FleetIcon(props: SVGProps<SVGSVGElement>) {
         fill="currentColor"
         fillOpacity={0.2}
       />
-      <circle
-        cx="7.5"
-        cy="17.5"
-        r="2.5"
-        fill="currentColor"
-        fillOpacity={0.3}
-      />
-      <circle
-        cx="17.5"
-        cy="17.5"
-        r="2.5"
-        fill="currentColor"
-        fillOpacity={0.3}
-      />
+      <rect x="5" y="15" width="5" height="5" fill="currentColor" fillOpacity={0.3} />
+      <rect x="15" y="15" width="5" height="5" fill="currentColor" fillOpacity={0.3} />
       <line x1="2" y1="9" x2="10" y2="9" strokeOpacity={0.4} />
     </svg>
   )
@@ -240,7 +210,7 @@ export function TrackingIcon(props: SVGProps<SVGSVGElement>) {
         fill="currentColor"
         fillOpacity={0.1}
       />
-      <circle cx="12" cy="10" r="3" fill="currentColor" fillOpacity={0.3} />
+      <rect x="9" y="7" width="6" height="6" fill="currentColor" fillOpacity={0.3} />
       <path d="M12 10l3-3" strokeOpacity={0.5} />
     </svg>
   )
@@ -267,7 +237,6 @@ export function InvoicesIcon(props: SVGProps<SVGSVGElement>) {
         y="10"
         width="8"
         height="4"
-        rx="1"
         fill="currentColor"
         fillOpacity={0.2}
       />
@@ -293,7 +262,7 @@ export function CustomersIcon(props: SVGProps<SVGSVGElement>) {
         fill="currentColor"
         fillOpacity={0.1}
       />
-      <circle cx="9" cy="7" r="4" fill="currentColor" fillOpacity={0.2} />
+      <rect x="5" y="3" width="8" height="8" fill="currentColor" fillOpacity={0.2} />
       <path d="M23 21v-2a4 4 0 0 0-3-3.87" strokeOpacity={0.5} />
       <path d="M16 3.13a4 4 0 0 1 0 7.75" strokeOpacity={0.5} />
     </svg>
@@ -311,7 +280,7 @@ export function PricingIcon(props: SVGProps<SVGSVGElement>) {
       strokeLinejoin="round"
       {...props}
     >
-      <circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity={0.1} />
+      <rect x="2" y="2" width="20" height="20" fill="currentColor" fillOpacity={0.1} />
       <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" fill="none" />
       <line x1="12" y1="18" x2="12" y2="6" />
       <path d="M12 6v12" strokeWidth="3" strokeOpacity={0.2} />
@@ -371,11 +340,11 @@ export function SidebarCollapseIcon(props: SVGProps<SVGSVGElement>) {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
       {...props}
     >
-      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+      <rect x="3" y="3" width="18" height="18" />
       <path d="M9 3v18" fill="currentColor" fillOpacity={0.1} />
       <path d="M15 15l-3-3 3-3" strokeOpacity={0.7} />
     </svg>
@@ -393,7 +362,7 @@ export function SunIcon(props: SVGProps<SVGSVGElement>) {
       strokeLinejoin="round"
       {...props}
     >
-      <circle cx="12" cy="12" r="5" fill="currentColor" fillOpacity={0.1} />
+      <rect x="7" y="7" width="10" height="10" fill="currentColor" fillOpacity={0.1} />
       <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
     </svg>
   )

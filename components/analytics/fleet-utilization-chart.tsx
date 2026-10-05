@@ -19,11 +19,11 @@ import {
 const chartConfig = {
   managed: {
     label: "Managed Vehicles",
-    color: "var(--color-primary)",
+    color: "var(--chart-1)",
   },
   registry: {
     label: "Fleet Registry",
-    color: "var(--color-chart-3)",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
@@ -50,8 +50,8 @@ export function FleetUtilizationChart({
     React.useState<keyof typeof chartConfig>("managed")
 
   return (
-    <Card className="col-span-1 overflow-hidden border border-border bg-card shadow-card md:col-span-2">
-      <CardHeader className="flex flex-col items-stretch border-b border-border/50 p-0 sm:flex-row">
+    <Card className="col-span-1 overflow-hidden md:col-span-2">
+      <CardHeader className="flex flex-col items-stretch border-b border-border p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-5">
           <CardTitle className="text-base font-semibold tracking-tight">
             Fleet Availability Snapshot
@@ -77,7 +77,7 @@ export function FleetUtilizationChart({
             <button
               key={item.key}
               data-active={activeChart === item.key}
-              className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t border-border/50 px-6 py-4 text-left transition-colors even:border-l hover:bg-muted/30 data-[active=true]:bg-muted/50 sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
+              className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t border-border px-6 py-4 text-left transition-colors even:border-l hover:bg-muted/30 data-[active=true]:bg-muted/50 sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
               onClick={() => setActiveChart(item.key)}
               type="button"
             >
@@ -109,7 +109,7 @@ export function FleetUtilizationChart({
           >
             <CartesianGrid
               vertical={false}
-              stroke="var(--color-border)"
+              stroke="var(--border)"
               strokeOpacity={0.3}
               strokeDasharray="3 3"
             />
@@ -118,11 +118,11 @@ export function FleetUtilizationChart({
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              stroke="var(--color-muted-foreground)"
+              stroke="var(--muted-foreground)"
               fontSize={12}
             />
             <YAxis
-              stroke="var(--color-muted-foreground)"
+              stroke="var(--muted-foreground)"
               fontSize={12}
               tickLine={false}
               axisLine={false}
@@ -154,7 +154,7 @@ export function FleetUtilizationChart({
               </linearGradient>
             </defs>
             <Area
-              type="monotone"
+              type="linear"
               dataKey={activeChart}
               stroke={`var(--color-${activeChart})`}
               fillOpacity={1}

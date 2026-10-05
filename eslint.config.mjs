@@ -37,4 +37,9 @@ export default [...nextVitals, {
       },
     ],
   },
+}, {
+  files: ["scripts/**"],
+  rules: {
+    "no-console": "off",
+  },
 }, ...storybook.configs["flat/recommended"]];

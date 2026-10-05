@@ -132,7 +132,7 @@ export function DeliveryDetails({
           <CardTitle>Proof of Delivery (ePoD)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="relative overflow-hidden rounded-md border bg-background">
+          <div className="relative overflow-hidden rounded-none border bg-background">
             <canvas
               ref={canvasRef}
               width={400}

@@ -20,6 +20,34 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("server-only", () => ({}))
 vi.mock("@/auth", () => ({ signIn: mocks.signIn }))
+vi.mock("@supabase/supabase-js", () => ({
+  createClient: () => ({
+    auth: {
+      signInWithPassword: vi.fn().mockResolvedValue({
+        data: { user: { id: "test-user-id", email: "operator@example.com" } },
+        error: null,
+      }),
+    },
+  }),
+}))
+vi.mock("@/lib/db", () => ({
+  db: {
+    select: () => ({
+      from: (table: any) => ({
+        where: async () => {
+          const tableName = table?.[Symbol.for("drizzle:Name")] || table?._?.name
+          if (tableName === "user_passkeys") return []
+          return [{ id: "test-user-id", email: "operator@example.com", role: "staff" }]
+        },
+      }),
+    }),
+    query: {
+      userMfa: {
+        findFirst: async () => null,
+      },
+    },
+  },
+}))
 vi.mock("next-auth", async () => {
   // Load Auth.js's real error classes without its Next.js runtime entrypoint,
   // whose extensionless server imports require the Next.js bundler.

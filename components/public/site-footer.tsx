@@ -31,15 +31,15 @@ const groups = [
 ]
 export function SiteFooter() {
   return (
-    <footer className="cargo-inverse border-t bg-background py-12 lg:pt-20">
+    <footer className="border-t border-border bg-surface/50 py-12 lg:pt-20 text-foreground transition-colors">
       <div className="cargo-container">
-        <div className="mb-14 flex flex-col justify-between gap-6 border-b pb-12 md:flex-row md:items-end">
-          <p className="cargo-heading max-w-2xl">
+        <div className="mb-14 flex flex-col justify-between gap-6 border-b border-border pb-12 md:flex-row md:items-end">
+          <p className="cargo-heading max-w-2xl text-foreground">
             Let’s move
             <br />
             something forward.
           </p>
-          <Button asChild size="lg" className="w-fit px-4">
+          <Button asChild size="lg" className="w-fit px-4 bg-primary text-primary-foreground hover:bg-primary/90 font-mono text-xs font-semibold uppercase tracking-wider">
             <Link href="/contact">
               Start a conversation <ArrowUpRight data-icon="inline-end" />
             </Link>

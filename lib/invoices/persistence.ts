@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { invoices, shipments } from "@/lib/db/schema"
 import { logAuditInTransaction } from "@/lib/audit"
 import { assertPaise, calculateInvoice, chargeKeys } from "./calculations"
+import { invalidateInvoicePdfCache } from "@/lib/documents/render-invoice-pdf"
 
 interface Actor {
   id: string
@@ -25,7 +26,7 @@ export async function updateStoredInvoice(
     parties?: PartyPatch
   } = {}
 ) {
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     const [current] = await tx
       .select()
       .from(invoices)
@@ -117,11 +118,13 @@ export async function updateStoredInvoice(
     })
     return updated
   })
+  invalidateInvoicePdfCache(id)
+  return result
 }
 
 /** Preserve financial history and its links instead of deleting the invoice row. */
 export async function voidStoredInvoice(id: string, actor: Actor) {
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     const [current] = await tx
       .select()
       .from(invoices)
@@ -147,6 +150,8 @@ export async function voidStoredInvoice(id: string, actor: Actor) {
       after: { status: "void" },
     })
   })
+  invalidateInvoicePdfCache(id)
+  return result
 }
 
 export async function createStoredInvoice(

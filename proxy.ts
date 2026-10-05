@@ -9,6 +9,7 @@ import NextAuth, { type Session } from "next-auth"
 import { authConfig } from "@/auth.config"
 import { isStaffRole } from "@/lib/auth/roles"
 import { verifyDocumentToken } from "@/lib/auth/document-token"
+import { auth0 } from "@/lib/auth0"
 import * as Sentry from "@sentry/nextjs"
 
 const { auth } = NextAuth(authConfig)
@@ -155,6 +156,27 @@ async function enforceRequestProtection(request: NextRequest) {
 }
 
 export async function proxy(request: NextRequest, event: NextFetchEvent) {
+  // Edge redirect: Invalid sign-in callbacks provide immediate recovery
+  if (
+    request.nextUrl.pathname === "/auth/callback" &&
+    !request.nextUrl.searchParams.has("code")
+  ) {
+    const res = NextResponse.redirect(
+      new URL("/signin?reason=staff-only", request.nextUrl.origin)
+    )
+    res.headers.set("Cache-Control", "no-store")
+    res.headers.set("Referrer-Policy", "no-referrer")
+    return res
+  }
+
+  // Auth0 OAuth Handler (/auth/login, /auth/logout, /auth/profile, or /auth/callback with code)
+  if (
+    request.nextUrl.pathname.startsWith("/auth/") &&
+    (request.nextUrl.pathname !== "/auth/callback" || request.nextUrl.searchParams.has("code"))
+  ) {
+    return await auth0.middleware(request)
+  }
+
   // Edge Block: Physically hide the test routes if bypass is not explicitly enabled
   if (request.nextUrl.pathname.startsWith("/e2e-auth")) {
     if (

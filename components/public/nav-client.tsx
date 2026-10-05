@@ -238,7 +238,7 @@ export function NavMobileSheet() {
                       aria-current={isActive ? "page" : undefined}
                     >
                       <span>{link.label}</span>
-                      {isActive && <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />}
+                      {isActive && <span className="size-1.5 bg-primary" aria-hidden="true" />}
                     </Link>
                   </motion.div>
                 )

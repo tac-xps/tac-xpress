@@ -88,6 +88,7 @@ export function WizardForm() {
   const progressPercentage = ((currentStep - 1) / (STEPS.length - 1)) * 100
 
   const onInvalid = (errors: any) => {
+    // eslint-disable-next-line no-console
     console.error(errors)
   }
 

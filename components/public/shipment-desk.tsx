@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { MagneticButton } from "./magnetic-button"
-import { TrackForm } from "./track-form"
 import { motion, useReducedMotion } from "motion/react"
 
 export function ShipmentDesk() {
@@ -51,7 +50,46 @@ export function ShipmentDesk() {
           viewport={{ once: true, amount: 0.25 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <TrackForm variant="desk" />
+          <form
+            action="/track"
+            method="get"
+            aria-label="Track your shipment"
+            className="bg-card p-6 sm:p-8"
+          >
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="home-awb" className="text-base font-medium">
+                  AWB / shipment reference
+                </FieldLabel>
+                <div className="flex flex-col gap-3 sm:flex-row items-stretch sm:items-center">
+                  <Input
+                    id="home-awb"
+                    name="awb"
+                    required
+                    maxLength={40}
+                    autoComplete="off"
+                    placeholder="Enter your AWB number"
+                    aria-describedby="home-awb-help"
+                    className="cargo-desk-input h-10 min-w-0 flex-1 font-mono text-xs sm:text-sm border border-border bg-card px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary uppercase rounded-none"
+                  />
+                  <MagneticButton strength={0.18} className="shrink-0">
+                    <Button
+                      type="submit"
+                      size="lg"
+                      className="w-full sm:w-auto h-10 px-5 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5"
+                    >
+                      <span>Track shipment</span>
+                      <ArrowUpRight className="size-3.5 ml-1.5" />
+                    </Button>
+                  </MagneticButton>
+                </div>
+                <FieldDescription id="home-awb-help" className="text-muted-foreground text-sm">
+                  Tracking shows recorded events, rather than a live vehicle
+                  location.
+                </FieldDescription>
+              </Field>
+            </FieldGroup>
+          </form>
         </motion.div>
       </div>
     </section>

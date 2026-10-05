@@ -22,7 +22,7 @@ export function DocsPreviewDialogTrigger({
         <Button
           variant="outline"
           size="sm"
-          className="gap-1.5 text-xs bg-white shadow-sm"
+          className="gap-1.5 text-xs bg-card shadow-sm"
           onClick={() => {
             setTab("invoice")
             setOpen(true)
@@ -35,7 +35,7 @@ export function DocsPreviewDialogTrigger({
         <Button
           variant="outline"
           size="sm"
-          className="gap-1.5 text-xs bg-white shadow-sm"
+          className="gap-1.5 text-xs bg-card shadow-sm"
           onClick={() => {
             setTab("label")
             setOpen(true)

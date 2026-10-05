@@ -39,7 +39,7 @@ export function VerticalRail({
       {/* ── Illuminated active rail progress runner ── */}
       <motion.div
         aria-hidden="true"
-        className="absolute -left-[2px] top-0 w-[2px] bg-gradient-to-b from-primary via-primary to-primary/60 rounded-full"
+        className="absolute -left-[2px] top-0 w-[2px] bg-gradient-to-b from-primary via-primary to-primary/60 rounded-none"
         initial={false}
         animate={{
           height: `${Math.min(100, Math.max(0, progressRatio * 100))}%`,
@@ -81,7 +81,7 @@ export function VerticalRailStep({
   return (
     <li
       className={cn(
-        "group/step relative mb-6 last:mb-0 rounded-2xl transition-colors duration-300",
+        "group/step relative mb-6 last:mb-0 rounded-none transition-colors duration-300",
         className,
       )}
     >
@@ -89,7 +89,7 @@ export function VerticalRailStep({
       {isActive && (
         <motion.div
           layoutId="active-step-highlight"
-          className="pointer-events-none absolute inset-0 -left-3.5 sm:-left-4 rounded-2xl bg-primary/[0.08] dark:bg-primary/[0.14] border-l-[3px] border-primary shadow-[0_4px_24px_rgba(30,123,122,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.25)]"
+          className="pointer-events-none absolute inset-0 -left-3.5 sm:-left-4 rounded-none bg-primary/[0.08] dark:bg-primary/[0.08] border-l-[3px] border-primary shadow-sm dark:shadow-md"
           transition={
             shouldReduceMotion
               ? { duration: 0 }
@@ -102,7 +102,7 @@ export function VerticalRailStep({
       <span
         aria-hidden="true"
         className={cn(
-          "absolute -left-[13px] top-6 flex h-6 w-6 items-center justify-center rounded-md transition-all duration-300 ring-4 ring-background z-10",
+          "absolute -left-[13px] top-6 flex h-6 w-6 items-center justify-center rounded-none transition-all duration-300 ring-4 ring-background z-10",
           isActive
             ? "bg-primary text-primary-foreground border-2 border-primary shadow-sm scale-105"
             : isCompleted
@@ -115,7 +115,7 @@ export function VerticalRailStep({
         ) : (
           <span
             className={cn(
-              "size-2 transition-transform duration-300 rounded-xs",
+              "size-2 transition-transform duration-300 rounded-none",
               isActive ? "bg-primary-foreground scale-100" : "bg-muted-foreground/60 scale-75",
             )}
           />
@@ -124,7 +124,7 @@ export function VerticalRailStep({
         {/* Pulsing ring — only on currently active step */}
         {isActive && !shouldReduceMotion && (
           <motion.span
-            className="absolute inset-0 rounded-md border-2 border-primary pointer-events-none"
+            className="absolute inset-0 rounded-none border-2 border-primary pointer-events-none"
             initial={{ scale: 1, opacity: 0.8 }}
             animate={{ scale: 2.1, opacity: 0 }}
             transition={{

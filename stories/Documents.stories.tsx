@@ -79,6 +79,8 @@ const invoice: Invoice = {
   advancePaid: 247800,
   balanceDue: 0,
   remarks: "Delivered to Singjamei delivery station",
+  documentSnapshot: null,
+  termsVersion: "2026.10",
   termsAccepted: true,
   prohibitedAccepted: true,
   signatureUrl: null,

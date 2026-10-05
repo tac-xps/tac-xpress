@@ -1,10 +1,13 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest"
 
+vi.mock("server-only", () => ({}))
+
 const mocks = vi.hoisted(() => ({
   rows: [] as { id: string; email: string; role: string }[],
   insert: vi.fn(),
   signIn: vi.fn(),
   allow: vi.fn(),
+  verifyProof: vi.fn(),
   authorize: undefined as
     | undefined
     | ((credentials: Record<string, unknown>) => Promise<unknown>),
@@ -32,6 +35,7 @@ vi.mock("@supabase/supabase-js", () => ({
 vi.mock("@sentry/nextjs", () => ({ captureException: vi.fn() }))
 vi.mock("@/lib/auth/credential-rate-limit", () => ({
   allowCredentialAttempt: mocks.allow,
+  verifyRateLimitProof: mocks.verifyProof,
 }))
 
 await import("@/auth")
@@ -41,6 +45,7 @@ describe("staff authentication", () => {
     vi.stubEnv("E2E_TEST_BYPASS_ENABLED", "false")
     mocks.rows = []
     mocks.allow.mockResolvedValue(true)
+    mocks.verifyProof.mockReturnValue(false)
     mocks.insert.mockClear()
     mocks.signIn.mockResolvedValue({
       data: { user: { id: "user-1", email: "person@example.com" } },
@@ -109,5 +114,18 @@ describe("staff authentication", () => {
       })
     ).toBeNull()
     expect(mocks.insert).not.toHaveBeenCalled()
+  })
+  it("accepts an attempt with a valid rateLimitProof without calling allowCredentialAttempt", async () => {
+    mocks.signIn.mockClear()
+    mocks.allow.mockClear()
+    mocks.verifyProof.mockReturnValue(true)
+    mocks.rows = [{ id: "user-1", email: "person@example.com", role: "admin" }]
+    const result = await mocks.authorize!({
+      email: "person@example.com",
+      password: "test-password",
+      rateLimitProof: "valid-proof",
+    })
+    expect(result).toEqual({ id: "user-1", email: "person@example.com", role: "admin" })
+    expect(mocks.allow).not.toHaveBeenCalled()
   })
 })

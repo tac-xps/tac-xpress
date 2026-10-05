@@ -40,7 +40,7 @@ export default async function TrackingPage({
         <form
           action="/track"
           method="get"
-          className="mb-8 flex flex-col gap-3 rounded-xl border bg-card p-5 sm:p-6"
+          className="mb-8 flex flex-col gap-3 rounded-none border bg-card p-5 sm:p-6"
         >
           <Label htmlFor="tracking-awb">AWB number</Label>
           <div className="flex flex-col gap-3 sm:flex-row">

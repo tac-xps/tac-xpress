@@ -56,7 +56,7 @@ export function PostHogProvider({
         })
       }
     }
-  }, [])
+  }, [bootstrappedFeatureFlags])
 
   return (
     <PHProvider client={posthog}>

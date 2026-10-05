@@ -50,8 +50,9 @@ export function useScannerStation(initialAwb: string) {
             version
           )
         )
+    const req = request
     return () => {
-      request.current++
+      req.current++
     }
   }, [initialAwb, commit])
   useEffect(() => {
