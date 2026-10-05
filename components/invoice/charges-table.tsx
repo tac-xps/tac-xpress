@@ -69,10 +69,10 @@ export function ChargesTable({ doc }: ChargesTableProps) {
                 ) : (
                   <>
                     <td className="py-0.5 px-2 text-right font-mono text-neutral-700">
-                      {formatMoney({ paise: Math.floor(charge.taxAmount.paise / 2), currency: "INR" })}
+                      {formatMoney({ paise: charge.taxAmount.paise - Math.floor(charge.taxAmount.paise / 2), currency: "INR" })}
                     </td>
                     <td className="py-0.5 px-2 text-right font-mono text-neutral-700">
-                      {formatMoney({ paise: charge.taxAmount.paise - Math.floor(charge.taxAmount.paise / 2), currency: "INR" })}
+                      {formatMoney({ paise: Math.floor(charge.taxAmount.paise / 2), currency: "INR" })}
                     </td>
                   </>
                 )}

@@ -36,7 +36,8 @@ export function getStateFromPinCode(pinCode?: string | null): { state: string; s
   if (p2 >= "40" && p2 <= "44") return { state: "Maharashtra", stateCode: "27" }
   if (p2 >= "45" && p2 <= "48") return { state: "Madhya Pradesh", stateCode: "23" }
   if (p2 === "49") return { state: "Chhattisgarh", stateCode: "22" }
-  if (p2 >= "50" && p2 <= "53") return { state: "Andhra Pradesh", stateCode: "37" }
+  if (p2 === "50") return { state: "Telangana", stateCode: "36" }
+  if (p2 >= "51" && p2 <= "53") return { state: "Andhra Pradesh", stateCode: "37" }
   if (p2 >= "56" && p2 <= "59") return { state: "Karnataka", stateCode: "29" }
   if (p2 >= "60" && p2 <= "64") return { state: "Tamil Nadu", stateCode: "33" }
   if (p2 >= "67" && p2 <= "69") return { state: "Kerala", stateCode: "32" }

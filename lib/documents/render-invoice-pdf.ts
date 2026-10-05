@@ -2,6 +2,9 @@ import "server-only"
 import { getAppUrl } from "@/lib/config/app-url"
 import { signDocumentToken } from "@/lib/auth/document-token"
 import { isAbsolute } from "node:path"
+import { db } from "@/lib/db"
+import { invoices } from "@/lib/db/schema"
+import { eq } from "drizzle-orm"
 
 interface CacheEntry {
   buffer: Buffer
@@ -107,16 +110,27 @@ export async function renderInvoicePdf(
   id: string,
   options: RenderInvoicePdfOptions = {}
 ): Promise<Buffer> {
-  // 1. Check in-memory short-lived cache
+  // 1. Check in-memory short-lived cache with database freshness guarantee
   if (!options.forceFresh) {
     const cached = pdfCache.get(id)
-    const modifiedTime = options.lastModified ? new Date(options.lastModified).getTime() : 0
-    if (
-      cached &&
-      Date.now() - cached.timestamp < CACHE_TTL_MS &&
-      (!modifiedTime || cached.timestamp >= modifiedTime)
-    ) {
-      return cached.buffer
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      let modifiedTime = options.lastModified ? new Date(options.lastModified).getTime() : 0
+      if (!modifiedTime) {
+        try {
+          const [inv] = await db
+            .select({ updatedAt: invoices.updatedAt })
+            .from(invoices)
+            .where(eq(invoices.id, id))
+          if (inv?.updatedAt) {
+            modifiedTime = new Date(inv.updatedAt).getTime()
+          }
+        } catch {
+          // If DB is offline, continue with timestamp check
+        }
+      }
+      if (!modifiedTime || cached.timestamp >= modifiedTime) {
+        return cached.buffer
+      }
     }
   }
 
