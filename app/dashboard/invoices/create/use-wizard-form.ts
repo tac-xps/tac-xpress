@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import * as Sentry from "@sentry/nextjs"
 import { useAction } from "next-safe-action/hooks"
+import { usePostHog } from "posthog-js/react"
 import { chargedWeight } from "@/lib/shipment-weight"
 
 import {
@@ -14,6 +15,7 @@ import {
   type InvoiceWizardValues,
 } from "@/lib/schemas/invoice-wizard"
 import { createWizardInvoiceAction, lookupPincodeAction } from "../actions"
+import { resolveWizardSubmitError } from "./wizard-submit-error"
 
 export const STEPS = [
   { id: 1, name: "Basics", description: "Consignment route" },
@@ -29,6 +31,7 @@ export function useWizardForm() {
   const [direction, setDirection] = useState(1)
   const [canSubmit, setCanSubmit] = useState(false)
   const router = useRouter()
+  const posthog = usePostHog()
   const [createdResult, setCreatedResult] = useState<{
     invoiceId: string
     shipmentId: string
@@ -48,16 +51,19 @@ export function useWizardForm() {
       }
     },
     onError: ({ error }) => {
-      const serverMsg = error.serverError
-      if (
-        !serverMsg?.includes("permission") &&
-        !serverMsg?.includes("signed in") &&
-        !serverMsg?.includes("Unauthorized") &&
-        !serverMsg?.includes("Forbidden")
-      ) {
-        Sentry.captureException(error)
+      const { cause, message, invalidFields } = resolveWizardSubmitError(error)
+      if (cause !== "auth") {
+        const exception =
+          error.thrownError ?? new Error(`Invoice wizard submit failed: ${cause}`)
+        Sentry.captureException(exception, {
+          tags: { invoice_submit_error: cause },
+        })
+        posthog?.captureException(exception, {
+          invoice_submit_error_cause: cause,
+          invoice_submit_invalid_fields: invalidFields,
+        })
       }
-      toast.error(serverMsg || "An unexpected error occurred")
+      toast.error(message)
     },
   })
 
