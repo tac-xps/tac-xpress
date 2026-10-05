@@ -48,8 +48,16 @@ export function useWizardForm() {
       }
     },
     onError: ({ error }) => {
-      Sentry.captureException(error)
-      toast.error(error.serverError || "An unexpected error occurred")
+      const serverMsg = error.serverError
+      if (
+        !serverMsg?.includes("permission") &&
+        !serverMsg?.includes("signed in") &&
+        !serverMsg?.includes("Unauthorized") &&
+        !serverMsg?.includes("Forbidden")
+      ) {
+        Sentry.captureException(error)
+      }
+      toast.error(serverMsg || "An unexpected error occurred")
     },
   })
 
