@@ -649,13 +649,20 @@ export const createWizardInvoiceAction = authActionClient
               createdAt: new Date(),
             }
 
+            let appOrigin: string | undefined
+            try {
+              appOrigin = getAppUrl()
+            } catch {
+              appOrigin = undefined
+            }
+
             const snapshot = normalizeInvoiceDomain(
               invoiceValues as any,
               {
                 ...newShipment,
                 destinationState: parsedInput.destinationState,
               } as any,
-              { appOrigin: getAppUrl() }
+              { appOrigin }
             )
 
             const [newInvoice] = await tx
