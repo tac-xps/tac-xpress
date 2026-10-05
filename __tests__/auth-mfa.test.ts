@@ -239,7 +239,7 @@ describe("WebAuthn / Windows Hello Configuration & Options", () => {
     expect(config.origin).toContain("localhost")
   })
 
-  it("generates registration options with preferred user verification for Windows Hello", async () => {
+  it("generates registration options with required user verification for Windows Hello", async () => {
     const options = await createPasskeyRegistrationOptions(
       { id: "test-user-id", email: "test@tacexpress.app" },
       [],
@@ -251,7 +251,7 @@ describe("WebAuthn / Windows Hello Configuration & Options", () => {
     expect(options.rp.name).toBe("Tac-Xpress Logistics")
     expect(options.rp.id).toBe("localhost")
     expect(options.user.name).toBe("test@tacexpress.app")
-    expect(options.authenticatorSelection?.userVerification).toBe("preferred")
+    expect(options.authenticatorSelection?.userVerification).toBe("required")
   })
 
   it("generates authentication options with challenge", async () => {
@@ -260,6 +260,6 @@ describe("WebAuthn / Windows Hello Configuration & Options", () => {
     expect(options).toBeDefined()
     expect(options.challenge).toBeDefined()
     expect(options.rpId).toBe("localhost")
-    expect(options.userVerification).toBe("preferred")
+    expect(options.userVerification).toBe("required")
   })
 })

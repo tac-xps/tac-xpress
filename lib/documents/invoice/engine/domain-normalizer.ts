@@ -19,13 +19,39 @@ export function getStateFromPinCode(pinCode?: string | null): { state: string; s
   const p2 = pin.substring(0, 2)
   const p3 = pin.substring(0, 3)
 
+  // 1. Specific Union Territories and Sub-state Regions (3-digit or 5-digit precision)
+  if (p3 === "160") return { state: "Chandigarh", stateCode: "04" }
+  if (p3 === "194") return { state: "Ladakh", stateCode: "38" }
+  if (p3 === "403") return { state: "Goa", stateCode: "30" }
+  if (p3 === "737") return { state: "Sikkim", stateCode: "11" }
+  if (p3 === "744") return { state: "Andaman and Nicobar Islands", stateCode: "35" }
+  if (p3 === "605") return { state: "Puducherry", stateCode: "34" }
+  if (pin.startsWith("68255")) return { state: "Lakshadweep", stateCode: "31" }
+  if (p3 === "396") return { state: "Dadra and Nagar Haveli and Daman and Diu", stateCode: "26" }
+
+  // Uttarakhand (carved out from UP 20-28: 246, 248, 249, 262, 263)
+  if (p3 === "246" || p3 === "248" || p3 === "249" || p3 === "262" || p3 === "263") {
+    return { state: "Uttarakhand", stateCode: "05" }
+  }
+
+  // Jharkhand (carved out from Bihar 80-85: 814-816, 825-829, 831-835)
+  if (
+    (p3 >= "814" && p3 <= "816") ||
+    (p3 >= "825" && p3 <= "829") ||
+    (p3 >= "831" && p3 <= "835")
+  ) {
+    return { state: "Jharkhand", stateCode: "20" }
+  }
+
+  // Northeast States (79x)
   if (p3 === "795") return { state: "Manipur", stateCode: "14" }
   if (p3 === "796") return { state: "Mizoram", stateCode: "15" }
   if (p3 === "797") return { state: "Nagaland", stateCode: "13" }
-  if (p3 === "798") return { state: "Tripura", stateCode: "16" }
+  if (p3 === "798" || p3 === "799") return { state: "Tripura", stateCode: "16" }
   if (p3 === "793" || p3 === "794") return { state: "Meghalaya", stateCode: "17" }
   if (p3 >= "790" && p3 <= "792") return { state: "Arunachal Pradesh", stateCode: "12" }
-  if (p2 === "78") return { state: "Assam", stateCode: "18" }
+
+  // 2. Standard 2-digit Zonal Groupings
   if (p2 === "11") return { state: "Delhi", stateCode: "07" }
   if (p2 === "12" || p2 === "13") return { state: "Haryana", stateCode: "06" }
   if (p2 >= "14" && p2 <= "16") return { state: "Punjab", stateCode: "03" }
@@ -44,6 +70,7 @@ export function getStateFromPinCode(pinCode?: string | null): { state: string; s
   if (p2 >= "67" && p2 <= "69") return { state: "Kerala", stateCode: "32" }
   if (p2 >= "70" && p2 <= "74") return { state: "West Bengal", stateCode: "19" }
   if (p2 >= "75" && p2 <= "77") return { state: "Odisha", stateCode: "21" }
+  if (p2 === "78") return { state: "Assam", stateCode: "18" }
   if (p2 >= "80" && p2 <= "85") return { state: "Bihar", stateCode: "10" }
 
   return undefined
@@ -79,30 +106,73 @@ function toBase64(value: string): string {
  * - Commercial transactions are decoupled from operational logistics.
  * - Payment status is strictly derived from total - advance.
  * - Tax decisions and weight bases are computed through pure stateless engines.
- * - If an immutable documentSnapshot is already recorded on the invoice, honors it.
+ * - If an immutable documentSnapshot is already recorded on the invoice, honors it while reconciling mutable status.
  */
 export function normalizeInvoiceDomain(
   invoice: Invoice,
   shipment: Shipment,
   options: NormalizerOptions = {}
 ): TaxInvoiceDocument {
-  // If an immutable document snapshot was previously saved, honor it
+  // If an immutable document snapshot was previously saved, honor it while reconciling mutable state
   if (!options.forceFresh && invoice.documentSnapshot && typeof invoice.documentSnapshot === "object") {
     const snapshot = invoice.documentSnapshot as unknown as TaxInvoiceDocument
     if (snapshot.commercial && snapshot.shipment && snapshot.routing) {
+      // Reconcile mutable status and payments from live invoice row
+      const advancePaid = money(invoice.advancePaid)
+      const totalValue = snapshot.commercial.financials?.totalInvoiceValue || money(invoice.amount)
+      const balanceDue =
+        advancePaid.paise >= totalValue.paise
+          ? zeroMoney()
+          : subtractMoney(totalValue, advancePaid, false)
+
+      let paymentStatus: "unpaid" | "partially_paid" | "paid" | "void"
+      if (invoice.status === "void") {
+        paymentStatus = "void"
+      } else if (advancePaid.paise >= totalValue.paise || balanceDue.paise === 0) {
+        paymentStatus = "paid"
+      } else if (advancePaid.paise > 0) {
+        paymentStatus = "partially_paid"
+      } else {
+        paymentStatus = "unpaid"
+      }
+
+      let upiPayload = snapshot.commercial.upiPayload
+      if (paymentStatus === "void" || paymentStatus === "paid" || balanceDue.paise === 0) {
+        upiPayload = undefined
+      } else if (balanceDue.paise > 0) {
+        const dueRupees = toRupees(balanceDue).toFixed(2)
+        upiPayload = `upi://pay?pa=tapan.cargo@icici&pn=TAC-XPRESS&am=${dueRupees}&tr=${encodeURIComponent(
+          invoice.id
+        )}&tn=${encodeURIComponent(`AWB-${snapshot.shipment.awbNumber}`)}&cu=INR`
+      }
+
+      const reconciledSnapshot: TaxInvoiceDocument = {
+        ...snapshot,
+        commercial: {
+          ...snapshot.commercial,
+          status: paymentStatus,
+          upiPayload,
+          financials: {
+            ...snapshot.commercial.financials,
+            advancePaid,
+            balanceDue,
+          },
+        },
+      }
+
       if (options.appOrigin) {
         return {
-          ...snapshot,
+          ...reconciledSnapshot,
           verification: {
-            ...snapshot.verification,
-            trackingUrl: `${options.appOrigin}/track?awb=${encodeURIComponent(snapshot.shipment.awbNumber)}`,
+            ...reconciledSnapshot.verification,
+            trackingUrl: `${options.appOrigin}/track?awb=${encodeURIComponent(reconciledSnapshot.shipment.awbNumber)}`,
             verificationUrl: `${options.appOrigin}/invoice/${encodeURIComponent(invoice.id)}?v=${encodeURIComponent(
-              snapshot.verification.verificationToken
+              reconciledSnapshot.verification.verificationToken
             )}`,
           },
         }
       }
-      return snapshot
+      return reconciledSnapshot
     }
   }
 
@@ -157,17 +227,7 @@ export function normalizeInvoiceDomain(
     }
   }
 
-  if (!destState && shipment.consigneeAddress) {
-    const lowerAddr = shipment.consigneeAddress.toLowerCase()
-    for (const [stateName, code] of Object.entries(INDIAN_STATE_CODES)) {
-      if (lowerAddr.includes(stateName)) {
-        destState = stateName.charAt(0).toUpperCase() + stateName.slice(1)
-        destStateCode = code
-        break
-      }
-    }
-  }
-
+  // Prioritize structured 6-digit postal PIN code before free-form address string scanning
   if (!destState && shipment.consigneePinCode) {
     const pinMatch = getStateFromPinCode(shipment.consigneePinCode)
     if (pinMatch) {
@@ -176,12 +236,24 @@ export function normalizeInvoiceDomain(
     }
   }
 
-  // Intrastate reconciliation: If invoice was persisted with CGST/SGST and 0 IGST,
-  // the supply was strictly intrastate within Delhi.
+  const isPersistedInterstate = (invoice.igst ?? 0) > 0
   const isPersistedIntrastate =
     (invoice.igst ?? 0) === 0 && ((invoice.cgst ?? 0) > 0 || (invoice.sgst ?? 0) > 0)
 
-  if (!destState && isPersistedIntrastate) {
+  if (!destState && shipment.consigneeAddress) {
+    const lowerAddr = shipment.consigneeAddress.toLowerCase()
+    for (const [stateName, code] of Object.entries(INDIAN_STATE_CODES)) {
+      // Exclude Delhi match from consignee address if shipment was explicitly persisted as interstate
+      if (stateName === "delhi" && isPersistedInterstate) continue
+      if (lowerAddr.includes(stateName)) {
+        destState = stateName.charAt(0).toUpperCase() + stateName.slice(1)
+        destStateCode = code
+        break
+      }
+    }
+  }
+
+  if (isPersistedIntrastate) {
     destState = "Delhi"
     destStateCode = "07"
   }
@@ -400,9 +472,13 @@ export function normalizeInvoiceDomain(
       originHubCode: DELHI_CENTRAL_HUB.code,
       originStateCode: DELHI_CENTRAL_HUB.stateCode,
       originName: "Delhi Central Dispatch Hub",
-      destHubCode: MANIPUR_REGIONAL_HUB.code,
-      destStateCode: MANIPUR_REGIONAL_HUB.stateCode,
-      destName: "Manipur Regional Hub & Station",
+      destHubCode: deliverTo.stateCode === "07" ? DELHI_CENTRAL_HUB.code : deliverTo.stateCode === "14" ? MANIPUR_REGIONAL_HUB.code : (deliverTo.stateCode || "REG"),
+      destStateCode: deliverTo.stateCode || "14",
+      destName: deliverTo.stateCode === "14"
+        ? "Manipur Regional Hub & Station"
+        : deliverTo.stateCode === "07"
+        ? "Delhi Central Dispatch Hub"
+        : `${deliverTo.state || "Destination"} Delivery Station`,
       isInterstate: taxEngineResult.decision.supplyType === "interstate",
     },
     verification: {

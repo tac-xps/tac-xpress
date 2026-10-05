@@ -61,7 +61,7 @@ export async function createPasskeyRegistrationOptions(
     attestationType: "none",
     authenticatorSelection: {
       residentKey: "preferred",
-      userVerification: "preferred", // Prompts Windows Hello PIN / Biometrics
+      userVerification: "required", // Enforces Windows Hello PIN / Biometrics
     },
     excludeCredentials: existingPasskeys.map((pk) => ({
       id: pk.id,
@@ -104,7 +104,7 @@ export async function createPasskeyAuthOptions(
 
   const options = await generateAuthenticationOptions({
     rpID,
-    userVerification: "preferred",
+    userVerification: "required",
     allowCredentials: allowedPasskeys?.map((pk) => ({
       id: pk.id,
       transports: (pk.transports as any) || undefined,

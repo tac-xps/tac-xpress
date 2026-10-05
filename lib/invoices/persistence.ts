@@ -26,7 +26,7 @@ export async function updateStoredInvoice(
     parties?: PartyPatch
   } = {}
 ) {
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     const [current] = await tx
       .select()
       .from(invoices)
@@ -53,6 +53,7 @@ export async function updateStoredInvoice(
         advancePaid,
         balanceDue: current.amount - advancePaid,
         status: advancePaid === current.amount ? "paid" : "unpaid",
+        documentSnapshot: null,
       }
     } else {
       const charges = Object.fromEntries(
@@ -73,6 +74,7 @@ export async function updateStoredInvoice(
         gstRate,
         paymentMode: fields.paymentMode ?? current.paymentMode,
         remarks: fields.remarks ?? current.remarks,
+        documentSnapshot: null,
       }
     }
     const [updated] = await tx
@@ -116,9 +118,10 @@ export async function updateStoredInvoice(
         advancePaid: updated.advancePaid,
       },
     })
-    invalidateInvoicePdfCache(id)
     return updated
   })
+  invalidateInvoicePdfCache(id)
+  return result
 }
 
 /** Preserve financial history and its links instead of deleting the invoice row. */
@@ -137,7 +140,7 @@ export async function voidStoredInvoice(id: string, actor: Actor) {
       )
     await tx
       .update(invoices)
-      .set({ status: "void", updatedAt: new Date() })
+      .set({ status: "void", documentSnapshot: null, updatedAt: new Date() })
       .where(eq(invoices.id, id))
     await logAuditInTransaction(tx, {
       action: "invoice.voided",
