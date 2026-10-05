@@ -19,6 +19,7 @@ import { db } from "@/lib/db"
 import { invoices, shipments, users, trackingEvents } from "@/lib/db/schema"
 import { authActionClient } from "@/lib/safe-action"
 import { invoiceWizardSchema } from "@/lib/schemas/invoice-wizard"
+import { normalizeInvoiceDomain } from "@/lib/documents/invoice/engine/domain-normalizer"
 import { normalizeWhatsAppPhone, sendWhatsAppTemplateMessage } from "@/lib/whatsapp/service"
 import { capturePostHogEvent } from "@/lib/posthog-server"
 const GENERIC_INVOICE_ERROR =
@@ -623,25 +624,39 @@ export const createWizardInvoiceAction = authActionClient
 
             const totals = calculateInvoice({ freightCharge: freightChargePaise, pickupCharge: pickupChargePaise, packingCharge: packingChargePaise, docketCharge: docketChargePaise, insuranceCharge: insuranceChargePaise, otherCharges: otherChargesPaise, gstRate: parsedInput.gstRate, interstate: !!parsedInput.originState && !!parsedInput.destinationState && parsedInput.originState.trim().toLowerCase() !== parsedInput.destinationState.trim().toLowerCase(), advancePaid: toPaise(parsedInput.advancePaid) })
 
+            const invoiceValues = {
+              id: invoiceId,
+              shipmentId: newShipment.id,
+              customerId: consignorUser?.id || null,
+              ...totals,
+              freightCharge: freightChargePaise,
+              pickupCharge: pickupChargePaise,
+              packingCharge: packingChargePaise,
+              docketCharge: docketChargePaise,
+              insuranceCharge: insuranceChargePaise,
+              otherCharges: otherChargesPaise,
+              gstRate: parsedInput.gstRate,
+              paymentMode: parsedInput.paymentMode,
+              remarks: parsedInput.remarks,
+              termsAccepted: parsedInput.termsAccepted,
+              prohibitedAccepted: parsedInput.prohibitedAccepted,
+              pdfUrl: `/invoice/${invoiceId}`,
+              createdAt: new Date(),
+            }
+
+            const snapshot = normalizeInvoiceDomain(
+              invoiceValues as any,
+              {
+                ...newShipment,
+                destinationState: parsedInput.destinationState,
+              } as any
+            )
+
             const [newInvoice] = await tx
               .insert(invoices)
               .values({
-                id: invoiceId,
-                shipmentId: newShipment.id,
-                customerId: consignorUser?.id || null,
-                ...totals,
-                freightCharge: freightChargePaise,
-                pickupCharge: pickupChargePaise,
-                packingCharge: packingChargePaise,
-                docketCharge: docketChargePaise,
-                insuranceCharge: insuranceChargePaise,
-                otherCharges: otherChargesPaise,
-                gstRate: parsedInput.gstRate,
-                paymentMode: parsedInput.paymentMode,
-                remarks: parsedInput.remarks,
-                termsAccepted: parsedInput.termsAccepted,
-                prohibitedAccepted: parsedInput.prohibitedAccepted,
-                pdfUrl: `/invoice/${invoiceId}`,
+                ...invoiceValues,
+                documentSnapshot: snapshot as any,
               })
               .returning()
 

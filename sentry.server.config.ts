@@ -37,10 +37,7 @@ Sentry.init({
     }
 
     // Filter out expected auth failures (wrong password/email)
-    if (
-      errorValue.includes("Invalid login credentials") ||
-      errorType === "AuthApiError"
-    ) {
+    if (errorValue.includes("Invalid login credentials")) {
       return null;
     }
 

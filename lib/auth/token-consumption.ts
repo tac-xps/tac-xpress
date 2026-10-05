@@ -42,6 +42,11 @@ export async function consumeAuthToken(
 
     return inserted.length > 0
   } catch {
+    // In production, fail closed to prevent distributed replay attacks across serverless instances.
+    if (process.env.NODE_ENV === "production") {
+      return false
+    }
+
     // If DB is offline (e.g. isolated unit test execution without Postgres),
     // fallback to in-memory set to prevent test suite disruption while maintaining replay protection.
     if (testMemoryFallback.has(key)) {

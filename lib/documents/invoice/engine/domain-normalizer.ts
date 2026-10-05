@@ -1,6 +1,6 @@
 import { format } from "date-fns"
 import type { Invoice, Shipment } from "@/lib/db/schema"
-import { money, toRupees, subtractMoney } from "../domain/money"
+import { money, toRupees, subtractMoney, zeroMoney } from "../domain/money"
 import {
   DELHI_CENTRAL_HUB,
   MANIPUR_REGIONAL_HUB,
@@ -8,6 +8,44 @@ import {
   INDIAN_STATE_CODES,
   getStateCode,
 } from "../domain/master-data"
+
+/**
+ * Resolves Indian State and GST State Code from a 6-digit postal PIN code.
+ */
+export function getStateFromPinCode(pinCode?: string | null): { state: string; stateCode: string } | undefined {
+  if (!pinCode || !/^\d{6}$/.test(pinCode.trim())) return undefined
+  const pin = pinCode.trim()
+  const p2 = pin.substring(0, 2)
+  const p3 = pin.substring(0, 3)
+
+  if (p3 === "795") return { state: "Manipur", stateCode: "14" }
+  if (p3 === "796") return { state: "Mizoram", stateCode: "15" }
+  if (p3 === "797") return { state: "Nagaland", stateCode: "13" }
+  if (p3 === "798") return { state: "Tripura", stateCode: "16" }
+  if (p3 === "793" || p3 === "794") return { state: "Meghalaya", stateCode: "17" }
+  if (p3 >= "790" && p3 <= "792") return { state: "Arunachal Pradesh", stateCode: "12" }
+  if (p2 === "78") return { state: "Assam", stateCode: "18" }
+  if (p2 === "11") return { state: "Delhi", stateCode: "07" }
+  if (p2 === "12" || p2 === "13") return { state: "Haryana", stateCode: "06" }
+  if (p2 >= "14" && p2 <= "16") return { state: "Punjab", stateCode: "03" }
+  if (p2 === "17") return { state: "Himachal Pradesh", stateCode: "02" }
+  if (p2 === "18" || p2 === "19") return { state: "Jammu and Kashmir", stateCode: "01" }
+  if (p2 >= "20" && p2 <= "28") return { state: "Uttar Pradesh", stateCode: "09" }
+  if (p2 >= "30" && p2 <= "34") return { state: "Rajasthan", stateCode: "08" }
+  if (p2 >= "36" && p2 <= "39") return { state: "Gujarat", stateCode: "24" }
+  if (p2 >= "40" && p2 <= "44") return { state: "Maharashtra", stateCode: "27" }
+  if (p2 >= "45" && p2 <= "48") return { state: "Madhya Pradesh", stateCode: "23" }
+  if (p2 === "49") return { state: "Chhattisgarh", stateCode: "22" }
+  if (p2 >= "50" && p2 <= "53") return { state: "Andhra Pradesh", stateCode: "37" }
+  if (p2 >= "56" && p2 <= "59") return { state: "Karnataka", stateCode: "29" }
+  if (p2 >= "60" && p2 <= "64") return { state: "Tamil Nadu", stateCode: "33" }
+  if (p2 >= "67" && p2 <= "69") return { state: "Kerala", stateCode: "32" }
+  if (p2 >= "70" && p2 <= "74") return { state: "West Bengal", stateCode: "19" }
+  if (p2 >= "75" && p2 <= "77") return { state: "Odisha", stateCode: "21" }
+  if (p2 >= "80" && p2 <= "85") return { state: "Bihar", stateCode: "10" }
+
+  return undefined
+}
 import type {
   TaxInvoiceDocument,
   CommercialDocument,
@@ -60,7 +98,9 @@ export function normalizeInvoiceDomain(
     toBase64(`${invoice.id}-${shipment.awbNumber}`).substring(0, 16)
 
   // 1. Format Dates
-  const invoiceDate = format(new Date(invoice.createdAt), "dd MMM yyyy")
+  const invoiceDate = invoice.createdAt
+    ? format(new Date(invoice.createdAt), "dd MMM yyyy")
+    : format(new Date(), "dd MMM yyyy")
   const bookingDate = shipment.bookingDate
     ? format(new Date(shipment.bookingDate), "dd MMM yyyy")
     : invoiceDate
@@ -82,23 +122,51 @@ export function normalizeInvoiceDomain(
 
   const rawShipment = shipment as any
   let destState: string | undefined = rawShipment.destinationState?.trim()
+  let destStateCode: string | undefined
+
+  if (destState) {
+    destStateCode = getStateCode(destState)
+  }
+
   if (!destState && shipment.destination) {
     const matchedCode = getStateCode(shipment.destination)
     if (matchedCode) {
       destState = shipment.destination.trim()
+      destStateCode = matchedCode
     }
   }
+
   if (!destState && shipment.consigneeAddress) {
     const lowerAddr = shipment.consigneeAddress.toLowerCase()
-    for (const stateName of Object.keys(INDIAN_STATE_CODES)) {
+    for (const [stateName, code] of Object.entries(INDIAN_STATE_CODES)) {
       if (lowerAddr.includes(stateName)) {
         destState = stateName.charAt(0).toUpperCase() + stateName.slice(1)
+        destStateCode = code
         break
       }
     }
   }
+
+  if (!destState && shipment.consigneePinCode) {
+    const pinMatch = getStateFromPinCode(shipment.consigneePinCode)
+    if (pinMatch) {
+      destState = pinMatch.state
+      destStateCode = pinMatch.stateCode
+    }
+  }
+
+  // Intrastate reconciliation: If invoice was persisted with CGST/SGST and 0 IGST,
+  // the supply was strictly intrastate within Delhi.
+  const isPersistedIntrastate =
+    (invoice.igst ?? 0) === 0 && ((invoice.cgst ?? 0) > 0 || (invoice.sgst ?? 0) > 0)
+
+  if (!destState && isPersistedIntrastate) {
+    destState = "Delhi"
+    destStateCode = "07"
+  }
+
   const resolvedState = destState || "Manipur"
-  const resolvedStateCode = getStateCode(resolvedState) || (shipment.consigneePinCode?.startsWith("795") ? "14" : "14")
+  const resolvedStateCode = destStateCode || getStateCode(resolvedState) || (shipment.consigneePinCode?.startsWith("795") ? "14" : "14")
 
   const deliverTo: PartyInfo = {
     name: shipment.consigneeName || "Consignee On Record",
@@ -137,7 +205,14 @@ export function normalizeInvoiceDomain(
       ? SAC_CLASSIFICATIONS.AIR_FREIGHT.code
       : SAC_CLASSIFICATIONS.SURFACE_FREIGHT.code
 
-  const gstRate = invoice.gstRate ?? 18
+  // Preserve zero-tax classification for stored invoices without GST
+  const gstRate =
+    invoice.gstRate !== null && invoice.gstRate !== undefined
+      ? invoice.gstRate
+      : (invoice.cgst ?? 0) === 0 && (invoice.sgst ?? 0) === 0 && (invoice.igst ?? 0) === 0
+      ? 0
+      : 18
+
   const ancillaryPaise =
     (invoice.pickupCharge ?? 0) +
     (invoice.packingCharge ?? 0) +
@@ -219,7 +294,10 @@ export function normalizeInvoiceDomain(
   // 6. Payment Financials Reconciliation
   const advancePaid = money(invoice.advancePaid)
   const totalValue = taxEngineResult.totalInvoiceValue
-  const balanceDue = subtractMoney(totalValue, advancePaid, false)
+  const balanceDue =
+    advancePaid.paise >= totalValue.paise
+      ? zeroMoney()
+      : subtractMoney(totalValue, advancePaid, false)
 
   let paymentStatus: "unpaid" | "partially_paid" | "paid" | "void"
   if (invoice.status === "void") {

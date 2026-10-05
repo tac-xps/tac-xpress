@@ -100,6 +100,7 @@ function scheduleBrowserReap() {
 
 export interface RenderInvoicePdfOptions {
   forceFresh?: boolean
+  lastModified?: Date | number
 }
 
 export async function renderInvoicePdf(
@@ -109,7 +110,12 @@ export async function renderInvoicePdf(
   // 1. Check in-memory short-lived cache
   if (!options.forceFresh) {
     const cached = pdfCache.get(id)
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    const modifiedTime = options.lastModified ? new Date(options.lastModified).getTime() : 0
+    if (
+      cached &&
+      Date.now() - cached.timestamp < CACHE_TTL_MS &&
+      (!modifiedTime || cached.timestamp >= modifiedTime)
+    ) {
       return cached.buffer
     }
   }

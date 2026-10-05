@@ -59,11 +59,13 @@ export function RevenueChart({
   const previousMonth = data[data.length - 2]?.amountPaise || 0
   
   let trend: number | null = null
+  let isNewBaseline = false
   if (data.length >= 2) {
     if (previousMonth > 0) {
       trend = ((currentMonth - previousMonth) / previousMonth) * 100
     } else if (currentMonth > 0) {
-      trend = 100
+      trend = null
+      isNewBaseline = true
     } else {
       trend = 0
     }
@@ -154,7 +156,9 @@ export function RevenueChart({
       <CardFooter className="flex-col items-start gap-2 text-sm pt-6">
         <div className="flex gap-2 font-medium leading-none">
           {trend === null ? (
-            <span className="text-muted-foreground">Insufficient monthly data for trend</span>
+            <span className="text-muted-foreground">
+              {isNewBaseline ? "First month of billed revenue (new baseline)" : "Insufficient monthly data for trend"}
+            </span>
           ) : trend >= 0 ? (
             <>
               Trending up by {trend.toFixed(1)}% this month <TrendingUp className="h-4 w-4 text-status-delivered" />

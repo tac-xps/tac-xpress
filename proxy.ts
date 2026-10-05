@@ -156,8 +156,24 @@ async function enforceRequestProtection(request: NextRequest) {
 }
 
 export async function proxy(request: NextRequest, event: NextFetchEvent) {
-  // Auth0 OAuth Handler (/auth/login, /auth/logout, /auth/callback, /auth/profile)
-  if (request.nextUrl.pathname.startsWith("/auth/")) {
+  // Edge redirect: Invalid sign-in callbacks provide immediate recovery
+  if (
+    request.nextUrl.pathname === "/auth/callback" &&
+    !request.nextUrl.searchParams.has("code")
+  ) {
+    const res = NextResponse.redirect(
+      new URL("/signin?reason=staff-only", request.nextUrl.origin)
+    )
+    res.headers.set("Cache-Control", "no-store")
+    res.headers.set("Referrer-Policy", "no-referrer")
+    return res
+  }
+
+  // Auth0 OAuth Handler (/auth/login, /auth/logout, /auth/profile, or /auth/callback with code)
+  if (
+    request.nextUrl.pathname.startsWith("/auth/") &&
+    (request.nextUrl.pathname !== "/auth/callback" || request.nextUrl.searchParams.has("code"))
+  ) {
     return await auth0.middleware(request)
   }
 

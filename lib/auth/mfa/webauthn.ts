@@ -87,7 +87,7 @@ export async function verifyPasskeyRegistration(
     expectedChallenge,
     expectedOrigin: origin,
     expectedRPID: rpID,
-    requireUserVerification: false,
+    requireUserVerification: true,
   })
 
   return verification
@@ -136,7 +136,7 @@ export async function verifyPasskeyAuth(
       counter: passkey.counter,
       transports: (passkey.transports as any) || undefined,
     },
-    requireUserVerification: false,
+    requireUserVerification: true,
   })
 
   return verification
