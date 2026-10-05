@@ -14,7 +14,7 @@ import { chargedWeight } from "@/lib/shipment-weight"
 import { calculateInvoice, toPaise } from "@/lib/invoices/calculations"
 import { createStoredInvoice, updateStoredInvoice, voidStoredInvoice } from "@/lib/invoices/persistence"
 import { requireDashboardSession } from "@/lib/auth/guards"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { db } from "@/lib/db"
 import { invoices, shipments, users, trackingEvents } from "@/lib/db/schema"
 import { authActionClient } from "@/lib/safe-action"
@@ -653,7 +653,16 @@ export const createWizardInvoiceAction = authActionClient
             try {
               appOrigin = getAppUrl()
             } catch {
-              appOrigin = undefined
+              try {
+                const headerList = await headers()
+                const host = headerList.get("x-forwarded-host") || headerList.get("host")
+                const proto = headerList.get("x-forwarded-proto") || "https"
+                if (host) {
+                  appOrigin = `${proto}://${host}`
+                }
+              } catch {
+                appOrigin = undefined
+              }
             }
 
             const snapshot = normalizeInvoiceDomain(

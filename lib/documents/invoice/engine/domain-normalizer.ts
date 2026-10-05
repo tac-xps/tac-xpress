@@ -90,6 +90,18 @@ export function normalizeInvoiceDomain(
   if (!options.forceFresh && invoice.documentSnapshot && typeof invoice.documentSnapshot === "object") {
     const snapshot = invoice.documentSnapshot as unknown as TaxInvoiceDocument
     if (snapshot.commercial && snapshot.shipment && snapshot.routing) {
+      if (options.appOrigin) {
+        return {
+          ...snapshot,
+          verification: {
+            ...snapshot.verification,
+            trackingUrl: `${options.appOrigin}/track?awb=${encodeURIComponent(snapshot.shipment.awbNumber)}`,
+            verificationUrl: `${options.appOrigin}/invoice/${encodeURIComponent(invoice.id)}?v=${encodeURIComponent(
+              snapshot.verification.verificationToken
+            )}`,
+          },
+        }
+      }
       return snapshot
     }
   }
