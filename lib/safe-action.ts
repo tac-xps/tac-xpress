@@ -1,15 +1,11 @@
 import { createSafeActionClient } from "next-safe-action"
 import * as Sentry from "@sentry/nextjs"
+import { isAuthErrorMessage } from "./auth/auth-error-message"
 import { requireDashboardAction } from "./auth/guards"
 
 export const actionClient = createSafeActionClient({
   handleServerError(e) {
-    if (
-      e.message.includes("permission") ||
-      e.message.includes("signed in") ||
-      e.message.includes("Unauthorized") ||
-      e.message.includes("Forbidden")
-    ) {
+    if (isAuthErrorMessage(e.message)) {
       return e.message
     }
     Sentry.captureException(e)

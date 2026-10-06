@@ -4,6 +4,8 @@ import { useState, useEffect, useTransition } from "react"
 import { QRCodeSVG } from "qrcode.react"
 import { toast } from "sonner"
 import { startRegistration } from "@simplewebauthn/browser"
+import * as Sentry from "@sentry/nextjs"
+import posthog from "posthog-js"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -27,6 +29,7 @@ import {
   Loader2,
   KeyRound,
   Download,
+  RotateCw,
 } from "lucide-react"
 import {
   getMfaSettingsAction,
@@ -46,10 +49,27 @@ interface PasskeyItem {
   lastUsedAt: string | null
 }
 
+type MfaSettingsResult = Awaited<ReturnType<typeof getMfaSettingsAction>>
+
+async function fetchMfaSettings(): Promise<MfaSettingsResult> {
+  let res: MfaSettingsResult
+  try {
+    res = await getMfaSettingsAction()
+  } catch (err) {
+    Sentry.captureException(err, { tags: { area: "mfa_settings_load" } })
+    res = { error: "Security settings could not load. Try again later." }
+  }
+  if ("error" in res && res.error) {
+    posthog.capture("mfa_settings_load_failed", { error: res.error })
+  }
+  return res
+}
+
 export function MfaSecuritySettings() {
   const [totpEnabled, setTotpEnabled] = useState(false)
   const [passkeys, setPasskeys] = useState<PasskeyItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
   const [isPending, startTransition] = useTransition()
 
   // TOTP setup state
@@ -69,10 +89,11 @@ export function MfaSecuritySettings() {
   useEffect(() => {
     let isMounted = true
     async function init() {
-      const res = await getMfaSettingsAction()
+      const res = await fetchMfaSettings()
       if (!isMounted) return
       if ("error" in res && res.error) {
         setError(res.error)
+        setLoadFailed(true)
       } else {
         if ("totpEnabled" in res && typeof res.totpEnabled === "boolean") {
           setTotpEnabled(res.totpEnabled)
@@ -92,10 +113,12 @@ export function MfaSecuritySettings() {
   async function loadSettings() {
     setIsLoading(true)
     setError(null)
-    const res = await getMfaSettingsAction()
+    const res = await fetchMfaSettings()
     if ("error" in res && res.error) {
       setError(res.error)
+      setLoadFailed(true)
     } else {
+      setLoadFailed(false)
       if ("totpEnabled" in res && typeof res.totpEnabled === "boolean") {
         setTotpEnabled(res.totpEnabled)
       }
@@ -270,14 +293,37 @@ export function MfaSecuritySettings() {
     )
   }
 
+  const header = (
+    <div>
+      <h3 className="text-lg font-medium">Multi-Factor Authentication (MFA)</h3>
+      <p className="text-xs text-muted-foreground">
+        Protect your staff workspace account with hardware biometrics and one-time codes.
+      </p>
+    </div>
+  )
+
+  if (loadFailed) {
+    return (
+      <div className="flex flex-col gap-6 py-2">
+        {header}
+        <Alert variant="destructive">
+          <ShieldAlert className="size-4" />
+          <AlertTitle>Security settings unavailable</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+        <div>
+          <Button type="button" variant="outline" size="sm" onClick={loadSettings}>
+            <RotateCw className="mr-2 size-3.5" />
+            Try again
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-6 py-2">
-      <div>
-        <h3 className="text-lg font-medium">Multi-Factor Authentication (MFA)</h3>
-        <p className="text-xs text-muted-foreground">
-          Protect your staff workspace account with hardware biometrics and one-time codes.
-        </p>
-      </div>
+      {header}
 
       {error && (
         <Alert variant="destructive">

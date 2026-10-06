@@ -127,6 +127,30 @@ describe("current database role authorization", () => {
     })
   })
 
+  it.each([
+    ["a v7 ID", "01922e3a-7b4c-7d2e-9f10-1234567890ab"],
+    ["the fixed local staff ID", "11111111-1111-1111-1111-111111111111"],
+  ])("looks up the role for %s", async (_label, id) => {
+    mocks.auth.mockResolvedValue({
+      ...staleAdminSession,
+      user: { ...staleAdminSession.user, id },
+    })
+    expect(await requireDashboardAction()).toMatchObject({
+      ok: true,
+      session: { user: { role: "staff", id } },
+    })
+    expect(mocks.query.mock.calls[0][0].params).toEqual([id])
+  })
+
+  it("rejects a session ID that is not UUID syntax without querying the role database", async () => {
+    mocks.auth.mockResolvedValue({
+      ...staleAdminSession,
+      user: { ...staleAdminSession.user, id: "not-a-uuid" },
+    })
+    await expectAllForbidden()
+    expect(mocks.query).not.toHaveBeenCalled()
+  })
+
   it("returns unauthenticated responses without querying the role database", async () => {
     mocks.auth.mockResolvedValue(null)
     await expect(requireDashboardSession()).rejects.toThrow("Unauthorized")
