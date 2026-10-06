@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import * as Sentry from "@sentry/nextjs"
+import { usePostHog } from "posthog-js/react"
 import { Button } from "@/components/ui/button"
 
 export default function DashboardError({
@@ -11,9 +12,12 @@ export default function DashboardError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const posthog = usePostHog()
+
   useEffect(() => {
     Sentry.captureException(error)
-  }, [error])
+    posthog?.captureException(error, { digest: error.digest })
+  }, [error, posthog])
 
   return (
     <div className="flex h-96 w-full flex-col items-center justify-center gap-4 rounded-none border border-dashed border-border bg-muted/20 text-center">
