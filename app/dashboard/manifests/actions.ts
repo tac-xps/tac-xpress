@@ -11,6 +11,7 @@ import {
   vehicles,
 } from "@/lib/db/schema"
 import { revalidatePath } from "next/cache"
+import { after } from "next/server"
 import * as Sentry from "@sentry/nextjs"
 import { authActionClient } from "@/lib/safe-action"
 import {
@@ -154,13 +155,22 @@ export const createManifestAction = authActionClient
 
       let whatsAppDispatched = false
       if (sendWhatsAppNotification && driverId) {
+        whatsAppDispatched = true
+        const notifyDriver = async () => {
+          try {
+            await messageDriverAction(createdManifest.id, driverId)
+          } catch (msgErr) {
+            Sentry.captureException(msgErr, {
+              tags: { area: "manifest_create_whatsapp_notify" },
+            })
+          }
+        }
+
         try {
-          const waResult = await messageDriverAction(createdManifest.id, driverId)
-          whatsAppDispatched = !!waResult?.success
-        } catch (msgErr) {
-          Sentry.captureException(msgErr, {
-            tags: { area: "manifest_create_whatsapp_notify" },
-          })
+          after(notifyDriver)
+        } catch {
+          // In test environments outside Next.js request context, schedule non-blocking
+          void notifyDriver()
         }
       }
 

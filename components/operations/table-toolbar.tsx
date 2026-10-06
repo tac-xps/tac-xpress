@@ -19,6 +19,7 @@ export function TableToolbar({
   placeholder = "Search records",
   sort,
   order,
+  children,
 }: {
   pathname: string
   query: string
@@ -27,6 +28,7 @@ export function TableToolbar({
   placeholder?: string
   sort?: string
   order?: string
+  children?: React.ReactNode
 }) {
   const isFiltered = Boolean(query || (status && status !== "all"))
 
@@ -81,6 +83,7 @@ export function TableToolbar({
 
       {sort && <input type="hidden" name="sort" value={sort} />}
       {order && <input type="hidden" name="order" value={order} />}
+      {children}
 
       <Button
         type="submit"

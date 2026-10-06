@@ -21,14 +21,14 @@ interface ModalCargoDetailsProps {
 }
 
 export function ModalCargoDetails({ shipment }: ModalCargoDetailsProps) {
-  const pieces = shipment.pieces ?? 1
-  const actualWeight = shipment.weightKg != null ? Number(shipment.weightKg) : 0
+  const pieces = shipment.pieces ?? null
+  const actualWeight = shipment.weightKg != null ? Number(shipment.weightKg) : null
   const chargedWeight = shipment.chargedWeightKg != null
     ? Number(shipment.chargedWeightKg)
     : actualWeight
-  const dimL = shipment.dimensionsL != null ? Number(shipment.dimensionsL) : 0
-  const dimW = shipment.dimensionsW != null ? Number(shipment.dimensionsW) : 0
-  const dimH = shipment.dimensionsH != null ? Number(shipment.dimensionsH) : 0
+  const dimL = shipment.dimensionsL != null ? Number(shipment.dimensionsL) : null
+  const dimW = shipment.dimensionsW != null ? Number(shipment.dimensionsW) : null
+  const dimH = shipment.dimensionsH != null ? Number(shipment.dimensionsH) : null
 
   return (
     <Card className="rounded-none border-border shadow-xs">
@@ -83,14 +83,22 @@ export function ModalCargoDetails({ shipment }: ModalCargoDetailsProps) {
             <span className="flex items-center gap-1 font-mono text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
               <Layers className="size-3 text-primary" /> Pieces
             </span>
-            <p className="font-mono text-lg font-bold text-foreground">{pieces}</p>
+            <p className="font-mono text-lg font-bold text-foreground">
+              {pieces != null ? pieces : "—"}
+            </p>
           </div>
           <div className="border border-border/80 bg-muted/20 p-2.5 space-y-1">
             <span className="flex items-center gap-1 font-mono text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
               <Scale className="size-3 text-primary" /> Actual Wt
             </span>
             <p className="font-mono text-lg font-bold text-foreground">
-              {actualWeight} <span className="text-xs font-normal text-muted-foreground">KG</span>
+              {actualWeight != null ? (
+                <>
+                  {actualWeight} <span className="text-xs font-normal text-muted-foreground">KG</span>
+                </>
+              ) : (
+                "—"
+              )}
             </p>
           </div>
           <div className="border border-border/80 bg-muted/20 p-2.5 space-y-1">
@@ -98,7 +106,13 @@ export function ModalCargoDetails({ shipment }: ModalCargoDetailsProps) {
               <Scale className="size-3 text-status-pending" /> Charged Wt
             </span>
             <p className="font-mono text-lg font-bold text-foreground">
-              {chargedWeight} <span className="text-xs font-normal text-muted-foreground">KG</span>
+              {chargedWeight != null ? (
+                <>
+                  {chargedWeight} <span className="text-xs font-normal text-muted-foreground">KG</span>
+                </>
+              ) : (
+                "—"
+              )}
             </p>
           </div>
           <div className="border border-border/80 bg-muted/20 p-2.5 space-y-1">
@@ -106,7 +120,13 @@ export function ModalCargoDetails({ shipment }: ModalCargoDetailsProps) {
               <Maximize2 className="size-3 text-primary" /> Dimensions
             </span>
             <p className="font-mono text-xs font-semibold text-foreground pt-1 truncate">
-              {dimL} × {dimW} × {dimH} <span className="text-[10px] font-normal text-muted-foreground">cm</span>
+              {dimL != null && dimW != null && dimH != null ? (
+                <>
+                  {dimL} × {dimW} × {dimH} <span className="text-[10px] font-normal text-muted-foreground">cm</span>
+                </>
+              ) : (
+                "—"
+              )}
             </p>
           </div>
         </div>

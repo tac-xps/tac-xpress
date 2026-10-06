@@ -1,7 +1,7 @@
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { feedback } from "@/lib/db/schema"
-import { ilike, or, sql } from "drizzle-orm"
+import { and, ilike, or, sql, type SQL } from "drizzle-orm"
 import { FeedbackClientTable } from "./feedback-client-table"
 import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
@@ -32,6 +32,36 @@ export default async function FeedbackPage({
   )
   const pattern = containsPattern(q)
 
+  const rawSentiment = typeof (params as any).sentiment === "string" ? (params as any).sentiment : "all"
+  const sentiment = ["positive", "negative", "general"].includes(rawSentiment)
+    ? rawSentiment
+    : "all"
+
+  const positiveSql = sql`(${feedback.message} ~* '\\m(great|fast|excellent|good|smooth|thank|awesome)')`
+  const negativeSql = sql`(${feedback.message} ~* '\\m(delay|damage|broken|lost|late|poor|terrible|worst)')`
+
+  let sentimentCondition: SQL | undefined = undefined
+  if (sentiment === "positive") {
+    sentimentCondition = positiveSql
+  } else if (sentiment === "negative") {
+    sentimentCondition = negativeSql
+  } else if (sentiment === "general") {
+    sentimentCondition = sql`(NOT ${positiveSql} AND NOT ${negativeSql})`
+  }
+
+  const searchCondition = q
+    ? or(
+        ilike(feedback.name, pattern),
+        ilike(feedback.email, pattern),
+        ilike(feedback.message, pattern)
+      )
+    : undefined
+
+  const whereCondition =
+    searchCondition && sentimentCondition
+      ? and(searchCondition, sentimentCondition)
+      : searchCondition || sentimentCondition
+
   const sortColumns = {
     name: feedback.name,
     email: feedback.email,
@@ -40,13 +70,7 @@ export default async function FeedbackPage({
   const sortColumn = sortColumns[sort as keyof typeof sortColumns] ?? feedback.createdAt
 
   const feedbackRows = await db.query.feedback.findMany({
-    where: q
-      ? or(
-          ilike(feedback.name, pattern),
-          ilike(feedback.email, pattern),
-          ilike(feedback.message, pattern)
-        )
-      : undefined,
+    where: whereCondition,
     orderBy: [recordOrder(sortColumn, order)],
     limit: pageSize,
     offset: (page - 1) * pageSize,
@@ -55,16 +79,8 @@ export default async function FeedbackPage({
   const countResult = await db
     .select({ count: sql<number>`count(*)` })
     .from(feedback)
-    .where(
-      q
-        ? or(
-            ilike(feedback.name, pattern),
-            ilike(feedback.email, pattern),
-            ilike(feedback.message, pattern)
-          )
-        : undefined
-    )
-  const totalCount = Number(countResult[0].count)
+    .where(whereCondition)
+  const totalCount = Number(countResult[0]?.count ?? 0)
   const pageCount = Math.ceil(totalCount / pageSize)
 
   const formattedData = feedbackRows.map((fb) => ({
@@ -89,7 +105,11 @@ export default async function FeedbackPage({
           sort={sort}
           order={order}
           placeholder="Search by name, email, or message..."
-        />
+        >
+          {sentiment !== "all" && (
+            <input type="hidden" name="sentiment" value={sentiment} />
+          )}
+        </TableToolbar>
         <FeedbackClientTable
           data={formattedData}
           pageCount={pageCount}

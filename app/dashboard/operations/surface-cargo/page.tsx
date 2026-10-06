@@ -31,7 +31,7 @@ export default async function SurfaceCargoPage({
       icon={<TruckIcon className="size-8 text-status-delivered" />}
       iconBg="bg-status-delivered/10"
       heading="Surface Cargo Operations"
-      description="Monitor line-haul road movements and highway corridor transit (NH-27, NH-29, AH-1)."
+      description="Monitor line-haul road movements, highway corridor transit (NH-27, NH-29, AH-1), and standard ocean freight consignments."
       tableTitle="Active Surface Shipments"
       pathname="/dashboard/operations/surface-cargo"
       kpiCards={[

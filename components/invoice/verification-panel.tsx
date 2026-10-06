@@ -43,7 +43,7 @@ export function VerificationPanel({
             className="flex items-center gap-2 cursor-pointer group hover:bg-neutral-100/60 p-1 -m-1 transition-colors select-none print:m-0 print:p-0 print:cursor-default print:hover:bg-transparent"
           >
             <div className="size-[20mm] border border-[#191716] p-0.5 bg-white shrink-0 group-hover:border-primary transition-colors print:group-hover:border-[#191716]">
-              <QRCode data={shipment.awbNumber} className="size-full" />
+              <QRCode data={verification.trackingUrl} className="size-full" />
             </div>
             <div className="flex flex-col text-[7px] font-mono leading-tight">
               <span className="font-bold uppercase text-[#191716] group-hover:text-primary transition-colors print:group-hover:text-[#191716]">

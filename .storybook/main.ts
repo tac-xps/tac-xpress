@@ -56,7 +56,9 @@ const config: StorybookConfig = {
       ),
       // Server action mocks are also enforced by NormalModuleReplacementPlugin below,
       // because the Next.js tsconfig-paths resolver can rewrite `@/` before alias runs.
+      'server-only': require.resolve('./mocks/empty.ts'),
       '@/app/actions/tracking': require.resolve('./mocks/tracking.ts'),
+      '@/app/actions/scanner-actions': require.resolve('./mocks/scanner-actions.ts'),
       '@/app/dashboard/invoices/actions': require.resolve('./mocks/invoices-actions.ts'),
       '@sparticuz/chromium': false,
       'puppeteer-core': false,
@@ -117,6 +119,11 @@ const config: StorybookConfig = {
         /unstable-rethrow(\.js)?$/,
         require.resolve('next/dist/client/components/unstable-rethrow.browser.js')
       ),
+      // Mock server-only in Storybook browser environment
+      new webpack.NormalModuleReplacementPlugin(
+        /^server-only$/,
+        require.resolve('./mocks/empty.ts')
+      ),
       // Never bundle "use server" modules (they pull in lib/db and server-only).
       new webpack.NormalModuleReplacementPlugin(
         /[\\/]app[\\/]dashboard[\\/]invoices[\\/]actions(\.ts)?$/,
@@ -125,6 +132,10 @@ const config: StorybookConfig = {
       new webpack.NormalModuleReplacementPlugin(
         /[\\/]app[\\/]actions[\\/]tracking(\.ts)?$/,
         require.resolve('./mocks/tracking.ts')
+      ),
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]app[\\/]actions[\\/]scanner-actions(\.ts)?$/,
+        require.resolve('./mocks/scanner-actions.ts')
       )
     );
 

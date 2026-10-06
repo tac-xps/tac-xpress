@@ -51,8 +51,8 @@ export function ModalFinancials({ shipmentId, invoice }: ModalFinancialsProps) {
     )
   }
 
-  const balanceDue = invoice.balanceDue ?? 0
-  const isPaid = invoice.status === "paid" || balanceDue <= 0
+  const isPaid = invoice.status === "paid"
+  const balanceDue = invoice.balanceDue
 
   return (
     <Card className="rounded-none border-border shadow-xs flex flex-col justify-between">
@@ -100,7 +100,7 @@ export function ModalFinancials({ shipmentId, invoice }: ModalFinancialsProps) {
                 Balance Due
               </span>
               <p className="font-mono text-lg font-bold truncate">
-                {formatCurrency(balanceDue)}
+                {balanceDue != null ? formatCurrency(balanceDue) : "—"}
               </p>
             </div>
           </div>

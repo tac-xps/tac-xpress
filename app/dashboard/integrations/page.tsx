@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/operations/page-header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getWhatsAppConfig } from "@/lib/whatsapp/config"
+import { getAppUrl } from "@/lib/config/app-url"
 import { ScannerTest } from "./scanner-test"
 import { WebhookEndpointsCard } from "./webhook-endpoints-card"
 
@@ -10,6 +11,7 @@ export default async function IntegrationsPage() {
   await requireStaffPage()
   const whatsapp = getWhatsAppConfig()
   const configured = Boolean(whatsapp.relayToken && whatsapp.appSecret && whatsapp.verifyToken)
+  const baseUrl = getAppUrl()
 
   const integrations = [
     {
@@ -41,16 +43,16 @@ export default async function IntegrationsPage() {
   const webhookEndpoints = [
     {
       name: "WhatsApp Meta Webhook",
-      url: "/api/webhooks/whatsapp",
+      url: `${baseUrl}/api/webhooks/whatsapp`,
       secretName: "Verify Token",
       secretValue: whatsapp.verifyToken,
       isConfigured: Boolean(whatsapp.verifyToken),
     },
     {
       name: "Carrier Telemetry Relay",
-      url: "/api/webhooks/carrier",
+      url: `${baseUrl}/api/webhooks/carrier`,
       secretName: "Signing Secret",
-      secretValue: process.env.CARRIER_WEBHOOK_SECRET?.trim() || null,
+      secretValue: null,
       isConfigured: Boolean(process.env.CARRIER_WEBHOOK_SECRET?.trim()),
     },
   ]

@@ -224,16 +224,20 @@ export function MfaSecuritySettings() {
     })
   }
 
-  function copyToClipboard(text: string, isSecret = true) {
-    navigator.clipboard.writeText(text)
-    if (isSecret) {
-      setCopiedSecret(true)
-      toast.success("Authenticator secret copied to clipboard")
-      setTimeout(() => setCopiedSecret(false), 2000)
-    } else {
-      setCopiedBackupCodes(true)
-      toast.success("Recovery codes copied to clipboard")
-      setTimeout(() => setCopiedBackupCodes(false), 2000)
+  async function copyToClipboard(text: string, isSecret = true) {
+    try {
+      await navigator.clipboard.writeText(text)
+      if (isSecret) {
+        setCopiedSecret(true)
+        toast.success("Authenticator secret copied to clipboard")
+        setTimeout(() => setCopiedSecret(false), 2000)
+      } else {
+        setCopiedBackupCodes(true)
+        toast.success("Recovery codes copied to clipboard")
+        setTimeout(() => setCopiedBackupCodes(false), 2000)
+      }
+    } catch {
+      toast.error("Failed to copy to clipboard")
     }
   }
 

@@ -29,11 +29,7 @@ export function CreateShipmentForm({ onSuccess }: { onSuccess?: () => void }) {
             <span aria-live="polite" aria-atomic="true">
               Step {currentStep} of {STEPS.length}
             </span>
-            <span
-              className="font-medium"
-              aria-current="step"
-              aria-label={`Current step: ${STEPS[currentStep - 1].title}`}
-            >
+            <span className="font-medium">
               {STEPS[currentStep - 1].title}
             </span>
           </div>

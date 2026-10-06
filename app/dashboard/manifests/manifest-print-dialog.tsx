@@ -218,6 +218,7 @@ export function ManifestPrintDialog({
               <iframe
                 ref={iframeRef}
                 srcDoc={htmlContent}
+                sandbox="allow-modals allow-same-origin"
                 title={`Print preview for manifest ${referenceId}`}
                 className="w-full flex-1 border-0 bg-card"
               />

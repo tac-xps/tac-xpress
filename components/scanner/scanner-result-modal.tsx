@@ -114,7 +114,7 @@ export function ScannerResultModal({
               </Button>
             )}
 
-            {shipmentData.status === "in-transit" && (
+            {(shipmentData.status === "in-transit" || shipmentData.status === "out-for-delivery") && (
               <Button
                 size="sm"
                 className="rounded-none font-semibold text-xs bg-status-delivered hover:bg-status-delivered/90 text-primary-foreground"

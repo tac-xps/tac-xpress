@@ -2,14 +2,24 @@
 
 import * as Sentry from "@sentry/nextjs"
 import { eq } from "drizzle-orm"
+import { z } from "zod"
 
 import { requireDashboardSession } from "@/lib/auth/guards"
 import { db } from "@/lib/db"
-import { manifests, users, drivers } from "@/lib/db/schema"
+import { manifests, drivers } from "@/lib/db/schema"
 import {
   sendWhatsAppTemplateMessage,
   sendWhatsAppTextMessage,
 } from "@/lib/whatsapp/service"
+
+const directMessageSchema = z.object({
+  driverId: z.string().uuid("Invalid driver identifier"),
+  message: z
+    .string()
+    .trim()
+    .min(1, "Message content is required")
+    .max(1000, "Message cannot exceed 1000 characters"),
+})
 
 export async function messageDriverAction(
   manifestId: string,
@@ -31,14 +41,17 @@ export async function messageDriverAction(
       return { success: false, error: "Manifest record not found" }
     }
 
-    // Lookup driver from drivers table, with fallback to users
-    const driver =
-      (await db.query.drivers.findFirst({
-        where: eq(drivers.id, driverId),
-      })) ||
-      (await db.query.users.findFirst({
-        where: eq(users.id, driverId),
-      }))
+    if (!manifest.driverId || manifest.driverId !== driverId) {
+      return {
+        success: false,
+        error: "Driver is not assigned to this manifest",
+      }
+    }
+
+    // Lookup driver strictly from drivers table
+    const driver = await db.query.drivers.findFirst({
+      where: eq(drivers.id, driverId),
+    })
 
     if (!driver || !driver.phone) {
       return {
@@ -100,14 +113,18 @@ export async function directDriverWhatsAppAction(
 ) {
   await requireDashboardSession()
 
+  const parsed = directMessageSchema.safeParse({ driverId, message })
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: parsed.error.issues[0]?.message || "Invalid driver or message input",
+    }
+  }
+
   try {
-    const driver =
-      (await db.query.drivers.findFirst({
-        where: eq(drivers.id, driverId),
-      })) ||
-      (await db.query.users.findFirst({
-        where: eq(users.id, driverId),
-      }))
+    const driver = await db.query.drivers.findFirst({
+      where: eq(drivers.id, parsed.data.driverId),
+    })
 
     if (!driver || !driver.phone) {
       return {
@@ -118,7 +135,7 @@ export async function directDriverWhatsAppAction(
 
     const result = await sendWhatsAppTextMessage({
       to: driver.phone,
-      text: message,
+      text: parsed.data.message,
       context: "driver_direct_notice",
     })
 

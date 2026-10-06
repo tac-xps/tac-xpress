@@ -42,12 +42,16 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
       ? JSON.stringify({ message: message.body, template: message.templateName }, null, 2)
       : null
 
-  const copyPayload = () => {
+  const copyPayload = async () => {
     if (!payloadString) return
-    navigator.clipboard.writeText(payloadString)
-    setCopied(true)
-    toast.success("Payload copied to clipboard")
-    setTimeout(() => setCopied(false), 2000)
+    try {
+      await navigator.clipboard.writeText(payloadString)
+      setCopied(true)
+      toast.success("Payload copied to clipboard")
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      toast.error("Failed to copy payload to clipboard")
+    }
   }
 
   const getStatusBadge = (status: string) => {
@@ -87,18 +91,6 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
         </DialogHeader>
 
         <div className="space-y-4 py-2 text-sm">
-          {/* Rate limit & telemetry pill */}
-          <div className="flex flex-wrap items-center justify-between gap-2 border border-border/40 bg-muted/20 p-2.5 text-xs">
-            <span className="text-muted-foreground">Relay Status:</span>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-micro font-mono">
-                Relay Limit: 80 req/min
-              </Badge>
-              <Badge variant="success" className="text-micro">
-                Healthy
-              </Badge>
-            </div>
-          </div>
 
           {/* Key metadata */}
           <div className="grid grid-cols-2 gap-3 text-xs">

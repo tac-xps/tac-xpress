@@ -18,6 +18,7 @@ interface ModalTimelineProps {
 }
 
 export function ModalTimeline({ events }: ModalTimelineProps) {
+  const totalCount = events?.length ?? 0
   const safeEvents = events && events.length > 0 ? events.slice(0, 5) : []
 
   return (
@@ -30,7 +31,8 @@ export function ModalTimeline({ events }: ModalTimelineProps) {
               Scan History & Audit Trail
             </CardTitle>
             <span className="font-mono text-[10px] text-muted-foreground uppercase font-bold">
-              {safeEvents.length} Event{safeEvents.length === 1 ? "" : "s"}
+              {totalCount} Event{totalCount === 1 ? "" : "s"}
+              {totalCount > 5 ? " (Latest 5)" : ""}
             </span>
           </div>
         </CardHeader>

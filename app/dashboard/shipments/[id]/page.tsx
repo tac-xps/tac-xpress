@@ -14,6 +14,7 @@ import {
   MapPin,
   Plane,
   Truck,
+  Ship,
   Scale,
   Package,
   Phone,
@@ -46,7 +47,19 @@ export default async function ShipmentDetailPage({
     .orderBy(desc(trackingEvents.createdAt))
     .limit(200)
 
-  const isAir = shipment.serviceType === "express_air"
+  const getServiceMeta = (type: string) => {
+    switch (type) {
+      case "express_air":
+        return { label: "Air Cargo Express", icon: Plane }
+      case "standard_ocean":
+        return { label: "Ocean Freight", icon: Ship }
+      case "road_freight":
+      default:
+        return { label: "Surface Cargo Freight", icon: Truck }
+    }
+  }
+
+  const serviceMeta = getServiceMeta(shipment.serviceType)
 
   const facts = [
     {
@@ -56,8 +69,8 @@ export default async function ShipmentDetailPage({
     },
     {
       label: "Service Type",
-      value: isAir ? "Air Cargo Express" : "Surface Cargo Freight",
-      icon: isAir ? Plane : Truck,
+      value: serviceMeta.label,
+      icon: serviceMeta.icon,
     },
     {
       label: "Actual Weight",

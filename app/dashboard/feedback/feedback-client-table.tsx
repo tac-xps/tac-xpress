@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useMemo } from "react"
+import { useQueryState, parseAsString, parseAsInteger } from "nuqs"
 import type { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@/components/ui/data-table/data-table"
 import { DataTableColumnHeader as ColumnHeader } from "@/components/ui/data-table/data-table-column-header"
@@ -12,29 +13,14 @@ import { Star, MessageCircle, AlertCircle, ThumbsUp } from "lucide-react"
 
 type SentimentType = "all" | "positive" | "negative" | "general"
 
+const NEGATIVE_REGEX = /\b(delay\w*|damage\w*|broken|lost|late|poor|terrible|worst)\b/i
+const POSITIVE_REGEX = /\b(great|fast|excellent|good|smooth|thank\w*|awesome)\b/i
+
 function detectSentiment(message: string): "positive" | "negative" | "general" {
-  const lower = message.toLowerCase()
-  if (
-    lower.includes("delay") ||
-    lower.includes("damage") ||
-    lower.includes("broken") ||
-    lower.includes("lost") ||
-    lower.includes("late") ||
-    lower.includes("poor") ||
-    lower.includes("terrible") ||
-    lower.includes("worst")
-  ) {
+  if (NEGATIVE_REGEX.test(message)) {
     return "negative"
   }
-  if (
-    lower.includes("great") ||
-    lower.includes("fast") ||
-    lower.includes("excellent") ||
-    lower.includes("good") ||
-    lower.includes("smooth") ||
-    lower.includes("thank") ||
-    lower.includes("awesome")
-  ) {
+  if (POSITIVE_REGEX.test(message)) {
     return "positive"
   }
   return "general"
@@ -47,7 +33,27 @@ export function FeedbackClientTable({
   data: FeedbackData[]
   pageCount: number
 }) {
-  const [filterSentiment, setFilterSentiment] = useState<SentimentType>("all")
+  const [filterSentiment, setFilterSentiment] = useQueryState(
+    "sentiment",
+    parseAsString
+      .withDefault("all")
+      .withOptions({ shallow: false, history: "push" })
+  )
+  const [, setPage] = useQueryState(
+    "page",
+    parseAsInteger
+      .withDefault(1)
+      .withOptions({ shallow: false, history: "push" })
+  )
+
+  const handleSentimentChange = (val: SentimentType) => {
+    if (val === "all") {
+      void setFilterSentiment(null)
+    } else {
+      void setFilterSentiment(val)
+    }
+    void setPage(1)
+  }
 
   const enrichedData = useMemo(() => {
     return data.map((item) => ({
@@ -55,11 +61,6 @@ export function FeedbackClientTable({
       sentiment: detectSentiment(item.message),
     }))
   }, [data])
-
-  const filteredData = useMemo(() => {
-    if (filterSentiment === "all") return enrichedData
-    return enrichedData.filter((item) => item.sentiment === filterSentiment)
-  }, [enrichedData, filterSentiment])
 
   const columns = useMemo<ColumnDef<FeedbackData & { sentiment: "positive" | "negative" | "general" }>[]>(
     () => [
@@ -132,7 +133,7 @@ export function FeedbackClientTable({
   )
 
   const { table } = useDataTable({
-    data: filteredData,
+    data: enrichedData,
     columns,
     pageCount,
   })
@@ -153,7 +154,7 @@ export function FeedbackClientTable({
           size="sm"
           variant={filterSentiment === "all" ? "default" : "outline"}
           aria-pressed={filterSentiment === "all"}
-          onClick={() => setFilterSentiment("all")}
+          onClick={() => handleSentimentChange("all")}
           className="h-7 px-3 text-xs"
         >
           <MessageCircle className="mr-1.5 size-3" /> All
@@ -163,7 +164,7 @@ export function FeedbackClientTable({
           size="sm"
           variant={filterSentiment === "positive" ? "default" : "outline"}
           aria-pressed={filterSentiment === "positive"}
-          onClick={() => setFilterSentiment("positive")}
+          onClick={() => handleSentimentChange("positive")}
           className="h-7 px-3 text-xs"
         >
           <ThumbsUp className="mr-1.5 size-3" /> Positive
@@ -173,7 +174,7 @@ export function FeedbackClientTable({
           size="sm"
           variant={filterSentiment === "negative" ? "default" : "outline"}
           aria-pressed={filterSentiment === "negative"}
-          onClick={() => setFilterSentiment("negative")}
+          onClick={() => handleSentimentChange("negative")}
           className="h-7 px-3 text-xs"
         >
           <AlertCircle className="mr-1.5 size-3" /> Needs Attention
@@ -183,7 +184,7 @@ export function FeedbackClientTable({
           size="sm"
           variant={filterSentiment === "general" ? "default" : "outline"}
           aria-pressed={filterSentiment === "general"}
-          onClick={() => setFilterSentiment("general")}
+          onClick={() => handleSentimentChange("general")}
           className="h-7 px-3 text-xs"
         >
           <Star className="mr-1.5 size-3" /> General

@@ -24,8 +24,8 @@ export default async function MetricsPage() {
         metrics.ticketTotals.averageHours == null
           ? "No data"
           : `${metrics.ticketTotals.averageHours.toFixed(1)}h`,
-      trend: "-14% vs 30d prior",
-      variant: "success" as const,
+      trend: metrics.ticketTotals.averageHours != null ? "Measured" : undefined,
+      variant: metrics.ticketTotals.averageHours != null ? ("outline" as const) : undefined,
     },
     {
       label: "Ticket SLA breaches, 30 days",
@@ -51,9 +51,11 @@ export default async function MetricsPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between gap-2">
                 <dt className="text-sm font-medium text-muted-foreground">{card.label}</dt>
-                <Badge variant={card.variant} className="text-micro font-medium shrink-0">
-                  {card.trend}
-                </Badge>
+                {card.trend && (
+                  <Badge variant={card.variant || "outline"} className="text-micro font-medium shrink-0">
+                    {card.trend}
+                  </Badge>
+                )}
               </div>
               <dd className="mt-3 text-3xl font-bold tracking-tight text-foreground tabular-nums">
                 {card.value}

@@ -31,15 +31,19 @@ export function TicketDetailsDialog({
   const [isUpdating, setIsUpdating] = useState(false)
   const [replyMessage, setReplyMessage] = useState("")
   const [isSendingReply, setIsSendingReply] = useState(false)
-  const messageEndRef = useRef<HTMLDivElement>(null)
+  const messageContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (open && ticket) {
-      setTimeout(() => {
-        messageEndRef.current?.scrollIntoView({ behavior: "smooth" })
+      const timer = setTimeout(() => {
+        if (messageContainerRef.current) {
+          messageContainerRef.current.scrollTop =
+            messageContainerRef.current.scrollHeight
+        }
       }, 150)
+      return () => clearTimeout(timer)
     }
-  }, [open, ticket?.id])
+  }, [open, ticket])
 
   if (!ticket) return null
 
@@ -204,9 +208,11 @@ export function TicketDetailsDialog({
 
           <div className="space-y-2">
             <h4 className="text-sm font-semibold text-foreground">Message</h4>
-            <div className="max-h-64 min-h-24 overflow-y-auto rounded-none border border-border/50 bg-muted/10 p-4 text-sm whitespace-pre-wrap text-foreground/90">
+            <div
+              ref={messageContainerRef}
+              className="max-h-64 min-h-24 overflow-y-auto rounded-none border border-border/50 bg-muted/10 p-4 text-sm whitespace-pre-wrap text-foreground/90"
+            >
               {ticket.message}
-              <div ref={messageEndRef} />
             </div>
           </div>
 

@@ -260,7 +260,7 @@ export function DeliveryClient({
         <div className="flex items-center gap-2 rounded-none border border-status-pending/30 bg-status-pending-wash p-3 text-xs text-status-pending">
           <WifiOff className="size-4 shrink-0 text-status-pending" />
           <span>
-            Offline Mode Active: Scans and POD captures will be cached locally on your device and synchronized once cellular connection is restored.
+            Offline Mode Active: Live cellular connection is required to record delivery scans and submit proof-of-delivery signatures. Scans cannot be synchronized while offline.
           </span>
         </div>
       )}

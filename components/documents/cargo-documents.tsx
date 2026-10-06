@@ -50,6 +50,7 @@ export function CargoDocuments({
     e.preventDefault()
     e.stopPropagation()
     setIsDragOver(false)
+    if (documents.uploading) return
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       setFile(e.dataTransfer.files[0])
     }
@@ -109,12 +110,21 @@ export function CargoDocuments({
 
         {/* ── Modern Dropzone Upload Area ── */}
         <div
+          role="button"
+          tabIndex={file ? -1 : 0}
+          aria-label="Choose a document to upload"
+          onKeyDown={(e) => {
+            if (!file && (e.key === "Enter" || e.key === " ")) {
+              e.preventDefault()
+              inputRef.current?.click()
+            }
+          }}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={() => !file && inputRef.current?.click()}
           className={cn(
-            "relative flex flex-col items-center justify-center p-6 text-center border transition-all duration-200 cursor-pointer rounded-none",
+            "relative flex flex-col items-center justify-center p-6 text-center border transition-all duration-200 cursor-pointer rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             isDragOver
               ? "border-primary bg-primary-wash/50"
               : file

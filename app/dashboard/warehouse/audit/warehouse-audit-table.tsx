@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import {
   Card,
   CardContent,
@@ -19,85 +19,66 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
-import { CheckCircle2, RotateCcw, AlertTriangle, PackageCheck } from "lucide-react"
+import { CheckCircle2, RotateCcw, PackageCheck, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import {
+  getWarehouseAuditDiscrepanciesAction,
+  verifyAwbForAuditAction,
+  reconcileWarehouseDiscrepanciesAction,
+  type DiscrepancyRecord,
+} from "@/app/dashboard/warehouse/actions"
 
-export interface DiscrepancyItem {
-  id: string
-  awb: string
-  hub: string
-  expectedLocation: string
-  scannedLocation: string
-  discrepancyType: "location_mismatch" | "unmanifested" | "missing_tag"
-  status: "pending" | "reconciled"
-  timestamp: string
-}
-
-const INITIAL_AUDIT_ITEMS: DiscrepancyItem[] = [
-  {
-    id: "aud-001",
-    awb: "AWB-2026-GAU-0192",
-    hub: "Guwahati Hub (GAU)",
-    expectedLocation: "Bay A-12",
-    scannedLocation: "Bay C-04",
-    discrepancyType: "location_mismatch",
-    status: "pending",
-    timestamp: "10 mins ago",
-  },
-  {
-    id: "aud-002",
-    awb: "AWB-2026-IMP-0841",
-    hub: "Imphal Hub (IMF)",
-    expectedLocation: "Inbound Staging",
-    scannedLocation: "Sorting Conveyor 2",
-    discrepancyType: "unmanifested",
-    status: "pending",
-    timestamp: "25 mins ago",
-  },
-  {
-    id: "aud-003",
-    awb: "AWB-2026-DMR-0419",
-    hub: "Dimapur Hub (DMU)",
-    expectedLocation: "Outbound Dock 3",
-    scannedLocation: "Dock 3",
-    discrepancyType: "missing_tag",
-    status: "pending",
-    timestamp: "40 mins ago",
-  },
-  {
-    id: "aud-004",
-    awb: "AWB-2026-IXA-1102",
-    hub: "Agartala Hub (IXA)",
-    expectedLocation: "Secure Cage",
-    scannedLocation: "Secure Cage",
-    discrepancyType: "location_mismatch",
-    status: "reconciled",
-    timestamp: "1 hour ago",
-  },
-]
+export type DiscrepancyItem = DiscrepancyRecord
 
 export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string }) {
-  const [items, setItems] = useState<DiscrepancyItem[]>(INITIAL_AUDIT_ITEMS)
+  const [items, setItems] = useState<DiscrepancyItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isResolving, setIsResolving] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [prevScannedAwb, setPrevScannedAwb] = useState<string | undefined>(undefined)
+  const lastProcessedAwbRef = useRef<string | null>(null)
 
-  if (newScannedAwb && newScannedAwb !== prevScannedAwb) {
-    setPrevScannedAwb(newScannedAwb)
-    const alreadyListed = items.some((i) => i.awb === newScannedAwb)
-    if (!alreadyListed) {
-      const newItem: DiscrepancyItem = {
-        id: `scan-${newScannedAwb}`,
-        awb: newScannedAwb,
-        hub: "Unknown Hub",
-        expectedLocation: "Manifest",
-        scannedLocation: "Floor Scan",
-        discrepancyType: "unmanifested",
-        status: "pending",
-        timestamp: "Just now",
+  useEffect(() => {
+    let active = true
+    async function loadDiscrepancies() {
+      setIsLoading(true)
+      const res = await getWarehouseAuditDiscrepanciesAction()
+      if (active) {
+        if (res.success && res.data) {
+          setItems(res.data)
+        }
+        setIsLoading(false)
       }
-      setItems((prev) => [newItem, ...prev])
     }
-  }
+    loadDiscrepancies()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!newScannedAwb || newScannedAwb === lastProcessedAwbRef.current) return
+    lastProcessedAwbRef.current = newScannedAwb
+
+    async function handleScan(awb: string) {
+      const res = await verifyAwbForAuditAction(awb)
+      if (!res.success) {
+        toast.error(res.error || "Failed to audit scan.")
+        return
+      }
+
+      if (res.isDiscrepancy && res.discrepancy) {
+        setItems((prev) => {
+          if (prev.some((item) => item.awb === res.discrepancy!.awb)) return prev
+          return [res.discrepancy!, ...prev]
+        })
+        toast.warning(res.message || `Discrepancy flagged for AWB ${awb}`)
+      } else {
+        toast.info(res.message || `AWB ${awb} verified against manifest.`)
+      }
+    }
+
+    void handleScan(newScannedAwb)
+  }, [newScannedAwb])
 
   const pendingItems = items.filter((i) => i.status === "pending")
   const allPendingSelected =
@@ -118,8 +99,21 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
     )
   }
 
-  const handleBatchResolve = () => {
-    if (selectedIds.length === 0) return
+  const handleBatchResolve = async () => {
+    if (selectedIds.length === 0 || isResolving) return
+
+    const awbsToResolve = items
+      .filter((i) => selectedIds.includes(i.id))
+      .map((i) => i.awb)
+
+    setIsResolving(true)
+    const res = await reconcileWarehouseDiscrepanciesAction(awbsToResolve)
+    setIsResolving(false)
+
+    if (!res.success) {
+      toast.error(res.error || "Failed to reconcile consignments")
+      return
+    }
 
     setItems((prev) =>
       prev.map((item) =>
@@ -133,7 +127,17 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
     setSelectedIds([])
   }
 
-  const handleResolveSingle = (id: string, awb: string) => {
+  const handleResolveSingle = async (id: string, awb: string) => {
+    if (isResolving) return
+    setIsResolving(true)
+    const res = await reconcileWarehouseDiscrepanciesAction([awb])
+    setIsResolving(false)
+
+    if (!res.success) {
+      toast.error(res.error || `Failed to reconcile ${awb}`)
+      return
+    }
+
     setItems((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, status: "reconciled" as const } : item
@@ -173,10 +177,14 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
             variant="default"
             size="sm"
             onClick={handleBatchResolve}
-            disabled={selectedIds.length === 0}
+            disabled={selectedIds.length === 0 || isResolving}
             className="font-medium"
           >
-            <CheckCircle2 className="mr-1.5 size-4" />
+            {isResolving ? (
+              <Loader2 className="mr-1.5 size-4 animate-spin" />
+            ) : (
+              <CheckCircle2 className="mr-1.5 size-4" />
+            )}
             Reconcile Selected ({selectedIds.length})
           </Button>
         </div>
@@ -191,7 +199,7 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
                   <Checkbox
                     checked={allPendingSelected}
                     onCheckedChange={toggleSelectAll}
-                    disabled={pendingItems.length === 0}
+                    disabled={pendingItems.length === 0 || isLoading}
                     aria-label="Select all pending consignments"
                   />
                 </TableHead>
@@ -204,65 +212,87 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
               </TableRow>
             </TableHeader>
             <TableBody>
-              {items.map((item) => {
-                const isSelected = selectedIds.includes(item.id)
-                const isPending = item.status === "pending"
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-32 text-center">
+                    <div className="flex flex-col items-center justify-center text-muted-foreground">
+                      <Loader2 className="size-6 animate-spin text-primary mb-2" />
+                      <p className="text-xs">Loading warehouse audit data...</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : items.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-32 text-center">
+                    <div className="flex flex-col items-center justify-center text-muted-foreground">
+                      <CheckCircle2 className="size-8 text-success/70 mb-2" />
+                      <p className="text-sm font-medium text-foreground">No active discrepancies</p>
+                      <p className="text-xs">All floor inventory matches recorded manifests. Scan any unit to audit.</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                items.map((item) => {
+                  const isSelected = selectedIds.includes(item.id)
+                  const isPending = item.status === "pending"
 
-                return (
-                  <TableRow
-                    key={item.id}
-                    className={isSelected ? "bg-muted/40" : undefined}
-                  >
-                    <TableCell className="text-center">
-                      <Checkbox
-                        checked={isSelected}
-                        onCheckedChange={() => toggleSelectItem(item.id)}
-                        disabled={!isPending}
-                        aria-label={`Select ${item.awb}`}
-                      />
-                    </TableCell>
-                    <TableCell className="font-mono text-xs font-semibold text-foreground">
-                      {item.awb}
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {item.hub}
-                    </TableCell>
-                    <TableCell className="text-xs">
-                      <span className="text-muted-foreground line-through mr-1.5">
-                        {item.expectedLocation}
-                      </span>
-                      <span className="font-medium text-foreground">
-                        {item.scannedLocation}
-                      </span>
-                    </TableCell>
-                    <TableCell>{getDiscrepancyBadge(item.discrepancyType)}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={item.status === "reconciled" ? "success" : "warning"}
-                        className="text-xs capitalize"
-                      >
-                        {item.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {isPending ? (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleResolveSingle(item.id, item.awb)}
-                          className="h-7 px-2 text-xs"
+                  return (
+                    <TableRow
+                      key={item.id}
+                      className={isSelected ? "bg-muted/40" : undefined}
+                    >
+                      <TableCell className="text-center">
+                        <Checkbox
+                          checked={isSelected}
+                          onCheckedChange={() => toggleSelectItem(item.id)}
+                          disabled={!isPending || isResolving}
+                          aria-label={`Select ${item.awb}`}
+                        />
+                      </TableCell>
+                      <TableCell className="font-mono text-xs font-semibold text-foreground">
+                        {item.awb}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {item.hub}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        <span className="text-muted-foreground line-through mr-1.5">
+                          {item.expectedLocation}
+                        </span>
+                        <span className="font-medium text-foreground">
+                          {item.scannedLocation}
+                        </span>
+                      </TableCell>
+                      <TableCell>{getDiscrepancyBadge(item.discrepancyType)}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={item.status === "reconciled" ? "success" : "warning"}
+                          className="text-xs capitalize"
                         >
-                          <CheckCircle2 className="mr-1 size-3.5 text-success" />
-                          Resolve
-                        </Button>
-                      ) : (
-                        <span className="text-xs text-muted-foreground font-medium">Reconciled</span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
+                          {item.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {isPending ? (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            disabled={isResolving}
+                            onClick={() => handleResolveSingle(item.id, item.awb)}
+                            className="h-7 px-2 text-xs"
+                          >
+                            <CheckCircle2 className="mr-1 size-3.5 text-success" />
+                            Resolve
+                          </Button>
+                        ) : (
+                          <span className="text-xs text-muted-foreground font-medium">Reconciled</span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
+              )}
             </TableBody>
           </Table>
         </div>

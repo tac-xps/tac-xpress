@@ -16,7 +16,7 @@ import {
   Package,
   Filter,
 } from "lucide-react"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import type { CreateManifestValues } from "./validations"
 import type {
@@ -93,10 +93,24 @@ export function ManifestShipmentSelector({
 
   const totalPages = Math.max(1, Math.ceil(filteredShipments.length / itemsPerPage))
 
+  // Auto-reset page when destination hub or corridor filter changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [corridorOnly, selectedDestinationHub, searchQuery, setCurrentPage])
+
+  // Clamp current page if filtered set shrinks
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages)
+    }
+  }, [currentPage, totalPages, setCurrentPage])
+
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages)
+
   const paginatedShipments = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage
+    const start = (safeCurrentPage - 1) * itemsPerPage
     return filteredShipments.slice(start, start + itemsPerPage)
-  }, [filteredShipments, currentPage, itemsPerPage])
+  }, [filteredShipments, safeCurrentPage, itemsPerPage])
 
   const areAllFilteredSelected =
     filteredShipments.length > 0 &&
