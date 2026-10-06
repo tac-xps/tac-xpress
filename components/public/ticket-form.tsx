@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import {
   Select,
   SelectContent,
@@ -324,11 +324,12 @@ export function TicketForm({ className }: TicketFormProps = {}) {
                   Message *
                 </FormLabel>
                 <FormControl>
-                  <Textarea
-                    rows={4}
-                    className="w-full resize-y border border-border bg-background px-3 py-2 text-sm transition-colors outline-none focus:border-primary"
+                  <RichTextEditor
+                    variant="compact"
+                    minHeight="120px"
                     placeholder="Describe your issue or cargo requirements in detail..."
-                    {...field}
+                    value={field.value}
+                    onChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />

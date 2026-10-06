@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { preparation } from "./shipping-content"
 import { CargoImage } from "./cargo-image"
 import { motion, useReducedMotion } from "motion/react"
+import { RichTextRenderer } from "@/components/ui/rich-text-renderer"
 
 export function ShippingPreparation() {
   const shouldReduceMotion = useReducedMotion()
@@ -85,7 +86,7 @@ export function ShippingPreparation() {
                 {item.title}
               </dt>
               <dd className="mt-3 leading-relaxed text-muted-foreground">
-                {item.text}
+                <RichTextRenderer content={item.text} className="text-sm leading-relaxed text-muted-foreground" />
               </dd>
             </motion.div>
           ))}

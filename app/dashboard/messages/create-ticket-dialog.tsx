@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import {
   Select,
   SelectContent,
@@ -207,10 +207,12 @@ export function CreateTicketDialog() {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="Detailed explanation of the issue"
-                        className="min-h-[100px]"
-                        {...field}
+                      <RichTextEditor
+                        variant="full"
+                        placeholder="Detailed explanation of the issue with bullet points, steps to reproduce, or tables..."
+                        minHeight="140px"
+                        value={field.value}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />

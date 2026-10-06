@@ -4,7 +4,7 @@ import { useState } from "react"
 import { createTicket } from "@/app/actions/tickets"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import {
   Select,
   SelectContent,
@@ -162,7 +162,13 @@ export default function PortalTicketForm({
             <FormItem>
               <FormLabel>Message</FormLabel>
               <FormControl>
-                <Textarea className="min-h-24" {...field} />
+                <RichTextEditor
+                  variant="compact"
+                  minHeight="110px"
+                  placeholder="Provide details about your shipment, consignee, or question..."
+                  value={field.value}
+                  onChange={field.onChange}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
