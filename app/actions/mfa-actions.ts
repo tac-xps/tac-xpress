@@ -1,5 +1,6 @@
 "use server"
 
+import * as Sentry from "@sentry/nextjs"
 import { auth, signIn } from "@/auth"
 import { db } from "@/lib/db"
 import { userMfa, userPasskeys, users } from "@/lib/db/schema"
@@ -38,25 +39,30 @@ export async function getMfaSettingsAction() {
     return { error: "Unauthorized access." }
   }
 
-  const mfa = await db.query.userMfa.findFirst({
-    where: eq(userMfa.userId, session.user.id),
-  })
+  try {
+    const mfa = await db.query.userMfa.findFirst({
+      where: eq(userMfa.userId, session.user.id),
+    })
 
-  const passkeys = await db
-    .select()
-    .from(userPasskeys)
-    .where(eq(userPasskeys.userId, session.user.id))
+    const passkeys = await db
+      .select()
+      .from(userPasskeys)
+      .where(eq(userPasskeys.userId, session.user.id))
 
-  return {
-    totpEnabled: Boolean(mfa?.totpEnabled),
-    hasBackupCodes: Boolean(mfa?.backupCodesHash),
-    passkeys: passkeys.map((p) => ({
-      id: p.id,
-      name: p.name,
-      deviceType: p.deviceType,
-      createdAt: p.createdAt.toISOString(),
-      lastUsedAt: p.lastUsedAt ? p.lastUsedAt.toISOString() : null,
-    })),
+    return {
+      totpEnabled: Boolean(mfa?.totpEnabled),
+      hasBackupCodes: Boolean(mfa?.backupCodesHash),
+      passkeys: passkeys.map((p) => ({
+        id: p.id,
+        name: p.name,
+        deviceType: p.deviceType,
+        createdAt: p.createdAt.toISOString(),
+        lastUsedAt: p.lastUsedAt ? p.lastUsedAt.toISOString() : null,
+      })),
+    }
+  } catch (error) {
+    Sentry.captureException(error, { tags: { area: "mfa_settings_load" } })
+    return { error: "Security settings could not load. Try again later." }
   }
 }
 
