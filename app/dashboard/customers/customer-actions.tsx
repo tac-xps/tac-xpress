@@ -24,10 +24,12 @@ import { deleteCustomerAction } from "./actions"
 import { toast } from "sonner"
 import { EditCustomerDialog } from "./edit-customer-dialog"
 import { CustomerForEdit } from "./use-edit-customer-dialog"
+import { CustomerLedgerDialog } from "./customer-ledger-dialog"
 
 export function CustomerActions({ customer }: { customer: CustomerForEdit }) {
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
+  const [showLedger, setShowLedger] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
 
@@ -58,11 +60,7 @@ export function CustomerActions({ customer }: { customer: CustomerForEdit }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={() =>
-              router.push(`/dashboard/customers/${customer.id}/ledger`)
-            }
-          >
+          <DropdownMenuItem onClick={() => setShowLedger(true)}>
             <FileText className="mr-2 h-4 w-4" />
             View Ledger
           </DropdownMenuItem>
@@ -107,6 +105,15 @@ export function CustomerActions({ customer }: { customer: CustomerForEdit }) {
           customer={customer}
           open={showEdit}
           onOpenChange={setShowEdit}
+        />
+      )}
+
+      {showLedger && (
+        <CustomerLedgerDialog
+          customerId={customer.id}
+          customerName={customer.name}
+          open={showLedger}
+          onOpenChange={setShowLedger}
         />
       )}
     </>

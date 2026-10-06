@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { AddTrackingEventDialog } from "./add-tracking-event-dialog"
 import { EditShipmentDialog } from "./edit-shipment-dialog"
+import { ShipmentDetailDialog } from "./shipment-detail-dialog"
 import { deleteShipmentAction } from "./actions"
 import { toast } from "sonner"
 
@@ -43,6 +44,7 @@ interface ShipmentActionsProps {
 
 export function ShipmentActions({ shipment }: ShipmentActionsProps) {
   const router = useRouter()
+  const [detailOpen, setDetailOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const pdfUrl = shipment.invoice?.pdfUrl
@@ -135,11 +137,9 @@ export function ShipmentActions({ shipment }: ShipmentActionsProps) {
             className="border-border/50 bg-background"
           >
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-              <Link href={`/dashboard/shipments/${shipment.id}`}>
-                <Eye className="mr-2 h-4 w-4" />
-                View Details
-              </Link>
+            <DropdownMenuItem onClick={() => setDetailOpen(true)}>
+              <Eye className="mr-2 h-4 w-4" />
+              View Details
             </DropdownMenuItem>
 
             <SecureBoundary
@@ -176,6 +176,16 @@ export function ShipmentActions({ shipment }: ShipmentActionsProps) {
             </SecureBoundary>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {detailOpen && (
+          <ShipmentDetailDialog
+            shipmentId={shipment.id}
+            awbNumber={shipment.awbNumber}
+            open={detailOpen}
+            onOpenChange={setDetailOpen}
+            initialData={shipment}
+          />
+        )}
       </div>
     </>
   )

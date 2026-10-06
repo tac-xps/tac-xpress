@@ -1,5 +1,6 @@
 "use client"
-import Link from "next/link"
+
+import React, { useState } from "react"
 import { format } from "date-fns"
 import type { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@/components/ui/data-table/data-table"
@@ -8,18 +9,38 @@ import { useDataTable } from "@/hooks/use-data-table"
 import { ShipmentActions, type ShipmentWithRelations } from "./shipment-actions"
 import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/logistics/status-badge"
+import { ShipmentDetailDialog } from "./shipment-detail-dialog"
+
+function ShipmentAwbCell({ shipment }: { shipment: ShipmentWithRelations }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="font-mono text-xs font-semibold text-primary hover:underline underline-offset-4 cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        aria-label={`View details for ${shipment.awbNumber}`}
+      >
+        {shipment.awbNumber}
+      </button>
+      {open && (
+        <ShipmentDetailDialog
+          shipmentId={shipment.id}
+          awbNumber={shipment.awbNumber}
+          open={open}
+          onOpenChange={setOpen}
+          initialData={shipment}
+        />
+      )}
+    </>
+  )
+}
+
 const columns: ColumnDef<ShipmentWithRelations>[] = [
   {
     accessorKey: "awbNumber",
     header: ({ column }) => <ColumnHeader column={column} title="AWB / reference" />,
-    cell: ({ row }) => (
-      <Link
-        href={`/dashboard/shipments/${row.original.id}`}
-        className="font-mono text-xs font-semibold text-primary hover:underline underline-offset-4"
-      >
-        {row.original.awbNumber}
-      </Link>
-    ),
+    cell: ({ row }) => <ShipmentAwbCell shipment={row.original} />,
   },
   {
     accessorKey: "origin",

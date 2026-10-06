@@ -1,5 +1,5 @@
 "use client"
-import Link from "next/link"
+import { useState } from "react"
 import { Search } from "lucide-react"
 import { useScannerStation } from "./use-scanner-station"
 import { PageHeader } from "./page-header"
@@ -22,9 +22,12 @@ import {
 } from "@/components/ui/empty"
 import { StatusBadge } from "@/components/logistics/status-badge"
 import { AddTrackingEventDialog } from "@/app/dashboard/shipments/add-tracking-event-dialog"
+import { ShipmentDetailDialog } from "@/app/dashboard/shipments/shipment-detail-dialog"
+
 export function ScannerStation({ initialAwb }: { initialAwb: string }) {
   const station = useScannerStation(initialAwb)
   const shipment = station.result?.data
+  const [detailOpen, setDetailOpen] = useState(false)
   return (
     <div className="flex min-w-0 flex-col gap-6">
       <PageHeader
@@ -111,10 +114,12 @@ export function ScannerStation({ initialAwb }: { initialAwb: string }) {
               ))}
             </dl>
             <div className="flex flex-wrap items-center gap-3">
-              <Button asChild variant="outline">
-                <Link href={`/dashboard/shipments/${shipment.id}`}>
-                  Open complete record
-                </Link>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDetailOpen(true)}
+              >
+                Open complete record
               </Button>
               <div>
                 <AddTrackingEventDialog
@@ -126,6 +131,15 @@ export function ScannerStation({ initialAwb }: { initialAwb: string }) {
                 />
               </div>
             </div>
+            {detailOpen && (
+              <ShipmentDetailDialog
+                shipmentId={shipment.id}
+                awbNumber={shipment.awbNumber}
+                open={detailOpen}
+                onOpenChange={setDetailOpen}
+                initialData={shipment}
+              />
+            )}
             <p className="text-xs leading-relaxed text-muted-foreground">
               The complete record contains contacts, tracking history and
               private documents. Tracking updates are internal unless staff

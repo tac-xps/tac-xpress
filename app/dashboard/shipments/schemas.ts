@@ -90,3 +90,12 @@ export const deleteShipmentSchema = z.object({
   id: z.string().uuid(),
 })
 
+export const getShipmentDetailsSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    awbNumber: z.string().optional(),
+  })
+  .refine((data) => Boolean(data.id || data.awbNumber), {
+    message: "Provide either a shipment ID or an AWB number",
+  })
+
