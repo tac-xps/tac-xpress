@@ -163,10 +163,13 @@ export async function getWarehouseAuditDiscrepanciesAction(): Promise<{
         created_at: string
       }>(sql`
         select id, action, entity_id, "after", created_at
-        from public.audit_log
-        where action in ('warehouse_audit_discrepancy_unregistered', 'warehouse_audit_reconciled_unregistered')
+        from (
+          select distinct on (entity_id) id, action, entity_id, "after", created_at
+          from public.audit_log
+          where action in ('warehouse_audit_discrepancy_unregistered', 'warehouse_audit_reconciled_unregistered')
+          order by entity_id, created_at desc
+        ) latest_unreg
         order by created_at desc
-        limit 100
       `)
 
       for (const row of unregRows) {
@@ -402,6 +405,13 @@ export async function reconcileWarehouseDiscrepanciesAction(
 
   try {
     return await db.transaction(async (tx) => {
+      // 1. Pre-validate all AWBs in the batch first.
+      // If any AWB lacks an active discrepancy, return failure before executing any writes.
+      const validatedShipments = new Map<
+        string,
+        typeof shipments.$inferSelect | null
+      >()
+
       for (const awb of awbs) {
         const lastTracked = await tx.query.trackingEvents.findFirst({
           where: and(
@@ -447,6 +457,12 @@ export async function reconcileWarehouseDiscrepanciesAction(
         const shipment = await tx.query.shipments.findFirst({
           where: and(isNull(shipments.deletedAt), eq(shipments.awbNumber, awb)),
         })
+        validatedShipments.set(awb, shipment || null)
+      }
+
+      // 2. Perform all writes atomically for the pre-validated batch
+      for (const awb of awbs) {
+        const shipment = validatedShipments.get(awb)
 
         if (shipment) {
           await tx.insert(trackingEvents).values({
