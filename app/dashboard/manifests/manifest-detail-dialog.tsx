@@ -120,7 +120,7 @@ export function ManifestDetailDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[90svh] flex-col overflow-hidden sm:max-w-3xl rounded-none">
         <DialogHeader>
-          <div className="flex items-center justify-between pr-6">
+          <div className="flex items-center justify-between pr-10">
             <DialogTitle className="font-mono text-base font-bold">
               {manifest.referenceId}
             </DialogTitle>

@@ -53,7 +53,7 @@ export function JobDetailDialog({
         data-slot="job-detail-dialog"
         className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden"
       >
-        <DialogHeader className="px-6 py-4 border-b border-border/80 bg-muted/20 flex flex-row items-center justify-between gap-4 space-y-0 shrink-0">
+        <DialogHeader className="px-6 py-3.5 border-b border-border/80 bg-muted/20 flex flex-row items-center justify-between gap-4 space-y-0 shrink-0 pr-14">
           <div>
             <DialogTitle className="text-base font-bold text-foreground flex items-center gap-2">
               <AlertOctagon className="size-4 text-destructive shrink-0" />
@@ -68,7 +68,7 @@ export function JobDetailDialog({
           </Badge>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5 text-xs">
+        <div className="flex-1 overflow-y-auto px-6 py-5 pb-8 space-y-5 text-xs">
           {/* Metadata Grid */}
           <div className="grid grid-cols-2 gap-3 rounded-none border border-border/80 bg-card p-3 sm:grid-cols-4">
             <div>

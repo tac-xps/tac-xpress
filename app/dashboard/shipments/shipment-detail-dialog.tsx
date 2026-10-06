@@ -119,26 +119,31 @@ export function ShipmentDetailDialog({
         {
           label: "Corridor Route",
           value: `${effectiveShipment.origin} → ${effectiveShipment.destination}`,
+          isMono: false,
           icon: MapPin,
         },
         {
           label: "Service Type",
           value: serviceMeta.label,
+          isMono: false,
           icon: ServiceIcon,
         },
         {
           label: "Actual Weight",
           value: `${effectiveShipment.weightKg} kg`,
+          isMono: true,
           icon: Scale,
         },
         {
           label: "Charged Weight",
           value: `${effectiveShipment.chargedWeightKg ?? effectiveShipment.weightKg} kg`,
+          isMono: true,
           icon: Scale,
         },
         {
           label: "Packages / Pieces",
           value: `${effectiveShipment.pieces ?? 1} colli`,
+          isMono: false,
           icon: Package,
         },
         {
@@ -147,6 +152,7 @@ export function ShipmentDetailDialog({
             effectiveShipment.dimensionsL && effectiveShipment.dimensionsW && effectiveShipment.dimensionsH
               ? `${effectiveShipment.dimensionsL}×${effectiveShipment.dimensionsW}×${effectiveShipment.dimensionsH} cm`
               : "Standard packaging",
+          isMono: true,
           icon: Package,
         },
       ]
@@ -161,15 +167,15 @@ export function ShipmentDetailDialog({
         data-slot="shipment-detail-dialog"
         className="sm:max-w-3xl md:max-w-4xl max-h-[92vh] flex flex-col p-0 gap-0 overflow-hidden"
       >
-        {/* Header Strip */}
-        <DialogHeader className="px-6 py-4 border-b border-border/80 bg-muted/20 flex flex-row items-center justify-between gap-4 space-y-0 shrink-0">
+        {/* Header Strip with clearance for close button */}
+        <DialogHeader className="px-6 py-3.5 border-b border-border/80 bg-muted/20 flex flex-row items-center justify-between gap-4 space-y-0 shrink-0 pr-14">
           <div className="flex flex-wrap items-center gap-2.5 min-w-0">
             <DialogTitle className="font-mono text-base font-bold text-foreground tracking-tight flex items-center gap-2">
               <span>{displayAwb}</span>
               <button
                 type="button"
                 onClick={handleCopyAwb}
-                className="p-1 rounded-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="p-1 rounded-xs text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors cursor-pointer"
                 title="Copy AWB number"
                 aria-label="Copy AWB number"
               >
@@ -195,12 +201,14 @@ export function ShipmentDetailDialog({
                   shipmentId={effectiveShipment.id}
                   awbNumber={effectiveShipment.awbNumber}
                   onSuccess={fetchDetails}
+                  triggerVariant="outline"
+                  triggerClassName="h-7 text-xs gap-1.5 px-2.5 font-normal"
                 />
                 <Button
                   asChild
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  variant="outline"
+                  size="icon-sm"
+                  className="size-7 text-muted-foreground hover:text-foreground hover:bg-muted/80"
                   title="Open full page in new tab"
                 >
                   <a
@@ -209,7 +217,7 @@ export function ShipmentDetailDialog({
                     rel="noopener noreferrer"
                     aria-label="Open full shipment page in new tab"
                   >
-                    <ExternalLink className="size-4" />
+                    <ExternalLink className="size-3.5" />
                   </a>
                 </Button>
               </>
@@ -217,92 +225,135 @@ export function ShipmentDetailDialog({
           </div>
         </DialogHeader>
 
-        {/* Modal Scrollable Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 min-h-[300px]">
-          {isExecuting && !effectiveShipment ? (
-            <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground">
-              <Loader2 className="size-6 animate-spin text-primary" />
-              <p className="text-sm">Retrieving consignment details…</p>
+        {/* Tabs Bar & Scrollable Content */}
+        {isExecuting && !effectiveShipment ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground flex-1">
+            <Loader2 className="size-6 animate-spin text-primary" />
+            <p className="text-sm">Retrieving consignment details…</p>
+          </div>
+        ) : !effectiveShipment ? (
+          <div className="py-16 text-center text-sm text-muted-foreground flex-1">
+            Shipment record not found or inaccessible.
+          </div>
+        ) : (
+          <Tabs
+            defaultValue="overview"
+            value={activeTab}
+            onValueChange={(val) => setActiveTab(val as "overview" | "timeline" | "documents")}
+            className="flex flex-col flex-1 min-h-0"
+          >
+            {/* Pinned Subheader Tabs Bar */}
+            <div className="px-6 border-b border-border/70 bg-muted/10 shrink-0 flex items-center justify-between py-2">
+              <TabsList className="h-8 max-w-sm grid grid-cols-3">
+                <TabsTrigger value="overview" className="text-xs h-7">Overview</TabsTrigger>
+                <TabsTrigger value="timeline" className="text-xs h-7">
+                  Tracking ({effectiveShipment.trackingEvents?.length ?? 0})
+                </TabsTrigger>
+                <TabsTrigger value="documents" className="text-xs h-7">Documents</TabsTrigger>
+              </TabsList>
             </div>
-          ) : !effectiveShipment ? (
-            <div className="py-16 text-center text-sm text-muted-foreground">
-              Shipment record not found or inaccessible.
-            </div>
-          ) : (
-            <div className="flex flex-col gap-6">
-              <Tabs
-                defaultValue="overview"
-                value={activeTab}
-                onValueChange={(val) => setActiveTab(val as "overview" | "timeline" | "documents")}
-              >
-                <TabsList className="grid w-full grid-cols-3 max-w-sm mb-6">
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="timeline">
-                    Tracking ({effectiveShipment.trackingEvents?.length ?? 0})
-                  </TabsTrigger>
-                  <TabsTrigger value="documents">Documents</TabsTrigger>
-                </TabsList>
 
-                {/* Tab: Overview */}
-                <TabsContent value="overview" className="mt-0 space-y-6">
-                  {/* Specifications Card */}
-                  <section
-                    aria-label="Shipment Specifications"
-                    className="overflow-hidden rounded-none border border-border/80 bg-card shadow-none"
-                  >
-                    <div className="border-b border-border/80 bg-muted/20 px-4 py-2.5 text-xs text-muted-foreground flex items-center justify-between">
-                      <span className="flex items-center gap-1.5 font-mono text-[11px]">
-                        <Calendar className="size-3 text-muted-foreground" />
-                        Booked:{" "}
-                        {effectiveShipment.createdAt
-                          ? format(new Date(effectiveShipment.createdAt), "dd MMM yyyy")
-                          : "Not recorded"}
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        {effectiveShipment.isFragile && (
-                          <Badge variant="outline" className="text-[10px] text-destructive border-destructive/30">
-                            Fragile
-                          </Badge>
-                        )}
-                        {effectiveShipment.insuranceOptIn && (
-                          <Badge variant="outline" className="text-[10px] text-primary border-primary/30">
-                            Insurance
-                          </Badge>
-                        )}
-                      </div>
+            {/* Modal Scrollable Body */}
+            <div className="flex-1 overflow-y-auto px-6 py-5 pb-8 min-h-[300px]">
+              {/* Tab: Overview */}
+              <TabsContent value="overview" className="mt-0 space-y-5">
+                {/* Specifications Card */}
+                <section
+                  aria-label="Shipment Specifications"
+                  className="overflow-hidden rounded-none border border-border/80 bg-card shadow-none"
+                >
+                  <div className="border-b border-border/80 bg-muted/20 px-4 py-2.5 text-xs text-muted-foreground flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-foreground/80">
+                      <Calendar className="size-3.5 text-muted-foreground" />
+                      Booked:{" "}
+                      {effectiveShipment.createdAt
+                        ? format(new Date(effectiveShipment.createdAt), "dd MMM yyyy")
+                        : "Not recorded"}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {effectiveShipment.isFragile && (
+                        <Badge variant="outline" className="text-[10px] text-destructive border-destructive/30">
+                          Fragile
+                        </Badge>
+                      )}
+                      {effectiveShipment.insuranceOptIn && (
+                        <Badge variant="outline" className="text-[10px] text-primary border-primary/30">
+                          Insurance
+                        </Badge>
+                      )}
                     </div>
+                  </div>
 
-                    <div className="grid grid-cols-2 gap-y-4 p-4 sm:grid-cols-3">
-                      {facts.map((fact) => {
-                        const Icon = fact.icon
-                        return (
-                          <div key={fact.label} className="space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                              <Icon className="size-3.5 text-muted-foreground/80 shrink-0" />
-                              <span>{fact.label}</span>
-                            </div>
-                            <div className="font-mono text-sm font-semibold text-foreground tracking-tight">
-                              {fact.value}
-                            </div>
+                  <div className="grid grid-cols-2 gap-y-4 gap-x-6 p-4 sm:grid-cols-3">
+                    {facts.map((fact) => {
+                      const Icon = fact.icon
+                      return (
+                        <div key={fact.label} className="space-y-1">
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Icon className="size-3.5 text-muted-foreground/80 shrink-0" />
+                            <span>{fact.label}</span>
                           </div>
-                        )
-                      })}
-                    </div>
-                  </section>
+                          <div
+                            className={
+                              fact.isMono
+                                ? "font-mono text-sm font-semibold text-foreground tracking-tight"
+                                : "font-medium text-sm text-foreground"
+                            }
+                          >
+                            {fact.value}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
 
-                  {/* Consignor & Consignee Parties */}
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {/* Consignor / Sender */}
-                    <div className="rounded-none border border-border/80 bg-card p-4 space-y-3">
-                      <div className="flex items-center justify-between border-b border-border/70 pb-2">
-                        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                          <Building2 className="size-3.5 text-primary" />
-                          Sender (Consignor)
-                        </span>
-                        <span className="font-mono text-[10px] text-muted-foreground uppercase">
-                          {effectiveShipment.origin}
-                        </span>
-                      </div>
+                  {/* Integrated Commodity & Packaging Strip */}
+                  {(effectiveShipment.natureOfGoods ||
+                    effectiveShipment.packagingType ||
+                    effectiveShipment.itemCondition) && (
+                    <div className="border-t border-border/70 bg-muted/15 px-4 py-2.5 flex flex-wrap items-center gap-x-6 gap-y-1.5 text-xs">
+                      {effectiveShipment.natureOfGoods && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">Commodity:</span>
+                          <span className="font-medium text-foreground capitalize">
+                            {effectiveShipment.natureOfGoods.replaceAll("_", " ")}
+                          </span>
+                        </div>
+                      )}
+                      {effectiveShipment.packagingType && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">Packaging:</span>
+                          <span className="font-medium text-foreground capitalize">
+                            {effectiveShipment.packagingType.replaceAll("_", " ")}
+                          </span>
+                        </div>
+                      )}
+                      {effectiveShipment.itemCondition && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">Condition:</span>
+                          <span className="font-medium text-foreground capitalize">
+                            {effectiveShipment.itemCondition}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </section>
+
+                {/* Consignor & Consignee Parties */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {/* Consignor / Sender */}
+                  <div className="rounded-none border border-border/80 bg-card overflow-hidden">
+                    <div className="border-b border-border/70 bg-muted/15 px-4 py-2 flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                        <Building2 className="size-3.5 text-primary" />
+                        Sender (Consignor)
+                      </span>
+                      <span className="font-mono text-[10px] text-muted-foreground uppercase">
+                        {effectiveShipment.origin}
+                      </span>
+                    </div>
+                    <div className="p-4 space-y-3">
                       <div className="flex items-start gap-2">
                         <User className="size-4 text-muted-foreground shrink-0 mt-0.5" />
                         <div className="min-w-0">
@@ -317,25 +368,27 @@ export function ShipmentDetailDialog({
                           )}
                         </div>
                       </div>
-                      <div className="flex items-start gap-2 pt-1 border-t border-border/50 text-xs text-muted-foreground">
+                      <div className="flex items-start gap-2 pt-2 border-t border-border/50 text-xs text-muted-foreground">
                         <MapPin className="size-4 shrink-0 mt-0.5 text-muted-foreground/70" />
                         <p className="leading-relaxed">
                           {effectiveShipment.consignorAddress || "Address details not recorded"}
                         </p>
                       </div>
                     </div>
+                  </div>
 
-                    {/* Consignee / Recipient */}
-                    <div className="rounded-none border border-border/80 bg-card p-4 space-y-3">
-                      <div className="flex items-center justify-between border-b border-border/70 pb-2">
-                        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                          <User className="size-3.5 text-primary" />
-                          Recipient (Consignee)
-                        </span>
-                        <span className="font-mono text-[10px] text-muted-foreground uppercase">
-                          {effectiveShipment.destination}
-                        </span>
-                      </div>
+                  {/* Consignee / Recipient */}
+                  <div className="rounded-none border border-border/80 bg-card overflow-hidden">
+                    <div className="border-b border-border/70 bg-muted/15 px-4 py-2 flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                        <User className="size-3.5 text-primary" />
+                        Recipient (Consignee)
+                      </span>
+                      <span className="font-mono text-[10px] text-muted-foreground uppercase">
+                        {effectiveShipment.destination}
+                      </span>
+                    </div>
+                    <div className="p-4 space-y-3">
                       <div className="flex items-start gap-2">
                         <User className="size-4 text-muted-foreground shrink-0 mt-0.5" />
                         <div className="min-w-0">
@@ -350,7 +403,7 @@ export function ShipmentDetailDialog({
                           )}
                         </div>
                       </div>
-                      <div className="flex items-start gap-2 pt-1 border-t border-border/50 text-xs text-muted-foreground">
+                      <div className="flex items-start gap-2 pt-2 border-t border-border/50 text-xs text-muted-foreground">
                         <MapPin className="size-4 shrink-0 mt-0.5 text-muted-foreground/70" />
                         <p className="leading-relaxed">
                           {effectiveShipment.consigneeAddress || "Delivery address not recorded"}
@@ -358,17 +411,21 @@ export function ShipmentDetailDialog({
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  {/* Operational Assignment & Billing Metadata */}
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {/* Manifest Route Assignment */}
-                    <div className="rounded-none border border-border/80 bg-card p-4 space-y-2">
-                      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                {/* Operational Assignment & Billing Metadata */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {/* Manifest Route Assignment */}
+                  <div className="rounded-none border border-border/80 bg-card overflow-hidden">
+                    <div className="border-b border-border/70 bg-muted/15 px-4 py-2 flex items-center justify-between">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                         <Layers className="size-3.5 text-primary" />
                         Manifest Assignment
-                      </div>
+                      </span>
+                    </div>
+                    <div className="p-4 space-y-2">
                       {assignedManifest ? (
-                        <div className="space-y-1 text-xs">
+                        <div className="space-y-1.5 text-xs">
                           <div className="flex items-center justify-between">
                             <span className="text-muted-foreground">Manifest:</span>
                             <span className="font-mono font-medium">{assignedManifest.referenceId}</span>
@@ -386,15 +443,19 @@ export function ShipmentDetailDialog({
                         </p>
                       )}
                     </div>
+                  </div>
 
-                    {/* Invoice Billing Status */}
-                    <div className="rounded-none border border-border/80 bg-card p-4 space-y-2">
-                      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  {/* Invoice Billing Status */}
+                  <div className="rounded-none border border-border/80 bg-card overflow-hidden">
+                    <div className="border-b border-border/70 bg-muted/15 px-4 py-2 flex items-center justify-between">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                         <FileText className="size-3.5 text-primary" />
                         Billing & Invoicing
-                      </div>
+                      </span>
+                    </div>
+                    <div className="p-4 space-y-2">
                       {effectiveShipment.invoice ? (
-                        <div className="space-y-1 text-xs">
+                        <div className="space-y-1.5 text-xs">
                           <div className="flex items-center justify-between">
                             <span className="text-muted-foreground">Invoice ID:</span>
                             <span className="font-mono font-medium">
@@ -422,63 +483,33 @@ export function ShipmentDetailDialog({
                       )}
                     </div>
                   </div>
+                </div>
+              </TabsContent>
 
-                  {/* Commodity & Packaging Details */}
-                  {(effectiveShipment.natureOfGoods || effectiveShipment.packagingType) && (
-                    <div className="rounded-none border border-border/80 bg-card p-4 flex flex-wrap items-center gap-6 text-xs">
-                      {effectiveShipment.natureOfGoods && (
-                        <div>
-                          <span className="text-muted-foreground">Commodity: </span>
-                          <span className="font-medium capitalize">
-                            {effectiveShipment.natureOfGoods.replaceAll("_", " ")}
-                          </span>
-                        </div>
-                      )}
-                      {effectiveShipment.packagingType && (
-                        <div>
-                          <span className="text-muted-foreground">Packaging: </span>
-                          <span className="font-medium capitalize">
-                            {effectiveShipment.packagingType.replaceAll("_", " ")}
-                          </span>
-                        </div>
-                      )}
-                      {effectiveShipment.itemCondition && (
-                        <div>
-                          <span className="text-muted-foreground">Condition: </span>
-                          <span className="font-medium capitalize">
-                            {effectiveShipment.itemCondition}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </TabsContent>
+              {/* Tab: Tracking History */}
+              <TabsContent value="timeline" className="mt-0">
+                <ShipmentTimeline
+                  events={(effectiveShipment.trackingEvents || []).map((event: any) => ({
+                    id: event.id,
+                    type: event.status,
+                    occurredAt: new Date(event.createdAt).toISOString(),
+                    payload: {
+                      location: event.location,
+                      description: event.description,
+                    },
+                    eventHash: event.id,
+                    isPublic: event.isPublic,
+                  }))}
+                />
+              </TabsContent>
 
-                {/* Tab: Tracking History */}
-                <TabsContent value="timeline" className="mt-0">
-                  <ShipmentTimeline
-                    events={(effectiveShipment.trackingEvents || []).map((event: any) => ({
-                      id: event.id,
-                      type: event.status,
-                      occurredAt: new Date(event.createdAt).toISOString(),
-                      payload: {
-                        location: event.location,
-                        description: event.description,
-                      },
-                      eventHash: event.id,
-                      isPublic: event.isPublic,
-                    }))}
-                  />
-                </TabsContent>
-
-                {/* Tab: Cargo Documents */}
-                <TabsContent value="documents" className="mt-0">
-                  <CargoDocuments entity="shipments" id={effectiveShipment.id} />
-                </TabsContent>
-              </Tabs>
+              {/* Tab: Cargo Documents */}
+              <TabsContent value="documents" className="mt-0">
+                <CargoDocuments entity="shipments" id={effectiveShipment.id} />
+              </TabsContent>
             </div>
-          )}
-        </div>
+          </Tabs>
+        )}
       </DialogContent>
     </Dialog>
   )

@@ -88,7 +88,7 @@ export function CustomerLedgerDialog({
           className="sm:max-w-3xl md:max-w-4xl max-h-[92vh] flex flex-col p-0 gap-0 overflow-hidden"
         >
           {/* Header */}
-          <DialogHeader className="px-6 py-4 border-b border-border/80 bg-muted/20 flex flex-row items-center justify-between gap-4 space-y-0 shrink-0">
+          <DialogHeader className="px-6 py-3.5 border-b border-border/80 bg-muted/20 flex flex-row items-center justify-between gap-4 space-y-0 shrink-0 pr-14">
             <div className="min-w-0">
               <DialogTitle className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
                 <Building2 className="size-4 text-primary shrink-0" />
@@ -102,9 +102,9 @@ export function CustomerLedgerDialog({
             <div className="flex items-center gap-2 shrink-0">
               <Button
                 asChild
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                variant="outline"
+                size="icon-sm"
+                className="size-7 text-muted-foreground hover:text-foreground hover:bg-muted/80"
                 title="Open full ledger in new tab"
               >
                 <a
@@ -113,14 +113,14 @@ export function CustomerLedgerDialog({
                   rel="noopener noreferrer"
                   aria-label="Open full customer ledger in new tab"
                 >
-                  <ExternalLink className="size-4" />
+                  <ExternalLink className="size-3.5" />
                 </a>
               </Button>
             </div>
           </DialogHeader>
 
           {/* Body */}
-          <div className="flex-1 overflow-y-auto px-6 py-5 min-h-[300px] space-y-6">
+          <div className="flex-1 overflow-y-auto px-6 py-5 pb-8 min-h-[300px] space-y-6">
             {isExecuting && !data ? (
               <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground">
                 <Loader2 className="size-6 animate-spin text-primary" />

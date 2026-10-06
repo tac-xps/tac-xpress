@@ -96,6 +96,8 @@ describe("ShipmentDetailDialog Component", () => {
 
     const dialog = document.querySelector('[data-slot="shipment-detail-dialog"]')
     expect(dialog).not.toBeNull()
+    const closeBtn = document.querySelector('[data-slot="dialog-close"]')
+    expect(closeBtn).not.toBeNull()
     expect(document.body.textContent).toContain("TAC-20261005-001")
     expect(document.body.textContent).toContain("DEL → BOM")
     expect(document.body.textContent).toContain("Acme Logistics")
