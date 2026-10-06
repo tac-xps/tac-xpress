@@ -20,7 +20,7 @@ const INCOMPLETE_ERROR =
 const INVALID_INPUT_ERROR =
   "Please check the invoice details and try again."
 
-function firstValidationMessage(errors: unknown): string | undefined {
+export function firstValidationMessage(errors: unknown): string | undefined {
   if (!errors || typeof errors !== "object") {
     return undefined
   }
