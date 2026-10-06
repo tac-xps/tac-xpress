@@ -204,12 +204,12 @@ export function CreateDispatchForm({
           )}
         />
 
-        <DialogFooter>
-          <Button type="submit" disabled={isExecuting}>
+        <div className="m-0 rounded-none border-t border-border pt-4 flex flex-row items-center justify-end gap-2 shrink-0">
+          <Button type="submit" disabled={isExecuting} className="rounded-none font-semibold">
             {isExecuting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Assign Run Sheet
           </Button>
-        </DialogFooter>
+        </div>
       </form>
     </Form>
   )

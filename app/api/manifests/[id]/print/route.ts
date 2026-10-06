@@ -13,6 +13,8 @@ export async function GET(
   if (!access.ok) return access.response
 
   const { id } = await params
+  const { searchParams } = new URL(request.url)
+  const autoprint = searchParams.get("autoprint") !== "false"
 
   const manifest = await db.query.manifests.findFirst({
     where: eq(manifests.id, id),
@@ -170,7 +172,7 @@ export async function GET(
     <span>Ref: ${escapeHtml(manifest.referenceId)} | Generated: ${format(new Date(), "dd/MM/yyyy HH:mm")}</span>
   </div>
 
-  <script>window.onload = () => window.print();</script>
+  ${autoprint ? "<script>window.onload = () => window.print();</script>" : ""}
 </body>
 </html>`
 

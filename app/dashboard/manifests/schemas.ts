@@ -9,6 +9,7 @@ export const createManifestSchema = z.object({
     .array(z.string().uuid())
     .min(1, "Select at least one shipment").max(500, "A manifest can contain up to 500 shipments")
     .refine((ids) => new Set(ids).size === ids.length, "Select each shipment only once"),
+  sendWhatsAppNotification: z.boolean().default(true).optional(),
 })
 
 export const scanShipmentSchema = z.object({

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,19 @@ export function TicketDetailsDialog({
   const [isUpdating, setIsUpdating] = useState(false)
   const [replyMessage, setReplyMessage] = useState("")
   const [isSendingReply, setIsSendingReply] = useState(false)
+  const messageContainerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (open && ticket) {
+      const timer = setTimeout(() => {
+        if (messageContainerRef.current) {
+          messageContainerRef.current.scrollTop =
+            messageContainerRef.current.scrollHeight
+        }
+      }, 150)
+      return () => clearTimeout(timer)
+    }
+  }, [open, ticket])
 
   if (!ticket) return null
 
@@ -138,7 +151,16 @@ export function TicketDetailsDialog({
                     SLA At Risk
                   </Badge>
                 )}
-                <Badge variant="secondary" className="text-[11px] capitalize">
+                <Badge
+                  variant={
+                    ticket.priority === "urgent"
+                      ? "destructive"
+                      : ticket.priority === "high"
+                        ? "warning"
+                        : "secondary"
+                  }
+                  className="text-[11px] capitalize font-medium"
+                >
                   Priority: {ticket.priority}
                 </Badge>
               </div>
@@ -186,7 +208,10 @@ export function TicketDetailsDialog({
 
           <div className="space-y-2">
             <h4 className="text-sm font-semibold text-foreground">Message</h4>
-            <div className="max-h-64 min-h-24 overflow-y-auto rounded-none border border-border/50 bg-muted/10 p-4 text-sm whitespace-pre-wrap text-foreground/90">
+            <div
+              ref={messageContainerRef}
+              className="max-h-64 min-h-24 overflow-y-auto rounded-none border border-border/50 bg-muted/10 p-4 text-sm whitespace-pre-wrap text-foreground/90"
+            >
               {ticket.message}
             </div>
           </div>
@@ -206,7 +231,7 @@ export function TicketDetailsDialog({
           )}
         </div>
 
-        <div className="mt-4 flex justify-end gap-3 border-t border-border/50 pt-4">
+        <div className="mt-4 flex justify-end gap-3 border-t border-border/50 pb-2 pt-4">
           {ticket.status !== "resolved" && (
             <Button
               variant="outline"

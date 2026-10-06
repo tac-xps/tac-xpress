@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useTransition } from "react"
 import { QRCodeSVG } from "qrcode.react"
+import { toast } from "sonner"
 import { startRegistration } from "@simplewebauthn/browser"
 import * as Sentry from "@sentry/nextjs"
 import posthog from "posthog-js"
@@ -246,14 +247,20 @@ export function MfaSecuritySettings() {
     })
   }
 
-  function copyToClipboard(text: string, isSecret = true) {
-    navigator.clipboard.writeText(text)
-    if (isSecret) {
-      setCopiedSecret(true)
-      setTimeout(() => setCopiedSecret(false), 2000)
-    } else {
-      setCopiedBackupCodes(true)
-      setTimeout(() => setCopiedBackupCodes(false), 2000)
+  async function copyToClipboard(text: string, isSecret = true) {
+    try {
+      await navigator.clipboard.writeText(text)
+      if (isSecret) {
+        setCopiedSecret(true)
+        toast.success("Authenticator secret copied to clipboard")
+        setTimeout(() => setCopiedSecret(false), 2000)
+      } else {
+        setCopiedBackupCodes(true)
+        toast.success("Recovery codes copied to clipboard")
+        setTimeout(() => setCopiedBackupCodes(false), 2000)
+      }
+    } catch {
+      toast.error("Failed to copy to clipboard")
     }
   }
 
@@ -275,6 +282,7 @@ export function MfaSecuritySettings() {
     a.download = "tac-xpress-recovery-codes.txt"
     a.click()
     URL.revokeObjectURL(url)
+    toast.success("Recovery codes saved to tac-xpress-recovery-codes.txt")
   }
 
   if (isLoading) {
@@ -513,6 +521,8 @@ export function MfaSecuritySettings() {
                 value={totpCode}
                 onChange={setTotpCode}
                 disabled={isPending}
+                autoFocus
+                aria-label="6-digit verification code"
               >
                 <InputOTPGroup>
                   <InputOTPSlot index={0} />

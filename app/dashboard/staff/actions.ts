@@ -100,6 +100,13 @@ export const updateStaffAction = authActionClient
     const { id, email, phone, name, role } = data
     const session = ctx.session
 
+    if (id === session.user.id && role !== "admin") {
+      return {
+        success: false,
+        error: "You cannot demote your own administrator account.",
+      }
+    }
+
     try {
       const before = await db.query.users.findFirst({
         where: and(eq(users.id, id), inArray(users.role, ["staff", "admin"])),

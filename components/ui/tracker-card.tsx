@@ -138,7 +138,7 @@ export const PackageTrackerCard = ({
             className="rounded-none border border-border p-1 bg-card"
           >
             {qrCodeValue ? (
-              <QRCodeCanvas value={qrCodeValue} size={64} bgColor="transparent" fgColor="currentColor" className="text-foreground" />
+              <QRCodeCanvas value={qrCodeValue} size={64} bgColor="#ffffff" fgColor="#000000" />
             ) : (
               <div className="flex h-16 w-16 items-center justify-center bg-muted">
                 <QrCode className="h-8 w-8 text-muted-foreground" />

@@ -21,6 +21,8 @@ export function QRCode({
         size={160}
         level="M"
         marginSize={4}
+        fgColor={foreground}
+        bgColor={background}
         title="Shipment tracking QR code"
         className="h-full w-full"
       />

@@ -55,8 +55,16 @@ export function AddDriverForm({
               <FormItem>
                 <FormLabel>Phone Number</FormLabel>
                 <FormControl>
-                  <Input placeholder="+91..." {...field} />
+                  <Input
+                    placeholder="+91XXXXXXXXXX"
+                    type="tel"
+                    aria-describedby="driver-phone-hint"
+                    {...field}
+                  />
                 </FormControl>
+                <p id="driver-phone-hint" className="text-[11px] text-muted-foreground">
+                  E.164 format, e.g. +919876543210
+                </p>
                 <FormMessage />
               </FormItem>
             )}

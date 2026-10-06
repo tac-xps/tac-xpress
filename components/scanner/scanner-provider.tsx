@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useState,
+  useRef,
   ReactNode,
   useCallback,
 } from "react"
@@ -18,11 +19,13 @@ interface ScannerContextType {
   setOverrideHandler: (
     handler: ((code: string) => Promise<boolean>) | null
   ) => void
+  triggerScan: (code: string) => Promise<void>
 }
 
 const ScannerContext = createContext<ScannerContextType>({
   lastScannedCode: null,
   setOverrideHandler: () => {},
+  triggerScan: async () => {},
 })
 
 let sharedAudioContext: any = null
@@ -63,18 +66,18 @@ export function ScannerProvider({ children }: { children: ReactNode }) {
   const [lastScannedCode, setLastScannedCode] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [shipmentData, setShipmentData] = useState<any>(null)
-  const [overrideHandler, setOverrideHandlerState] = useState<
+  const overrideHandlerRef = useRef<
     ((code: string) => Promise<boolean>) | null
   >(null)
 
   const setOverrideHandler = useCallback(
     (handler: ((code: string) => Promise<boolean>) | null) => {
-      setOverrideHandlerState(() => handler)
+      overrideHandlerRef.current = handler
     },
     []
   )
 
-  const handleScan = async (barcode: string) => {
+  const handleScan = useCallback(async (barcode: string) => {
     // Basic sanitization and normalization for barcodes
     let rawCode = barcode.trim()
     let code = rawCode.toUpperCase()
@@ -82,7 +85,8 @@ export function ScannerProvider({ children }: { children: ReactNode }) {
     // Extract AWB from full URL QR codes (e.g. from generated shipping labels)
     if (
       rawCode.toLowerCase().startsWith("http") ||
-      rawCode.toLowerCase().includes("tacxpress.in")
+      rawCode.toLowerCase().includes("tacxpress.in") ||
+      rawCode.toLowerCase().includes("tacservice.in")
     ) {
       try {
         const urlStr = rawCode.toLowerCase().startsWith("http")
@@ -114,9 +118,10 @@ export function ScannerProvider({ children }: { children: ReactNode }) {
     setLastScannedCode(code)
 
     // Context-Aware Routing: If an active page registered a handler, let it process the scan.
-    if (overrideHandler) {
+    const activeOverride = overrideHandlerRef.current
+    if (activeOverride) {
       try {
-        const success = await overrideHandler(code)
+        const success = await activeOverride(code)
         playScanBeep(success)
       } catch (error) {
         Sentry.captureException(error, {
@@ -153,7 +158,7 @@ export function ScannerProvider({ children }: { children: ReactNode }) {
       toast.error("Failed to process scan", { id: toastId })
       playScanBeep(false)
     }
-  }
+  }, [])
 
   // Hook into the global window keydown events for rapid scanner input
   useBarcodeScanner({
@@ -178,7 +183,13 @@ export function ScannerProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <ScannerContext.Provider value={{ lastScannedCode, setOverrideHandler }}>
+    <ScannerContext.Provider
+      value={{
+        lastScannedCode,
+        setOverrideHandler,
+        triggerScan: handleScan,
+      }}
+    >
       {children}
       <ScannerResultModal
         isOpen={isModalOpen}

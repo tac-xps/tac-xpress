@@ -6,6 +6,8 @@ import {
   trackingEvents,
   vehicles,
   pricingRules,
+  hubs,
+  drivers,
 } from "../lib/db/schema"
 import { eq } from "drizzle-orm"
 import bcrypt from "bcryptjs"
@@ -151,6 +153,56 @@ async function seed() {
       console.log("Inserted mock invoice.")
     }
 
+    // Insert Hubs
+    try {
+      const defaultHubs = [
+        { name: "Central Delhi Cargo Hub", location: "Central Delhi", contact: "+91 11 2345 6789", type: "warehouse" as const },
+        { name: "South Delhi Distribution Hub", location: "South Delhi", contact: "+91 11 2345 6790", type: "branch" as const },
+        { name: "New Delhi Airport Gateway", location: "New Delhi", contact: "+91 11 2345 6791", type: "transit_center" as const },
+        { name: "Imphal Main Cargo Hub", location: "Imphal", contact: "+91 385 245 1234", type: "warehouse" as const },
+        { name: "Imphal West Logistics Center", location: "Imphal West", contact: "+91 385 245 5678", type: "branch" as const },
+        { name: "Guwahati Transit Terminal", location: "Guwahati", contact: "+91 361 289 4321", type: "transit_center" as const },
+        { name: "Kolkata Gateway Terminal", location: "Kolkata", contact: "+91 33 2233 4455", type: "transit_center" as const },
+      ]
+      for (const h of defaultHubs) {
+        const existing = await db.select().from(hubs).where(eq(hubs.name, h.name))
+        if (existing.length === 0) {
+          await db.insert(hubs).values(h)
+        }
+      }
+      console.log("Seeded operational hubs.")
+    } catch (e: any) {
+      console.error(`Failed to seed hubs: ${e.message}`)
+    }
+
+    // Insert Drivers
+    let rajeshId: string | undefined
+    let aslamId: string | undefined
+    let birenId: string | undefined
+    try {
+      const defaultDrivers = [
+        { name: "Rajesh Kumar", phone: "+91 98101 23456", licenseNumber: "DL-0420110012345", status: "active" as const },
+        { name: "Biren Singh", phone: "+91 94360 87654", licenseNumber: "MN-0120150023456", status: "active" as const },
+        { name: "Mohd. Aslam", phone: "+91 98712 34567", licenseNumber: "UP-1420180034567", status: "active" as const },
+      ]
+      for (const d of defaultDrivers) {
+        const existing = await db.select().from(drivers).where(eq(drivers.licenseNumber, d.licenseNumber))
+        let driverRecordId: string
+        if (existing.length === 0) {
+          const [inserted] = await db.insert(drivers).values(d).returning({ id: drivers.id })
+          driverRecordId = inserted.id
+        } else {
+          driverRecordId = existing[0].id
+        }
+        if (d.name === "Rajesh Kumar") rajeshId = driverRecordId
+        if (d.name === "Mohd. Aslam") aslamId = driverRecordId
+        if (d.name === "Biren Singh") birenId = driverRecordId
+      }
+      console.log("Seeded operational drivers.")
+    } catch (e: any) {
+      console.error(`Failed to seed drivers: ${e.message}`)
+    }
+
     // Insert Vehicles
     try {
       await db.delete(vehicles)
@@ -166,6 +218,7 @@ async function seed() {
           registrationNumber: "DL-1CA-5678",
           capacityKg: 2000,
           status: "active",
+          driverId: rajeshId,
         },
         {
           registrationNumber: "HR-26B-9012",
@@ -181,11 +234,13 @@ async function seed() {
           registrationNumber: "UP-16D-7890",
           capacityKg: 3000,
           status: "active",
+          driverId: aslamId,
         },
         {
           registrationNumber: "KA-01E-2345",
           capacityKg: 5000,
           status: "active",
+          driverId: birenId,
         },
       ])
       .returning({ id: vehicles.id })

@@ -28,7 +28,7 @@ export default async function AirCargoPage({
       icon={<PlaneIcon className="size-8 text-primary" />}
       iconBg="bg-primary/10"
       heading="Air Cargo Operations"
-      description="Monitor high-priority express air shipments."
+      description="Monitor high-priority express air shipments across IATA corridors (DEL-GAU, CCU-IMF, GAU-IXA) with standard 1:5000 volumetric divisor."
       tableTitle="Active Air Shipments"
       pathname="/dashboard/operations/air-cargo"
       kpiCards={[

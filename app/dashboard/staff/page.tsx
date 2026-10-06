@@ -23,7 +23,7 @@ export default async function StaffPage({
 }: {
   searchParams: Promise<RecordSearchParams>
 }) {
-  await requireAdminPage()
+  const session = await requireAdminPage()
 
   const params = await searchParams
   const query = parseRecordQuery(
@@ -97,6 +97,7 @@ export default async function StaffPage({
         <StaffClientTable
           data={staffRows}
           pageCount={pageCount}
+          currentUserId={session?.user?.id}
         />
       </div>
     </div>

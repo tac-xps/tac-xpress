@@ -37,6 +37,7 @@ import {
   ManifestDetailDialog,
   type ManifestDetail,
 } from "./manifest-detail-dialog"
+import { ManifestPrintDialog } from "./manifest-print-dialog"
 import { Trash2Icon, EditIcon } from "lucide-react"
 
 export function ManifestActions({ manifest }: { manifest: ManifestDetail }) {
@@ -44,6 +45,7 @@ export function ManifestActions({ manifest }: { manifest: ManifestDetail }) {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDetailDialog, setShowDetailDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [showPrintDialog, setShowPrintDialog] = useState(false)
 
   const { executeAsync: executeDelete, isExecuting: isDeleting } = useAction(
     deleteManifestAction,
@@ -80,7 +82,7 @@ export function ManifestActions({ manifest }: { manifest: ManifestDetail }) {
   }
 
   const handlePrint = () => {
-    window.open(`/api/manifests/${manifest.id}/print`, "_blank")
+    setShowPrintDialog(true)
   }
 
   const handleShare = async () => {
@@ -175,6 +177,14 @@ export function ManifestActions({ manifest }: { manifest: ManifestDetail }) {
         manifest={manifest}
         open={showEditDialog}
         onOpenChange={setShowEditDialog}
+      />
+
+      <ManifestPrintDialog
+        manifestId={manifest.id}
+        referenceId={manifest.referenceId}
+        status={manifest.status}
+        open={showPrintDialog}
+        onOpenChange={setShowPrintDialog}
       />
     </>
   )

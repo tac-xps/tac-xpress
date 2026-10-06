@@ -4,6 +4,7 @@ import React from "react"
 import { QRCode } from "@/components/documents/document-qr"
 import type { TaxInvoiceDocument } from "@/lib/documents/invoice/domain/types"
 import { formatMoney } from "@/lib/documents/invoice/domain/money"
+import { useScannerContext } from "@/components/scanner/scanner-provider"
 
 interface VerificationPanelProps {
   doc: TaxInvoiceDocument
@@ -19,6 +20,7 @@ export function VerificationPanel({
   const { commercial, verification, shipment } = doc
   const { supplier, status, financials, upiPayload } = commercial
   const isPaid = status === "paid" || financials.balanceDue.paise === 0
+  const { triggerScan } = useScannerContext()
 
   return (
     <footer className="invoice-section mt-auto pt-1.5 border-t border-[#191716] flex flex-col gap-1">
@@ -26,14 +28,33 @@ export function VerificationPanel({
         {/* Dual QRs / Seals */}
         <div className="flex items-center gap-4">
           {/* 1. AWB Live Tracking QR (Protected 20mm) */}
-          <div data-invoice-qr="tracking" className="flex items-center gap-2">
-            <div className="size-[20mm] border border-[#191716] p-0.5 bg-white shrink-0">
+          <div
+            data-invoice-qr="tracking"
+            role="button"
+            tabIndex={0}
+            onClick={() => triggerScan(shipment.awbNumber)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault()
+                triggerScan(shipment.awbNumber)
+              }
+            }}
+            title="Scan with terminal or click to open live telemetry dossier"
+            className="flex items-center gap-2 cursor-pointer group hover:bg-neutral-100/60 p-1 -m-1 transition-colors select-none print:m-0 print:p-0 print:cursor-default print:hover:bg-transparent"
+          >
+            <div className="size-[20mm] border border-[#191716] p-0.5 bg-white shrink-0 group-hover:border-primary transition-colors print:group-hover:border-[#191716]">
               <QRCode data={verification.trackingUrl} className="size-full" />
             </div>
             <div className="flex flex-col text-[7px] font-mono leading-tight">
-              <span className="font-bold uppercase text-[#191716]">LIVE AWB TRACKING</span>
-              <span className="text-neutral-500">Scan for live milestone telemetry &amp; delivery scan</span>
-              <span className="text-[6.5px] text-neutral-400 mt-0.5">AWB: {shipment.awbNumber}</span>
+              <span className="font-bold uppercase text-[#191716] group-hover:text-primary transition-colors print:group-hover:text-[#191716]">
+                LIVE AWB TRACKING
+              </span>
+              <span className="text-neutral-500">
+                Scan or click for milestone telemetry &amp; dossier
+              </span>
+              <span className="text-[6.5px] text-neutral-400 mt-0.5 font-bold">
+                AWB: {shipment.awbNumber}
+              </span>
             </div>
           </div>
 

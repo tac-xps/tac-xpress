@@ -58,6 +58,16 @@ function ChartContainer({
   const uniqueId = React.useId()
   const chartId = `chart-${id ?? uniqueId.replace(/:/g, "")}`
 
+  const inlineStyles = React.useMemo(() => {
+    const styles: Record<string, string> = {}
+    for (const [key, itemConfig] of Object.entries(config)) {
+      if (itemConfig.color) {
+        styles[`--color-${key}`] = itemConfig.color
+      }
+    }
+    return styles
+  }, [config])
+
   return (
     <ChartContext.Provider value={{ config }}>
       <div
@@ -68,6 +78,7 @@ function ChartContainer({
           className
         )}
         {...props}
+        style={{ ...inlineStyles, ...props.style }}
       >
         <ChartStyle id={chartId} config={config} />
         <RechartsPrimitive.ResponsiveContainer
@@ -95,7 +106,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
         __html: Object.entries(THEMES)
           .map(
             ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
+${prefix ? `${prefix} ` : ""}[data-chart=${id}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
     const color =
@@ -103,6 +114,7 @@ ${colorConfig
       itemConfig.color
     return color ? `  --color-${key}: ${color};` : null
   })
+  .filter(Boolean)
   .join("\n")}
 }
 `

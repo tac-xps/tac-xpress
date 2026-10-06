@@ -11,6 +11,7 @@ import {
   vehicles,
 } from "@/lib/db/schema"
 import { revalidatePath } from "next/cache"
+import { after } from "next/server"
 import * as Sentry from "@sentry/nextjs"
 import { authActionClient } from "@/lib/safe-action"
 import {
@@ -21,12 +22,19 @@ import {
 } from "./schemas"
 import { and, desc, eq, inArray, isNull, like, sql } from "drizzle-orm"
 import { logAuditInTransaction } from "@/lib/audit"
+import { messageDriverAction } from "@/app/dashboard/dispatch/whatsapp-actions"
 
 export const createManifestAction = authActionClient
   .schema(createManifestSchema)
   .action(async ({ parsedInput, ctx }) => {
-    const { shipmentIds, originHubId, destinationHubId, vehicleId, driverId } =
-      parsedInput
+    const {
+      shipmentIds,
+      originHubId,
+      destinationHubId,
+      vehicleId,
+      driverId,
+      sendWhatsAppNotification,
+    } = parsedInput
     const createdBy = ctx.session.user.id
 
     try {
@@ -145,10 +153,34 @@ export const createManifestAction = authActionClient
         return { id: newManifest.id, referenceId }
       })
 
+      let whatsAppDispatched = false
+      if (sendWhatsAppNotification && driverId) {
+        const assignedDriver = await db.query.drivers.findFirst({
+          where: eq(drivers.id, driverId),
+        })
+
+        if (assignedDriver?.phone) {
+          try {
+            const sendPromise = messageDriverAction(createdManifest.id, driverId)
+            const timeoutPromise = new Promise<{ success: boolean; error?: string }>((_, reject) =>
+              setTimeout(() => reject(new Error("Relay timeout")), 3000)
+            )
+            const sendResult = await Promise.race([sendPromise, timeoutPromise])
+            whatsAppDispatched = sendResult.success === true
+          } catch (msgErr) {
+            Sentry.captureException(msgErr, {
+              tags: { area: "manifest_create_whatsapp_notify" },
+            })
+            whatsAppDispatched = false
+          }
+        }
+      }
+
       revalidatePath("/dashboard/manifests")
       return {
         success: true,
         manifest: createdManifest,
+        whatsAppDispatched,
         error: undefined,
       }
     } catch (error) {

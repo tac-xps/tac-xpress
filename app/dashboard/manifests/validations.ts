@@ -8,6 +8,7 @@ export const createManifestSchema = z.object({
   shipmentIds: z
     .array(z.string().uuid())
     .min(1, "Select at least one shipment"),
+  sendWhatsAppNotification: z.boolean().default(true).optional(),
 })
 
 export const updateManifestSchema = z.object({

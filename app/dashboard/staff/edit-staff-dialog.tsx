@@ -34,10 +34,12 @@ export function EditStaffDialog({
   staff,
   open,
   onOpenChange,
+  isSelf = false,
 }: {
   staff: StaffForEdit
   open: boolean
   onOpenChange: (open: boolean) => void
+  isSelf?: boolean
 }) {
   const { form, isSubmitting, onSubmit } = useEditStaffDialog(
     staff,
@@ -127,9 +129,13 @@ export function EditStaffDialog({
                     <FormLabel className="text-xs font-semibold text-muted-foreground">
                       Role
                     </FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={isSelf}
+                    >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className={isSelf ? "opacity-75 cursor-not-allowed bg-muted/40" : ""}>
                           <SelectValue placeholder="Select a role" />
                         </SelectTrigger>
                       </FormControl>
@@ -138,7 +144,13 @@ export function EditStaffDialog({
                         <SelectItem value="admin">Admin</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage />
+                    {isSelf ? (
+                      <p className="text-xs text-status-pending">
+                        Self-demotion protection: You cannot change your own administrator role.
+                      </p>
+                    ) : (
+                      <FormMessage />
+                    )}
                   </FormItem>
                 )}
               />

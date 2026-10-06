@@ -17,7 +17,7 @@ export function ReviewItem({ label, value, className }: ReviewItemProps) {
       )}
     >
       <span className="text-sm text-muted-foreground">{label}</span>
-      <span className="text-right text-sm font-medium text-foreground tabular-nums">
+      <span className="text-right text-sm font-medium text-foreground tabular-nums font-mono">
         {value || "—"}
       </span>
     </div>

@@ -25,7 +25,44 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { retryDlqItem, dismissDlqItem } from "@/app/actions/dlq-actions"
-import { RefreshCw, Trash2, Code2, AlertCircle } from "lucide-react"
+import { RefreshCw, Trash2, Code2, AlertCircle, Copy, Check } from "lucide-react"
+
+/** Renders a JSON payload with copy-to-clipboard support */
+function DlqPayloadViewer({ payload }: { payload: unknown }) {
+  const [copied, setCopied] = useState(false)
+  const formatted = JSON.stringify(payload, null, 2)
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(formatted)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard unavailable in non-secure context
+    }
+  }
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="absolute right-2 top-2 z-10 rounded-sm p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+        title="Copy payload to clipboard"
+        aria-label="Copy payload"
+      >
+        {copied ? (
+          <Check className="size-3.5 text-status-delivered" />
+        ) : (
+          <Copy className="size-3.5" />
+        )}
+      </button>
+      <pre className="max-h-[350px] overflow-auto rounded-md border bg-muted p-4 pr-8 font-mono text-xs leading-relaxed text-foreground">
+        {formatted}
+      </pre>
+    </div>
+  )
+}
 
 export function DlqTable({
   data,
@@ -216,9 +253,7 @@ export function DlqTable({
               Inspection of the serialized event data that encountered unrecoverable errors.
             </DialogDescription>
           </DialogHeader>
-          <pre className="max-h-[350px] overflow-auto rounded-none bg-muted p-4 font-mono text-xs text-foreground">
-            {JSON.stringify(selectedPayload?.payload, null, 2)}
-          </pre>
+          <DlqPayloadViewer payload={selectedPayload?.payload} />
         </DialogContent>
       </Dialog>
     </>

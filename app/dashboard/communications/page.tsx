@@ -31,10 +31,14 @@ export default async function CommunicationsPage({
       .select({
         id: messageOutbound.id,
         phone: messageOutbound.phone,
+        body: messageOutbound.body,
         status: messageOutbound.status,
         templateName: messageOutbound.templateName,
+        templateLanguage: messageOutbound.templateLanguage,
         relatedInvoiceId: messageOutbound.relatedInvoiceId,
         relatedAwb: messageOutbound.relatedAwb,
+        failureReason: messageOutbound.failureReason,
+        providerPayload: messageOutbound.providerPayload,
         createdAt: messageOutbound.createdAt,
       })
       .from(messageOutbound)

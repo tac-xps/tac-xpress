@@ -80,7 +80,12 @@ export default async function ManifestsPage({
       .select({
         id: shipments.id,
         awbNumber: shipments.awbNumber,
+        origin: shipments.origin,
         destination: shipments.destination,
+        weightKg: shipments.weightKg,
+        pieces: shipments.pieces,
+        serviceType: shipments.serviceType,
+        natureOfGoods: shipments.natureOfGoods,
       })
       .from(shipments)
       .where(
@@ -97,15 +102,25 @@ export default async function ManifestsPage({
       )
       .limit(100),
     db
-      .select({ id: hubs.id, label: hubs.name })
+      .select({ id: hubs.id, label: hubs.name, location: hubs.location })
       .from(hubs)
       .where(isNull(hubs.deletedAt)),
     db
-      .select({ id: vehicles.id, label: vehicles.registrationNumber })
+      .select({
+        id: vehicles.id,
+        label: vehicles.registrationNumber,
+        capacityKg: vehicles.capacityKg,
+        driverId: vehicles.driverId,
+      })
       .from(vehicles)
       .where(and(eq(vehicles.status, "active"), isNull(vehicles.deletedAt))),
     db
-      .select({ id: drivers.id, label: drivers.name })
+      .select({
+        id: drivers.id,
+        label: drivers.name,
+        phone: drivers.phone,
+        licenseNumber: drivers.licenseNumber,
+      })
       .from(drivers)
       .where(and(eq(drivers.status, "active"), isNull(drivers.deletedAt))),
     ])
