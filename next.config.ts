@@ -90,7 +90,7 @@ const nextConfig: NextConfig = {
       "connect-src 'self' https: wss:",
       "worker-src 'self' blob:",
       "object-src 'none'",
-      "frame-ancestors 'none'",
+      "frame-ancestors 'self'",
       "base-uri 'self'",
       "form-action 'self'",
     ].join("; ")
@@ -113,7 +113,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: "X-Frame-Options",
-            value: "DENY",
+            value: "SAMEORIGIN",
           },
           {
             key: "Permissions-Policy",

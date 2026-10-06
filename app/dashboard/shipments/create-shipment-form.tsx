@@ -23,29 +23,39 @@ export function CreateShipmentForm({ onSuccess }: { onSuccess?: () => void }) {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex min-w-0 flex-col gap-6"
       >
+        {/* Step indicator with ARIA accessibility */}
         <div className="grid gap-3">
           <div className="flex justify-between gap-3 text-sm">
-            <span>
+            <span aria-live="polite" aria-atomic="true">
               Step {currentStep} of {STEPS.length}
             </span>
-            <span className="font-medium">{STEPS[currentStep - 1].title}</span>
+            <span
+              className="font-medium"
+              aria-current="step"
+              aria-label={`Current step: ${STEPS[currentStep - 1].title}`}
+            >
+              {STEPS[currentStep - 1].title}
+            </span>
           </div>
           <Progress
             value={(currentStep / STEPS.length) * 100}
-            aria-label="Shipment booking progress"
+            aria-label={`Shipment booking progress: step ${currentStep} of ${STEPS.length}`}
             className="h-1.5"
           />
         </div>
-        <fieldset disabled={isExecuting} className="min-w-0">
-          <legend className="sr-only">{STEPS[currentStep - 1].title}</legend>
-          {currentStep === 1 ? (
-            <ShipmentRouteStep />
-          ) : currentStep === 2 ? (
-            <ShipmentPartiesStep />
-          ) : (
-            <ShipmentCargoStep />
-          )}
-        </fieldset>
+        {/* Scrollable step content — safe on 1366×768 viewports */}
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <fieldset disabled={isExecuting} className="min-w-0">
+            <legend className="sr-only">{STEPS[currentStep - 1].title}</legend>
+            {currentStep === 1 ? (
+              <ShipmentRouteStep />
+            ) : currentStep === 2 ? (
+              <ShipmentPartiesStep />
+            ) : (
+              <ShipmentCargoStep />
+            )}
+          </fieldset>
+        </div>
         <div className="flex justify-between gap-3 border-t pt-5">
           <Button
             type="button"

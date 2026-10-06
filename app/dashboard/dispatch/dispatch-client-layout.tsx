@@ -108,7 +108,7 @@ export function DispatchClientLayout({
                   </div>
                   <CardDescription>{column.detail}</CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-3">
+                <CardContent className="flex min-h-[120px] flex-col gap-3">
                   {items
                     .filter((item) => item.column === column.id)
                     .map((item) => (
@@ -119,7 +119,7 @@ export function DispatchClientLayout({
                       />
                     ))}
                   {!items.some((item) => item.column === column.id) && (
-                    <p className="py-6 text-center text-sm text-muted-foreground">
+                    <p className="flex flex-1 items-center justify-center py-6 text-center text-sm text-muted-foreground">
                       No matching shipments in this queue.
                     </p>
                   )}

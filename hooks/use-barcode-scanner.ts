@@ -15,6 +15,11 @@ export function useBarcodeScanner({
 }: UseBarcodeScannerProps) {
   const buffer = useRef<string>("")
   const lastKeyTime = useRef<number>(0)
+  const onScanRef = useRef(onScan)
+
+  useEffect(() => {
+    onScanRef.current = onScan
+  })
 
   useEffect(() => {
     if (!enabled) return
@@ -33,8 +38,10 @@ export function useBarcodeScanner({
 
       if (e.key === "Enter") {
         if (buffer.current.length > 3) {
+          e.preventDefault()
+          e.stopPropagation()
           // Trigger scan callback with the current buffer
-          onScan(buffer.current)
+          onScanRef.current(buffer.current)
         }
         // Always clear the buffer on Enter
         buffer.current = ""
@@ -74,5 +81,5 @@ export function useBarcodeScanner({
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
     }
-  }, [onScan, enabled, timeoutMs])
+  }, [enabled, timeoutMs])
 }

@@ -4,52 +4,51 @@ import { authActionClient } from "@/lib/safe-action"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { shipments, trackingEvents } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
+import { and, eq, isNull } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
+import { logAuditInTransaction } from "@/lib/audit"
+import * as Sentry from "@sentry/nextjs"
 
 const scanShipmentSchema = z.object({
-  awbNumber: z.string().min(1, "AWB Number is required"),
+  awbNumber: z.string().trim().min(1, "AWB Number is required"),
 })
 
 export const scanShipmentAction = authActionClient
   .schema(scanShipmentSchema)
-  .action(async ({ parsedInput: { awbNumber } }) => {
-    // Find the shipment
-    const shipment = await db.query.shipments.findFirst({
-      where: eq(shipments.awbNumber, awbNumber),
-    })
-
-    if (!shipment) {
-      return {
-        success: false,
-        error: `Shipment with AWB ${awbNumber} not found.`,
-        shipment: undefined,
-      }
-    }
-
-    if (shipment.deletedAt) {
-      return {
-        success: false,
-        error: `Shipment ${awbNumber} was deleted.`,
-        shipment: undefined,
-      }
-    }
-
-    if (shipment.status === "delivered") {
-      return {
-        success: false,
-        error: `Shipment ${awbNumber} is already delivered.`,
-        shipment: undefined,
-      }
-    }
-
-    // Determine the new status. If pending, it becomes in-transit. If already in-transit, we just log a tracking event.
-    const newStatus =
-      shipment.status === "pending" ? "in-transit" : shipment.status
-
+  .action(async ({ parsedInput: { awbNumber }, ctx }) => {
     try {
-      await db.transaction(async (tx) => {
-        // Update shipment status if it changed
+      return await db.transaction(async (tx) => {
+        const [shipment] = await tx
+          .select()
+          .from(shipments)
+          .where(
+            and(
+              eq(shipments.awbNumber, awbNumber),
+              isNull(shipments.deletedAt)
+            )
+          )
+          .limit(1)
+          .for("update")
+
+        if (!shipment) {
+          return {
+            success: false,
+            error: `Shipment with AWB ${awbNumber} not found.`,
+            shipment: undefined,
+          }
+        }
+
+        if (shipment.status === "delivered") {
+          return {
+            success: false,
+            error: `Shipment ${awbNumber} is already delivered.`,
+            shipment: undefined,
+          }
+        }
+
+        const newStatus =
+          shipment.status === "pending" ? "in-transit" : shipment.status
+
         if (shipment.status !== newStatus) {
           await tx
             .update(shipments)
@@ -57,31 +56,44 @@ export const scanShipmentAction = authActionClient
             .where(eq(shipments.id, shipment.id))
         }
 
-        // Always add a tracking event for the scan
         await tx.insert(trackingEvents).values({
           shipmentId: shipment.id,
           status: newStatus,
           location: "Warehouse Hub",
           description: `Shipment scanned and processed at hub.`,
+          loggedBy: ctx.session.user.id,
+          isPublic: false,
         })
+
+        await logAuditInTransaction(tx, {
+          userId: ctx.session.user.id,
+          userEmail: ctx.session.user.email || "unknown",
+          action: "scanner_warehouse_transition",
+          entity: "shipments",
+          entityId: shipment.id,
+          before: { status: shipment.status },
+          after: { status: newStatus, location: "Warehouse Hub" },
+        })
+
+        revalidatePath("/dashboard/warehouse")
+        revalidatePath("/dashboard/shipments")
+
+        return {
+          success: true,
+          error: undefined,
+          shipment: {
+            id: shipment.id,
+            awbNumber: shipment.awbNumber,
+            status: newStatus,
+            origin: shipment.origin,
+            destination: shipment.destination,
+          },
+        }
       })
-
-      revalidatePath("/dashboard/warehouse")
-      revalidatePath("/dashboard/shipments")
-
-      return {
-        success: true,
-        error: undefined,
-        shipment: {
-          id: shipment.id,
-          awbNumber: shipment.awbNumber,
-          status: newStatus,
-          origin: shipment.origin,
-          destination: shipment.destination,
-        },
-      }
     } catch (error) {
-      // eslint-disable-next-line no-console
+      Sentry.captureException(error, {
+        tags: { feature: "warehouse-scanner", stage: "scan-action" },
+      })
       console.error("Failed to process scan:", error)
       return {
         success: false,

@@ -47,6 +47,7 @@ export function ScannerStation({ initialAwb }: { initialAwb: string }) {
                 value={station.query}
                 maxLength={64}
                 required
+                autoFocus
                 autoComplete="off"
                 placeholder="Enter or scan the reference"
                 className="font-mono"

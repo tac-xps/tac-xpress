@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useCallback, useEffect, useSyncExternalStore } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useScannerContext } from "@/components/scanner/scanner-provider"
 import {
   Truck,
   MapPin,
@@ -23,6 +24,7 @@ import {
   ChevronRight,
   FileText,
   RefreshCw,
+  WifiOff,
 } from "lucide-react"
 import { PageHeader } from "@/components/operations/page-header"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -92,6 +94,23 @@ interface DeliveryClientProps {
   summary: RouteSummaryMetrics
 }
 
+function subscribeToOnline(callback: () => void) {
+  window.addEventListener("online", callback)
+  window.addEventListener("offline", callback)
+  return () => {
+    window.removeEventListener("online", callback)
+    window.removeEventListener("offline", callback)
+  }
+}
+
+function getOnlineSnapshot() {
+  return typeof navigator !== "undefined" ? navigator.onLine : true
+}
+
+function getServerSnapshot() {
+  return true
+}
+
 export function DeliveryClient({
   manifests,
   activeManifest,
@@ -105,6 +124,7 @@ export function DeliveryClient({
   const [isScanOpen, setIsScanOpen] = useState(false)
   const [scanAwb, setScanAwb] = useState("")
   const [copiedAwb, setCopiedAwb] = useState<string | null>(null)
+  const isOnline = useSyncExternalStore(subscribeToOnline, getOnlineSnapshot, getServerSnapshot)
 
   const handleCopyAwb = (awb: string, e: React.MouseEvent) => {
     e.preventDefault()
@@ -115,22 +135,41 @@ export function DeliveryClient({
     setTimeout(() => setCopiedAwb(null), 2000)
   }
 
+  const { setOverrideHandler } = useScannerContext()
+
+  const processDriverScan = useCallback(
+    async (code: string) => {
+      const trimmed = code.trim().toUpperCase()
+      if (!trimmed) return false
+
+      const match = shipments.find(
+        (s) =>
+          s.awbNumber.toUpperCase() === trimmed ||
+          s.awbNumber.replace(/-/g, "").toUpperCase() === trimmed.replace(/-/g, "")
+      )
+
+      if (match) {
+        setIsScanOpen(false)
+        setScanAwb("")
+        toast.success(`Scanned AWB ${match.awbNumber}`)
+        router.push(`/driver/delivery/${match.id}`)
+        return true
+      } else {
+        toast.error(`AWB "${trimmed}" not found on current manifest`)
+        return false
+      }
+    },
+    [shipments, router]
+  )
+
+  useEffect(() => {
+    setOverrideHandler(processDriverScan)
+    return () => setOverrideHandler(null)
+  }, [setOverrideHandler, processDriverScan])
+
   const handleScanSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const trimmed = scanAwb.trim().toUpperCase()
-    if (!trimmed) return
-
-    const match = shipments.find(
-      (s) => s.awbNumber.toUpperCase() === trimmed || s.awbNumber.replace(/-/g, "").toUpperCase() === trimmed.replace(/-/g, "")
-    )
-
-    if (match) {
-      setIsScanOpen(false)
-      setScanAwb("")
-      router.push(`/driver/delivery/${match.id}`)
-    } else {
-      toast.error(`AWB "${trimmed}" not found on current manifest`)
-    }
+    void processDriverScan(scanAwb)
   }
 
   // Filter shipments based on search query and status tab
@@ -215,6 +254,16 @@ export function DeliveryClient({
           <RefreshCw className="size-3.5" />
         </Button>
       </PageHeader>
+      
+      {/* ── Offline Network Warning Banner ── */}
+      {!isOnline && (
+        <div className="flex items-center gap-2 rounded-none border border-status-pending/30 bg-status-pending-wash p-3 text-xs text-status-pending">
+          <WifiOff className="size-4 shrink-0 text-status-pending" />
+          <span>
+            Offline Mode Active: Scans and POD captures will be cached locally on your device and synchronized once cellular connection is restored.
+          </span>
+        </div>
+      )}
 
       {/* ── Route Telemetry / KPI Cards ── */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">

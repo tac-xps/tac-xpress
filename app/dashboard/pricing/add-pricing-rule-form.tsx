@@ -126,6 +126,7 @@ export function AddPricingRuleForm({ onSuccess }: AddPricingRuleFormProps) {
                         placeholder="0.00"
                         type="number"
                         step="0.01"
+                        min="0"
                         className="bg-background"
                         {...field}
                       />
@@ -145,6 +146,7 @@ export function AddPricingRuleForm({ onSuccess }: AddPricingRuleFormProps) {
                         placeholder="0.00"
                         type="number"
                         step="0.01"
+                        min="0"
                         className="bg-background"
                         {...field}
                       />

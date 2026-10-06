@@ -30,10 +30,10 @@ export function DateRangeSelect({ current }: { current: string }) {
 
   return (
     <Select value={current} onValueChange={handleChange}>
-      <SelectTrigger className="w-[180px] h-9">
+      <SelectTrigger className="w-full sm:w-[180px] h-9">
         <SelectValue placeholder="Select period" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent position="popper" sideOffset={4}>
         {PERIODS.map((p) => (
           <SelectItem key={p.value} value={p.value}>
             {p.label}

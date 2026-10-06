@@ -6,6 +6,7 @@ import { AddVehicleDialog } from "./add-vehicle-dialog"
 import { AddDriverDialog } from "./add-driver-dialog"
 import { VehiclesDataTable } from "./vehicles-data-table"
 import { DriversDataTable } from "./drivers-data-table"
+import { FleetTabsClient } from "./fleet-tabs-client"
 import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
 import { containsPattern, parseRecordQuery, type RecordSearchParams } from "@/lib/table-query"
@@ -29,8 +30,10 @@ export default async function FleetPage({ searchParams }: { searchParams: Promis
     db.select({ count: sql<number>`count(*)` }).from(drivers).where(driverWhere),
   ])
 
-  const vehiclePageCount = Math.ceil(Number(vehicleCountRes[0].count) / pageSize)
-  const driverPageCount = Math.ceil(Number(driverCountRes[0].count) / driverPageSize)
+  const vehicleTotal = Number(vehicleCountRes[0].count)
+  const driverTotal = Number(driverCountRes[0].count)
+  const vehiclePageCount = Math.ceil(vehicleTotal / pageSize)
+  const driverPageCount = Math.ceil(driverTotal / driverPageSize)
 
   return (
     <div className="flex min-w-0 flex-col gap-6">
@@ -41,9 +44,12 @@ export default async function FleetPage({ searchParams }: { searchParams: Promis
       <div className="rounded-none border bg-card">
         <TableToolbar pathname="/dashboard/fleet" query={q} placeholder="Vehicle registration, driver name, phone or licence" />
       </div>
-      <VehiclesDataTable data={vehicleRows} pageCount={vehiclePageCount} drivers={driverOptions} />
-      <DriversDataTable data={driverRows} pageCount={driverPageCount} />
+      <FleetTabsClient
+        vehicleCount={vehicleTotal}
+        driverCount={driverTotal}
+        vehiclesTable={<VehiclesDataTable data={vehicleRows} pageCount={vehiclePageCount} drivers={driverOptions} />}
+        driversTable={<DriversDataTable data={driverRows} pageCount={driverPageCount} />}
+      />
     </div>
   )
 }
-

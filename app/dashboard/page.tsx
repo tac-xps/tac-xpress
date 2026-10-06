@@ -39,15 +39,14 @@ export default async function DashboardPage() {
         </Button>
       </PageHeader>
       {/* ── Dashboard banner ── */}
-      <div className="w-full overflow-hidden rounded-none border border-border/80 shadow-xs">
+      <div className="w-full overflow-hidden rounded-none border border-border/80 shadow-xs aspect-[4/1] max-h-56">
         <Image
           src="/images/dashboard/banner_dashboard.png"
           alt="TAC-XPRESS operations dashboard banner"
           width={1536}
           height={384}
           priority
-          className="w-full object-cover"
-          style={{ height: "auto" }}
+          className="w-full h-full object-cover"
         />
       </div>
       <ControlCenterActions />

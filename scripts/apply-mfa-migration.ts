@@ -36,12 +36,18 @@ async function run() {
       CREATE TABLE IF NOT EXISTS public.user_mfa (
         user_id uuid PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
         totp_secret_encrypted text,
+        totp_pending_secret_encrypted text,
         totp_enabled boolean NOT NULL DEFAULT false,
         backup_codes_hash text,
+        failed_attempts integer NOT NULL DEFAULT 0,
+        locked_until timestamptz,
         updated_at timestamp without time zone NOT NULL DEFAULT now()
       );
     `
-    console.log("✅ Successfully created user_passkeys and user_mfa tables!")
+    await sql`ALTER TABLE public.user_mfa ADD COLUMN IF NOT EXISTS totp_pending_secret_encrypted text;`
+    await sql`ALTER TABLE public.user_mfa ADD COLUMN IF NOT EXISTS failed_attempts integer NOT NULL DEFAULT 0;`
+    await sql`ALTER TABLE public.user_mfa ADD COLUMN IF NOT EXISTS locked_until timestamptz;`
+    console.log("✅ Successfully created/updated user_passkeys and user_mfa tables!")
   } catch (err) {
     console.error("Migration failed:", err)
     process.exit(1)

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useTransition } from "react"
 import { QRCodeSVG } from "qrcode.react"
+import { toast } from "sonner"
 import { startRegistration } from "@simplewebauthn/browser"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -227,9 +228,11 @@ export function MfaSecuritySettings() {
     navigator.clipboard.writeText(text)
     if (isSecret) {
       setCopiedSecret(true)
+      toast.success("Authenticator secret copied to clipboard")
       setTimeout(() => setCopiedSecret(false), 2000)
     } else {
       setCopiedBackupCodes(true)
+      toast.success("Recovery codes copied to clipboard")
       setTimeout(() => setCopiedBackupCodes(false), 2000)
     }
   }
@@ -252,6 +255,7 @@ export function MfaSecuritySettings() {
     a.download = "tac-xpress-recovery-codes.txt"
     a.click()
     URL.revokeObjectURL(url)
+    toast.success("Recovery codes saved to tac-xpress-recovery-codes.txt")
   }
 
   if (isLoading) {
@@ -467,6 +471,8 @@ export function MfaSecuritySettings() {
                 value={totpCode}
                 onChange={setTotpCode}
                 disabled={isPending}
+                autoFocus
+                aria-label="6-digit verification code"
               >
                 <InputOTPGroup>
                   <InputOTPSlot index={0} />

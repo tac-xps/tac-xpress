@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { ScanBarcode, ShieldCheck } from "lucide-react"
+import { WarehouseAuditTable } from "./warehouse-audit-table"
 
 export default function WarehouseAuditPage() {
   const { lastScannedCode } = useScannerContext()
@@ -27,7 +28,7 @@ export default function WarehouseAuditPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="col-span-1 border-2 border-dashed md:col-span-2 lg:col-span-3">
+        <Card className="col-span-1 border-2 border-dashed md:col-span-2 lg:col-span-3 shadow-none">
           <CardHeader className="pb-2 text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-none bg-primary/10">
               <ScanBarcode className="h-8 w-8 text-primary" />
@@ -56,6 +57,8 @@ export default function WarehouseAuditPage() {
           </CardContent>
         </Card>
       </div>
+
+      <WarehouseAuditTable newScannedAwb={lastScannedCode || undefined} />
     </div>
   )
 }

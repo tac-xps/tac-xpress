@@ -93,7 +93,7 @@ export function WizardForm() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] w-full bg-muted/20 p-4 font-sans md:p-8">
+    <div className="relative min-h-[calc(100vh-4rem)] w-full bg-muted/20 p-4 pb-12 font-sans md:p-8 md:pb-16">
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -436,7 +436,7 @@ export function WizardForm() {
                     <span className="font-bold text-foreground">
                       Total Amount
                     </span>
-                    <span className="text-xl font-bold text-foreground tabular-nums">
+                    <span className="text-xl font-bold text-foreground tabular-nums font-mono">
                       ₹{calculations.totalAmount.toFixed(2)}
                     </span>
                   </div>
@@ -446,7 +446,7 @@ export function WizardForm() {
                       <span className="text-sm font-semibold">
                         Advance Paid
                       </span>
-                      <span className="text-sm font-bold tabular-nums">
+                      <span className="text-sm font-bold tabular-nums font-mono">
                         - ₹{(Number(form.watch("advancePaid")) || 0).toFixed(2)}
                       </span>
                     </div>
@@ -456,7 +456,7 @@ export function WizardForm() {
                     <span className="font-bold tracking-tight text-primary">
                       Balance Due
                     </span>
-                    <span className="text-2xl font-bold text-primary tabular-nums">
+                    <span className="text-2xl font-bold text-primary tabular-nums font-mono">
                       ₹{calculations.balanceDue.toFixed(2)}
                     </span>
                   </div>

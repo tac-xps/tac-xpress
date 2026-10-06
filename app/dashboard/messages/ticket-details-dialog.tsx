@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,15 @@ export function TicketDetailsDialog({
   const [isUpdating, setIsUpdating] = useState(false)
   const [replyMessage, setReplyMessage] = useState("")
   const [isSendingReply, setIsSendingReply] = useState(false)
+  const messageEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (open && ticket) {
+      setTimeout(() => {
+        messageEndRef.current?.scrollIntoView({ behavior: "smooth" })
+      }, 150)
+    }
+  }, [open, ticket?.id])
 
   if (!ticket) return null
 
@@ -138,7 +147,16 @@ export function TicketDetailsDialog({
                     SLA At Risk
                   </Badge>
                 )}
-                <Badge variant="secondary" className="text-[11px] capitalize">
+                <Badge
+                  variant={
+                    ticket.priority === "urgent"
+                      ? "destructive"
+                      : ticket.priority === "high"
+                        ? "warning"
+                        : "secondary"
+                  }
+                  className="text-[11px] capitalize font-medium"
+                >
                   Priority: {ticket.priority}
                 </Badge>
               </div>
@@ -188,6 +206,7 @@ export function TicketDetailsDialog({
             <h4 className="text-sm font-semibold text-foreground">Message</h4>
             <div className="max-h-64 min-h-24 overflow-y-auto rounded-none border border-border/50 bg-muted/10 p-4 text-sm whitespace-pre-wrap text-foreground/90">
               {ticket.message}
+              <div ref={messageEndRef} />
             </div>
           </div>
 
@@ -206,7 +225,7 @@ export function TicketDetailsDialog({
           )}
         </div>
 
-        <div className="mt-4 flex justify-end gap-3 border-t border-border/50 pt-4">
+        <div className="mt-4 flex justify-end gap-3 border-t border-border/50 pb-2 pt-4">
           {ticket.status !== "resolved" && (
             <Button
               variant="outline"

@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
@@ -16,19 +18,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import type { messageOutbound } from "@/lib/db/schema"
+import { MessagePayloadDialog, type MessagePayloadData } from "./message-payload-dialog"
+
 interface DeliveryHistoryProps {
   failedOnly: boolean
-  messages: Pick<
-    typeof messageOutbound.$inferSelect,
-    | "id"
-    | "phone"
-    | "status"
-    | "templateName"
-    | "relatedInvoiceId"
-    | "relatedAwb"
-  >[]
+  messages: MessagePayloadData[]
 }
+
 export function DeliveryHistory({
   messages,
   failedOnly,
@@ -75,6 +71,7 @@ export function DeliveryHistory({
                 <TableHead>Template</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Invoice</TableHead>
+                <TableHead className="text-right">Payload</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -110,12 +107,15 @@ export function DeliveryHistory({
                       "—"
                     )}
                   </TableCell>
+                  <TableCell className="text-right">
+                    <MessagePayloadDialog message={message} />
+                  </TableCell>
                 </TableRow>
               ))}
               {!messages.length && (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="py-8 text-center text-muted-foreground"
                   >
                     No matching delivery attempts.

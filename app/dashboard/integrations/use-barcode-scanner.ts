@@ -4,7 +4,7 @@ import * as Sentry from "@sentry/nextjs"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
-export function useBarcodeScanner(elementId: string = "reader-integration") {
+export function useCameraScanner(elementId: string = "reader-integration") {
   const [scanResult, setScanResult] = useState<string | null>(null)
   const [scannerError, setScannerError] = useState<string | null>(null)
   const router = useRouter()
@@ -68,3 +68,5 @@ export function useBarcodeScanner(elementId: string = "reader-integration") {
     scannerError,
   }
 }
+
+export const useBarcodeScanner = useCameraScanner

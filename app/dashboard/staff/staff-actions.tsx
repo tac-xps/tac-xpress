@@ -25,7 +25,13 @@ import { toast } from "sonner"
 import { EditStaffDialog } from "./edit-staff-dialog"
 import { StaffForEdit } from "./use-edit-staff-dialog"
 
-export function StaffActions({ staff }: { staff: StaffForEdit }) {
+export function StaffActions({
+  staff,
+  isSelf = false,
+}: {
+  staff: StaffForEdit
+  isSelf?: boolean
+}) {
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
@@ -63,11 +69,14 @@ export function StaffActions({ staff }: { staff: StaffForEdit }) {
             Edit
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => setShowDelete(true)}
-            className="text-destructive"
+            onClick={() => {
+              if (!isSelf) setShowDelete(true)
+            }}
+            disabled={isSelf}
+            className={isSelf ? "cursor-not-allowed opacity-50" : "text-destructive"}
           >
             <Trash className="mr-2 h-4 w-4" />
-            Revoke Access
+            {isSelf ? "Revoke Access (Self)" : "Revoke Access"}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -98,6 +107,7 @@ export function StaffActions({ staff }: { staff: StaffForEdit }) {
           staff={staff}
           open={showEdit}
           onOpenChange={setShowEdit}
+          isSelf={isSelf}
         />
       )}
     </>

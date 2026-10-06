@@ -21,12 +21,19 @@ import {
 } from "./schemas"
 import { and, desc, eq, inArray, isNull, like, sql } from "drizzle-orm"
 import { logAuditInTransaction } from "@/lib/audit"
+import { messageDriverAction } from "@/app/dashboard/dispatch/whatsapp-actions"
 
 export const createManifestAction = authActionClient
   .schema(createManifestSchema)
   .action(async ({ parsedInput, ctx }) => {
-    const { shipmentIds, originHubId, destinationHubId, vehicleId, driverId } =
-      parsedInput
+    const {
+      shipmentIds,
+      originHubId,
+      destinationHubId,
+      vehicleId,
+      driverId,
+      sendWhatsAppNotification,
+    } = parsedInput
     const createdBy = ctx.session.user.id
 
     try {
@@ -145,10 +152,23 @@ export const createManifestAction = authActionClient
         return { id: newManifest.id, referenceId }
       })
 
+      let whatsAppDispatched = false
+      if (sendWhatsAppNotification && driverId) {
+        try {
+          const waResult = await messageDriverAction(createdManifest.id, driverId)
+          whatsAppDispatched = !!waResult?.success
+        } catch (msgErr) {
+          Sentry.captureException(msgErr, {
+            tags: { area: "manifest_create_whatsapp_notify" },
+          })
+        }
+      }
+
       revalidatePath("/dashboard/manifests")
       return {
         success: true,
         manifest: createdManifest,
+        whatsAppDispatched,
         error: undefined,
       }
     } catch (error) {
