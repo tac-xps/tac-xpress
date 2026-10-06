@@ -4,9 +4,9 @@ import { authActionClient } from "@/lib/safe-action"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { shipments, trackingEvents } from "@/lib/db/schema"
-import { and, desc, eq, inArray, isNotNull, isNull } from "drizzle-orm"
+import { and, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
-import { logAuditInTransaction } from "@/lib/audit"
+import { logAuditInTransaction, logAudit } from "@/lib/audit"
 import { requireDashboardSession } from "@/lib/auth/guards"
 import * as Sentry from "@sentry/nextjs"
 
@@ -124,54 +124,85 @@ export async function getWarehouseAuditDiscrepanciesAction(): Promise<{
 }> {
   await requireDashboardSession()
   try {
-    const activeShipments = await db.query.shipments.findMany({
-      where: and(
-        isNull(shipments.deletedAt),
-        inArray(shipments.status, ["pending", "in-transit"])
-      ),
-      with: {
-        manifestItems: true,
-      },
-      limit: 25,
-      orderBy: (s, { desc }) => [desc(s.createdAt)],
-    })
-
-    const unmanifested = activeShipments
-      .filter((s) => s.manifestItems.length === 0)
-      .map((s) => ({
-        id: `unman-${s.id}`,
-        awb: s.awbNumber,
-        hub: s.origin || "Hub Floor",
-        expectedLocation: "Unassigned Manifest",
-        scannedLocation: "Inbound Staging",
-        discrepancyType: "unmanifested" as const,
-        status: "pending" as const,
-        timestamp: new Date(s.createdAt).toLocaleDateString(),
-      }))
-
-    const reconciledEvents = await db.query.trackingEvents.findMany({
-      where: and(
-        eq(trackingEvents.eventType, "warehouse_audit_reconciled"),
-        isNotNull(trackingEvents.awbNumber)
-      ),
-      limit: 15,
+    const trackedEvents = await db.query.trackingEvents.findMany({
+      where: inArray(trackingEvents.eventType, [
+        "warehouse_audit_discrepancy",
+        "warehouse_audit_reconciled",
+      ]),
       orderBy: (events, { desc }) => [desc(events.createdAt)],
     })
 
-    const reconciled = reconciledEvents.map((evt) => ({
-      id: `rec-${evt.id}`,
-      awb: evt.awbNumber || "Unknown",
-      hub: evt.location || "Warehouse Hub",
-      expectedLocation: evt.locationCode || "Floor Scan",
-      scannedLocation: evt.locationCode || "Floor Scan",
-      discrepancyType: "location_mismatch" as const,
-      status: "reconciled" as const,
-      timestamp: new Date(evt.createdAt).toLocaleDateString(),
-    }))
+    const itemsMap = new Map<string, DiscrepancyRecord>()
+
+    for (const evt of trackedEvents) {
+      const awb = evt.awbNumber
+      if (!awb || itemsMap.has(awb)) continue
+
+      const isReconciled = evt.eventType === "warehouse_audit_reconciled"
+
+      itemsMap.set(awb, {
+        id: `audit-${evt.id}`,
+        awb,
+        hub: evt.location || "Warehouse Hub",
+        expectedLocation: isReconciled
+          ? evt.locationCode || "Floor Scan"
+          : "Manifest Assigned",
+        scannedLocation: evt.locationCode || "Floor Scan",
+        discrepancyType: isReconciled ? "location_mismatch" : "unmanifested",
+        status: isReconciled ? "reconciled" : "pending",
+        timestamp: new Date(evt.createdAt).toLocaleDateString(),
+      })
+    }
+
+    try {
+      const unregRows = await db.execute<{
+        id: string
+        action: string
+        entity_id: string
+        after: unknown
+        created_at: string
+      }>(sql`
+        select id, action, entity_id, "after", created_at
+        from public.audit_log
+        where action in ('warehouse_audit_discrepancy_unregistered', 'warehouse_audit_reconciled_unregistered')
+        order by created_at desc
+        limit 100
+      `)
+
+      for (const row of unregRows) {
+        const awb = row.entity_id
+        if (!awb || itemsMap.has(awb)) continue
+
+        const afterData =
+          typeof row.after === "string"
+            ? (JSON.parse(row.after) as Record<string, unknown>)
+            : (row.after as Record<string, unknown> | null)
+
+        const isReconciled =
+          row.action === "warehouse_audit_reconciled_unregistered"
+
+        itemsMap.set(awb, {
+          id: `unreg-${row.id}`,
+          awb,
+          hub: (afterData?.hub as string) || "Floor Staging",
+          expectedLocation:
+            (afterData?.expectedLocation as string) || "Manifest Record",
+          scannedLocation:
+            (afterData?.scannedLocation as string) || "Scanner Station",
+          discrepancyType: "unmanifested",
+          status: isReconciled ? "reconciled" : "pending",
+          timestamp: new Date(row.created_at).toLocaleDateString(),
+        })
+      }
+    } catch (auditErr) {
+      Sentry.captureException(auditErr, {
+        tags: { area: "warehouse-audit-log-query" },
+      })
+    }
 
     return {
       success: true,
-      data: [...unmanifested, ...reconciled],
+      data: Array.from(itemsMap.values()),
     }
   } catch (error) {
     Sentry.captureException(error, { tags: { area: "warehouse-audit" } })
@@ -190,7 +221,7 @@ export async function verifyAwbForAuditAction(awbNumber: string): Promise<{
   message?: string
   error?: string
 }> {
-  await requireDashboardSession()
+  const session = await requireDashboardSession()
   try {
     const trimmed = awbNumber.trim().toUpperCase()
     if (!trimmed) {
@@ -213,37 +244,133 @@ export async function verifyAwbForAuditAction(awbNumber: string): Promise<{
     })
 
     if (!shipment) {
+      try {
+        const existingUnreg = await db.execute<{ action: string }>(sql`
+          select action from public.audit_log
+          where entity_id = ${trimmed}
+            and action in ('warehouse_audit_discrepancy_unregistered', 'warehouse_audit_reconciled_unregistered')
+          order by created_at desc
+          limit 1
+        `)
+        const alreadyPending =
+          existingUnreg.length > 0 &&
+          existingUnreg[0].action ===
+            "warehouse_audit_discrepancy_unregistered"
+
+        if (!alreadyPending) {
+          await logAudit({
+            userId: session.user.id,
+            userEmail: session.user.email || "staff",
+            action: "warehouse_audit_discrepancy_unregistered",
+            entity: "unregistered_awb",
+            entityId: trimmed,
+            resourceId: trimmed,
+            after: {
+              awb: trimmed,
+              hub: "Floor Staging",
+              expectedLocation: "Manifest Record",
+              scannedLocation: "Scanner Station",
+              discrepancyType: "unmanifested",
+              status: "pending",
+            },
+          })
+        }
+      } catch (err) {
+        Sentry.captureException(err, {
+          tags: { area: "warehouse-audit-log-unreg" },
+        })
+      }
+
+      const discrepancy: DiscrepancyRecord = {
+        id: `unreg-${trimmed}`,
+        awb: trimmed,
+        hub: "Floor Staging",
+        expectedLocation: "Manifest Record",
+        scannedLocation: "Scanner Station",
+        discrepancyType: "unmanifested",
+        status: "pending",
+        timestamp: "Just now",
+      }
+
       return {
         success: true,
         isDiscrepancy: true,
-        discrepancy: {
-          id: `unreg-${trimmed}-${Date.now()}`,
-          awb: trimmed,
-          hub: "Floor Staging",
-          expectedLocation: "Manifest Record",
-          scannedLocation: "Scanner Station",
-          discrepancyType: "unmanifested",
-          status: "pending",
-          timestamp: "Just now",
-        },
+        discrepancy,
         message: `AWB ${trimmed} is not registered in system. Flagged as unmanifested discrepancy.`,
       }
     }
 
     if (shipment.manifestItems.length === 0) {
+      const existingEvent = await db.query.trackingEvents.findFirst({
+        where: and(
+          eq(trackingEvents.shipmentId, shipment.id),
+          inArray(trackingEvents.eventType, [
+            "warehouse_audit_discrepancy",
+            "warehouse_audit_reconciled",
+          ])
+        ),
+        orderBy: (evt, { desc }) => [desc(evt.createdAt)],
+      })
+
+      let eventId = existingEvent?.id
+      if (
+        !existingEvent ||
+        existingEvent.eventType !== "warehouse_audit_discrepancy"
+      ) {
+        const [newEvent] = await db
+          .insert(trackingEvents)
+          .values({
+            shipmentId: shipment.id,
+            awbNumber: shipment.awbNumber,
+            eventType: "warehouse_audit_discrepancy",
+            status: shipment.status,
+            location: shipment.origin || "Hub Floor",
+            locationCode: "Floor Scan",
+            description:
+              "Warehouse floor audit flagged consignment: unassigned manifest.",
+            loggedBy: session.user.id,
+            isPublic: false,
+          })
+          .returning()
+
+        eventId = newEvent?.id
+
+        try {
+          await logAudit({
+            userId: session.user.id,
+            userEmail: session.user.email || "staff",
+            action: "warehouse_audit_discrepancy",
+            entity: "shipments",
+            entityId: shipment.id,
+            resourceId: shipment.awbNumber,
+            after: {
+              awb: shipment.awbNumber,
+              discrepancyType: "unmanifested",
+              status: "pending",
+            },
+          })
+        } catch (auditErr) {
+          Sentry.captureException(auditErr, {
+            tags: { area: "warehouse-audit-log" },
+          })
+        }
+      }
+
+      const discrepancy: DiscrepancyRecord = {
+        id: `audit-${eventId || shipment.id}`,
+        awb: shipment.awbNumber,
+        hub: shipment.origin || "Hub Floor",
+        expectedLocation: "Manifest Assigned",
+        scannedLocation: "Floor Scan",
+        discrepancyType: "unmanifested",
+        status: "pending",
+        timestamp: "Just now",
+      }
+
       return {
         success: true,
         isDiscrepancy: true,
-        discrepancy: {
-          id: `unman-${shipment.id}`,
-          awb: shipment.awbNumber,
-          hub: shipment.origin || "Hub Floor",
-          expectedLocation: "Manifest Assigned",
-          scannedLocation: "Floor Scan",
-          discrepancyType: "unmanifested",
-          status: "pending",
-          timestamp: "Just now",
-        },
+        discrepancy,
         message: `Shipment ${trimmed} has no assigned manifest. Added to discrepancy review.`,
       }
     }
@@ -266,9 +393,57 @@ export async function reconcileWarehouseDiscrepanciesAction(
   reason?: string
 ): Promise<{ success: boolean; error?: string }> {
   const session = await requireDashboardSession()
+  if (!awbs.length) {
+    return {
+      success: false,
+      error: "No consignments specified for reconciliation.",
+    }
+  }
+
   try {
     return await db.transaction(async (tx) => {
       for (const awb of awbs) {
+        const lastTracked = await tx.query.trackingEvents.findFirst({
+          where: and(
+            eq(trackingEvents.awbNumber, awb),
+            inArray(trackingEvents.eventType, [
+              "warehouse_audit_discrepancy",
+              "warehouse_audit_reconciled",
+            ])
+          ),
+          orderBy: (events, { desc }) => [desc(events.createdAt)],
+        })
+
+        const hasTrackedPending =
+          lastTracked?.eventType === "warehouse_audit_discrepancy"
+
+        let hasUnregisteredPending = false
+        try {
+          const unregLogs = await tx.execute<{ action: string }>(sql`
+            select action
+            from public.audit_log
+            where entity_id = ${awb}
+              and action in ('warehouse_audit_discrepancy_unregistered', 'warehouse_audit_reconciled_unregistered')
+            order by created_at desc
+            limit 1
+          `)
+          if (
+            unregLogs.length > 0 &&
+            unregLogs[0].action === "warehouse_audit_discrepancy_unregistered"
+          ) {
+            hasUnregisteredPending = true
+          }
+        } catch {
+          // Fall through
+        }
+
+        if (!hasTrackedPending && !hasUnregisteredPending) {
+          return {
+            success: false,
+            error: `Consignment ${awb} has no active warehouse discrepancy to reconcile.`,
+          }
+        }
+
         const shipment = await tx.query.shipments.findFirst({
           where: and(isNull(shipments.deletedAt), eq(shipments.awbNumber, awb)),
         })
@@ -292,6 +467,7 @@ export async function reconcileWarehouseDiscrepanciesAction(
             action: "warehouse_audit_reconciled",
             entity: "shipments",
             entityId: shipment.id,
+            resourceId: shipment.awbNumber,
             before: { discrepancy: "pending" },
             after: {
               discrepancy: "reconciled",
@@ -305,6 +481,7 @@ export async function reconcileWarehouseDiscrepanciesAction(
             action: "warehouse_audit_reconciled_unregistered",
             entity: "unregistered_awb",
             entityId: awb,
+            resourceId: awb,
             before: { awb, status: "pending" },
             after: {
               awb,

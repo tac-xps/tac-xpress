@@ -44,7 +44,11 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
       const res = await getWarehouseAuditDiscrepanciesAction()
       if (active) {
         if (res.success && res.data) {
-          setItems(res.data)
+          setItems((prev) => {
+            const fetchedAwbs = new Set(res.data.map((item) => item.awb))
+            const freshScans = prev.filter((item) => !fetchedAwbs.has(item.awb))
+            return [...freshScans, ...res.data]
+          })
         }
         setIsLoading(false)
       }

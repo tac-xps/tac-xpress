@@ -37,16 +37,16 @@ export default async function FeedbackPage({
     ? rawSentiment
     : "all"
 
-  const positiveSql = sql`(${feedback.message} ~* '\\m(great|fast|excellent|good|smooth|thank|awesome)')`
-  const negativeSql = sql`(${feedback.message} ~* '\\m(delay|damage|broken|lost|late|poor|terrible|worst)')`
+  const negativeSql = sql`(${feedback.message} ~* '\\m(delay[[:alpha:]]*|damage[[:alpha:]]*|broken|lost|late|poor|terrible|worst)\\M')`
+  const positiveSql = sql`(${feedback.message} ~* '\\m(great|fast|excellent|good|smooth|thank[[:alpha:]]*|awesome)\\M')`
 
   let sentimentCondition: SQL | undefined = undefined
-  if (sentiment === "positive") {
-    sentimentCondition = positiveSql
-  } else if (sentiment === "negative") {
+  if (sentiment === "negative") {
     sentimentCondition = negativeSql
+  } else if (sentiment === "positive") {
+    sentimentCondition = sql`(${positiveSql} AND NOT (${negativeSql}))`
   } else if (sentiment === "general") {
-    sentimentCondition = sql`(NOT ${positiveSql} AND NOT ${negativeSql})`
+    sentimentCondition = sql`(NOT (${positiveSql}) AND NOT (${negativeSql}))`
   }
 
   const searchCondition = q

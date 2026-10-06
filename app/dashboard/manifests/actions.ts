@@ -155,22 +155,24 @@ export const createManifestAction = authActionClient
 
       let whatsAppDispatched = false
       if (sendWhatsAppNotification && driverId) {
-        whatsAppDispatched = true
-        const notifyDriver = async () => {
+        const assignedDriver = await db.query.drivers.findFirst({
+          where: eq(drivers.id, driverId),
+        })
+
+        if (assignedDriver?.phone) {
           try {
-            await messageDriverAction(createdManifest.id, driverId)
+            const sendPromise = messageDriverAction(createdManifest.id, driverId)
+            const timeoutPromise = new Promise<{ success: boolean; error?: string }>((_, reject) =>
+              setTimeout(() => reject(new Error("Relay timeout")), 3000)
+            )
+            const sendResult = await Promise.race([sendPromise, timeoutPromise])
+            whatsAppDispatched = sendResult.success === true
           } catch (msgErr) {
             Sentry.captureException(msgErr, {
               tags: { area: "manifest_create_whatsapp_notify" },
             })
+            whatsAppDispatched = false
           }
-        }
-
-        try {
-          after(notifyDriver)
-        } catch {
-          // In test environments outside Next.js request context, schedule non-blocking
-          void notifyDriver()
         }
       }
 
