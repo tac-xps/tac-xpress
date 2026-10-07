@@ -88,3 +88,32 @@ export function sanitizeHtml(dirty: string): string {
   })
 }
 
+const HTML_STRUCTURE_REGEX =
+  /<\/?(?:p|h[1-6]|ul|ol|li|blockquote|table|thead|tbody|tr|th|td|pre|code|div|span|strong|em|b|i|u|s|hr|br|a)\b[^>]*>/i
+
+/**
+ * Extracts visible text content from a message string.
+ * - For HTML content (e.g. from rich text editors), strips ALL HTML tags and decodes common entities,
+ *   preventing non-rendering markup (such as `<p><img src=x></p>`) from artificially inflating character counts.
+ * - For plain text (e.g. from textareas or feedback), preserves literal angle bracket tokens
+ *   (such as `<AWB123>` or `2 < 5`) without stripping them.
+ */
+export function getVisibleText(content?: string | null): string {
+  if (!content) return ""
+
+  // If content has no recognized HTML structural tags, treat as plain text
+  if (!HTML_STRUCTURE_REGEX.test(content)) {
+    return content.trim()
+  }
+
+  // Content is HTML: strip all tags and decode basic entities to measure true visible text
+  return content
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .trim()
+}

@@ -25,9 +25,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-
-const HTML_TAG_REGEX =
-  /<\/?(?:p|h[1-6]|ul|ol|li|blockquote|table|thead|tbody|tr|th|td|pre|code|div|span|strong|em|b|i|u|s|hr|br|a)\b[^>]*>/gi
+import { getVisibleText } from "@/lib/sanitize"
 
 const ticketSchema = z.object({
   customer_name: z.string().min(2, "Name must be at least 2 characters"),
@@ -37,11 +35,11 @@ const ticketSchema = z.object({
   message: z
     .string()
     .refine(
-      (val) => val.replace(HTML_TAG_REGEX, "").trim().length >= 10,
+      (val) => getVisibleText(val).length >= 10,
       { message: "Message must be at least 10 characters" }
     )
     .refine(
-      (val) => val.replace(HTML_TAG_REGEX, "").trim().length <= 5000,
+      (val) => getVisibleText(val).length <= 5000,
       { message: "Message cannot exceed 5000 characters" }
     ),
 })
@@ -178,6 +176,7 @@ export default function PortalTicketForm({
                   variant="compact"
                   minHeight="110px"
                   placeholder="Provide details about your shipment, consignee, or question..."
+                  aria-label="Message"
                   {...field}
                 />
               </FormControl>

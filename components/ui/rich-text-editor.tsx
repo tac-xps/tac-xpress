@@ -50,6 +50,8 @@ export interface RichTextEditorProps {
   name?: string
   "aria-describedby"?: string
   "aria-invalid"?: boolean | "true" | "false"
+  "aria-label"?: string
+  "aria-labelledby"?: string
   onBlur?: () => void
 }
 
@@ -106,6 +108,8 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
       name,
       "aria-describedby": ariaDescribedBy,
       "aria-invalid": ariaInvalid,
+      "aria-label": ariaLabelProp,
+      "aria-labelledby": ariaLabelledByProp,
       onBlur,
     }: RichTextEditorProps,
     ref
@@ -113,6 +117,11 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
     const isInvalid = Boolean(
       error || ariaInvalid === true || ariaInvalid === "true"
     )
+    const accessibleLabel =
+      ariaLabelProp ||
+      (ariaLabelledByProp
+        ? undefined
+        : placeholder || "Rich text editor")
     const containerRef = React.useRef<HTMLDivElement>(null)
 
     const extensions = React.useMemo<AnyExtension[]>(() => {
@@ -164,6 +173,8 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
         attributes: {
           role: "textbox",
           "aria-multiline": "true",
+          ...(accessibleLabel ? { "aria-label": accessibleLabel } : {}),
+          ...(ariaLabelledByProp ? { "aria-labelledby": ariaLabelledByProp } : {}),
           ...(isInvalid ? { "aria-invalid": "true" } : {}),
           ...(id ? { id } : {}),
           ...(ariaDescribedBy ? { "aria-describedby": ariaDescribedBy } : {}),

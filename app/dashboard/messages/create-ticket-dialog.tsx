@@ -211,6 +211,7 @@ export function CreateTicketDialog() {
                         variant="full"
                         placeholder="Detailed explanation of the issue with bullet points, steps to reproduce, or tables..."
                         minHeight="140px"
+                        aria-label="Description"
                         value={field.value}
                         onChange={field.onChange}
                       />

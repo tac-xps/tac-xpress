@@ -31,10 +31,9 @@ const aj = arcjet({
   ],
 })
 
-// ---------------------------------------------------------------------------
+import { getVisibleText } from "@/lib/sanitize"
 
-const HTML_TAG_REGEX =
-  /<\/?(?:p|h[1-6]|ul|ol|li|blockquote|table|thead|tbody|tr|th|td|pre|code|div|span|strong|em|b|i|u|s|hr|br|a)\b[^>]*>/gi
+// ---------------------------------------------------------------------------
 
 const createTicketSchema = z.object({
   customer_name: z.string().min(2, "Name required").max(120),
@@ -44,11 +43,11 @@ const createTicketSchema = z.object({
   message: z
     .string()
     .refine(
-      (val) => val.replace(HTML_TAG_REGEX, "").trim().length >= 10,
+      (val) => getVisibleText(val).length >= 10,
       { message: "Message too short" }
     )
     .refine(
-      (val) => val.replace(HTML_TAG_REGEX, "").trim().length <= 5000,
+      (val) => getVisibleText(val).length <= 5000,
       { message: "Message too long" }
     )
     .refine((val) => val.length <= 25000, { message: "Payload too large" }),

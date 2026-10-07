@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest"
 import { act } from "react"
 import { createRoot, type Root } from "react-dom/client"
-import { sanitizeHtml } from "@/lib/sanitize"
+import { sanitizeHtml, getVisibleText } from "@/lib/sanitize"
 import { RichTextRenderer } from "@/components/ui/rich-text-renderer"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 
@@ -109,6 +109,22 @@ describe("RichTextEditor Component", () => {
     expect(editorContainer?.getAttribute("data-invalid")).toBe("true")
     expect(editorContainer?.className).toContain("border-destructive")
   })
+
+  it("applies aria-label accessible name to the textbox role element", () => {
+    act(() => {
+      root.render(<RichTextEditor aria-label="Support message" placeholder="Type here..." />)
+    })
+    const textbox = container.querySelector('[role="textbox"]')
+    expect(textbox?.getAttribute("aria-label")).toBe("Support message")
+  })
+
+  it("falls back to placeholder as accessible name if aria-label is omitted", () => {
+    act(() => {
+      root.render(<RichTextEditor placeholder="Enter invoice notes" />)
+    })
+    const textbox = container.querySelector('[role="textbox"]')
+    expect(textbox?.getAttribute("aria-label")).toBe("Enter invoice notes")
+  })
 })
 
 describe("Sanitizer & Renderer security improvements", () => {
@@ -143,16 +159,34 @@ describe("Sanitizer & Renderer security improvements", () => {
     testContainer.remove()
   })
 
-  it("preserves angle bracket references in feedback and message validation", () => {
-    const HTML_TAG_REGEX =
-      /<\/?(?:p|h[1-6]|ul|ol|li|blockquote|table|thead|tbody|tr|th|td|pre|code|div|span|strong|em|b|i|u|s|hr|br|a)\b[^>]*>/gi
-    const input = "Please check <AWB123>"
-    const stripped = input.replace(HTML_TAG_REGEX, "").trim()
-    expect(stripped).toBe("Please check <AWB123>")
-    expect(stripped.length).toBeGreaterThanOrEqual(10)
+  it("extracts true visible text correctly and rejects markup-only empty messages", () => {
+    // 1. Markup-only image payload: must evaluate to empty visible text
+    const emptyImgMsg = "<p><img src=x></p>"
+    expect(getVisibleText(emptyImgMsg)).toBe("")
+    expect(getVisibleText(emptyImgMsg).length).toBe(0)
 
+    // 2. Empty paragraphs or breaks
+    expect(getVisibleText("<p></p>")).toBe("")
+    expect(getVisibleText("<p><br></p>")).toBe("")
+
+    // 3. Plain text message containing angle brackets (from textarea or feedback)
+    const plainWithBrackets = "Please check <AWB123>"
+    expect(getVisibleText(plainWithBrackets)).toBe("Please check <AWB123>")
+    expect(getVisibleText(plainWithBrackets).length).toBeGreaterThanOrEqual(10)
+
+    // 4. Mathematical comparisons in plain text
     const mathInput = "Weight range: 2 < 5 and 5 > 2"
-    expect(mathInput.replace(HTML_TAG_REGEX, "").trim()).toBe("Weight range: 2 < 5 and 5 > 2")
+    expect(getVisibleText(mathInput)).toBe("Weight range: 2 < 5 and 5 > 2")
+
+    // 5. Rich text editor encoded angle brackets
+    const richWithBrackets = "<p>Check &lt;AWB123&gt; now</p>"
+    expect(getVisibleText(richWithBrackets)).toBe("Check <AWB123> now")
+    expect(getVisibleText(richWithBrackets).length).toBeGreaterThanOrEqual(10)
+
+    // 6. Markup with embedded image but valid text content
+    const msgWithImgAndText = "<p><img src=x>Confirmed delivery for cargo</p>"
+    expect(getVisibleText(msgWithImgAndText)).toBe("Confirmed delivery for cargo")
+    expect(getVisibleText(msgWithImgAndText).length).toBeGreaterThanOrEqual(10)
   })
 })
 

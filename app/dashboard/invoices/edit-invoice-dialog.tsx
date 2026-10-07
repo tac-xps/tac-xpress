@@ -507,6 +507,7 @@ export function EditInvoiceDialog({
                             variant="compact"
                             minHeight="96px"
                             placeholder="Add billing remarks, payment terms, or special invoice instructions..."
+                            aria-label="Remarks / Billing Notes"
                             value={field.value || ""}
                             onChange={field.onChange}
                           />

@@ -226,6 +226,7 @@ export function TicketDetailsDialog({
                 variant="full"
                 placeholder="Type your reply here with lists, quotes, or tables... (This will be emailed to the customer)"
                 minHeight="140px"
+                aria-label="Reply via Email"
                 value={replyMessage}
                 onChange={setReplyMessage}
               />
