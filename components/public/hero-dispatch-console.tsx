@@ -12,10 +12,15 @@ import { springs, microGestures } from "@/lib/animations"
 interface HeroDispatchConsoleProps {
   className?: string
   variant?: "dark" | "light"
+  defaultTab?: "track" | "quote"
 }
 
-export function HeroDispatchConsole({ className, variant: _variant }: HeroDispatchConsoleProps = {}) {
-  const [activeTab, setActiveTab] = useState<"track" | "quote">("quote")
+export function HeroDispatchConsole({
+  className,
+  variant: _variant,
+  defaultTab = "track",
+}: HeroDispatchConsoleProps = {}) {
+  const [activeTab, setActiveTab] = useState<"track" | "quote">(defaultTab)
   const [selectedDest, setSelectedDest] = useState("imphal")
   const [cargoType, setCargoType] = useState<"air" | "surface">("air")
   const shouldReduceMotion = useReducedMotion()
