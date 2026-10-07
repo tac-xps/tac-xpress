@@ -26,7 +26,10 @@ export function RichTextRenderer({
     )
   }
 
-  const isHtml = /<[a-z][\s\S]*>/i.test(content)
+  const isHtml =
+    /<\/?(?:p|h[1-6]|ul|ol|li|blockquote|table|thead|tbody|tr|th|td|pre|code|div|span|strong|em|b|i|u|s|hr|br|a)\b[^>]*>/i.test(
+      content
+    )
 
   if (!isHtml) {
     return (

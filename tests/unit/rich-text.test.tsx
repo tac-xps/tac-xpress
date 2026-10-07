@@ -100,4 +100,46 @@ describe("RichTextEditor Component", () => {
     expect(toolbar).not.toBeNull()
     expect(content).not.toBeNull()
   })
+
+  it("forwards aria-invalid and displays error styling", () => {
+    act(() => {
+      root.render(<RichTextEditor aria-invalid="true" placeholder="Error test" />)
+    })
+    const editorContainer = container.querySelector('[data-slot="rich-text-editor"]')
+    expect(editorContainer?.getAttribute("data-invalid")).toBe("true")
+    expect(editorContainer?.className).toContain("border-destructive")
+  })
+})
+
+describe("Sanitizer & Renderer security improvements", () => {
+  it("strips positioning, layering, and escape classes while retaining safe formatting", () => {
+    const input =
+      '<p class="fixed top-0 z-50 text-primary font-bold overflow-hidden pointer-events-none">Text</p>'
+    const output = sanitizeHtml(input)
+    expect(output).not.toContain("fixed")
+    expect(output).not.toContain("top-0")
+    expect(output).not.toContain("z-50")
+    expect(output).not.toContain("overflow-hidden")
+    expect(output).not.toContain("pointer-events-none")
+    expect(output).toContain("text-primary")
+    expect(output).toContain("font-bold")
+  })
+
+  it("does not treat bracketed email addresses or arbitrary angle bracket text as HTML", () => {
+    let testContainer = document.createElement("div")
+    document.body.appendChild(testContainer)
+    let testRoot = createRoot(testContainer)
+
+    act(() => {
+      testRoot.render(<RichTextRenderer content="Contact us at <support@example.com> or <item>" />)
+    })
+
+    const plainEl = testContainer.querySelector('[data-slot="rich-text-renderer-plain"]')
+    expect(plainEl).not.toBeNull()
+    expect(testContainer.textContent).toContain("<support@example.com>")
+    expect(testContainer.textContent).toContain("<item>")
+
+    act(() => testRoot.unmount())
+    testContainer.remove()
+  })
 })

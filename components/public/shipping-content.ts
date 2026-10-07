@@ -99,11 +99,11 @@ export const shippingFaqs = [
   {
     question: "Is the delivery date guaranteed?",
     answer:
-      "<p>We operate within calibrated <strong>SLA transit target windows</strong>. Severe weather disruptions, airline belly-hold capacity changes, or hill road transit advisories are flagged automatically with proactive customer alerts.</p>",
+      "<p>We operate within calibrated <strong>SLA transit target windows</strong>. Severe weather disruptions, airline belly-hold capacity changes, or hill road transit advisories are flagged on tracking milestone records with status updates.</p>",
   },
   {
     question: "What should I do if a shipment is delayed or damaged?",
     answer:
-      "<p>Initiate an immediate inquiry through our <a href='/contact' class='text-primary underline underline-offset-4'>Support Desk</a> citing your AWB number. For visible transit damage, preserve all intact packaging and upload photos for rapid claims processing under our transit insurance protocol.</p>",
+      "<p>Initiate an immediate inquiry through our <a href='/contact' class='text-primary underline underline-offset-4'>Support Desk</a> citing your AWB number. For visible transit damage, preserve all intact packaging, document clear photographs, and share them with the operations team during claim review under our transit insurance protocol.</p>",
   },
 ]

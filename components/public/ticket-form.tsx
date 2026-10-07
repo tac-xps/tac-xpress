@@ -37,7 +37,16 @@ const ticketSchema = z.object({
   category: z.enum(LANDING_TICKET_CATEGORIES),
   related_awb: z.string().optional(),
   subject: z.string().min(5, "Subject must be at least 5 characters"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  message: z
+    .string()
+    .refine(
+      (val) => val.replace(/<[^>]*>/g, "").trim().length >= 10,
+      { message: "Message must be at least 10 characters" }
+    )
+    .refine(
+      (val) => val.replace(/<[^>]*>/g, "").trim().length <= 5000,
+      { message: "Message cannot exceed 5000 characters" }
+    ),
   website: z.string().max(0, "Bots only").optional(), // Honeypot
 })
 
@@ -328,8 +337,7 @@ export function TicketForm({ className }: TicketFormProps = {}) {
                     variant="compact"
                     minHeight="120px"
                     placeholder="Describe your issue or cargo requirements in detail..."
-                    value={field.value}
-                    onChange={field.onChange}
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage />

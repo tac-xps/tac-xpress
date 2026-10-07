@@ -49,6 +49,8 @@ export interface RichTextEditorProps {
   id?: string
   name?: string
   "aria-describedby"?: string
+  "aria-invalid"?: boolean | "true" | "false"
+  onBlur?: () => void
 }
 
 interface ToolbarButtonProps {
@@ -87,149 +89,183 @@ function ToolbarButton({ onClick, isActive, disabled, tooltip, children }: Toolb
   )
 }
 
-export function RichTextEditor({
-  value = "",
-  onChange,
-  placeholder = "Write details here...",
-  disabled = false,
-  variant = "compact",
-  maxLength,
-  showCharacterCount = false,
-  minHeight = "120px",
-  className,
-  error = false,
-  id,
-  name,
-  "aria-describedby": ariaDescribedBy,
-}: RichTextEditorProps) {
-  const extensions = React.useMemo<AnyExtension[]>(() => {
-    const base: AnyExtension[] = [
-      StarterKit.configure({
-        heading: { levels: [2, 3] },
-        bulletList: { keepMarks: true, keepAttributes: false },
-        orderedList: { keepMarks: true, keepAttributes: false },
-        link: {
-          openOnClick: false,
-          HTMLAttributes: {
-            class: "text-primary underline underline-offset-4 hover:opacity-80 transition-opacity",
-            target: "_blank",
-            rel: "noopener noreferrer",
+export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorProps>(
+  function RichTextEditor(
+    {
+      value = "",
+      onChange,
+      placeholder = "Write details here...",
+      disabled = false,
+      variant = "compact",
+      maxLength,
+      showCharacterCount = false,
+      minHeight = "120px",
+      className,
+      error = false,
+      id,
+      name,
+      "aria-describedby": ariaDescribedBy,
+      "aria-invalid": ariaInvalid,
+      onBlur,
+    }: RichTextEditorProps,
+    ref
+  ) {
+    const isInvalid = Boolean(
+      error || ariaInvalid === true || ariaInvalid === "true"
+    )
+    const containerRef = React.useRef<HTMLDivElement>(null)
+
+    const extensions = React.useMemo<AnyExtension[]>(() => {
+      const base: AnyExtension[] = [
+        StarterKit.configure({
+          heading: { levels: [2, 3] },
+          bulletList: { keepMarks: true, keepAttributes: false },
+          orderedList: { keepMarks: true, keepAttributes: false },
+          link: {
+            openOnClick: false,
+            HTMLAttributes: {
+              class: "text-primary underline underline-offset-4 hover:opacity-80 transition-opacity",
+              target: "_blank",
+              rel: "noopener noreferrer",
+            },
+          },
+        }),
+        Placeholder.configure({
+          placeholder,
+        }),
+      ]
+
+      if (maxLength) {
+        base.push(CharacterCount.configure({ limit: maxLength }))
+      } else {
+        base.push(CharacterCount.configure({}))
+      }
+
+      if (variant === "full") {
+        base.push(
+          TaskList,
+          TaskItem.configure({ nested: true }),
+          Table.configure({ resizable: false }),
+          TableRow,
+          TableHeader,
+          TableCell
+        )
+      }
+
+      return base
+    }, [variant, placeholder, maxLength])
+
+    const editor = useEditor({
+      immediatelyRender: false,
+      extensions,
+      content: value || "",
+      editable: !disabled,
+      editorProps: {
+        attributes: {
+          role: "textbox",
+          "aria-multiline": "true",
+          ...(isInvalid ? { "aria-invalid": "true" } : {}),
+          ...(id ? { id } : {}),
+          ...(ariaDescribedBy ? { "aria-describedby": ariaDescribedBy } : {}),
+          class: cn(
+            "prose dark:prose-invert max-w-none focus:outline-none p-3 text-sm text-foreground",
+            "[&_p]:leading-relaxed [&_p]:my-1",
+            "[&_h2]:text-base [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:mt-2 [&_h2]:mb-1",
+            "[&_h3]:text-sm [&_h3]:font-semibold [&_h3]:tracking-tight [&_h3]:mt-1.5 [&_h3]:mb-1",
+            "[&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1.5 [&_ul]:space-y-0.5",
+            "[&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1.5 [&_ol]:space-y-0.5",
+            "[&_blockquote]:border-l-2 [&_blockquote]:border-border-strong [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_blockquote]:my-1.5",
+            "[&_code]:bg-muted [&_code]:text-foreground [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded-sm [&_code]:text-xs [&_code]:font-mono",
+            "[&_pre]:bg-muted/70 [&_pre]:p-2.5 [&_pre]:rounded-md [&_pre]:font-mono [&_pre]:text-xs [&_pre]:my-2",
+            "[&_table]:w-full [&_table]:border-collapse [&_table]:border [&_table]:border-border [&_table]:my-2 [&_table]:text-xs",
+            "[&_th]:border [&_th]:border-border [&_th]:bg-muted/50 [&_th]:p-1.5 [&_th]:text-left [&_th]:font-semibold",
+            "[&_td]:border [&_td]:border-border [&_td]:p-1.5 [&_td]:text-left",
+            "[&_.is-editor-empty:first-child::before]:text-muted-foreground [&_.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.is-editor-empty:first-child::before]:float-left [&_.is-editor-empty:first-child::before]:pointer-events-none [&_.is-editor-empty:first-child::before]:h-0"
+          ),
+        },
+        handleDOMEvents: {
+          blur: () => {
+            onBlur?.()
+            return false
           },
         },
-      }),
-      Placeholder.configure({
-        placeholder,
-      }),
-    ]
-
-    if (maxLength) {
-      base.push(CharacterCount.configure({ limit: maxLength }))
-    } else {
-      base.push(CharacterCount.configure({}))
-    }
-
-    if (variant === "full") {
-      base.push(
-        TaskList,
-        TaskItem.configure({ nested: true }),
-        Table.configure({ resizable: false }),
-        TableRow,
-        TableHeader,
-        TableCell
-      )
-    }
-
-    return base
-  }, [variant, placeholder, maxLength])
-
-  const editor = useEditor({
-    immediatelyRender: false,
-    extensions,
-    content: value || "",
-    editable: !disabled,
-    editorProps: {
-      attributes: {
-        role: "textbox",
-        "aria-multiline": "true",
-        ...(id ? { id } : {}),
-        ...(ariaDescribedBy ? { "aria-describedby": ariaDescribedBy } : {}),
-        class: cn(
-          "prose dark:prose-invert max-w-none focus:outline-none p-3 text-sm text-foreground",
-          "[&_p]:leading-relaxed [&_p]:my-1",
-          "[&_h2]:text-base [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:mt-2 [&_h2]:mb-1",
-          "[&_h3]:text-sm [&_h3]:font-semibold [&_h3]:tracking-tight [&_h3]:mt-1.5 [&_h3]:mb-1",
-          "[&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1.5 [&_ul]:space-y-0.5",
-          "[&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1.5 [&_ol]:space-y-0.5",
-          "[&_blockquote]:border-l-2 [&_blockquote]:border-border-strong [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_blockquote]:my-1.5",
-          "[&_code]:bg-muted [&_code]:text-foreground [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded-sm [&_code]:text-xs [&_code]:font-mono",
-          "[&_pre]:bg-muted/70 [&_pre]:p-2.5 [&_pre]:rounded-md [&_pre]:font-mono [&_pre]:text-xs [&_pre]:my-2",
-          "[&_table]:w-full [&_table]:border-collapse [&_table]:border [&_table]:border-border [&_table]:my-2 [&_table]:text-xs",
-          "[&_th]:border [&_th]:border-border [&_th]:bg-muted/50 [&_th]:p-1.5 [&_th]:text-left [&_th]:font-semibold",
-          "[&_td]:border [&_td]:border-border [&_td]:p-1.5 [&_td]:text-left",
-          "[&_.is-editor-empty:first-child::before]:text-muted-foreground [&_.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.is-editor-empty:first-child::before]:float-left [&_.is-editor-empty:first-child::before]:pointer-events-none [&_.is-editor-empty:first-child::before]:h-0"
-        ),
       },
-    },
-    onUpdate: ({ editor: currentEditor }) => {
-      const html = currentEditor.getHTML()
-      if (currentEditor.isEmpty) {
-        onChange?.("")
-      } else {
-        onChange?.(html)
+      onUpdate: ({ editor: currentEditor }) => {
+        const html = currentEditor.getHTML()
+        if (currentEditor.isEmpty) {
+          onChange?.("")
+        } else {
+          onChange?.(html)
+        }
+      },
+    })
+
+    React.useImperativeHandle(
+      ref,
+      () => {
+        const container = containerRef.current
+        if (!container) return {} as HTMLDivElement
+        return Object.assign(container, {
+          focus: () => {
+            editor?.commands.focus()
+          },
+        })
+      },
+      [editor]
+    )
+
+    // Synchronize incoming external value
+    React.useEffect(() => {
+      if (!editor) return
+      const currentHtml = editor.getHTML()
+      const incoming = value || ""
+      if (incoming !== currentHtml && (incoming !== "" || !editor.isEmpty)) {
+        editor.commands.setContent(incoming, { emitUpdate: false })
       }
-    },
-  })
+    }, [value, editor])
 
-  // Synchronize incoming external value
-  React.useEffect(() => {
-    if (!editor) return
-    const currentHtml = editor.getHTML()
-    const incoming = value || ""
-    if (incoming !== currentHtml && (incoming !== "" || !editor.isEmpty)) {
-      editor.commands.setContent(incoming, { emitUpdate: false })
-    }
-  }, [value, editor])
+    // Synchronize editable state
+    React.useEffect(() => {
+      if (!editor) return
+      editor.setEditable(!disabled)
+    }, [disabled, editor])
 
-  // Synchronize editable state
-  React.useEffect(() => {
-    if (!editor) return
-    editor.setEditable(!disabled)
-  }, [disabled, editor])
+    const setLink = React.useCallback(() => {
+      if (!editor) return
+      const previousUrl = editor.getAttributes("link").href
+      const url = window.prompt("Enter destination URL:", previousUrl)
 
-  const setLink = React.useCallback(() => {
-    if (!editor) return
-    const previousUrl = editor.getAttributes("link").href
-    const url = window.prompt("Enter destination URL:", previousUrl)
+      if (url === null) return
+      if (url.trim() === "") {
+        editor.chain().focus().extendMarkRange("link").unsetLink().run()
+        return
+      }
 
-    if (url === null) return
-    if (url.trim() === "") {
-      editor.chain().focus().extendMarkRange("link").unsetLink().run()
-      return
-    }
+      let validUrl = url.trim()
+      if (!/^https?:\/\//i.test(validUrl) && !/^mailto:/i.test(validUrl)) {
+        validUrl = `https://${validUrl}`
+      }
 
-    let validUrl = url.trim()
-    if (!/^https?:\/\//i.test(validUrl) && !/^mailto:/i.test(validUrl)) {
-      validUrl = `https://${validUrl}`
-    }
+      editor.chain().focus().extendMarkRange("link").setLink({ href: validUrl }).run()
+    }, [editor])
 
-    editor.chain().focus().extendMarkRange("link").setLink({ href: validUrl }).run()
-  }, [editor])
+    const charCount = editor?.storage.characterCount?.characters() || 0
+    const wordCount = editor?.storage.characterCount?.words() || 0
 
-  const charCount = editor?.storage.characterCount?.characters() || 0
-  const wordCount = editor?.storage.characterCount?.words() || 0
-
-  return (
-    <TooltipProvider delayDuration={200}>
-      <div
-        data-slot="rich-text-editor"
-        className={cn(
-          "group relative flex flex-col rounded-md border border-input bg-background text-foreground transition-all duration-150",
-          "focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20",
-          error && "border-destructive focus-within:border-destructive focus-within:ring-destructive/20",
-          disabled && "cursor-not-allowed opacity-60 bg-muted/20",
-          className
-        )}
-      >
+    return (
+      <TooltipProvider delayDuration={200}>
+        <div
+          ref={containerRef}
+          data-slot="rich-text-editor"
+          data-invalid={isInvalid ? "true" : undefined}
+          className={cn(
+            "group relative flex flex-col rounded-md border border-input bg-background text-foreground transition-all duration-150",
+            "focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20",
+            isInvalid && "border-destructive focus-within:border-destructive focus-within:ring-destructive/20",
+            disabled && "cursor-not-allowed opacity-60 bg-muted/20",
+            className
+          )}
+        >
         {/* Hidden field for traditional form submission */}
         {name && <input type="hidden" name={name} value={value} />}
 
@@ -444,4 +480,5 @@ export function RichTextEditor({
       </div>
     </TooltipProvider>
   )
-}
+})
+RichTextEditor.displayName = "RichTextEditor"

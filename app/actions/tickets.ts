@@ -38,7 +38,17 @@ const createTicketSchema = z.object({
   customer_email: z.string().email("Valid email required").max(254),
   customer_phone: z.string().max(30).optional(),
   subject: z.string().min(5, "Subject too short").max(200),
-  message: z.string().min(10, "Message too short").max(5000),
+  message: z
+    .string()
+    .refine(
+      (val) => val.replace(/<[^>]*>/g, "").trim().length >= 10,
+      { message: "Message too short" }
+    )
+    .refine(
+      (val) => val.replace(/<[^>]*>/g, "").trim().length <= 5000,
+      { message: "Message too long" }
+    )
+    .refine((val) => val.length <= 25000, { message: "Payload too large" }),
   category: z.enum(LANDING_TICKET_CATEGORIES),
   related_awb: z.string().max(40).optional(),
 })

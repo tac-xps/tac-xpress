@@ -31,7 +31,16 @@ const ticketSchema = z.object({
   related_awb: z.string().optional(),
   category: z.string().min(1, "Please select a category"),
   subject: z.string().min(5, "Subject must be at least 5 characters"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  message: z
+    .string()
+    .refine(
+      (val) => val.replace(/<[^>]*>/g, "").trim().length >= 10,
+      { message: "Message must be at least 10 characters" }
+    )
+    .refine(
+      (val) => val.replace(/<[^>]*>/g, "").trim().length <= 5000,
+      { message: "Message cannot exceed 5000 characters" }
+    ),
 })
 
 export default function PortalTicketForm({
@@ -166,8 +175,7 @@ export default function PortalTicketForm({
                   variant="compact"
                   minHeight="110px"
                   placeholder="Provide details about your shipment, consignee, or question..."
-                  value={field.value}
-                  onChange={field.onChange}
+                  {...field}
                 />
               </FormControl>
               <FormMessage />
