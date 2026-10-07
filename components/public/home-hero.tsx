@@ -2,10 +2,9 @@
 
 import React, { useState } from "react"
 import Link from "next/link"
-import { ArrowUpRight, ChevronDown, ChevronUp, Package, Truck, Search } from "lucide-react"
+import { ChevronDown, ChevronUp, Package } from "lucide-react"
 import { HeroLottieBox } from "./hero-lottie-box"
 import { HeroDispatchConsole } from "./hero-dispatch-console"
-import { cn } from "@/lib/utils"
 import {
   motion,
   useReducedMotion,
@@ -18,11 +17,9 @@ import { MagneticButton } from "./magnetic-button"
  * Clean, Minimalistic Nordic Lagom Hero Section for TAC-XPRESS.
  *
  * Full Light & Dark Mode Support:
- * - Single, unified hero section (NO divided bottom section or cut-off sub-cards)
- * - Light mode: Crisp white canvas with high-contrast slate/black typography & studio-lit truck
- * - Dark mode: Deep obsidian canvas with white display type & rim-lit dark truck
- * - Top-right horizontal stat triad (95%, 80+, 24/7) with primary color accents
- * - Exact floating telemetry badges: "• Live Tracks", "• Fast Status", "• Safe System"
+ * - Single, unified hero section
+ * - Light mode: Crisp white canvas with high-contrast slate/black typography & studio-lit asset
+ * - Dark mode: Deep obsidian canvas with white display type & rim-lit dark asset
  * - Instant inline AWB tracking lookup and expandable dispatch console
  */
 
@@ -36,14 +33,6 @@ const fadeUp = {
     opacity: 1,
     y: 0,
     transition: { duration: 0.6, delay, ease: EASE_OUT_EXPO },
-  }),
-}
-
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: (delay = 0) => ({
-    opacity: 1,
-    transition: { duration: 0.5, delay, ease: EASE_OUT_EXPO },
   }),
 }
 
@@ -69,49 +58,6 @@ export function HomeHero() {
       id="hero-section"
     >
       <div className="cargo-container relative z-10 w-full flex flex-col justify-between gap-8 sm:gap-10 lg:gap-12">
-
-        {/* ── TOP BAR: EYEBROW & STAT TRIAD ─────────────────────── */}
-        <motion.div
-          className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 pb-5 border-b border-border/60"
-          initial="hidden"
-          animate="visible"
-        >
-          {/* Eyebrow Pill */}
-          <motion.div
-            className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface border border-border font-mono text-[11px] font-semibold tracking-wider text-foreground uppercase self-start rounded-none shadow-2xs"
-            variants={fadeIn}
-            custom={dur(0.05)}
-          >
-            <span className="flex size-4 items-center justify-center bg-primary text-primary-foreground rounded-none">
-              <Truck className="size-2.5" aria-hidden="true" />
-            </span>
-            <span>FAST AND SECURE TRANSPORT FLOW</span>
-          </motion.div>
-
-          {/* Top-Right Stat Counter Triad */}
-          <div className="flex items-center gap-6 sm:gap-8 lg:gap-12">
-            {[
-              { value: "95", suffix: "%", label: "On-time delivery rate" },
-              { value: "80", suffix: "+", label: "Delivery destinations" },
-              { value: "24", suffix: "/7", label: "Operational coverage" },
-            ].map(({ value, suffix, label }, i) => (
-              <motion.div
-                key={label}
-                className="flex flex-col"
-                variants={fadeUp}
-                custom={dur(0.1 + i * 0.08)}
-              >
-                <div className="font-sans text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-foreground">
-                  {value}<span className="text-primary">{suffix}</span>
-                </div>
-                <p className="font-mono text-[10px] sm:text-[11px] text-muted-foreground uppercase tracking-wider mt-0.5 max-w-[110px]">
-                  {label}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
         {/* ── UNIFIED HERO STAGE: HEADLINE + PROMINENT TRUCK ─────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-12 items-center">
 
