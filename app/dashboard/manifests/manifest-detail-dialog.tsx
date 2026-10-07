@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/table"
 import { StatusBadge } from "@/components/logistics/status-badge"
 import { messageDriverAction } from "@/app/dashboard/dispatch/whatsapp-actions"
+import { ShipmentDetailDialog } from "@/app/dashboard/shipments/shipment-detail-dialog"
 
 export type ManifestItem = {
   id: string
@@ -71,6 +72,10 @@ export function ManifestDetailDialog({
 }: ManifestDetailDialogProps) {
   const [isSendingWhatsApp, setIsSendingWhatsApp] = useState(false)
   const [showPrintDialog, setShowPrintDialog] = useState(false)
+  const [selectedShipment, setSelectedShipment] = useState<{
+    id: string
+    awb: string
+  } | null>(null)
   const items = manifest.items ?? []
 
   const handleSendWhatsApp = async () => {
@@ -115,7 +120,7 @@ export function ManifestDetailDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[90svh] flex-col overflow-hidden sm:max-w-3xl rounded-none">
         <DialogHeader>
-          <div className="flex items-center justify-between pr-6">
+          <div className="flex items-center justify-between pr-10">
             <DialogTitle className="font-mono text-base font-bold">
               {manifest.referenceId}
             </DialogTitle>
@@ -189,12 +194,19 @@ export function ManifestDetailDialog({
                     <TableRow key={item.id}>
                       <TableCell className="text-xs">
                         {item.shipment ? (
-                          <Link
-                            className="font-mono text-primary underline-offset-4 hover:underline"
-                            href={`/dashboard/shipments/${item.shipment.id}`}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setSelectedShipment({
+                                id: item.shipment!.id,
+                                awb: item.shipment!.awbNumber,
+                              })
+                            }
+                            className="font-mono text-primary underline-offset-4 hover:underline cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                            aria-label={`View details for ${item.shipment.awbNumber}`}
                           >
                             {item.shipment.awbNumber}
-                          </Link>
+                          </button>
                         ) : (
                           "Unavailable"
                         )}
@@ -290,6 +302,17 @@ export function ManifestDetailDialog({
       referenceId={manifest.referenceId}
       status={manifest.status}
     />
+
+    {selectedShipment && (
+      <ShipmentDetailDialog
+        shipmentId={selectedShipment.id}
+        awbNumber={selectedShipment.awb}
+        open={Boolean(selectedShipment)}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) setSelectedShipment(null)
+        }}
+      />
+    )}
   </>
   )
 }

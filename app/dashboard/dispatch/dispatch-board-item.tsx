@@ -1,8 +1,12 @@
-import Link from "next/link"
+"use client"
+
+import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { CreateDispatchDialog } from "./create-dispatch-dialog"
+import { ShipmentDetailDialog } from "@/app/dashboard/shipments/shipment-detail-dialog"
 import type { Shipment } from "@/lib/db/schema"
 import type { QueueItem } from "./dispatch-client-layout"
+
 export function DispatchBoardItem({
   item,
   pendingShipments,
@@ -10,19 +14,19 @@ export function DispatchBoardItem({
   item: QueueItem
   pendingShipments: Shipment[]
 }) {
+  const [detailOpen, setDetailOpen] = useState(false)
+
   return (
     <article className="rounded-none border bg-background p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link
-          href={
-            item.shipmentId
-              ? `/dashboard/shipments/${item.shipmentId}`
-              : `/dashboard/tracking?awb=${encodeURIComponent(item.id)}`
-          }
-          className="font-mono text-xs font-medium underline-offset-4 hover:underline"
+        <button
+          type="button"
+          onClick={() => setDetailOpen(true)}
+          className="font-mono text-xs font-semibold text-primary underline-offset-4 hover:underline cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          aria-label={`View details for ${item.id}`}
         >
           {item.id}
-        </Link>
+        </button>
         <Badge variant="outline">{item.type}</Badge>
       </div>
       <p className="mt-3 text-sm font-medium">{item.route}</p>
@@ -49,6 +53,15 @@ export function DispatchBoardItem({
             />
           )}
         </div>
+      )}
+
+      {detailOpen && (
+        <ShipmentDetailDialog
+          shipmentId={item.shipmentId}
+          awbNumber={item.id}
+          open={detailOpen}
+          onOpenChange={setDetailOpen}
+        />
       )}
     </article>
   )

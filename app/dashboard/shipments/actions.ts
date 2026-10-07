@@ -18,6 +18,7 @@ import {
   createTrackingEventSchema,
   updateShipmentSchema,
   deleteShipmentSchema,
+  getShipmentDetailsSchema,
 } from "./schemas"
 import { logAuditInTransaction } from "@/lib/audit"
 
@@ -259,5 +260,39 @@ export const deleteShipmentAction = authActionClient
     } catch (error: any) {
       Sentry.captureException(error)
       throw new Error("Failed to delete shipment.")
+    }
+  })
+
+export const getShipmentDetailsAction = authActionClient
+  .schema(getShipmentDetailsSchema)
+  .action(async ({ parsedInput }) => {
+    try {
+      const { id, awbNumber } = parsedInput
+      const shipment = await db.query.shipments.findFirst({
+        where: id
+          ? and(eq(shipments.id, id), isNull(shipments.deletedAt))
+          : and(eq(shipments.awbNumber, awbNumber!), isNull(shipments.deletedAt)),
+        with: {
+          customer: true,
+          invoice: true,
+          trackingEvents: {
+            orderBy: (events, { desc }) => [desc(events.createdAt)],
+          },
+          manifestItems: {
+            with: {
+              manifest: true,
+            },
+          },
+        },
+      })
+
+      if (!shipment) {
+        throw new Error("Shipment not found")
+      }
+
+      return shipment
+    } catch (error: any) {
+      Sentry.captureException(error)
+      throw new Error(error?.message || "Failed to retrieve shipment details.")
     }
   })

@@ -18,7 +18,22 @@ export default async function DashboardPage() {
   await requireStaffPage()
   const [overview, drafts, [pending], [draftCount], [overdue], [support], control] = await Promise.all([
     getDashboardOverview(),
-    db.query.manifests.findMany({ where: (table, { eq }) => eq(table.status, "draft"), with: { driver: true, vehicle: true, originHub: true, destinationHub: true }, orderBy: (table, { desc }) => [desc(table.createdAt)], limit: 10 }),
+    db.query.manifests.findMany({
+      where: (table, { eq }) => eq(table.status, "draft"),
+      with: {
+        driver: true,
+        vehicle: true,
+        originHub: true,
+        destinationHub: true,
+        items: {
+          with: {
+            shipment: true,
+          },
+        },
+      },
+      orderBy: (table, { desc }) => [desc(table.createdAt)],
+      limit: 10,
+    }),
     db.select({ count: sql<number>`count(*) filter (where ${shipments.status} = 'pending')` }).from(shipments).where(isNull(shipments.deletedAt)),
     db.select({ count: sql<number>`count(*) filter (where ${manifests.status} = 'draft')` }).from(manifests),
     db.select({ count: sql<number>`count(*) filter (where ${invoices.status} = 'unpaid' and ${invoices.dueDate} < now())` }).from(invoices),

@@ -1,9 +1,13 @@
 "use client"
+
+import React, { useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@/components/ui/data-table/data-table"
 import { DataTableColumnHeader as ColumnHeader } from "@/components/ui/data-table/data-table-column-header"
 import { useDataTable } from "@/hooks/use-data-table"
 import { Badge } from "@/components/ui/badge"
+import { ShipmentDetailDialog } from "@/app/dashboard/shipments/shipment-detail-dialog"
+import { InvoicePreviewDialog } from "@/app/dashboard/invoices/invoice-preview-dialog"
 
 export type CustomerInvoiceRow = {
   id: string
@@ -15,6 +19,53 @@ export type CustomerInvoiceRow = {
   awbNumber: string | null
 }
 
+function LedgerAwbCell({ awbNumber }: { awbNumber: string | null }) {
+  const [open, setOpen] = useState(false)
+  if (!awbNumber) return <span className="text-muted-foreground text-xs">N/A</span>
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="font-mono text-xs font-semibold text-primary underline-offset-4 hover:underline cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        aria-label={`View shipment ${awbNumber}`}
+      >
+        {awbNumber}
+      </button>
+      {open && (
+        <ShipmentDetailDialog
+          awbNumber={awbNumber}
+          open={open}
+          onOpenChange={setOpen}
+        />
+      )}
+    </>
+  )
+}
+
+function LedgerInvoiceCell({ invoice }: { invoice: CustomerInvoiceRow }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="font-medium underline-offset-4 hover:underline hover:text-primary cursor-pointer text-right tabular-nums focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        aria-label={`View invoice details for ${invoice.id.slice(0, 8)}`}
+      >
+        ₹{((invoice.amount || 0) / 100).toLocaleString()}
+      </button>
+      {open && (
+        <InvoicePreviewDialog
+          invoiceId={invoice.id}
+          open={open}
+          onOpenChange={setOpen}
+        />
+      )}
+    </>
+  )
+}
+
 export function LedgerDataTable({
   data,
   pageCount,
@@ -23,12 +74,64 @@ export function LedgerDataTable({
   pageCount: number
 }) {
   const columns: ColumnDef<CustomerInvoiceRow>[] = [
-    { accessorKey: "createdAt", header: ({ column }) => <ColumnHeader column={column} title="Date" />, cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString() },
-    { accessorKey: "awbNumber", header: ({ column }) => <ColumnHeader column={column} title="AWB Number" />, cell: ({ row }) => <span className="font-medium">{row.original.awbNumber || "N/A"}</span> },
-    { accessorKey: "status", header: ({ column }) => <ColumnHeader column={column} title="Status" />, cell: ({ row }) => <Badge variant={row.original.status === "paid" ? "default" : "destructive"}>{row.original.status}</Badge> },
-    { accessorKey: "amount", header: ({ column }) => <div className="text-right"><ColumnHeader column={column} title="Billed" /></div>, cell: ({ row }) => <div className="text-right">₹{((row.original.amount || 0) / 100).toLocaleString()}</div> },
-    { accessorKey: "advancePaid", header: ({ column }) => <div className="text-right"><ColumnHeader column={column} title="Paid" /></div>, cell: ({ row }) => <div className="text-right text-trend-positive">₹{((row.original.advancePaid || 0) / 100).toLocaleString()}</div> },
-    { accessorKey: "balanceDue", header: ({ column }) => <div className="text-right"><ColumnHeader column={column} title="Due" /></div>, cell: ({ row }) => <div className="text-right font-bold text-destructive">₹{((row.original.balanceDue || 0) / 100).toLocaleString()}</div> },
+    {
+      accessorKey: "createdAt",
+      header: ({ column }) => <ColumnHeader column={column} title="Date" />,
+      cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
+    },
+    {
+      accessorKey: "awbNumber",
+      header: ({ column }) => <ColumnHeader column={column} title="AWB Number" />,
+      cell: ({ row }) => <LedgerAwbCell awbNumber={row.original.awbNumber} />,
+    },
+    {
+      accessorKey: "status",
+      header: ({ column }) => <ColumnHeader column={column} title="Status" />,
+      cell: ({ row }) => (
+        <Badge variant={row.original.status === "paid" ? "default" : "destructive"}>
+          {row.original.status}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: "amount",
+      header: ({ column }) => (
+        <div className="text-right">
+          <ColumnHeader column={column} title="Billed" />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="text-right">
+          <LedgerInvoiceCell invoice={row.original} />
+        </div>
+      ),
+    },
+    {
+      accessorKey: "advancePaid",
+      header: ({ column }) => (
+        <div className="text-right">
+          <ColumnHeader column={column} title="Paid" />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="text-right text-trend-positive">
+          ₹{((row.original.advancePaid || 0) / 100).toLocaleString()}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "balanceDue",
+      header: ({ column }) => (
+        <div className="text-right">
+          <ColumnHeader column={column} title="Due" />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="text-right font-bold text-destructive">
+          ₹{((row.original.balanceDue || 0) / 100).toLocaleString()}
+        </div>
+      ),
+    },
   ]
 
   const { table } = useDataTable({

@@ -1,3 +1,6 @@
+"use client"
+
+import React, { useState } from "react"
 import Link from "next/link"
 import {
   Card,
@@ -18,15 +21,63 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { HubVolumePoint } from "@/lib/dashboard-metrics"
+import { ManifestDetailDialog, type ManifestDetail, type ManifestItem } from "@/app/dashboard/manifests/manifest-detail-dialog"
+
 export type OpenManifest = {
   id: string
   referenceId: string
-  status: string
-  driver: { name: string } | null
-  vehicle: { registrationNumber: string } | null
+  status: "draft" | "finalized"
+  createdAt?: Date
+  driverId?: string | null
+  vehicleId?: string | null
+  originHubId?: string | null
+  destinationHubId?: string | null
+  driver: { id?: string; name: string | null; phone?: string | null } | null
+  vehicle: { registrationNumber: string | null } | null
   originHub: { name: string } | null
   destinationHub: { name: string } | null
+  items?: ManifestItem[]
 }
+
+function OpenManifestCell({ item }: { item: OpenManifest }) {
+  const [open, setOpen] = useState(false)
+  const fullManifest: ManifestDetail = {
+    id: item.id,
+    referenceId: item.referenceId,
+    status: item.status,
+    createdAt: item.createdAt || new Date(),
+    driverId: item.driverId ?? item.driver?.id ?? null,
+    vehicleId: item.vehicleId ?? null,
+    originHubId: item.originHubId ?? null,
+    destinationHubId: item.destinationHubId ?? null,
+    driver: item.driver ? { name: item.driver.name, phone: item.driver.phone ?? null } : null,
+    vehicle: item.vehicle,
+    originHub: item.originHub,
+    destinationHub: item.destinationHub,
+    items: item.items ?? [],
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="font-mono text-xs font-semibold text-primary underline-offset-4 hover:underline cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        aria-label={`View manifest ${item.referenceId}`}
+      >
+        {item.referenceId}
+      </button>
+      {open && (
+        <ManifestDetailDialog
+          manifest={fullManifest}
+          open={open}
+          onOpenChange={setOpen}
+        />
+      )}
+    </>
+  )
+}
+
 export function OpenManifests({ data }: { data: OpenManifest[] }) {
   return (
     <Card className="border border-border/80 shadow-xs overflow-hidden">
@@ -57,12 +108,7 @@ export function OpenManifests({ data }: { data: OpenManifest[] }) {
             {data.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-mono text-xs font-semibold text-primary">
-                  <Link
-                    href={`/dashboard/manifests?q=${encodeURIComponent(item.referenceId)}`}
-                    className="underline-offset-4 hover:underline"
-                  >
-                    {item.referenceId}
-                  </Link>
+                  <OpenManifestCell item={item} />
                 </TableCell>
                 <TableCell>
                   <span className="font-medium text-foreground">

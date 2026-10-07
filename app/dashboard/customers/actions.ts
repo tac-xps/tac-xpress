@@ -1,8 +1,8 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { users } from "@/lib/db/schema"
-import { and, eq, ne, or } from "drizzle-orm"
+import { users, invoices, shipments } from "@/lib/db/schema"
+import { and, desc, eq, ne, or, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import { authActionClient } from "@/lib/safe-action"
@@ -235,3 +235,70 @@ export const deleteCustomerAction = authActionClient
     return { success: false, error: "Failed to delete customer." }
   }
 })
+
+const getCustomerLedgerSchema = z.object({
+  id: z.string().uuid(),
+})
+
+export const getCustomerLedgerAction = authActionClient
+  .schema(getCustomerLedgerSchema)
+  .action(async ({ parsedInput }) => {
+    try {
+      const { id } = parsedInput
+
+      const customer = await db.query.users.findFirst({
+        where: and(eq(users.id, id), eq(users.role, "customer")),
+      })
+
+      if (!customer) {
+        throw new Error("Customer not found")
+      }
+
+      const [customerInvoices, aggregateSums] = await Promise.all([
+        db
+          .select({
+            id: invoices.id,
+            amount: invoices.amount,
+            advancePaid: invoices.advancePaid,
+            balanceDue: invoices.balanceDue,
+            status: invoices.status,
+            createdAt: invoices.createdAt,
+            awbNumber: shipments.awbNumber,
+          })
+          .from(invoices)
+          .leftJoin(shipments, eq(invoices.shipmentId, shipments.id))
+          .where(eq(invoices.customerId, id))
+          .orderBy(desc(invoices.createdAt))
+          .limit(50),
+        db
+          .select({
+            totalBilled: sql<number>`sum(${invoices.amount})`,
+            totalAdvance: sql<number>`sum(${invoices.advancePaid})`,
+            totalDue: sql<number>`sum(${invoices.balanceDue})`,
+            totalCount: sql<number>`count(*)`,
+          })
+          .from(invoices)
+          .where(eq(invoices.customerId, id)),
+      ])
+
+      const totalBilled = Number(aggregateSums[0]?.totalBilled) || 0
+      const totalAdvance = Number(aggregateSums[0]?.totalAdvance) || 0
+      const totalDue = Number(aggregateSums[0]?.totalDue) || 0
+      const totalCount = Number(aggregateSums[0]?.totalCount) || 0
+
+      return {
+        customer,
+        invoices: customerInvoices,
+        totals: {
+          totalBilled,
+          totalAdvance,
+          totalDue,
+          totalCount,
+        },
+      }
+    } catch (error: any) {
+      Sentry.captureException(error)
+      throw new Error(error?.message || "Failed to retrieve customer ledger.")
+    }
+  })
+

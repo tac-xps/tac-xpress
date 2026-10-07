@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { InvoiceTableActions } from "./invoice-table-actions"
 import { InvoicePreviewDialog } from "./invoice-preview-dialog"
 import { type InvoiceData, formatInvoiceCurrency } from "./invoice-types"
+import { ShipmentDetailDialog } from "@/app/dashboard/shipments/shipment-detail-dialog"
 
 function InvoiceIdCell({ invoice }: { invoice: InvoiceData }) {
   const [open, setOpen] = useState(false)
@@ -37,9 +38,43 @@ function InvoiceIdCell({ invoice }: { invoice: InvoiceData }) {
   )
 }
 
+function InvoiceShipmentCell({ invoice }: { invoice: InvoiceData }) {
+  const [open, setOpen] = useState(false)
+  const awb = invoice.shipment?.awbNumber
+  return (
+    <div>
+      <p className="font-medium">
+        {invoice.customer?.name || invoice.shipment?.consignorName || "Name not recorded"}
+      </p>
+      {awb ? (
+        <>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="mt-1 font-mono text-xs text-primary underline-offset-4 hover:underline cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            aria-label={`View shipment ${awb}`}
+          >
+            {awb}
+          </button>
+          {open && (
+            <ShipmentDetailDialog
+              shipmentId={invoice.shipmentId}
+              awbNumber={awb}
+              open={open}
+              onOpenChange={setOpen}
+            />
+          )}
+        </>
+      ) : (
+        <p className="mt-1 font-mono text-xs text-muted-foreground">Shipment not linked</p>
+      )}
+    </div>
+  )
+}
+
 const columns = (canVoid: boolean): ColumnDef<InvoiceData>[] => [
   { accessorKey: "id", header: ({ column }) => <ColumnHeader column={column} title="Invoice" />, cell: ({ row }) => <InvoiceIdCell invoice={row.original} /> },
-  { id: "customer", header: "Customer / shipment", cell: ({ row }) => <div><p className="font-medium">{row.original.customer?.name || row.original.shipment?.consignorName || "Name not recorded"}</p><p className="mt-1 font-mono text-xs text-muted-foreground">{row.original.shipment?.awbNumber ?? "Shipment not linked"}</p></div> },
+  { id: "customer", header: "Customer / shipment", cell: ({ row }) => <InvoiceShipmentCell invoice={row.original} /> },
   { accessorKey: "createdAt", header: ({ column }) => <ColumnHeader column={column} title="Issued" />, cell: ({ row }) => format(new Date(row.original.createdAt), "dd MMM yyyy") },
   { accessorKey: "status", header: ({ column }) => <ColumnHeader column={column} title="Status" />, cell: ({ row }) => <Badge variant={row.original.status === "paid" ? "success" : row.original.status === "unpaid" ? "warning" : "outline"} className="capitalize">{row.original.status}</Badge> },
   { accessorKey: "amount", header: ({ column }) => <ColumnHeader column={column} title="Amount" />, cell: ({ row }) => <div className="text-right tabular-nums"><p className="font-medium">{formatInvoiceCurrency(row.original.amount)}</p><p className="mt-1 text-xs text-muted-foreground">{formatInvoiceCurrency(row.original.balanceDue ?? row.original.amount)} due</p></div> },

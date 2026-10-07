@@ -17,19 +17,27 @@ interface AddTrackingEventDialogProps {
   shipmentId: string
   awbNumber: string
   onSuccess?: () => void
+  triggerVariant?: "ghost" | "outline" | "default" | "secondary"
+  triggerClassName?: string
 }
 
 export function AddTrackingEventDialog({
   shipmentId,
   awbNumber,
   onSuccess,
+  triggerVariant = "ghost",
+  triggerClassName,
 }: AddTrackingEventDialogProps) {
   const [open, setOpen] = useState(false)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 w-full justify-start">
+        <Button
+          variant={triggerVariant}
+          size="sm"
+          className={triggerClassName || "h-8 w-full justify-start"}
+        >
           <MapPinIcon className="mr-2 h-4 w-4" />
           Log Event
         </Button>
