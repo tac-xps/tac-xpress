@@ -21,17 +21,22 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { HubVolumePoint } from "@/lib/dashboard-metrics"
-import { ManifestDetailDialog, type ManifestDetail } from "@/app/dashboard/manifests/manifest-detail-dialog"
+import { ManifestDetailDialog, type ManifestDetail, type ManifestItem } from "@/app/dashboard/manifests/manifest-detail-dialog"
 
 export type OpenManifest = {
   id: string
   referenceId: string
   status: "draft" | "finalized"
   createdAt?: Date
-  driver: { name: string | null; phone?: string | null } | null
+  driverId?: string | null
+  vehicleId?: string | null
+  originHubId?: string | null
+  destinationHubId?: string | null
+  driver: { id?: string; name: string | null; phone?: string | null } | null
   vehicle: { registrationNumber: string | null } | null
   originHub: { name: string } | null
   destinationHub: { name: string } | null
+  items?: ManifestItem[]
 }
 
 function OpenManifestCell({ item }: { item: OpenManifest }) {
@@ -41,10 +46,15 @@ function OpenManifestCell({ item }: { item: OpenManifest }) {
     referenceId: item.referenceId,
     status: item.status,
     createdAt: item.createdAt || new Date(),
+    driverId: item.driverId ?? item.driver?.id ?? null,
+    vehicleId: item.vehicleId ?? null,
+    originHubId: item.originHubId ?? null,
+    destinationHubId: item.destinationHubId ?? null,
     driver: item.driver ? { name: item.driver.name, phone: item.driver.phone ?? null } : null,
     vehicle: item.vehicle,
     originHub: item.originHub,
     destinationHub: item.destinationHub,
+    items: item.items ?? [],
   }
 
   return (

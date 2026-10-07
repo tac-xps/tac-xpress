@@ -5,13 +5,19 @@ import { createRoot, type Root } from "react-dom/client"
 import { getShipmentDetailsSchema } from "@/app/dashboard/shipments/schemas"
 import { ShipmentDetailDialog } from "@/app/dashboard/shipments/shipment-detail-dialog"
 import { JobDetailDialog } from "@/app/dashboard/jobs/job-detail-dialog"
+import { CustomerLedgerDialog } from "@/app/dashboard/customers/customer-ledger-dialog"
 
 ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
 
 // Mock server-only and actions for JSDOM test runner
 vi.mock("server-only", () => ({}))
+vi.mock("@/auth", () => ({ auth: vi.fn() }))
+vi.mock("@/auth.config", () => ({ authConfig: {} }))
 vi.mock("@/app/dashboard/shipments/actions", () => ({
   getShipmentDetailsAction: vi.fn(),
+}))
+vi.mock("@/app/dashboard/customers/actions", () => ({
+  getCustomerLedgerAction: vi.fn(),
 }))
 
 // Mock next-safe-action hook
@@ -151,5 +157,67 @@ describe("JobDetailDialog Component", () => {
     expect(document.body.textContent).toContain("Failed Job: sync_manifest_telemetry")
     expect(document.body.textContent).toContain("Connection timeout while contacting GPS telemetry provider")
     expect(document.body.textContent).toContain("teltonika")
+  })
+})
+
+describe("CustomerLedgerDialog Component", () => {
+  let container: HTMLDivElement
+  let root: Root
+
+  beforeEach(() => {
+    container = document.createElement("div")
+    document.body.appendChild(container)
+    root = createRoot(container)
+  })
+
+  afterEach(() => {
+    act(() => root.unmount())
+    container.remove()
+  })
+
+  it("renders ledger dialog and displays recent subset indicator when total exceeds shown count", () => {
+    const mockLedgerData = {
+      customer: {
+        id: "c-123",
+        name: "Acme Industrial Corp",
+        email: "billing@acme.test",
+        phone: "+91 98765 00000",
+      },
+      invoices: [
+        {
+          id: "inv-1",
+          amount: 50000,
+          advancePaid: 20000,
+          balanceDue: 30000,
+          status: "pending",
+          createdAt: new Date("2026-10-06"),
+          awbNumber: "TAC-20261005-001",
+        },
+      ],
+      totals: {
+        totalBilled: 5000000,
+        totalAdvance: 2000000,
+        totalDue: 3000000,
+        totalCount: 75,
+      },
+    }
+
+    act(() => {
+      root.render(
+        <CustomerLedgerDialog
+          open={true}
+          customerId="c-123"
+          customerName="Acme Industrial Corp"
+          onOpenChange={vi.fn()}
+          initialData={mockLedgerData}
+        />
+      )
+    })
+
+    const dialog = document.querySelector('[data-slot="customer-ledger-dialog"]')
+    expect(dialog).not.toBeNull()
+    expect(document.body.textContent).toContain("Showing 1 most recent of 75 invoices")
+    expect(document.body.textContent).toContain("Displaying the 50 most recent invoices")
+    expect(document.body.textContent).toContain("Acme Industrial Corp")
   })
 })

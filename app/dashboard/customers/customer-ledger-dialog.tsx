@@ -40,6 +40,7 @@ export interface CustomerLedgerDialogProps {
   customerName?: string | null
   open: boolean
   onOpenChange: (open: boolean) => void
+  initialData?: any
 }
 
 export function CustomerLedgerDialog({
@@ -47,8 +48,9 @@ export function CustomerLedgerDialog({
   customerName,
   open,
   onOpenChange,
+  initialData,
 }: CustomerLedgerDialogProps) {
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<any>(initialData ?? null)
   const [selectedShipmentAwb, setSelectedShipmentAwb] = useState<string | null>(null)
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null)
 
@@ -77,7 +79,7 @@ export function CustomerLedgerDialog({
 
   const customer = data?.customer
   const invoices = data?.invoices ?? []
-  const totals = data?.totals ?? { totalBilled: 0, totalAdvance: 0, totalDue: 0 }
+  const totals = data?.totals ?? { totalBilled: 0, totalAdvance: 0, totalDue: 0, totalCount: 0 }
   const displayName = customer?.name || customerName || "Customer Ledger"
 
   return (
@@ -120,7 +122,7 @@ export function CustomerLedgerDialog({
           </DialogHeader>
 
           {/* Body */}
-          <div className="flex-1 overflow-y-auto px-6 py-5 pb-8 min-h-[300px] space-y-6">
+          <div className="flex-1 overflow-y-auto px-6 py-5 pb-8 min-h-0 space-y-6">
             {isExecuting && !data ? (
               <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground">
                 <Loader2 className="size-6 animate-spin text-primary" />
@@ -202,7 +204,9 @@ export function CustomerLedgerDialog({
                       Invoice Statement Ledger
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {invoices.length} {invoices.length === 1 ? "invoice" : "invoices"}
+                      {totals.totalCount && totals.totalCount > invoices.length
+                        ? `Showing ${invoices.length} most recent of ${totals.totalCount} invoices`
+                        : `${invoices.length} ${invoices.length === 1 ? "invoice" : "invoices"}`}
                     </span>
                   </div>
 
@@ -278,6 +282,11 @@ export function CustomerLedgerDialog({
                       )}
                     </TableBody>
                   </Table>
+                  {totals.totalCount && totals.totalCount > invoices.length && (
+                    <div className="border-t border-border/70 bg-muted/20 px-4 py-2 text-[11px] text-muted-foreground">
+                      Displaying the 50 most recent invoices. Total financial metrics reflect the complete customer ledger.
+                    </div>
+                  )}
                 </div>
               </>
             )}

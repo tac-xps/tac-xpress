@@ -275,6 +275,7 @@ export const getCustomerLedgerAction = authActionClient
             totalBilled: sql<number>`sum(${invoices.amount})`,
             totalAdvance: sql<number>`sum(${invoices.advancePaid})`,
             totalDue: sql<number>`sum(${invoices.balanceDue})`,
+            totalCount: sql<number>`count(*)`,
           })
           .from(invoices)
           .where(eq(invoices.customerId, id)),
@@ -283,6 +284,7 @@ export const getCustomerLedgerAction = authActionClient
       const totalBilled = Number(aggregateSums[0]?.totalBilled) || 0
       const totalAdvance = Number(aggregateSums[0]?.totalAdvance) || 0
       const totalDue = Number(aggregateSums[0]?.totalDue) || 0
+      const totalCount = Number(aggregateSums[0]?.totalCount) || 0
 
       return {
         customer,
@@ -291,6 +293,7 @@ export const getCustomerLedgerAction = authActionClient
           totalBilled,
           totalAdvance,
           totalDue,
+          totalCount,
         },
       }
     } catch (error: any) {

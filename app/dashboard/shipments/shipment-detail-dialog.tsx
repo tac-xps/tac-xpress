@@ -254,7 +254,7 @@ export function ShipmentDetailDialog({
             </div>
 
             {/* Modal Scrollable Body */}
-            <div className="flex-1 overflow-y-auto px-6 py-5 pb-8 min-h-[300px]">
+            <div className="flex-1 overflow-y-auto px-6 py-5 pb-8 min-h-0">
               {/* Tab: Overview */}
               <TabsContent value="overview" className="mt-0 space-y-5">
                 {/* Specifications Card */}
