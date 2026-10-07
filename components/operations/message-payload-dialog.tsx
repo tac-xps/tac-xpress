@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Code, Copy, Check, MessageSquare, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
+import { RichTextRenderer } from "@/components/ui/rich-text-renderer"
 
 export interface MessagePayloadData {
   id: string
@@ -149,8 +150,8 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Message Body
               </span>
-              <div className="rounded-none border border-border/40 bg-muted/10 p-3 text-xs leading-relaxed text-foreground whitespace-pre-wrap">
-                {message.body}
+              <div className="rounded-none border border-border/40 bg-muted/10 p-3 text-xs leading-relaxed text-foreground">
+                <RichTextRenderer content={message.body} />
               </div>
             </div>
           )}

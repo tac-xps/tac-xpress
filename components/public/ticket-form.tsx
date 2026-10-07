@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import {
   Select,
   SelectContent,
@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { LANDING_TICKET_CATEGORIES } from "@/lib/support/tickets"
+import { getVisibleText } from "@/lib/sanitize"
 
 const ticketSchema = z.object({
   customer_name: z.string().min(2, "Name must be at least 2 characters"),
@@ -37,7 +38,16 @@ const ticketSchema = z.object({
   category: z.enum(LANDING_TICKET_CATEGORIES),
   related_awb: z.string().optional(),
   subject: z.string().min(5, "Subject must be at least 5 characters"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  message: z
+    .string()
+    .refine(
+      (val) => getVisibleText(val).length >= 10,
+      { message: "Message must be at least 10 characters" }
+    )
+    .refine(
+      (val) => getVisibleText(val).length <= 5000,
+      { message: "Message cannot exceed 5000 characters" }
+    ),
   website: z.string().max(0, "Bots only").optional(), // Honeypot
 })
 
@@ -324,10 +334,11 @@ export function TicketForm({ className }: TicketFormProps = {}) {
                   Message *
                 </FormLabel>
                 <FormControl>
-                  <Textarea
-                    rows={4}
-                    className="w-full resize-y border border-border bg-background px-3 py-2 text-sm transition-colors outline-none focus:border-primary"
+                  <RichTextEditor
+                    variant="compact"
+                    minHeight="120px"
                     placeholder="Describe your issue or cargo requirements in detail..."
+                    aria-label="Message"
                     {...field}
                   />
                 </FormControl>

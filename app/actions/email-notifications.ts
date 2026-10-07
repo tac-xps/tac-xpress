@@ -37,6 +37,38 @@ function buildSubject(type: NotificationType, ticketSubject: string): string {
   return `${prefixes[type]}: ${ticketSubject}`
 }
 
+const HTML_TAG_REGEX =
+  /<\/?(?:p|h[1-6]|ul|ol|li|blockquote|table|thead|tbody|tr|th|td|pre|code|div|span|strong|em|b|i|u|s|hr|br|a)\b[^>]*>/i
+
+function htmlToPlainText(content?: string): string {
+  if (!content) return ""
+  // If content contains no recognized HTML tags, preserve plain text verbatim
+  if (!HTML_TAG_REGEX.test(content)) {
+    return content.trim()
+  }
+
+  return content
+    // Convert anchor links to "Text (URL)" so text email readers can follow links
+    .replace(/<a\b[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gi, "$2 ($1)")
+    .replace(/<br\s*[\/]?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<\/li>/gi, "\n")
+    .replace(/<\/tr>/gi, "\n")
+    .replace(/<li\b[^>]*>/gi, "• ")
+    .replace(
+      /<\/?(?:p|h[1-6]|ul|ol|li|blockquote|table|thead|tbody|tr|th|td|pre|code|div|span|strong|em|b|i|u|s|hr|br|a)\b[^>]*>/gi,
+      ""
+    )
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+}
+
 // ---------------------------------------------------------------------------
 // HTML email templates (inline CSS for compatibility)
 // ---------------------------------------------------------------------------
@@ -52,6 +84,7 @@ function buildEmailContent(
   // Sanitize body and subject to prevent XSS via email in webmail clients
   const safeBody = body ? sanitizeHtml(body) : ""
   const safeSubject = subject ? sanitizeHtml(subject) : ""
+  const plainBody = htmlToPlainText(body)
 
   const base = (content: string) => `
 <!DOCTYPE html>
@@ -78,8 +111,8 @@ function buildEmailContent(
       </table>
     </td></tr>
   </table>
-</body>
-</html>`
+ </body>
+ </html>`
 
   const btn = (url: string, text: string) =>
     `<a href="${url}" style="display:inline-block;background:#1a1a1a;color:#ffffff;text-decoration:none;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:10px 20px;margin-top:16px;">${text}</a>`
@@ -102,7 +135,7 @@ function buildEmailContent(
         <p style="color:#6b7280;font-size:13px;margin:0 0 4px;">Need to add more information? Contact support and include your ticket number.</p>
         ${btn(contactUrl, "Contact support")}
       `),
-      text: `Update on ${subject} ${ticketLabel}:\n\n${body || ""}\n\nReply: ${contactUrl}`,
+      text: `Update on ${subject} ${ticketLabel}:\n\n${plainBody}\n\nReply: ${contactUrl}`,
     },
     agent_replied: {
       html: base(`
@@ -111,7 +144,7 @@ function buildEmailContent(
         <blockquote style="border-left:3px solid #10b981;padding:12px 16px;background:#f0fdf4;color:#374151;font-size:14px;margin:0 0 16px;">${safeBody}</blockquote>
         ${btn(contactUrl, "Reply Here")}
       `),
-      text: `Agent response on ${subject} ${ticketLabel}:\n\n${body || ""}\n\nReply: ${contactUrl}`,
+      text: `Agent response on ${subject} ${ticketLabel}:\n\n${plainBody}\n\nReply: ${contactUrl}`,
     },
     sla_breach: {
       html: base(`

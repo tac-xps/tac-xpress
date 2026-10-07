@@ -49,19 +49,19 @@ export const bookingSteps = [
 export const preparation = [
   {
     title: "Accurate shipment details",
-    text: "List what is inside, the number of packages, the weight and the external dimensions. Differences at handover can change acceptance or charges.",
+    text: "<p>List the exact contents, piece count, <strong>gross weight</strong>, and external <strong>length × width × height</strong> dimensions.</p><p class='mt-1 text-xs text-muted-foreground'>Differences discovered at cargo handover can alter airline acceptance or chargeable pricing.</p>",
   },
   {
     title: "Packaging and labels",
-    text: "Use a strong outer package, cushion fragile contents and seal openings securely. Put clear sender and recipient details on each package.",
+    text: "<p>Use rigid corrugated boxes, cushion fragile contents with high-density wrap, and seal all seams with heavy-duty tape.</p><p class='mt-1 text-xs text-muted-foreground'>Affix dual waterproof consignor and consignee address labels on opposite sides.</p>",
   },
   {
     title: "Documents and declarations",
-    text: "Keep the invoice and any applicable transport documents ready. Ask the team which documents your particular goods and route require.",
+    text: "<p>Keep statutory documents ready prior to dispatch:</p><ul class='mt-1 list-disc pl-4 text-xs space-y-0.5'><li>GST Tax Invoice / E-Way Bill (consignment &gt; ₹50,000)</li><li>Consignor photo ID declaration for regional flights</li></ul>",
   },
   {
     title: "Special handling",
-    text: "Declare liquids, batteries, perishables, fragile goods and anything needing temperature control before booking. Acceptance must be confirmed by the team.",
+    text: "<p>Strictly declare restricted cargo prior to dispatch confirmation:</p><ul class='mt-1 list-disc pl-4 text-xs space-y-0.5'><li>Lithium batteries (UN 3480/3481) &amp; electronic devices</li><li>Flammables, aerosols, pressurized liquids &amp; perishables</li></ul>",
   },
 ]
 
@@ -69,41 +69,41 @@ export const shippingFaqs = [
   {
     question: "Do I need an account to send or track a shipment?",
     answer:
-      "No. Customers can contact TAC-XPRESS and track a shipment with an AWB number without signing in. The operations workspace is reserved for provisioned admins and staff.",
+      "<p><strong>No account required.</strong> Customers can directly contact TAC-XPRESS and trace consignments using their 10-digit Air Waybill reference on the <a href='/track' class='text-primary underline underline-offset-4'>public tracking console</a>.</p>",
   },
   {
     question: "Which service should I choose?",
     answer:
-      "Start with your delivery window, the goods and the size of the consignment. Air cargo may suit a shorter delivery window; surface cargo may suit larger loads with more flexible timing. Our team confirms availability and acceptance for your route.",
+      "<p>Choose based on your operational urgency and physical freight profile:</p><ul class='mt-1.5 list-disc pl-4 space-y-1'><li><strong>Express Air:</strong> 24–48 hour transit window for high-priority parts, medical supplies, and sensitive documents.</li><li><strong>Surface Cargo:</strong> Cost-optimized road freight for bulk cartons, palletized industrial goods, and scheduled restocking.</li></ul>",
   },
   {
     question: "How do I request a price?",
     answer:
-      "Use the contact form with the origin, destination, contents, number of packages, weight and dimensions. Mention any collection or delivery constraints. The team needs these details to review the service and charges.",
+      "<p>Submit an inquiry with your <strong>corridor</strong> (e.g., Delhi Central to Imphal RDS), package dimensions, weight, and nature of goods. Our dispatch team computes dimensional volumetric weight and returns an itemized GST estimate.</p>",
   },
   {
     question: "What is an AWB number?",
     answer:
-      "Your Air Waybill or shipment reference identifies your consignment. It is provided with your shipment documentation. Enter the reference on the tracking page; you do not need a customer account.",
+      "<p>Your <strong>Air Waybill (AWB)</strong> is the statutory document and unique cargo barcode issued upon booking confirmation. It binds carrier liability under the <em>Carriage by Air Act</em> and tracks every milestone from hub scan to proof of delivery.</p>",
   },
   {
     question: "Does tracking show the vehicle’s live location?",
     answer:
-      "Public tracking shows the latest recorded shipment events. It is not a continuous GPS feed. An interval without a new scan does not necessarily mean the goods have stopped moving.",
+      "<p>Public tracking reports verified <strong>optical physical barcode milestone events</strong> across linehaul gateway hubs, flight manifest departures, and regional delivery stations. Continuous GPS telemetry is reserved for internal fleet dispatch controllers.</p>",
   },
   {
     question: "Can I send fragile goods, batteries or liquids?",
     answer:
-      "Tell the team exactly what you plan to send before booking. Some goods require special packaging or documentation and some may not be accepted. Do not hand over restricted goods without confirmation.",
+      "<p>Yes, provided mandatory statutory packing declarations are filed before dispatch. <strong>Lithium batteries</strong> require Section II IATA compliance certificates; fragile glassware requires wooden crating and shock-absorption verification.</p>",
   },
   {
     question: "Is the delivery date guaranteed?",
     answer:
-      "The team will discuss an expected delivery window when reviewing your shipment. Actual movement can be affected by cargo acceptance, flight or road conditions, weather and destination access. Ask about the terms that apply to your booking.",
+      "<p>We operate within calibrated <strong>SLA transit target windows</strong>. Severe weather disruptions, airline belly-hold capacity changes, or hill road transit advisories are flagged on tracking milestone records with status updates.</p>",
   },
   {
     question: "What should I do if a shipment is delayed or damaged?",
     answer:
-      "Contact the team with your AWB and a description of the issue. For visible damage, keep the packaging and any relevant photographs or documents. The team will advise on the next steps for your consignment.",
+      "<p>Initiate an immediate inquiry through our <a href='/contact' class='text-primary underline underline-offset-4'>Support Desk</a> citing your AWB number. For visible transit damage, preserve all intact packaging, document clear photographs, and share them with the operations team during claim review under our transit insurance protocol.</p>",
   },
 ]

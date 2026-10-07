@@ -4,7 +4,7 @@ import { useState } from "react"
 import { createTicket } from "@/app/actions/tickets"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import {
   Select,
   SelectContent,
@@ -25,13 +25,23 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { getVisibleText } from "@/lib/sanitize"
 
 const ticketSchema = z.object({
   customer_name: z.string().min(2, "Name must be at least 2 characters"),
   related_awb: z.string().optional(),
   category: z.string().min(1, "Please select a category"),
   subject: z.string().min(5, "Subject must be at least 5 characters"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  message: z
+    .string()
+    .refine(
+      (val) => getVisibleText(val).length >= 10,
+      { message: "Message must be at least 10 characters" }
+    )
+    .refine(
+      (val) => getVisibleText(val).length <= 5000,
+      { message: "Message cannot exceed 5000 characters" }
+    ),
 })
 
 export default function PortalTicketForm({
@@ -162,7 +172,13 @@ export default function PortalTicketForm({
             <FormItem>
               <FormLabel>Message</FormLabel>
               <FormControl>
-                <Textarea className="min-h-24" {...field} />
+                <RichTextEditor
+                  variant="compact"
+                  minHeight="110px"
+                  placeholder="Provide details about your shipment, consignee, or question..."
+                  aria-label="Message"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

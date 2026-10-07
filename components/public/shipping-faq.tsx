@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { shippingFaqs } from "./shipping-content"
+import { RichTextRenderer } from "@/components/ui/rich-text-renderer"
 export function ShippingFaq() {
   return (
     <section className="border-t bg-background" aria-labelledby="faq-title">
@@ -41,7 +42,7 @@ export function ShippingFaq() {
                 {item.question}
               </AccordionTrigger>
               <AccordionContent className="max-w-2xl pb-6 text-base leading-relaxed text-muted-foreground">
-                {item.answer}
+                <RichTextRenderer content={item.answer} className="text-base leading-relaxed text-muted-foreground" />
               </AccordionContent>
             </AccordionItem>
           ))}

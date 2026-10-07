@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { RichTextRenderer } from "@/components/ui/rich-text-renderer"
 import {
   updateTicketStatus,
   replyToTicketFromDashboard,
@@ -210,9 +211,9 @@ export function TicketDetailsDialog({
             <h4 className="text-sm font-semibold text-foreground">Message</h4>
             <div
               ref={messageContainerRef}
-              className="max-h-64 min-h-24 overflow-y-auto rounded-none border border-border/50 bg-muted/10 p-4 text-sm whitespace-pre-wrap text-foreground/90"
+              className="max-h-64 min-h-24 overflow-y-auto rounded-none border border-border/50 bg-muted/10 p-4 text-sm text-foreground/90"
             >
-              {ticket.message}
+              <RichTextRenderer content={ticket.message} />
             </div>
           </div>
 
@@ -221,11 +222,13 @@ export function TicketDetailsDialog({
               <h4 className="text-sm font-semibold text-foreground">
                 Reply via Email
               </h4>
-              <Textarea
-                placeholder="Type your reply here... (This will be emailed to the customer)"
-                className="min-h-32 resize-none"
+              <RichTextEditor
+                variant="full"
+                placeholder="Type your reply here with lists, quotes, or tables... (This will be emailed to the customer)"
+                minHeight="140px"
+                aria-label="Reply via Email"
                 value={replyMessage}
-                onChange={(e) => setReplyMessage(e.target.value)}
+                onChange={setReplyMessage}
               />
             </div>
           )}
