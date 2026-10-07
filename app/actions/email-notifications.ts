@@ -37,15 +37,28 @@ function buildSubject(type: NotificationType, ticketSubject: string): string {
   return `${prefixes[type]}: ${ticketSubject}`
 }
 
-function htmlToPlainText(html?: string): string {
-  if (!html) return ""
-  return html
+const HTML_TAG_REGEX =
+  /<\/?(?:p|h[1-6]|ul|ol|li|blockquote|table|thead|tbody|tr|th|td|pre|code|div|span|strong|em|b|i|u|s|hr|br|a)\b[^>]*>/i
+
+function htmlToPlainText(content?: string): string {
+  if (!content) return ""
+  // If content contains no recognized HTML tags, preserve plain text verbatim
+  if (!HTML_TAG_REGEX.test(content)) {
+    return content.trim()
+  }
+
+  return content
+    // Convert anchor links to "Text (URL)" so text email readers can follow links
+    .replace(/<a\b[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gi, "$2 ($1)")
     .replace(/<br\s*[\/]?>/gi, "\n")
     .replace(/<\/p>/gi, "\n\n")
     .replace(/<\/li>/gi, "\n")
     .replace(/<\/tr>/gi, "\n")
     .replace(/<li\b[^>]*>/gi, "• ")
-    .replace(/<[^>]+>/g, "")
+    .replace(
+      /<\/?(?:p|h[1-6]|ul|ol|li|blockquote|table|thead|tbody|tr|th|td|pre|code|div|span|strong|em|b|i|u|s|hr|br|a)\b[^>]*>/gi,
+      ""
+    )
     .replace(/&nbsp;/gi, " ")
     .replace(/&amp;/gi, "&")
     .replace(/&lt;/gi, "<")

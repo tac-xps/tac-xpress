@@ -142,4 +142,17 @@ describe("Sanitizer & Renderer security improvements", () => {
     act(() => testRoot.unmount())
     testContainer.remove()
   })
+
+  it("preserves angle bracket references in feedback and message validation", () => {
+    const HTML_TAG_REGEX =
+      /<\/?(?:p|h[1-6]|ul|ol|li|blockquote|table|thead|tbody|tr|th|td|pre|code|div|span|strong|em|b|i|u|s|hr|br|a)\b[^>]*>/gi
+    const input = "Please check <AWB123>"
+    const stripped = input.replace(HTML_TAG_REGEX, "").trim()
+    expect(stripped).toBe("Please check <AWB123>")
+    expect(stripped.length).toBeGreaterThanOrEqual(10)
+
+    const mathInput = "Weight range: 2 < 5 and 5 > 2"
+    expect(mathInput.replace(HTML_TAG_REGEX, "").trim()).toBe("Weight range: 2 < 5 and 5 > 2")
+  })
 })
+
