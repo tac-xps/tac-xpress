@@ -1,4 +1,9 @@
-import arcjet, { detectBot, shield, slidingWindow } from "@arcjet/next"
+import arcjet, {
+  createRemoteClient,
+  detectBot,
+  shield,
+  slidingWindow,
+} from "@arcjet/next"
 import {
   NextResponse,
   type NextFetchEvent,
@@ -18,8 +23,15 @@ type AuthenticatedRequest = NextRequest & {
   auth: Session | null
 }
 
+// 2500ms timeout prevents false deadline_exceeded errors from regional/edge network variance
+const arcjetClient =
+  typeof createRemoteClient === "function"
+    ? createRemoteClient({ timeout: 2500 })
+    : undefined
+
 export const aj = arcjet({
   key: process.env.ARCJET_KEY || "ajkey_placeholder", // Provide key in .env.local
+  ...(arcjetClient ? { client: arcjetClient } : {}),
   rules: [
     // Protect against common attacks (SQLi, XSS, etc)
     shield({
@@ -96,6 +108,7 @@ const authMiddleware = auth(
 // Multipart actions still need a rate limit even when Shield cannot parse a body.
 const actionLimiter = arcjet({
   key: process.env.ARCJET_KEY || "ajkey_placeholder",
+  ...(arcjetClient ? { client: arcjetClient } : {}),
   rules: [slidingWindow({ mode: "LIVE", interval: "1m", max: 100 })],
 })
 
@@ -142,14 +155,60 @@ async function enforceRequestProtection(request: NextRequest) {
       decision.isErrored() ||
       decision.results.some((result) => result.conclusion === "ERROR")
     ) {
-      Sentry.captureMessage("Request protection could not complete", {
-        level: "error",
-        tags: { area: "request_protection" },
-        extra: { decisionId: decision.id },
-      })
+      const reasonObj = decision.reason as { message?: unknown } | undefined
+      const resultMessage = decision.results
+        .map((r) => (r.reason as { message?: unknown } | undefined)?.message)
+        .filter(Boolean)
+        .join(" ")
+      const reasonMessage = [
+        typeof reasonObj?.message === "string" ? reasonObj.message : "",
+        resultMessage,
+      ]
+        .filter(Boolean)
+        .join(" ")
+      const isTransientTimeout =
+        reasonMessage.includes("deadline_exceeded") ||
+        reasonMessage.includes("timed out") ||
+        reasonMessage.includes("timeout")
+
+      Sentry.captureMessage(
+        isTransientTimeout
+          ? "Request protection timed out (failing open for legitimate traffic)"
+          : "Request protection could not complete",
+        {
+          level: isTransientTimeout ? "warning" : "error",
+          tags: { area: "request_protection" },
+          extra: {
+            decisionId: decision.id,
+            reason: decision.reason,
+            results: decision.results,
+          },
+        }
+      )
+
+      // Network latency timeouts fail open with warning so legitimate users aren't locked out of the dashboard
+      if (isTransientTimeout) {
+        return null
+      }
+
       if (isSensitiveRequest(request)) return protectionUnavailable()
     }
   } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    const isTransientTimeout =
+      errorMsg.includes("deadline_exceeded") ||
+      errorMsg.includes("timed out") ||
+      errorMsg.includes("timeout")
+
+    if (isTransientTimeout) {
+      Sentry.captureMessage("Request protection network timed out (failing open)", {
+        level: "warning",
+        tags: { area: "request_protection" },
+        extra: { error: errorMsg },
+      })
+      return null
+    }
+
     Sentry.captureException(error, { tags: { area: "request_protection" } })
     if (isSensitiveRequest(request)) return protectionUnavailable()
   }

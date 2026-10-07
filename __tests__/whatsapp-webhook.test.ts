@@ -12,6 +12,7 @@ vi.mock("@arcjet/next", () => ({
   tokenBucket: vi.fn(),
   slidingWindow: vi.fn(),
   fixedWindow: vi.fn(),
+  createRemoteClient: vi.fn(),
 }))
 import { GET, POST } from "@/app/api/webhooks/whatsapp/route"
 const payload = { entry: [{ changes: [{ value: { messages: [{ id: "wamid.fixture", from: "919876543210", timestamp: "1788780000", type: "text", text: { body: "Track AWB-123456789" } }] } }] }] }

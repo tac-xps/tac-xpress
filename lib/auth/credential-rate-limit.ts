@@ -1,6 +1,6 @@
 import "server-only"
 import crypto from "node:crypto"
-import arcjet, { slidingWindow } from "@arcjet/next"
+import arcjet, { createRemoteClient, slidingWindow } from "@arcjet/next"
 import * as Sentry from "@sentry/nextjs"
 import { CredentialsSignin } from "next-auth"
 import { resolveAuthSecret } from "@/lib/auth/secret"
@@ -62,6 +62,10 @@ export async function verifyRateLimitProof(proof: unknown, email: string): Promi
 
 const limiter = arcjet({
   key: process.env.ARCJET_KEY || "ajkey_placeholder",
+  client:
+    typeof createRemoteClient === "function"
+      ? createRemoteClient({ timeout: 2500 })
+      : undefined,
   // `email` is reserved by Arcjet's email-validation rule and is not a
   // custom fingerprint characteristic. Use a separate account identifier.
   characteristics: ["credentialKey"],
@@ -78,6 +82,21 @@ export async function allowCredentialAttempt(request: Request, email: string) {
   try {
     decision = await limiter.protect(request, { credentialKey: email })
   } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    const isTransientTimeout =
+      errorMsg.includes("deadline_exceeded") ||
+      errorMsg.includes("timed out") ||
+      errorMsg.includes("timeout")
+
+    if (isTransientTimeout) {
+      Sentry.captureMessage("Credential rate-limit network timed out; failing open", {
+        level: "warning",
+        tags: { area: "credential_rate_limit" },
+        extra: { error: errorMsg },
+      })
+      return true
+    }
+
     Sentry.captureException(error, { tags: { area: "credential_rate_limit" } })
     throw new CredentialProtectionError()
   }
@@ -86,6 +105,24 @@ export async function allowCredentialAttempt(request: Request, email: string) {
     decision.isErrored() ||
     decision.results.some((result) => result.conclusion === "ERROR")
   ) {
+    const reasonMessage =
+      decision.reason && typeof decision.reason === "object" && "message" in decision.reason
+        ? String((decision.reason as { message?: unknown }).message ?? "")
+        : ""
+    const isTransientTimeout =
+      reasonMessage.includes("deadline_exceeded") ||
+      reasonMessage.includes("timed out") ||
+      reasonMessage.includes("timeout")
+
+    if (isTransientTimeout) {
+      Sentry.captureMessage("Credential rate-limit check timed out; failing open", {
+        level: "warning",
+        tags: { area: "credential_rate_limit" },
+        extra: { decisionId: decision.id, reason: reasonMessage },
+      })
+      return true
+    }
+
     Sentry.captureMessage("Credential rate-limit check failed", {
       level: "error",
       tags: { area: "credential_rate_limit" },

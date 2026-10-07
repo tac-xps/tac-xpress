@@ -12,6 +12,7 @@ vi.mock("@arcjet/next", () => ({
   shield: vi.fn(),
   detectBot: vi.fn(),
   slidingWindow: vi.fn(),
+  createRemoteClient: vi.fn(),
 }))
 vi.mock("next-auth", () => ({
   default: () => ({ auth: () => mocks.downstream }),

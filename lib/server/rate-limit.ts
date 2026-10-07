@@ -1,9 +1,13 @@
-import arcjet, { slidingWindow } from "@arcjet/next"
+import arcjet, { createRemoteClient, slidingWindow } from "@arcjet/next"
 import * as Sentry from "@sentry/nextjs"
 
 function createLimiter(max: number, interval: `${number}m` | `${number}h` | `${number}s` = "1m") {
   return arcjet({
     key: process.env.ARCJET_KEY || "ajkey_placeholder",
+    client:
+      typeof createRemoteClient === "function"
+        ? createRemoteClient({ timeout: 2500 })
+        : undefined,
     rules: [slidingWindow({ mode: "LIVE", interval, max })],
   })
 }
@@ -57,6 +61,24 @@ export async function enforceRateLimit(
       )
     }
     if (decision.isErrored() || decision.results.some((r) => r.conclusion === "ERROR")) {
+      const reasonMessage =
+        decision.reason && typeof decision.reason === "object" && "message" in decision.reason
+          ? String((decision.reason as { message?: unknown }).message ?? "")
+          : ""
+      const isTransientTimeout =
+        reasonMessage.includes("deadline_exceeded") ||
+        reasonMessage.includes("timed out") ||
+        reasonMessage.includes("timeout")
+
+      if (isTransientTimeout) {
+        Sentry.captureMessage("Rate-limit protection timed out; failing open", {
+          level: "warning",
+          tags: { area },
+          extra: { decisionId: decision.id, reason: reasonMessage },
+        })
+        return null
+      }
+
       Sentry.captureMessage("Rate-limit protection could not complete", {
         level: "error",
         tags: { area },
@@ -68,6 +90,21 @@ export async function enforceRateLimit(
       )
     }
   } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    const isTransientTimeout =
+      errorMsg.includes("deadline_exceeded") ||
+      errorMsg.includes("timed out") ||
+      errorMsg.includes("timeout")
+
+    if (isTransientTimeout) {
+      Sentry.captureMessage("Rate-limit protection network timed out; failing open", {
+        level: "warning",
+        tags: { area },
+        extra: { error: errorMsg },
+      })
+      return null
+    }
+
     Sentry.captureException(error, { tags: { area } })
     return Response.json(
       { error: "Request protection is temporarily unavailable." },
