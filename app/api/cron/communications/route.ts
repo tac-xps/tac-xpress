@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   )
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   try {
-    const jobResults = await processBackgroundJobs(25)
+    const jobResults = await processBackgroundJobs(10, undefined, { maxDurationMs: 45_000 })
 
     // DLQ Depth Monitoring (Phase 2.5): Alert when failed tasks accumulate
     const [dlqRow] = await db

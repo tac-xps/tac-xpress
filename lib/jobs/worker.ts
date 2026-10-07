@@ -5,10 +5,24 @@ import { eq } from "drizzle-orm"
 import { tickets } from "@/lib/db/schema"
 import { claimJob, finishJob } from "./store"
 
+export interface ProcessJobsOptions {
+  maxDurationMs?: number
+}
+
 /** Called by an authenticated scheduler or after a committed contact request. */
-export async function processBackgroundJobs(limit = 2, ticketId?: string) {
+export async function processBackgroundJobs(
+  limit = 2,
+  ticketId?: string,
+  options?: ProcessJobsOptions
+) {
+  const startTime = Date.now()
+  // Reserve a 15-second safety margin to prevent serverless function timeouts mid-execution
+  const maxDurationMs = options?.maxDurationMs ?? 45_000
   let processed = 0
   while (processed < limit) {
+    if (processed > 0 && Date.now() - startTime > maxDurationMs - 15_000) {
+      break
+    }
     const job = await claimJob(ticketId)
     if (!job) break
     try {
