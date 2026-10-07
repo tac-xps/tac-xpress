@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || vars.NEXT_PUBLIC_APP_URL || secrets.PRODUCTION_APP_URL || vars.PRODUCTION_APP_URL || 'https://tac-xpress.com' }}
+      APP_URL: "https://tac-xpress.com"
       CRON_SECRET: ${{ secrets.CRON_SECRET }}
     steps:
       - name: Trigger Communications Recovery
