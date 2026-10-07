@@ -1,0 +1,21 @@
+name: Communications Worker Cron
+on:
+  schedule:
+    # Run every 15 minutes to recover any pending communications jobs on Vercel Hobby deployments
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger Communications Recovery
+        if: env.APP_URL != '' && env.CRON_SECRET != ''
+        env:
+          APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || secrets.PRODUCTION_APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -fsSL -X GET "$APP_URL/api/cron/communications" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "User-Agent: GitHub-Actions-Cron"
