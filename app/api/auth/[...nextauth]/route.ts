@@ -29,10 +29,11 @@ function createAuthRouteErrorResponse(method: "GET" | "POST", error: unknown) {
     },
   })
 
-  // For GET (e.g. session checks), return clean null so client useSession/getSession
-  // does not crash with ClientFetchError or invalid JSON parsing error
+  // For GET, return valid JSON (null body) so client useSession/getSession
+  // does not crash with ClientFetchError or invalid JSON parsing error,
+  // but use 500 status so monitoring catches the failure.
   if (method === "GET") {
-    return NextResponse.json(null, { status: 200 })
+    return NextResponse.json(null, { status: 500 })
   }
 
   return NextResponse.json(

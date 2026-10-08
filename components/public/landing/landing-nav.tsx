@@ -54,6 +54,7 @@ export function LandingNav() {
         y: hidden && !mobileMenuOpen ? "-100%" : "0%",
       }}
       transition={motionSprings.springEditorial}
+      onFocusCapture={() => { if (hidden) setHidden(false) }}
       className={cn(
         "sticky top-0 z-50 w-full transition-colors duration-300",
         scrolled

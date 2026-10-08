@@ -32,11 +32,9 @@ export function ChapterRail() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight * 0.35
-
       for (let i = CHAPTERS.length - 1; i >= 0; i--) {
         const el = document.getElementById(CHAPTERS[i].id)
-        if (el && el.offsetTop <= scrollPosition) {
+        if (el && el.getBoundingClientRect().top <= window.innerHeight * 0.35) {
           setActiveChapter(CHAPTERS[i].id)
           break
         }
@@ -51,7 +49,7 @@ export function ChapterRail() {
   const scrollToChapter = (id: string) => {
     const element = document.getElementById(id)
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
+      element.scrollIntoView({ behavior: shouldReduceMotion ? "auto" : "smooth" })
     }
   }
 

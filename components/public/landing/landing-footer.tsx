@@ -20,10 +20,10 @@ const FOOTER_GROUPS = [
   {
     title: "Operations",
     links: [
-      { label: "Track Consignment", href: "#tracking" },
-      { label: "How It Works", href: "#process" },
+      { label: "Track Consignment", href: "#visibility-chapter" },
+      { label: "How It Works", href: "#journey-chapter" },
       { label: "Network Stations", href: "#network" },
-      { label: "Custody & Care", href: "#care" },
+      { label: "Custody & Care", href: "#delivery-chapter" },
     ],
   },
   {
@@ -31,7 +31,7 @@ const FOOTER_GROUPS = [
     links: [
       { label: "Conditions of Carriage", href: "/shipping-guide" },
       { label: "Restricted Goods", href: "/shipping-guide" },
-      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Privacy Policy", href: "/terms" },
       { label: "Terms of Service", href: "/terms" },
     ],
   },

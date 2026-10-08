@@ -92,15 +92,16 @@ export function TrackingSection() {
     if (!trimmed) return
 
     setErrorMessage(null)
-    setActiveAwb(trimmed)
 
     if (trimmed === "TAC-2409-18472") {
+      setActiveAwb(trimmed)
       setIsSample(true)
       setLiveData(null)
       return
     }
 
     setIsSample(false)
+    setLiveData(null)
     startTransition(async () => {
       try {
         const formData = new FormData()
@@ -112,6 +113,7 @@ export function TrackingSection() {
             (res && "error" in res && res.error) ||
               `Consignment reference "${trimmed}" was not found in active records. Check your AWB number.`
           )
+          setActiveAwb(trimmed)
           return
         }
 
@@ -137,6 +139,7 @@ export function TrackingSection() {
             event_time: e.event_time,
           })),
         })
+        setActiveAwb(trimmed)
       } catch {
         setLiveData(null)
         setErrorMessage("Tracking service temporarily unavailable. Please try again.")
@@ -345,10 +348,16 @@ export function TrackingSection() {
 
                     {/* Progressive Milestone Resolution */}
                     <div className="mt-6 space-y-4">
-                      {liveData && liveData.events && liveData.events.length > 0 ? (
+                      {isPending ? (
+                        <div className="flex items-center gap-2 py-6 text-xs text-muted-foreground">
+                          <Loader2 className="size-4 animate-spin" />
+                          <span className="font-mono">Retrieving consignment milestones…</span>
+                        </div>
+                      ) : liveData && liveData.events && liveData.events.length > 0 ? (
                         liveData.events.map((evt, index) => {
-                          const isCompleted = index > 0
-                          const isCurrent = index === 0
+                          const isDelivered = liveData.status === "delivered"
+                          const isCompleted = isDelivered || index > 0
+                          const isCurrent = !isDelivered && index === 0
 
                           return (
                             <div
@@ -376,7 +385,8 @@ export function TrackingSection() {
                                   <span>{evt.location || "Gateway Hub"}</span>
                                   <span>
                                     {evt.event_time
-                                      ? new Date(evt.event_time).toLocaleDateString("en-IN", {
+                                      ? new Date(evt.event_time).toLocaleString("en-IN", {
+                                          timeZone: "Asia/Kolkata",
                                           month: "short",
                                           day: "numeric",
                                           hour: "2-digit",
@@ -389,6 +399,10 @@ export function TrackingSection() {
                             </div>
                           )
                         })
+                      ) : !isSample && !liveData ? (
+                        <p className="py-6 font-mono text-xs text-muted-foreground">
+                          No public tracking events are available yet.
+                        </p>
                       ) : (
                         SAMPLE_MILESTONES.map((item, index) => {
                           const isCompleted = item.status === "completed"

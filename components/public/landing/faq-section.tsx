@@ -1,9 +1,14 @@
 "use client"
 
-import React, { useState } from "react"
-import { motion, AnimatePresence, useReducedMotion } from "motion/react"
+import React from "react"
 import { Plus } from "lucide-react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion"
 
 const FAQS = [
   {
@@ -33,13 +38,6 @@ const FAQS = [
 ]
 
 export function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0)
-  const shouldReduceMotion = useReducedMotion()
-
-  const toggleAccordion = (idx: number) => {
-    setOpenIndex(openIndex === idx ? null : idx)
-  }
-
   return (
     <EditorialContainer
       id="faq"
@@ -65,59 +63,38 @@ export function FAQSection() {
           </p>
         </div>
 
-        {/* Clean Horizontal Accordion Rows */}
-        <div className="divide-y divide-border/80 border-y border-border/80">
-          {FAQS.map((faq, idx) => {
-            const isOpen = openIndex === idx
-
-            return (
-              <div key={faq.q} className="py-4 sm:py-6">
-                <button
-                  type="button"
-                  onClick={() => toggleAccordion(idx)}
-                  className="group flex w-full items-start justify-between text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  aria-expanded={isOpen}
+        {/* Shadcn Accordion — Radix primitive with correct a11y */}
+        <Accordion
+          type="single"
+          collapsible
+          defaultValue="faq-0"
+          className="divide-y divide-border/80 border-y border-border/80"
+        >
+          {FAQS.map((faq, idx) => (
+            <AccordionItem
+              key={faq.q}
+              value={`faq-${idx}`}
+              className="border-b-0 py-4 sm:py-6"
+            >
+              <AccordionTrigger
+                className="py-0 text-left hover:no-underline [&>svg]:hidden group"
+              >
+                <span
+                  style={{ fontSize: "var(--type-sub)" }}
+                  className="pr-6 font-heading font-medium tracking-tight text-foreground transition-colors group-hover:text-primary"
                 >
-                  <span
-                    style={{ fontSize: "var(--type-sub)" }}
-                    className="pr-6 font-heading font-medium tracking-tight text-foreground transition-colors group-hover:text-primary"
-                  >
-                    {faq.q}
-                  </span>
-                  <motion.span
-                    animate={{ rotate: isOpen ? 45 : 0 }}
-                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                    className="mt-1 flex size-6 shrink-0 items-center justify-center border border-border bg-card text-muted-foreground transition-colors group-hover:border-primary group-hover:text-primary"
-                  >
-                    <Plus className="size-3.5" />
-                  </motion.span>
-                </button>
-
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={
-                        shouldReduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }
-                      }
-                      animate={
-                        shouldReduceMotion ? { opacity: 1 } : { opacity: 1, height: "auto" }
-                      }
-                      exit={
-                        shouldReduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }
-                      }
-                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <p className="pt-4 pr-12 text-sm sm:text-base leading-relaxed text-muted-foreground font-normal">
-                        {faq.a}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            )
-          })}
-        </div>
+                  {faq.q}
+                </span>
+                <span className="mt-1 flex size-6 shrink-0 items-center justify-center border border-border bg-card text-muted-foreground transition-all group-hover:border-primary group-hover:text-primary group-data-[state=open]:rotate-45">
+                  <Plus className="size-3.5" />
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="pt-4 pr-12 text-sm sm:text-base leading-relaxed text-muted-foreground font-normal">
+                {faq.a}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </EditorialContainer>
   )

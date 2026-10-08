@@ -65,7 +65,7 @@ export function HeroSection() {
               <SectionEyebrow>
                 01 Cargo · Dispatch &amp; Linehaul Network
               </SectionEyebrow>
-              <span className="relative flex size-2" aria-hidden="true">
+              <span className="relative flex size-2 motion-reduce:hidden" aria-hidden="true">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-status-delivered opacity-75" />
                 <span className="relative inline-flex size-2 rounded-full bg-status-delivered" />
               </span>

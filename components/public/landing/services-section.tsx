@@ -122,7 +122,6 @@ export function ServicesSection() {
             className="relative aspect-16/9 w-full overflow-hidden"
           >
             <motion.div
-              style={shouldReduceMotion ? undefined : { objectPosition }}
               className="relative h-full w-full"
             >
               <Image
@@ -130,6 +129,7 @@ export function ServicesSection() {
                 alt="Panoramic multi-modal logistics corridor across modern Indian metropolis with arterial expressway, container linehaul, rapid rail, and ascending aircraft"
                 fill
                 priority={false}
+                style={shouldReduceMotion ? undefined : { objectPosition: objectPosition as unknown as string }}
                 className="object-cover select-none transition-all duration-500 ease-out"
                 sizes="(min-width: 1360px) 1264px, 100vw"
               />
