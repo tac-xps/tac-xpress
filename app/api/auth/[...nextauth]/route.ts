@@ -29,6 +29,12 @@ function createAuthRouteErrorResponse(method: "GET" | "POST", error: unknown) {
     },
   })
 
+  // For GET (e.g. session checks), return clean null so client useSession/getSession
+  // does not crash with ClientFetchError or invalid JSON parsing error
+  if (method === "GET") {
+    return NextResponse.json(null, { status: 200 })
+  }
+
   return NextResponse.json(
     { error: "Authentication service unavailable" },
     { status: 500 }

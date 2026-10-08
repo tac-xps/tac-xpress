@@ -28,5 +28,14 @@ export function AuthProvider({
     }
   }, [session])
 
-  return <SessionProvider session={session}>{children}</SessionProvider>
+  return (
+    <SessionProvider
+      session={session}
+      basePath="/api/auth"
+      refetchOnWindowFocus={false}
+      refetchInterval={0}
+    >
+      {children}
+    </SessionProvider>
+  )
 }

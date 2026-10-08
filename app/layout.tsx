@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { IBM_Plex_Mono, Inter, Manrope } from "next/font/google"
+import { Geist, Geist_Mono, Manrope } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -13,14 +13,19 @@ import { Toaster } from "sonner"
 import * as Sentry from "@sentry/nextjs"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 
-const manropeHeading = Manrope({ subsets: ["latin"], variable: "--font-heading" })
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
-
-const fontMono = IBM_Plex_Mono({
-  weight: ["400", "500", "600", "700"],
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-ibm-plex-mono",
-  preload: false,
+  variable: "--font-geist",
+})
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+})
+
+const manropeHeading = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
 })
 
 export const metadata: Metadata = {
@@ -45,13 +50,18 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning className={cn("font-sans", inter.variable, manropeHeading.variable)}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+      className={cn("font-sans", geist.variable, geistMono.variable, manropeHeading.variable)}
+    >
       <body
         className={cn(
           "antialiased font-sans",
-          inter.variable,
-          manropeHeading.variable,
-          fontMono.variable,
+          geist.variable,
+          geistMono.variable,
+          manropeHeading.variable
         )}
       >
         <PostHogProvider>
