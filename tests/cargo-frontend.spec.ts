@@ -72,7 +72,7 @@ test("essential content, navigation and tracking work without JavaScript", async
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: /Your world\.\s*On the move\./,
+        name: /Move cargo\.\s*With clarity\./,
       })
     ).toBeVisible()
     const form = page.getByRole("form", { name: "Track your shipment" })
@@ -87,7 +87,7 @@ test("essential content, navigation and tracking work without JavaScript", async
       .getByRole("link", { name: "Services", exact: true })
       .click()
     await expect(
-      page.getByRole("heading", { name: "A service that fits what you send." })
+      page.getByRole("heading", { name: "Your cargo. The right journey." })
     ).toBeVisible()
   } finally {
     await context.close()
