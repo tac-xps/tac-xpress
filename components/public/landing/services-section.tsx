@@ -9,7 +9,9 @@ import {
   useSpring,
   useReducedMotion,
 } from "motion/react"
-import { Plane, Truck, PackageCheck } from "lucide-react"
+import Link from "next/link"
+import { Plane, Truck, PackageCheck, ArrowUpRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { LivingCargoLine } from "./living-cargo-line"
 import { motionSprings } from "@/lib/motion/motion.theme"
@@ -21,7 +23,9 @@ const SERVICES = [
   {
     icon: Plane,
     num: "01",
-    title: "Air Cargo",
+    title: "Air cargo",
+    href: "/services/air-cargo",
+    action: "Explore air cargo",
     tagline: "Shorter transit windows for priority freight.",
     description:
       "Scheduled commercial departures connecting New Delhi and Northeast regional hubs. Ideal for critical inventory, medical supplies, and urgent commercial consignments subject to statutory civil aviation standards.",
@@ -30,7 +34,9 @@ const SERVICES = [
   {
     icon: Truck,
     num: "02",
-    title: "Surface Cargo",
+    title: "Surface cargo",
+    href: "/services/surface-cargo",
+    action: "Explore surface cargo",
     tagline: "Cost-optimized movement for bulk shipments.",
     description:
       "Dependable arterial highway transport engineered for heavier pallet loads, industrial cartons, and planned restocking. Full linehaul tracking with verified transit checkpoints along national corridors.",
@@ -39,7 +45,9 @@ const SERVICES = [
   {
     icon: PackageCheck,
     num: "03",
-    title: "Door-to-Door",
+    title: "Ready for the journey",
+    href: "/shipping-guide",
+    action: "Read the shipping guide",
     tagline: "Direct custodial care from origin to threshold.",
     description:
       "Complete chain-of-custody pickup from your warehouse or store directly to the recipient's premises. Optical barcode verification at every handover eliminates blind spots and handover ambiguity.",
@@ -136,7 +144,7 @@ export function ServicesSection() {
                 fill
                 priority={false}
                 style={shouldReduceMotion ? undefined : { objectPosition }}
-                className="object-cover select-none"
+                className="object-cover select-none motion-reduce:transform-none motion-reduce:transition-none"
                 sizes="(min-width: 1360px) 1264px, 100vw"
               />
             </motion.div>
@@ -189,6 +197,19 @@ export function ServicesSection() {
                       </li>
                     ))}
                   </ul>
+
+                  <div className="mt-4 pt-3 border-t border-border/40">
+                    <Button
+                      asChild
+                      variant="link"
+                      className="h-auto p-0 font-mono text-xs uppercase tracking-wider text-primary hover:text-primary/80 group"
+                    >
+                      <Link href={srv.href}>
+                        <span>{srv.action}</span>
+                        <ArrowUpRight className="ml-1 size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
             )

@@ -1069,8 +1069,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cargo-nav,
+  #services img,
   .cargo-service-media img {
     transition: none;
+    transform: none;
   }
 
   .cargo-service:focus-within .cargo-service-media img,

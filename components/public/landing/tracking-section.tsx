@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { LivingCargoLine } from "./living-cargo-line"
-import { trackAwb } from "@/app/actions/tracking"
 import {
   motionDurations,
   motionEasings,
@@ -91,64 +90,22 @@ export function TrackingSection() {
   const shouldReduceMotion = useReducedMotion()
 
   const handleTrackSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
     const trimmed = awbInput.trim().toUpperCase()
-    if (!trimmed) return
-
-    setErrorMessage(null)
-
-    if (trimmed === "TAC-2409-18472") {
-      setActiveAwb(trimmed)
-      setIsSample(true)
-      setLiveData(null)
+    if (!trimmed) {
+      e.preventDefault()
       return
     }
 
-    setIsSample(false)
-    setLiveData(null)
-    startTransition(async () => {
-      try {
-        const formData = new FormData()
-        formData.append("awb_number", trimmed)
-        const res = await trackAwb(formData)
-        if (!res || "error" in res || !res.data) {
-          setLiveData(null)
-          setErrorMessage(
-            (res && "error" in res && res.error) ||
-              `Consignment reference "${trimmed}" was not found in active records. Check your AWB number.`
-          )
-          setActiveAwb(trimmed)
-          return
-        }
+    if (trimmed === "TAC-2409-18472") {
+      e.preventDefault()
+      setActiveAwb(trimmed)
+      setIsSample(true)
+      setLiveData(null)
+      setErrorMessage(null)
+      return
+    }
 
-        const shipment = res.data
-        const events = Array.isArray(shipment.events) ? shipment.events : []
-
-        setLiveData({
-          status: shipment.status || "in-transit",
-          origin: shipment.origin || "Delhi (DEL)",
-          destination: shipment.destination || "Imphal (IMF)",
-          service: shipment.service || "Air Express",
-          events: events.map((e: {
-            id?: string
-            status?: string
-            location?: string
-            description?: string
-            event_time?: string
-          }) => ({
-            id: e.id,
-            status: e.status,
-            location: e.location,
-            description: e.description,
-            event_time: e.event_time,
-          })),
-        })
-        setActiveAwb(trimmed)
-      } catch {
-        setLiveData(null)
-        setErrorMessage("Tracking service temporarily unavailable. Please try again.")
-      }
-    })
+    // Allow native GET form submission to /track?awb=...
   }
 
   const handleResetToSample = () => {
@@ -165,7 +122,7 @@ export function TrackingSection() {
       aria-labelledby="tracking-heading"
       className="py-12 sm:py-20 lg:py-24"
     >
-      <div className="space-y-10 lg:space-y-14">
+      <div id="shipment-desk" className="space-y-10 lg:space-y-14">
         {/* Section Header */}
         <div className="max-w-2xl">
           <SectionEyebrow className="mb-4">
@@ -220,12 +177,18 @@ export function TrackingSection() {
           <div className="order-1 flex flex-col justify-between border border-border/80 bg-card p-4 sm:p-7 lg:order-2 lg:col-span-7 shadow-xs">
             <div>
               {/* Form Input with Restrained Focus State */}
-              <form onSubmit={handleTrackSubmit} className="space-y-3">
+              <form
+                action="/track"
+                method="get"
+                aria-label="Track your shipment"
+                onSubmit={handleTrackSubmit}
+                className="space-y-3"
+              >
                 <label
-                  htmlFor="awb-query"
-                  className="block font-mono text-[11px] uppercase tracking-wider text-muted-foreground"
+                  htmlFor="home-awb"
+                  className="block font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium"
                 >
-                  Enter AWB Consignment Reference
+                  AWB / shipment reference
                 </label>
                 <div className="flex gap-2">
                   <div
@@ -235,7 +198,9 @@ export function TrackingSection() {
                   >
                     <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
-                      id="awb-query"
+                      id="home-awb"
+                      name="awb"
+                      aria-label="AWB / shipment reference"
                       value={awbInput}
                       onFocus={() => setIsFocused(true)}
                       onBlur={() => setIsFocused(false)}
@@ -256,7 +221,7 @@ export function TrackingSection() {
                           Verifying...
                         </>
                       ) : (
-                        "Track"
+                        "Track shipment"
                       )}
                     </Button>
                   </motion.div>
@@ -333,7 +298,7 @@ export function TrackingSection() {
                     {/* Corridor & Service Specs */}
                     <div className="mt-4 grid grid-cols-2 gap-4 border-y border-border/60 py-3 font-mono text-[11px] text-muted-foreground">
                       <div>
-                        <span className="block text-[10px] uppercase text-muted-foreground/80">
+                        <span className="block text-[10px] uppercase text-muted-foreground font-medium">
                           Corridor
                         </span>
                         <span className="text-foreground">
@@ -341,7 +306,7 @@ export function TrackingSection() {
                         </span>
                       </div>
                       <div>
-                        <span className="block text-[10px] uppercase text-muted-foreground/80">
+                        <span className="block text-[10px] uppercase text-muted-foreground font-medium">
                           Modality / Weight
                         </span>
                         <span className="text-foreground">
