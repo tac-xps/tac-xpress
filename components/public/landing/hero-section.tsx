@@ -176,9 +176,9 @@ export function HeroSection() {
             initial={
               shouldReduceMotion
                 ? false
-                : { opacity: 0, scale: 0.985, y: 12 }
+                : { scale: 0.985, y: 12 }
             }
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            animate={{ scale: 1, y: 0 }}
             transition={{
               duration: motionDurations.hero,
               delay: 0.16,
@@ -208,7 +208,7 @@ export function HeroSection() {
               </motion.div>
 
               {/* Architectural Caption Bar */}
-              <div className="flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-mono text-[10px] tracking-wider uppercase text-muted-foreground">
+              <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-mono text-[10px] tracking-wider uppercase text-muted-foreground">
                 <span className="flex items-center gap-2">
                   <span className="inline-block size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
                   Metropolitan Arterial Gateway · Active Dispatch

@@ -71,6 +71,7 @@ test("dark theme maintains accessible contrast", async ({ page }) => {
   await page.evaluate(() => document.fonts.ready)
   await page.getByRole("button", { name: "Toggle color theme" }).click()
   await expect(page.locator("html")).toHaveClass(/dark/)
+  await page.evaluate(() => document.fonts.ready)
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
     .analyze()
