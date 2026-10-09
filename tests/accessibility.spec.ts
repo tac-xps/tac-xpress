@@ -67,6 +67,8 @@ test("mobile navigation supports keyboard focus", async ({ page }) => {
 
 test("dark theme maintains accessible contrast", async ({ page }) => {
   await page.goto("/")
+  await expect(page.locator("main")).toBeVisible()
+  await page.evaluate(() => document.fonts.ready)
   await page.getByRole("button", { name: "Toggle color theme" }).click()
   await expect(page.locator("html")).toHaveClass(/dark/)
   const results = await new AxeBuilder({ page })
@@ -89,6 +91,8 @@ test("assistant opens accessibly on a small screen without sending a message", a
 }) => {
   await page.setViewportSize({ width: 320, height: 800 })
   await page.goto("/")
+  await expect(page.locator("main")).toBeVisible()
+  await page.evaluate(() => document.fonts.ready)
   await page.getByRole("button", { name: "Open AI assistant" }).click()
   await expect(page.getByRole("dialog")).toBeVisible()
   await expect(page.getByLabel("Your question")).toBeVisible()

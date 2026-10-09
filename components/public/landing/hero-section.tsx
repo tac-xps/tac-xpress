@@ -58,8 +58,8 @@ export function HeroSection() {
         >
           {/* Eyebrow with Active Pulse Indicator */}
           <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={shouldReduceMotion ? false : { y: 8 }}
+            animate={{ y: 0 }}
             transition={{
               duration: motionDurations.reveal,
               ease: motionEasings.editorial,
@@ -85,8 +85,8 @@ export function HeroSection() {
             <span className="block overflow-hidden py-1">
               <motion.span
                 className="block"
-                initial={shouldReduceMotion ? false : { y: "115%", opacity: 0.05 }}
-                animate={{ y: "0%", opacity: 1 }}
+                initial={shouldReduceMotion ? false : { y: "115%" }}
+                animate={{ y: "0%" }}
                 transition={{
                   duration: motionDurations.hero,
                   delay: 0.06,
@@ -99,8 +99,8 @@ export function HeroSection() {
             <span className="block overflow-hidden py-1">
               <motion.span
                 className="block text-muted-foreground/90"
-                initial={shouldReduceMotion ? false : { y: "115%", opacity: 0.05 }}
-                animate={{ y: "0%", opacity: 1 }}
+                initial={shouldReduceMotion ? false : { y: "115%" }}
+                animate={{ y: "0%" }}
                 transition={{
                   duration: motionDurations.hero,
                   delay: 0.16,
@@ -116,8 +116,8 @@ export function HeroSection() {
           <div className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
             <LivingCargoLine variant="rule" className="w-24" />
             <motion.p
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={shouldReduceMotion ? false : { y: 10 }}
+              animate={{ y: 0 }}
               transition={{
                 duration: motionDurations.editorial,
                 delay: 0.26,
@@ -132,8 +132,8 @@ export function HeroSection() {
 
           {/* Actions with Tactile Micro-Springs */}
           <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={shouldReduceMotion ? false : { y: 12 }}
+            animate={{ y: 0 }}
             transition={{
               duration: motionDurations.reveal,
               delay: 0.34,
