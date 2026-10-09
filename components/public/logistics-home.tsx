@@ -1,7 +1,5 @@
-"use client"
-
 import React from "react"
-import { MotionConfig } from "motion/react"
+import { MotionProvider } from "./landing/motion-provider"
 import { LandingNav } from "./landing/landing-nav"
 import { ChapterRail } from "./landing/chapter-rail"
 import { HeroSection } from "./landing/hero-section"
@@ -36,7 +34,7 @@ import { SupportChat } from "./support-chat"
  */
 export function LogisticsHome() {
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionProvider>
       <div className="cargo-public min-h-svh bg-background text-foreground antialiased selection:bg-primary/20 selection:text-foreground">
         {/* Accessible Skip-to-Content Link */}
         <a
@@ -80,6 +78,6 @@ export function LogisticsHome() {
         {/* On-Demand Support Assistant */}
         <SupportChat />
       </div>
-    </MotionConfig>
+    </MotionProvider>
   )
 }
