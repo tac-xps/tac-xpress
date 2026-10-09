@@ -261,9 +261,9 @@ export function TrackingSection() {
                   /* Verified Consignment Record Card */
                   <motion.div
                     key="found-state"
-                    initial={shouldReduceMotion ? false : { opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
+                    initial={shouldReduceMotion ? false : { y: 6 }}
+                    animate={{ y: 0 }}
+                    exit={{ y: -6 }}
                     transition={{ duration: motionDurations.control }}
                     className="mt-6 border-t border-border/80 pt-6"
                   >
@@ -380,8 +380,8 @@ export function TrackingSection() {
                           return (
                             <motion.div
                               key={item.title}
-                              initial={shouldReduceMotion ? false : { opacity: 0, x: -6 }}
-                              animate={{ opacity: 1, x: 0 }}
+                              initial={shouldReduceMotion ? false : { x: -6 }}
+                              animate={{ x: 0 }}
                               transition={{
                                 duration: motionDurations.fast,
                                 delay: index * 0.06,
