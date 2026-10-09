@@ -40,6 +40,10 @@ const NETWORK_ANNOTATIONS = [
   },
 ]
 
+/**
+ * Network topology section presenting strategic hub stations, national arterial corridors,
+ * and regional gateway infrastructure with parallax city depth.
+ */
 export function NetworkSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = useReducedMotion()

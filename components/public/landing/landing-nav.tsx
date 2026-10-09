@@ -20,7 +20,12 @@ const NAV_LINKS = [
   { href: "#contact", label: "Contact" },
 ]
 
+/**
+ * Direction-aware sticky navigation bar with editorial typography,
+ * keyboard accessibility, and mobile drawer support.
+ */
 export function LandingNav() {
+  const headerRef = useRef<HTMLElement>(null)
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
@@ -41,7 +46,12 @@ export function LandingNav() {
       return
     }
 
-    if (latest > previous && latest > 120 && !mobileMenuOpen) {
+    const hasFocus =
+      headerRef.current != null &&
+      typeof document !== "undefined" &&
+      headerRef.current.contains(document.activeElement)
+
+    if (latest > previous && latest > 120 && !mobileMenuOpen && !hasFocus) {
       setHidden(true)
     } else if (latest < previous) {
       setHidden(false)
@@ -50,6 +60,7 @@ export function LandingNav() {
 
   return (
     <motion.header
+      ref={headerRef}
       animate={{
         y: hidden && !mobileMenuOpen ? "-100%" : "0%",
       }}

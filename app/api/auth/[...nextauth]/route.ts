@@ -11,6 +11,13 @@ import { NextRequest, NextResponse } from "next/server"
 //
 // See: https://github.com/nextauthjs/next-auth/issues/10568
 
+/**
+ * Normalizes a NextRequest into a standard Fetch API Request using the raw URL string.
+ * This circumvents Next.js 16 App Router / Turbopack nextUrl segmentation quirks in @auth/core.
+ *
+ * @param req - Incoming Next.js request.
+ * @returns Standard fetch Request compatible with NextAuth handlers.
+ */
 function buildAuthRequest(req: NextRequest): Request {
   return new Request(req.url, {
     method: req.method,
@@ -21,6 +28,13 @@ function buildAuthRequest(req: NextRequest): Request {
   })
 }
 
+/**
+ * Logs authentication routing exceptions to Sentry and produces standardized HTTP 500 error responses.
+ *
+ * @param method - The HTTP method ("GET" or "POST").
+ * @param error - The captured exception.
+ * @returns JSON error response.
+ */
 function createAuthRouteErrorResponse(method: "GET" | "POST", error: unknown) {
   Sentry.captureException(error, {
     tags: {
@@ -42,6 +56,13 @@ function createAuthRouteErrorResponse(method: "GET" | "POST", error: unknown) {
   )
 }
 
+/**
+ * Handles incoming Auth.js GET requests including session verification and CSRF token retrieval.
+ *
+ * @param req - Incoming NextRequest.
+ * @param props - Next.js route segment props with asynchronous params.
+ * @returns Response from NextAuth or HTTP 500 error response.
+ */
 export async function GET(
   req: NextRequest,
   props: { params: Promise<{ nextauth: string[] }> }
@@ -56,6 +77,13 @@ export async function GET(
   }
 }
 
+/**
+ * Handles incoming Auth.js POST requests including credentials authentication and signout.
+ *
+ * @param req - Incoming NextRequest.
+ * @param props - Next.js route segment props with asynchronous params.
+ * @returns Response from NextAuth or HTTP 500 error response.
+ */
 export async function POST(
   req: NextRequest,
   props: { params: Promise<{ nextauth: string[] }> }

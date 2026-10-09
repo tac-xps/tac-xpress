@@ -53,6 +53,10 @@ const STEPS = [
   },
 ]
 
+/**
+ * Process section presenting the 4-stage freight journey with scroll-synced
+ * progressive step highlights and focal waypoint indicators.
+ */
 export function ProcessSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = useReducedMotion()

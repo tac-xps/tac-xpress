@@ -64,6 +64,10 @@ const SAMPLE_MILESTONES: SampleMilestone[] = [
   },
 ]
 
+/**
+ * Public shipment tracking console supporting interactive AWB query,
+ * live gateway milestone telemetry, and fallback sample demonstration data.
+ */
 export function TrackingSection() {
   const [awbInput, setAwbInput] = useState<string>("TAC-2409-18472")
   const [activeAwb, setActiveAwb] = useState<string>("TAC-2409-18472")
@@ -399,7 +403,7 @@ export function TrackingSection() {
                             </div>
                           )
                         })
-                      ) : !isSample && !liveData ? (
+                      ) : !isSample ? (
                         <p className="py-6 font-mono text-xs text-muted-foreground">
                           No public tracking events are available yet.
                         </p>

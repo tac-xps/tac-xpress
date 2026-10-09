@@ -6,6 +6,9 @@ import * as Sentry from "@sentry/nextjs"
 import posthog from "posthog-js"
 import { useEffect } from "react"
 
+/**
+ * Application authentication and telemetry provider syncing user sessions with Sentry and PostHog.
+ */
 export function AuthProvider({
   children,
   session,

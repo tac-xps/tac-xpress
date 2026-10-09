@@ -13,6 +13,10 @@ import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { LivingCargoLine } from "./living-cargo-line"
 import { motionDurations, motionEasings, motionSprings } from "@/lib/motion/motion.theme"
 
+/**
+ * Editorial brand narrative statement section delivering mission closure
+ * with scroll-settling hero imagery and final cargo rule resolution.
+ */
 export function BrandStatementSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = useReducedMotion()

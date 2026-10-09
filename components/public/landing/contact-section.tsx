@@ -6,6 +6,10 @@ import { Phone, Mail, MapPin } from "lucide-react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { TicketForm } from "@/components/public/ticket-form"
 
+/**
+ * Direct contact desk section integrating operational gateway directories
+ * alongside the validated support ticket and quote submission form.
+ */
 export function ContactSection() {
   const shouldReduceMotion = useReducedMotion()
 

@@ -10,6 +10,9 @@ interface SectionEyebrowProps {
   id?: string
 }
 
+/**
+ * Monospace section eyebrow marker with leading geometric square accent.
+ */
 export function SectionEyebrow({ children, className, id }: SectionEyebrowProps) {
   return (
     <div
@@ -32,6 +35,9 @@ interface EditorialHeadingProps {
   as?: "h1" | "h2" | "h3" | "h4" | "p"
 }
 
+/**
+ * Editorial heading component mapped to fluid clamp typography variables.
+ */
 export function EditorialHeading({
   children,
   className,
@@ -73,6 +79,10 @@ interface EditorialContainerProps {
   "aria-labelledby"?: string
 }
 
+/**
+ * Standardized responsive container wrapper enforcing 1360px max width
+ * and consistent horizontal padding across viewports.
+ */
 export const EditorialContainer = React.forwardRef<
   HTMLDivElement,
   EditorialContainerProps
@@ -177,6 +187,9 @@ interface RevealProps {
   delay?: number
 }
 
+/**
+ * Scroll reveal wrapper providing coordinated entry animation with reduced-motion support.
+ */
 export function Reveal({ children, className, delay = 0 }: RevealProps) {
   const shouldReduceMotion = useReducedMotion()
 

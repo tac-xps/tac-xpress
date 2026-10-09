@@ -35,6 +35,10 @@ const CARE_ROWS = [
   },
 ]
 
+/**
+ * Custody and care section detailing the 4 operational packaging and handling standards
+ * alongside physical handover documentation.
+ */
 export function CareSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = useReducedMotion()

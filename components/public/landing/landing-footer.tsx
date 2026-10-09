@@ -31,12 +31,15 @@ const FOOTER_GROUPS = [
     links: [
       { label: "Conditions of Carriage", href: "/shipping-guide" },
       { label: "Restricted Goods", href: "/shipping-guide" },
-      { label: "Privacy Policy", href: "/terms" },
       { label: "Terms of Service", href: "/terms" },
     ],
   },
 ]
 
+/**
+ * Editorial footer providing brand governance, operations navigation,
+ * direct quote CTAs, and statutory registration credentials.
+ */
 export function LandingFooter() {
   return (
     <footer className="w-full border-t border-border/80 bg-surface/50 text-foreground transition-colors">

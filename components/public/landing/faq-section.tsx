@@ -37,6 +37,10 @@ const FAQS = [
   },
 ]
 
+/**
+ * Frequently asked questions accordion addressing booking requirements,
+ * chargeable weight calculations, and statutory dangerous goods declarations.
+ */
 export function FAQSection() {
   return (
     <EditorialContainer

@@ -15,6 +15,8 @@ import { LivingCargoLine } from "./living-cargo-line"
 import { motionSprings } from "@/lib/motion/motion.theme"
 import { cn } from "@/lib/utils"
 
+const MotionImage = motion.create(Image)
+
 const SERVICES = [
   {
     icon: Plane,
@@ -45,6 +47,10 @@ const SERVICES = [
   },
 ]
 
+/**
+ * Services showcase section displaying core multi-modal freight offerings
+ * with scroll-driven cinematic corridor panorama revealing transit corridors.
+ */
 export function ServicesSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = useReducedMotion()
@@ -124,13 +130,13 @@ export function ServicesSection() {
             <motion.div
               className="relative h-full w-full"
             >
-              <Image
+              <MotionImage
                 src="/images/logistics/journey.webp"
                 alt="Panoramic multi-modal logistics corridor across modern Indian metropolis with arterial expressway, container linehaul, rapid rail, and ascending aircraft"
                 fill
                 priority={false}
-                style={shouldReduceMotion ? undefined : { objectPosition: objectPosition as unknown as string }}
-                className="object-cover select-none transition-all duration-500 ease-out"
+                style={shouldReduceMotion ? undefined : { objectPosition }}
+                className="object-cover select-none"
                 sizes="(min-width: 1360px) 1264px, 100vw"
               />
             </motion.div>

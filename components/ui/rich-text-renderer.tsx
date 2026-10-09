@@ -8,6 +8,9 @@ export interface RichTextRendererProps
   fallbackText?: string
 }
 
+/**
+ * Sanitized rich text viewer providing typography styling and safe HTML injection.
+ */
 export function RichTextRenderer({
   content,
   fallbackText = "No details provided.",

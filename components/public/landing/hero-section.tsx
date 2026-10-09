@@ -21,6 +21,10 @@ import {
   tactileInteraction,
 } from "@/lib/motion/motion.theme"
 
+/**
+ * Hero section delivering the primary commercial value proposition,
+ * linehaul metrics, quick quote and tracking CTAs, and master logistics visual.
+ */
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = useReducedMotion()
