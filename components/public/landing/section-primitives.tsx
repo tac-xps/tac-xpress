@@ -293,38 +293,19 @@ const CORRIDOR_MARQUEE_ITEMS = [
   {
     corridor: "IMF to DEL",
     tag: "Priority Air Express",
-    color: "text-primary",
-    dot: "bg-primary",
-    badge: "border-primary/40 bg-primary/10 text-primary",
   },
   {
     corridor: "DEL to IMF",
     tag: "Belly-Hold Linehaul",
-    color: "text-info",
-    dot: "bg-info",
-    badge: "border-info/40 bg-info/10 text-info",
   },
   {
     corridor: "New Delhi – Northeast",
     tag: "Arterial Highway Fleet",
-    color: "text-status-delivered",
-    dot: "bg-status-delivered",
-    badge: "border-status-delivered/40 bg-status-delivered/10 text-status-delivered",
   },
   {
     corridor: "Northeast to Imphal",
     tag: "Regional Station Delivery",
-    color: "text-status-pending",
-    dot: "bg-status-pending",
-    badge: "border-status-pending/40 bg-status-pending/10 text-status-pending",
   },
-]
-
-/** Repeated corridors for smooth, uninterrupted continuous marquee */
-const REPEATED_CORRIDORS = [
-  ...CORRIDOR_MARQUEE_ITEMS,
-  ...CORRIDOR_MARQUEE_ITEMS,
-  ...CORRIDOR_MARQUEE_ITEMS,
 ]
 
 /**
@@ -353,30 +334,31 @@ export function ProofStrip({ className }: { className?: string } = {}) {
         ))}
       </div>
 
-      {/* Live Corridor Marquee with Left & Right Gradient Fade Masks */}
+      {/* Live Corridor Marquee with Seamless Edge Gradient Masks */}
       <div
-        className="relative w-full max-w-full overflow-hidden bg-muted/20"
+        className="relative w-full max-w-full overflow-hidden bg-background/40"
         aria-hidden="true"
       >
-        {/* Soft edge gradient masks */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-24 bg-gradient-to-r from-card to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-24 bg-gradient-to-l from-card to-transparent" />
+        {/* Soft edge gradient masks blending seamlessly into background */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 sm:w-32 bg-gradient-to-r from-background via-background/80 to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 sm:w-32 bg-gradient-to-l from-background via-background/80 to-transparent" />
 
         <Marquee
+          repeat={3}
           pauseOnHover
-          className="[--duration:28s] [--gap:0rem] py-0"
+          className="[--duration:44s] [--gap:0rem] py-0"
           aria-hidden="true"
         >
-          {REPEATED_CORRIDORS.map((item, idx) => (
+          {CORRIDOR_MARQUEE_ITEMS.map((item, idx) => (
             <div
               key={`${item.corridor}-${idx}`}
-              className="flex items-center gap-3 px-6 py-2.5 font-mono text-xs uppercase tracking-[0.14em]"
+              className="flex items-center gap-3.5 border-r border-border/70 px-8 sm:px-10 py-2.5 font-mono text-xs"
             >
-              <span className={cn("inline-block size-2 rounded-none", item.dot)} aria-hidden="true" />
-              <span className={cn("font-bold text-xs sm:text-sm tracking-wide", item.color)}>
+              <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
+              <span className="font-semibold text-foreground tracking-wide text-xs sm:text-sm">
                 {item.corridor}
               </span>
-              <span className={cn("border px-2 py-0.5 font-mono text-xs font-semibold tracking-wider", item.badge)}>
+              <span className="border border-border/80 bg-card/80 px-2 py-0.5 font-sans text-xs text-muted-foreground font-medium tracking-normal">
                 {item.tag}
               </span>
             </div>
