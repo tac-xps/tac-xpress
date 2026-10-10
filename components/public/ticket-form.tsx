@@ -186,7 +186,7 @@ export function TicketForm({
             </span>
           </div>
           <span className="font-mono text-[10px] text-muted-foreground">
-            Avg response &lt; 1 hr
+            Direct controller routing
           </span>
         </div>
       ) : (
@@ -199,7 +199,7 @@ export function TicketForm({
           </div>
           <div className="flex items-center gap-1.5 self-start pt-1 font-mono text-[10px] text-muted-foreground sm:self-auto sm:pt-0">
             <span className="size-1.5 rounded-none bg-status-delivered" />
-            <span>Avg response &lt; 1 hr</span>
+            <span>Direct controller routing</span>
           </div>
         </div>
       )}
