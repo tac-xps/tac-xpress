@@ -195,6 +195,7 @@ export function ShippingSteps() {
                 key={step.title}
                 number={`0${index + 1} / STEP`}
                 title={step.title}
+                lead={step.lead}
                 text={step.text}
                 isActive={index === activeStep}
                 isCompleted={index < activeStep}

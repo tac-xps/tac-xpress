@@ -17,27 +17,35 @@ import { cn } from "@/lib/utils"
 const STEPS = [
   {
     num: "01",
-    label: "BOOK",
-    title: "Book",
-    description: "Share the details of your shipment.",
+    label: "INTAKE",
+    title: "Consignment Intake",
+    lead: "Route & dimensional registration.",
+    description:
+      "Register corridor origin, destination, piece counts, and volumetric weight to generate immediate GST-itemized freight estimates.",
   },
   {
     num: "02",
-    label: "CONFIRM",
-    title: "Confirm",
-    description: "Review the booking details and next steps.",
+    label: "CLEARANCE",
+    title: "Statutory Booking",
+    lead: "Air Waybill generation.",
+    description:
+      "Issue unique 10-digit Air Waybill (AWB) documents with mandatory E-Way bill verification, consignor declarations, and security audit.",
   },
   {
     num: "03",
-    label: "MOVE",
-    title: "Move",
-    description: "Your cargo travels through the selected service.",
+    label: "LINEHAUL",
+    title: "Arterial Transit",
+    lead: "Scheduled gateway movement.",
+    description:
+      "Cargo departs via commercial flight belly-hold space or sealed container highway fleets with optical gate checkpoint scans.",
   },
   {
     num: "04",
-    label: "TRACK",
-    title: "Track",
-    description: "Check the latest recorded milestone.",
+    label: "HANDOVER",
+    title: "Custodial Delivery",
+    lead: "Verified destination sign-off.",
+    description:
+      "Consignment is unloaded at the regional destination terminal with physical package condition audit and digital proof of delivery.",
   },
 ]
 
@@ -172,8 +180,11 @@ export function ProcessSection() {
                     </h3>
 
                     {/* Step Description */}
-                    <p className="mt-2 text-body-editorial">
-                      {step.description}
+                    <p className="mt-2.5 text-body-editorial">
+                      <strong className="font-semibold text-foreground">
+                        {step.lead}{" "}
+                      </strong>
+                      <span>{step.description}</span>
                     </p>
                   </div>
 

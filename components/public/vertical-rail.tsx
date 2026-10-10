@@ -64,6 +64,7 @@ export function VerticalRail({
 export function VerticalRailStep({
   number,
   title,
+  lead,
   text,
   className,
   isActive = false,
@@ -71,6 +72,7 @@ export function VerticalRailStep({
 }: {
   number: string
   title: string
+  lead?: string
   text: string
   className?: string
   isActive?: boolean
@@ -168,6 +170,7 @@ export function VerticalRailStep({
             isActive ? "text-foreground/90 font-normal" : "text-muted-foreground",
           )}
         >
+          {lead && <strong className="font-semibold text-foreground">{lead} </strong>}
           {text}
         </p>
       </div>

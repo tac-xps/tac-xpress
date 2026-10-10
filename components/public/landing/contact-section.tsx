@@ -37,7 +37,8 @@ export function ContactSection() {
             A person to help with the next step.
           </h2>
           <p className="mt-4 text-lead max-w-[50ch]">
-            Tell us what you need to move. Our team can help you work out what comes next.
+            <strong className="font-semibold text-foreground">Dedicated logistics desk. </strong>
+            Submit corridor parameters, dimensional cargo manifests, or dispatch inquiries. Our operations team computes volumetric ratings and responds directly.
           </p>
 
           {/* Operational Contact Directory */}
@@ -72,13 +73,13 @@ export function ContactSection() {
             <div className="flex items-start gap-3">
               <MapPin className="size-4 shrink-0 text-primary mt-0.5" />
               <div>
-                <span className="text-muted-foreground block uppercase tracking-wider text-[10px]">
+                <span className="text-muted-foreground block font-sans uppercase tracking-wider text-[11px] font-semibold">
                   Principal Gateway Stations
                 </span>
-                <span className="text-foreground block text-xs">
+                <span className="text-foreground block text-sm">
                   Delhi Hub: Cargo Terminal 2, IGI Airport, New Delhi
                 </span>
-                <span className="text-foreground block text-xs">
+                <span className="text-foreground block text-sm">
                   Imphal Hub: RDS Station, Airport Road, Imphal
                 </span>
               </div>

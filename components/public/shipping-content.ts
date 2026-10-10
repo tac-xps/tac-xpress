@@ -2,47 +2,51 @@ export const services = [
   {
     slug: "air-cargo",
     name: "Air cargo",
-    summary: "For goods with a shorter delivery window.",
+    summary: "High-priority commercial cargo with 24–48 hour gateway delivery.",
     description:
-      "Discuss air cargo when timing matters. We review the route, dimensions, weight and contents before confirming acceptance and the available movement.",
+      "Scheduled belly-hold air freight connecting Delhi Central Consolidation directly to Northeast India regional airport stations.",
     suitable:
-      "Time-sensitive business supplies, samples and smaller consignments that meet airline acceptance requirements.",
+      "Time-sensitive commercial cargo, electronics, medical inventory, and urgent consignments requiring verified belly-hold allocation.",
     planning:
-      "Share your required delivery date before booking. Flight capacity, cargo acceptance, weather and onward movement affect the final schedule.",
+      "Corridor capacity, pre-flight terminal cutoffs, airline security screening, and regional airport weather determine daily manifest allocations.",
     preparation:
-      "Pack securely, provide accurate weights and dimensions, and declare the contents. Ask the team before sending batteries, liquids, fragile items or other goods with special handling requirements.",
+      "Enclose in rigid multi-wall corrugated packaging. Affix dual waterproof AWB barcodes and enclose mandatory GST Tax Invoices before dispatch.",
   },
   {
     slug: "surface-cargo",
     name: "Surface cargo",
-    summary: "For larger loads and more flexible timelines.",
+    summary: "High-capacity linehaul road transit for volume freight and bulk inventory.",
     description:
-      "Plan road movement around the size of your consignment and the destination. Surface cargo can suit heavier or bulkier goods when the delivery window allows for a longer journey.",
+      "Dedicated arterial highway linehaul optimized for consolidated pallets, heavy industrial goods, and cost-controlled commercial supply chains.",
     suitable:
-      "Business stock, packaged household goods and larger consignments, subject to route and goods acceptance.",
+      "Palletized manufacturing components, industrial equipment, retail inventory, and full-truckload (FTL) bulk consignments.",
     planning:
-      "Tell us about loading access, the number of packages and any delivery constraints. Road conditions, consolidation and destination access can affect the schedule.",
+      "Highway corridor routing, vehicle gross axle weights, multi-state commercial checkpoints, and destination dock access govern the transit timetable.",
     preparation:
-      "Use packaging that protects against movement and stacking. Mark each package clearly, secure loose parts and tell the team about goods that cannot be stacked.",
+      "Utilize reinforced pallets, heavy-duty banding, and weather-sealed wrap. Mark center-of-gravity and stackability guidelines on all crates.",
   },
 ] as const
 
 export const bookingSteps = [
   {
-    title: "Tell us what is moving",
-    text: "Share the collection and delivery locations, contents, package count, weight, dimensions and your preferred delivery window.",
+    title: "Consignment Parameter Intake",
+    lead: "Origin, corridor & parcel specs.",
+    text: "Declare collection and destination pincodes, package count, gross weight, L × W × H external dimensions, and required delivery window.",
   },
   {
-    title: "Confirm the details",
-    text: "Our team reviews service availability, acceptance, charges and handling needs with you. A request for a quote is not a confirmed booking.",
+    title: "Capacity & Spot Rate Review",
+    lead: "Statutory pricing confirmation.",
+    text: "Our operations desk confirms flight belly-hold or multi-axle slot availability, itemized 18% GST estimate, and mandatory DG compliance.",
   },
   {
-    title: "Prepare and hand over",
-    text: "Pack and label the goods, keep the required documents ready and follow the agreed handover arrangements. Keep your booking receipt and AWB number.",
+    title: "Packaging & Custodial Intake",
+    lead: "Rigid packaging and statutory AWB.",
+    text: "Apply dual AWB barcoded shipping labels, prepare statutory GST E-Way documents, and execute physical scale verification at the intake terminal.",
   },
   {
-    title: "Follow the journey",
-    text: "Use your AWB to check recorded shipment events. Contact the team with that number if an update needs explaining or delivery details change.",
+    title: "Optical Milestone Traceability",
+    lead: "Physical barcode scan checkpoints.",
+    text: "Trace physical barcode scans at linehaul checkpoints and flight manifests, backed by single-custody delivery reconciliation.",
   },
 ]
 

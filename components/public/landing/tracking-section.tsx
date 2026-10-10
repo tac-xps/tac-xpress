@@ -205,43 +205,43 @@ export function TrackingSection() {
                 </div>
               </form>
 
-              {/* Active Consignment Meta Details */}
-              <div className="mt-6 border-t border-border/80 pt-5 space-y-4 font-mono text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                    Active reference
+              {/* Active Consignment Meta Details Well */}
+              <div className="mt-6 border border-border/80 bg-muted/20 p-4 space-y-3.5">
+                <div className="flex items-center justify-between border-b border-border/60 pb-2.5 font-mono">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                    Consignment Reference
                   </span>
-                  <span className="font-semibold text-foreground">{activeAwb}</span>
+                  <span className="text-xs font-bold tracking-wider text-foreground">{activeAwb}</span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 border-y border-border/60 py-3 text-[11px]">
+                <div className="grid grid-cols-2 gap-3 font-mono text-[11px]">
                   <div>
                     <span className="block text-[10px] uppercase text-muted-foreground font-medium">Corridor</span>
-                    <span className="text-foreground">
+                    <span className="font-semibold text-foreground">
                       {liveData ? `${liveData.origin} → ${liveData.destination}` : "Delhi (DEL) → Imphal (IMF)"}
                     </span>
                   </div>
                   <div>
-                    <span className="block text-[10px] uppercase text-muted-foreground font-medium">Service mode</span>
-                    <span className="text-foreground">
+                    <span className="block text-[10px] uppercase text-muted-foreground font-medium">Service Mode</span>
+                    <span className="font-semibold text-foreground">
                       {liveData ? liveData.service : "Air Express · Priority"}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center justify-between border-t border-border/60 pt-2.5 text-[11px]">
                   {isSample ? (
-                    <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground">
                       <ShieldCheck className="size-3.5 text-status-delivered" />
                       Sample custody record
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground">
                       <ShieldCheck className="size-3.5 text-muted-foreground" />
                       Consignment status
                     </span>
                   )}
-                  <span className="inline-flex items-center gap-1.5 border border-status-transit/30 bg-status-transit/10 px-2 py-0.5 text-[10px] font-medium text-status-transit">
+                  <span className="inline-flex items-center gap-1.5 border border-status-transit/40 bg-status-transit/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-status-transit">
                     <span className="size-1 bg-status-transit" />
                     {liveData ? liveData.status.toUpperCase() : "IN TRANSIT"}
                   </span>
@@ -346,23 +346,25 @@ export function TrackingSection() {
                               </div>
 
                               <div className="flex-1 pb-1">
-                                <p className="font-medium text-foreground">
-                                  {evt.description || evt.status || "Milestone Scan"}
-                                </p>
-                                <div className="mt-0.5 flex flex-wrap items-center justify-between gap-1 font-mono text-[11px] text-muted-foreground">
-                                  <span>{evt.location || "Gateway Hub"}</span>
-                                  <span>
-                                    {evt.event_time
-                                      ? new Date(evt.event_time).toLocaleString("en-IN", {
-                                          timeZone: "Asia/Kolkata",
-                                          month: "short",
-                                          day: "numeric",
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                        })
-                                      : ""}
-                                  </span>
+                                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                                  <p className="text-xs font-semibold text-foreground">
+                                    {evt.description || evt.status || "Milestone Scan"}
+                                  </p>
+                                  {evt.event_time && (
+                                    <span className="border border-border/70 bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] text-foreground/80">
+                                      {new Date(evt.event_time).toLocaleString("en-IN", {
+                                        timeZone: "Asia/Kolkata",
+                                        month: "short",
+                                        day: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })}
+                                    </span>
+                                  )}
                                 </div>
+                                <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
+                                  {evt.location || "Gateway Hub"}
+                                </p>
                               </div>
                             </div>
                           )
@@ -406,21 +408,25 @@ export function TrackingSection() {
                               </div>
 
                               <div className="flex-1 pb-1">
-                                <p
-                                  className={`font-medium ${
-                                    isCurrent
-                                      ? "text-foreground font-semibold"
-                                      : isCompleted
-                                      ? "text-foreground"
-                                      : "text-muted-foreground"
-                                  }`}
-                                >
-                                  {item.title}
-                                </p>
-                                <div className="mt-0.5 flex flex-wrap items-center justify-between gap-1 font-mono text-[11px] text-muted-foreground">
-                                  <span>{item.location}</span>
-                                  <span>{item.timestamp}</span>
+                                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                                  <p
+                                    className={`text-xs ${
+                                      isCurrent
+                                        ? "text-foreground font-semibold"
+                                        : isCompleted
+                                        ? "text-foreground font-medium"
+                                        : "text-muted-foreground"
+                                    }`}
+                                  >
+                                    {item.title}
+                                  </p>
+                                  <span className="border border-border/70 bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] text-foreground/80">
+                                    {item.timestamp}
+                                  </span>
                                 </div>
+                                <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
+                                  {item.location}
+                                </p>
                               </div>
                             </motion.div>
                           )
@@ -432,11 +438,17 @@ export function TrackingSection() {
               </AnimatePresence>
             </div>
 
-            <div className="mt-6 border-t border-border/80 pt-4 font-mono text-[11px] text-muted-foreground">
-              <span>
-                {isSample
-                  ? "Verified sample intake record · Synchronized within 120 seconds of physical gate read"
-                  : "Consignment record synchronized with central tracking log"}
+            <div className="mt-6 border-t border-border/80 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono text-[11px] text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <span className="size-1.5 rounded-none bg-status-delivered animate-pulse" />
+                <span>
+                  {isSample
+                    ? "Verified physical scan trail · Synced within 120s of gate intake"
+                    : "Consignment record synchronized with central tracking log"}
+                </span>
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80">
+                Optical Gate Audit
               </span>
             </div>
           </div>

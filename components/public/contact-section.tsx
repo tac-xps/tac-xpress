@@ -11,24 +11,31 @@ export function ContactSection() {
       <div className="grid gap-12 lg:grid-cols-12 lg:gap-16 items-start">
         {/* Left Column: Context, FAQs and Escalation Guidance */}
         <div className="flex flex-col gap-8 lg:col-span-5">
-          <div>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">
+          <div className="border-t-2 border-t-primary/70 border-x border-b border-border/80 bg-card/60 p-5 shadow-xs">
+            <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-primary">
+              <span className="size-1.5 rounded-none bg-primary" aria-hidden="true" />
+              Consignment Quotation
+            </div>
+            <h2 className="mt-2 text-base font-semibold tracking-tight text-foreground">
               Planning a shipment?
             </h2>
-            <p className="mt-3 leading-relaxed text-muted-foreground text-sm">
-              Include the origin and destination, contents, package count, weight
-              and dimensions. Tell us when you need the goods delivered and any
-              special handling needs.
+            <p className="mt-2 text-body-editorial text-sm">
+              <strong className="font-semibold text-foreground">Include volumetric specs. </strong>
+              Specify origin, destination, piece count, gross weight, and package dimensions to compute chargeable weight and get an itemized quote.
             </p>
           </div>
 
-          <div>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">
+          <div className="border-t-2 border-t-primary/70 border-x border-b border-border/80 bg-card/60 p-5 shadow-xs">
+            <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-primary">
+              <span className="size-1.5 rounded-none bg-primary" aria-hidden="true" />
+              Consignment Support
+            </div>
+            <h2 className="mt-2 text-base font-semibold tracking-tight text-foreground">
               Need help with a delivery?
             </h2>
-            <p className="mt-3 leading-relaxed text-muted-foreground text-sm">
-              Add your AWB number and explain the issue. For invoice questions,
-              include the invoice reference so the team can find the right record.
+            <p className="mt-2 text-body-editorial text-sm">
+              <strong className="font-semibold text-foreground">Provide reference numbers. </strong>
+              Include your 10-digit Air Waybill reference for shipment status, or the tax invoice number for billing reconciliation.
             </p>
           </div>
 

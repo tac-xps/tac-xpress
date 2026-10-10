@@ -20,24 +20,30 @@ const NETWORK_ANNOTATIONS = [
     tag: "Warehouse Terminal",
     title: "Delhi Central Consolidation (DEL)",
     role: "National Consolidation & Air Manifest Terminal",
+    lead: "Air gateway sortation.",
     details:
       "High-throughput sorting facility servicing daily commercial flight departures and regional inter-state linehaul fleets.",
+    footer: "Air Gateway Hub · Direct AWB Manifest",
   },
   {
     icon: Route,
     tag: "Arterial Transit",
     title: "National Freight Corridors",
     role: "Dedicated Linehaul Highway Network",
+    lead: "Dedicated arterial lanes.",
     details:
       "Dedicated commercial freight routes optimized for cargo transit speed, safety, and all-weather operational continuity.",
+    footer: "Arterial Corridor · Monitored Transit",
   },
   {
     icon: MapPin,
     tag: "Destination Hub",
     title: "Imphal Regional Station (IMF)",
     role: "Northeast Gateway Distribution & Delivery Station",
+    lead: "Regional gateway delivery.",
     details:
       "Direct terminal receiving scheduled air and surface consignments for rapid regional distribution across Manipur and neighboring corridors.",
+    footer: "Regional Gateway · Proof-of-Delivery Desk",
   },
 ]
 
@@ -84,7 +90,7 @@ export function NetworkSection() {
           </div>
           <div className="md:col-span-4">
             <p className="text-lead max-w-[55ch]">
-              From dispatch to destination, every stage has a place in the journey.
+              High-density sorting, dedicated arterial lanes, and regional gateway reconciliation ensure uninterrupted custody.
             </p>
           </div>
         </div>
@@ -118,7 +124,7 @@ export function NetworkSection() {
         </motion.div>
 
         {/* Informational Annotations: Warehouse -> Transit -> Destination */}
-        <div className="grid grid-cols-1 divide-y divide-border/80 border-y border-border/80 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+        <div className="grid grid-cols-1 divide-y divide-border/80 border border-border/80 bg-card/60 shadow-xs lg:grid-cols-3 lg:divide-x lg:divide-y-0">
           {NETWORK_ANNOTATIONS.map((item, idx) => {
             const Icon = item.icon
             return (
@@ -132,7 +138,7 @@ export function NetworkSection() {
                   delay: idx * 0.1,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="group flex flex-col justify-between p-5 sm:p-7 lg:p-8 transition-colors duration-200 hover:bg-muted/20"
+                className="group flex flex-col justify-between p-5 sm:p-7 lg:p-8 border-t-2 border-t-transparent hover:border-t-primary/70 transition-all duration-200 hover:bg-muted/30"
               >
                 <div>
                   <div className="flex items-center gap-2.5 font-mono text-xs text-muted-foreground">
@@ -152,12 +158,14 @@ export function NetworkSection() {
                     {item.role}
                   </p>
                   <p className="mt-3 text-body-editorial">
+                    <strong className="font-semibold text-foreground">{item.lead} </strong>
                     {item.details}
                   </p>
                 </div>
 
-                <div className="mt-6 border-t border-border/60 pt-3 font-mono text-[11px] text-muted-foreground">
-                  <span>Continuous Linehaul Custody</span>
+                <div className="mt-6 border-t border-border/60 pt-3 font-mono text-[11px] text-muted-foreground flex items-center justify-between">
+                  <span>{item.footer}</span>
+                  <span className="size-1 rounded-none bg-primary/60" aria-hidden="true" />
                 </div>
               </motion.div>
             )

@@ -111,7 +111,7 @@ export function BrandStatementSection() {
             }}
             className="mx-auto mt-4 sm:mt-5 max-w-[50ch] text-lead text-center"
           >
-            Behind each parcel is something worth moving: someone&apos;s work, a personal connection or the next step in a plan.
+            Behind every consignment is essential enterprise: commercial supply continuity, critical regional inventory, and verified delivery custody.
           </motion.p>
         </div>
 

@@ -90,10 +90,12 @@ export function HomeStory({
             Every consignment connects people as well as places.
           </p>
           <p className="text-body-editorial mt-5">
-            TAC-XPRESS supports the movement of goods between New Delhi and
-            Northeast India, with Imphal at the heart of our story. We start
-            with the details that matter: what you are sending, the route, the
-            handling and the handover.
+            <strong className="font-semibold text-foreground">Dedicated arterial linehaul. </strong>
+            TAC-XPRESS coordinates scheduled cargo movement between New Delhi consolidation terminals and Northeast India regional stations, anchored at our Imphal distribution hub.
+          </p>
+          <p className="text-body-editorial mt-3">
+            <strong className="font-semibold text-foreground">Operational accountability. </strong>
+            We manage every consignment with strict verification: volumetric profile intake, statutory AWB documentation, sealed transit custody, and single-custody handover.
           </p>
 
           {/* Stats strip */}

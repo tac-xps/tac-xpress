@@ -282,10 +282,10 @@ export function TheCargoLine({ className, variant = "hero" }: TheCargoLineProps)
 
 /** Verifiable operational capabilities shown in the proof strip */
 const PROOF_CLAIMS = [
-  { label: "Clear Tracking", detail: "Real milestone events" },
-  { label: "Operations Desk", detail: "Direct controller desk" },
-  { label: "Arterial Transport", detail: "Air & surface linehaul" },
-  { label: "Secure Handling", detail: "Verified custodial chain" },
+  { label: "Optical Gate Audit", detail: "Physical barcode scan trails" },
+  { label: "Arterial Linehaul", detail: "Scheduled commercial departures" },
+  { label: "Statutory Compliance", detail: "Air Waybills & GST e-way bills" },
+  { label: "Controller Support", detail: "Direct operations desk routing" },
 ]
 
 /** Route corridor names for the live network ticker */

@@ -9,22 +9,30 @@ const CARE_STANDARDS = [
   {
     stage: "01",
     label: "Packaging",
-    detail: "Double-wall corrugated cartons with impact-dampening interior cushioning for fragile and sensitive cargo.",
+    lead: "Rigid container shock mitigation.",
+    detail:
+      "Double-wall corrugated cartons with high-density foam cushioning and weather-sealed wrap for fragile cargo.",
   },
   {
     stage: "02",
     label: "Handling",
-    detail: "Strict weight distribution rules, pallet securement, and orientation controls throughout linehaul transit.",
+    lead: "Dynamic weight distribution.",
+    detail:
+      "Precision pallet securement, orientation controls, and center-of-gravity stabilization throughout linehaul transit.",
   },
   {
     stage: "03",
     label: "Documentation",
-    detail: "Statutory GST invoices, E-Way bills, and airway carriage documentation audited prior to corridor dispatch.",
+    lead: "Statutory compliance audit.",
+    detail:
+      "10-digit Air Waybill carriage contracts, GST tax invoices, and E-Way bills audited prior to corridor dispatch release.",
   },
   {
     stage: "04",
     label: "Handover",
-    detail: "Recipient signature verification, package condition sign-off, and instantaneous digital proof-of-delivery.",
+    lead: "Digital signature verification.",
+    detail:
+      "Consignee identity check, outer packaging condition audit, and real-time electronic proof-of-delivery capture.",
   },
 ]
 
@@ -82,8 +90,8 @@ export function CareSection() {
           </div>
         </div>
 
-        {/* Right Column: Four Operational Standards with Thin Hairlines */}
-        <div className="divide-y divide-border/80 border-y border-border/80 lg:col-span-7">
+        {/* Right Column: Four Operational Standards with Tonal Card Backing */}
+        <div className="border border-border/80 bg-card/60 divide-y divide-border/70 lg:col-span-7">
           {CARE_STANDARDS.map((std, idx) => (
             <motion.div
               key={std.stage}
@@ -95,7 +103,7 @@ export function CareSection() {
                 delay: idx * 0.08,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="py-5 sm:py-6 first:pt-4 last:pb-4 group transition-colors hover:bg-muted/10"
+              className="p-5 sm:p-6 group transition-colors hover:bg-muted/20"
             >
               <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
                 <div className="flex items-center gap-3">
@@ -107,7 +115,10 @@ export function CareSection() {
                   </h3>
                 </div>
                 <p className="max-w-md text-body-editorial">
-                  {std.detail}
+                  <strong className="font-semibold text-foreground">
+                    {std.lead}{" "}
+                  </strong>
+                  <span>{std.detail}</span>
                 </p>
               </div>
             </motion.div>

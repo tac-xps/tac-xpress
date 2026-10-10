@@ -43,19 +43,26 @@ export default async function ServicePage({ params }: Props) {
               reviews the consignment before confirming acceptance, charges and
               the movement plan.
             </p>
-            <Button asChild className="mt-8">
+            <Button asChild className="mt-8 rounded-none">
               <Link href="/contact">Discuss {item.name.toLowerCase()}</Link>
             </Button>
           </div>
-          <dl className="flex flex-col gap-8">
+          <dl className="flex flex-col gap-6">
             {[
-              ["What it may suit", item.suitable],
-              ["What affects the plan", item.planning],
-              ["How to prepare", item.preparation],
-            ].map(([label, text]) => (
-              <div key={label} className="border-t pt-5">
-                <dt className="text-subhead">{label}</dt>
+              ["Cargo Profile & Suitability", item.suitable, "Operational profile"],
+              ["Corridor & Routing Factors", item.planning, "Schedule management"],
+              ["Intake Preparation & Packaging", item.preparation, "Mandatory compliance"],
+            ].map(([label, text, lead]) => (
+              <div
+                key={label}
+                className="border-t-2 border-t-transparent hover:border-t-primary/70 border-x border-b border-border/80 bg-background/50 p-5 sm:p-6 transition-all duration-200"
+              >
+                <dt className="text-subhead flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary">
+                  <span className="size-1.5 rounded-none bg-primary" aria-hidden="true" />
+                  {label}
+                </dt>
                 <dd className="mt-3 text-body-editorial">
+                  <strong className="font-semibold text-foreground">{lead}. </strong>
                   {text}
                 </dd>
               </div>

@@ -27,10 +27,15 @@ const SERVICES = [
     title: "Air cargo",
     href: "/services/air-cargo",
     action: "Explore air cargo",
-    tagline: "When time matters.",
+    tagline: "24–48h Gateway Linehaul",
+    lead: "Scheduled airport departures.",
     description:
-      "Explore the available air-freight options for your shipment.",
-    specs: ["24–48h gateway transit", "Statutory Air Waybill (AWB)", "Priority ramp transfer"],
+      "Guaranteed belly-hold allocation connecting Delhi NCR and Northeast India with statutory Air Waybill (AWB) issuance, BCAS security screening, and priority ramp handover.",
+    specs: [
+      { label: "Transit", value: "24–48h airport gateway" },
+      { label: "Carriage", value: "Statutory AWB issuance" },
+      { label: "Handling", value: "Priority ramp transfer" },
+    ],
   },
   {
     icon: Truck,
@@ -38,10 +43,15 @@ const SERVICES = [
     title: "Surface cargo",
     href: "/services/surface-cargo",
     action: "Explore surface cargo",
-    tagline: "Planned routes.",
+    tagline: "National Arterial Expressways",
+    lead: "Heavy multi-ton linehaul.",
     description:
-      "Reliable road movement for consignments on planned routes.",
-    specs: ["Economical multi-ton freight", "Pallet & carton security", "National corridor tracking"],
+      "High-capacity container transport along dedicated highway corridors with optical gate checkpoint scans, sealed vehicle security, and scheduled hub cross-docking.",
+    specs: [
+      { label: "Freight", value: "Palletized & multi-ton" },
+      { label: "Corridor", value: "National highway linehaul" },
+      { label: "Security", value: "Sealed container custody" },
+    ],
   },
   {
     icon: PackageCheck,
@@ -49,10 +59,15 @@ const SERVICES = [
     title: "Door-to-door",
     href: "/shipping-guide",
     action: "Read the shipping guide",
-    tagline: "From pickup to handover.",
+    tagline: "Unified First & Last Mile",
+    lead: "Single-custody consignment.",
     description:
-      "From pickup to handover, with a simpler journey to coordinate.",
-    specs: ["Origin dock collection", "Last-mile station delivery", "Digital proof-of-delivery"],
+      "End-to-end custody coordination from origin dock pickup through commercial destination handover, eliminating third-party handoffs with real-time digital proof of delivery.",
+    specs: [
+      { label: "Intake", value: "Origin dock collection" },
+      { label: "Delivery", value: "Last-mile station handover" },
+      { label: "Sign-off", value: "Instantaneous digital POD" },
+    ],
   },
 ]
 
@@ -160,16 +175,19 @@ export function ServicesSection() {
 
         {/* Three Service Modalities with Waypoint Activation on Scroll */}
         <div className="grid grid-cols-1 divide-y divide-border/80 border-y border-border/80 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
-          {SERVICES.map((srv, idx) => {
+          {SERVICES.map((srv) => {
             const Icon = srv.icon
             return (
               <div
                 key={srv.num}
-                className="group flex flex-col justify-between p-5 sm:p-7 lg:p-8 transition-colors duration-300 hover:bg-muted/20"
+                className="group flex flex-col justify-between p-6 sm:p-7 lg:p-8 bg-card/60 transition-all duration-300 hover:bg-card border-t-2 border-t-transparent hover:border-t-primary/70"
               >
                 <div>
                   <div className="flex items-center justify-between font-mono text-xs">
                     <span className="font-semibold text-primary">{srv.num}</span>
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                      {srv.tagline}
+                    </span>
                     <Icon className="size-4 text-muted-foreground transition-colors group-hover:text-primary" />
                   </div>
                   <h3
@@ -178,25 +196,32 @@ export function ServicesSection() {
                   >
                     {srv.title}
                   </h3>
-                  <p className="mt-1 font-sans text-xs font-medium text-muted-foreground">
-                    {srv.tagline}
-                  </p>
                   <p className="mt-3 text-body-editorial">
-                    {srv.description}
+                    <strong className="font-semibold text-foreground">
+                      {srv.lead}{" "}
+                    </strong>
+                    <span>{srv.description}</span>
                   </p>
                 </div>
 
-                <div className="mt-6 sm:mt-8 border-t border-border/60 pt-4">
-                  <ul className="space-y-1.5 font-sans text-xs text-foreground/90">
+                <div className="mt-6 sm:mt-8 border-t border-border/70 pt-4">
+                  <div className="space-y-2">
                     {srv.specs.map((spec) => (
-                      <li key={spec} className="flex items-center gap-2">
-                        <span className="size-1 rounded-none bg-primary/60 transition-colors group-hover:bg-primary" />
-                        <span>{spec}</span>
-                      </li>
+                      <div
+                        key={spec.label}
+                        className="flex items-center justify-between text-xs"
+                      >
+                        <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                          {spec.label}
+                        </span>
+                        <span className="font-sans font-medium text-foreground">
+                          {spec.value}
+                        </span>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
 
-                  <div className="mt-4 pt-3 border-t border-border/40">
+                  <div className="mt-5 pt-3 border-t border-border/50">
                     <Button
                       asChild
                       variant="link"

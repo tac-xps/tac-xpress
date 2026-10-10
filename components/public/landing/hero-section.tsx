@@ -125,7 +125,10 @@ export function HeroSection() {
               }}
               className="max-w-[54ch] text-lead"
             >
-              Book a shipment, follow its progress, and get help when you need it.
+              <strong className="font-semibold text-foreground">
+                High-frequency linehaul connecting New Delhi and Northeast India.
+              </strong>{" "}
+              Scheduled air and surface freight with statutory Air Waybill (AWB) issuance, optical gate scan audit trails, and dedicated controller support.
             </motion.p>
           </div>
 

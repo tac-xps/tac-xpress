@@ -19,7 +19,7 @@ const cards = [
   {
     title: "Ready for the journey",
     description:
-      "From the first layer of packing to the final label, get the details right before you hand over your goods.",
+      "Standardized multi-wall corrugated packaging, dual barcode labeling, and statutory GST e-way compliance before terminal handover.",
     href: "/shipping-guide",
     action: "Read the shipping guide",
     asset: "packing" as CargoAsset,
@@ -52,8 +52,8 @@ export function HomeServices() {
             </h2>
           </div>
           <p className="text-body-editorial max-w-sm">
-            Across the sky or along the road. We help you plan around what you
-            are sending, where it is going and when it needs to arrive.
+            <strong className="font-semibold text-foreground">Calibrated routing modes. </strong>
+            Across dedicated flight belly-holds or engineered linehaul road networks, we optimize corridor transit by payload weight, dimension, and arrival urgency.
           </p>
         </div>
 

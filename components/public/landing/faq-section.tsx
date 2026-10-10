@@ -12,26 +12,32 @@ import {
 const FAQS = [
   {
     q: "Do I need a corporate account to send or track a shipment?",
-    a: "No prior account or registration is required. Any business or individual can book shipments directly with our dispatch desk and track consignments publicly using their 10-digit Air Waybill (AWB) number.",
+    lead: "No corporate registration required.",
+    a: "Any business or individual can book shipments directly with our dispatch desk and track consignments publicly using their 10-digit Air Waybill (AWB) number.",
   },
   {
     q: "Which service should I select between Air Cargo and Surface Cargo?",
+    lead: "Transit speed versus bulk capacity.",
     a: "Choose Air Cargo when transit time is urgent (24–48 hour gateway delivery for sensitive parts, electronics, or medical goods). Choose Surface Cargo when shipping heavier palletized cartons or larger consolidated freight where an economical multi-day road transit schedule is appropriate.",
   },
   {
     q: "How is cargo pricing computed?",
+    lead: "Chargeable volumetric ratio.",
     a: "Pricing is calculated using chargeable weight, which is the greater of actual gross weight or volumetric dimensional weight (Length × Width × Height in cm ÷ 5000 for air, or ÷ 4000 for surface), plus statutory 18% GST and applicable corridor fuel index.",
   },
   {
     q: "What is an Air Waybill (AWB) number and where do I find it?",
+    lead: "Statutory 10-digit cargo barcode.",
     a: "Your AWB is the unique 10-digit statutory cargo barcode reference generated when your shipment is confirmed. It appears at the top right of your booking manifest and binding carriage receipt.",
   },
   {
     q: "Does public tracking show continuous vehicle GPS location?",
+    lead: "Verified physical milestone scans.",
     a: "Public tracking reports verified optical physical barcode milestone events at each linehaul checkpoint, flight manifest clearance, and local station delivery scan. Live continuous telemetry is reserved for our internal fleet dispatch safety team.",
   },
   {
     q: "Can I ship fragile items, electronics, or batteries?",
+    lead: "Statutory DG packaging compliance.",
     a: "Yes, provided statutory packing and handling declarations are satisfied. Lithium batteries (UN 3480/3481) require IATA Section II compliance verification. Fragile glassware and precision machinery require rigid crating and internal foam shock dampening.",
   },
 ]
@@ -95,6 +101,7 @@ export function FAQSection() {
                 </span>
               </AccordionTrigger>
               <AccordionContent className="pt-4 pr-12 text-body-editorial">
+                <strong className="font-semibold text-foreground">{faq.lead} </strong>
                 {faq.a}
               </AccordionContent>
             </AccordionItem>
