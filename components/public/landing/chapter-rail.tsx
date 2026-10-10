@@ -18,12 +18,9 @@ const CHAPTERS: Chapter[] = [
 ]
 
 /**
- * TAC Journey Rail — Restrained 4-Stage Narrative Navigation
- * Replaces developer/debug markers with an editorial logistics rail:
- * 01 Cargo ● │ 02 Visibility ○ │ 03 Journey ○ │ 04 Delivery ○
- *
- * Desktop only (hidden on mobile).
- * Only the active chapter receives Quiet Indigo emphasis.
+ * TAC Journey Rail — Restrained 4-Stage Editorial Rail
+ * Provides a continuous vertical guideline with quiet active-state markers.
+ * Desktop only (hidden on viewports below xl).
  */
 export function ChapterRail() {
   const [activeChapter, setActiveChapter] = useState<string>("cargo-chapter")
@@ -34,7 +31,7 @@ export function ChapterRail() {
     const handleScroll = () => {
       for (let i = CHAPTERS.length - 1; i >= 0; i--) {
         const el = document.getElementById(CHAPTERS[i].id)
-        if (el && el.getBoundingClientRect().top <= window.innerHeight * 0.35) {
+        if (el && el.getBoundingClientRect().top <= window.innerHeight * 0.38) {
           setActiveChapter(CHAPTERS[i].id)
           break
         }
@@ -58,12 +55,12 @@ export function ChapterRail() {
       aria-label="Chapter Rail"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="fixed left-6 2xl:left-10 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-start select-none min-[1600px]:flex"
+      className="fixed left-6 2xl:left-10 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-start select-none xl:flex"
     >
       <div className="relative flex flex-col items-start space-y-6">
-        {/* Continuous Background Rail Track */}
+        {/* Continuous Thin Background Rail Track */}
         <div
-          className="absolute left-[5.5px] top-2 bottom-2 w-px bg-border/80"
+          className="absolute left-0 top-1 bottom-1 w-px bg-border/80"
           aria-hidden="true"
         />
 
@@ -79,46 +76,43 @@ export function ChapterRail() {
                 aria-current={isActive ? "step" : undefined}
                 aria-label={`Jump to Chapter ${chapter.number}: ${chapter.title}`}
               >
-                {/* Chapter Dot Indicator on Continuous Track */}
-                <div className="relative flex size-3 items-center justify-center bg-background">
+                {/* Restrained Hairline Notch Indicator on Track */}
+                <div className="relative flex h-3 w-4 items-center">
                   {isActive ? (
                     <motion.div
-                      layoutId={shouldReduceMotion ? undefined : "activeChapterDot"}
-                      className="size-2 rounded-full bg-primary"
+                      layoutId={shouldReduceMotion ? undefined : "activeChapterTick"}
+                      className="h-[2px] w-3.5 bg-primary"
                       transition={{ type: "spring", stiffness: 350, damping: 30 }}
                     />
                   ) : (
-                    <div className="size-1.5 rounded-full border border-muted-foreground/50 bg-background transition-colors group-hover:border-foreground" />
+                    <div className="h-px w-2 bg-border transition-colors group-hover:w-3 group-hover:bg-foreground" />
                   )}
                 </div>
 
                 {/* Chapter Number & Label */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 pl-0.5">
                   <span
                     className={cn(
                       "font-mono text-[10px] tracking-widest transition-colors",
                       isActive
                         ? "font-semibold text-primary"
-                        : "text-muted-foreground/70 group-hover:text-foreground"
+                        : "text-muted-foreground group-hover:text-foreground"
                     )}
                   >
                     {chapter.number}
                   </span>
-                  <motion.span
-                    animate={{
-                      opacity: isActive || isHovered ? 1 : 0,
-                      x: isActive || isHovered ? 0 : -4,
-                    }}
-                    transition={{ duration: 0.2 }}
+                  <span
                     className={cn(
                       "font-mono text-[10px] uppercase tracking-wider transition-colors",
                       isActive
                         ? "font-semibold text-foreground"
-                        : "text-muted-foreground group-hover:text-foreground"
+                        : isHovered
+                        ? "text-muted-foreground"
+                        : "hidden 2xl:inline text-muted-foreground/80 group-hover:text-foreground"
                     )}
                   >
                     {chapter.title}
-                  </motion.span>
+                  </span>
                 </div>
               </button>
             </div>

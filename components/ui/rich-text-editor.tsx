@@ -25,13 +25,16 @@ import {
   Code,
   Table as TableIcon,
   Link as LinkIcon,
-  Unlink,
   Undo2,
   Redo2,
   Minus,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Underline } from "@tiptap/extension-underline"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
@@ -72,8 +75,9 @@ function ToolbarButton({ onClick, isActive, disabled, tooltip, children }: Toolb
           onClick={onClick}
           disabled={disabled}
           data-active={isActive ? "true" : undefined}
+          aria-pressed={isActive !== undefined ? isActive : undefined}
           className={cn(
-            "inline-flex h-7 w-7 items-center justify-center rounded-sm text-xs font-medium transition-colors",
+            "inline-flex h-7 w-7 items-center justify-center rounded-none text-xs font-medium transition-colors",
             "text-muted-foreground hover:bg-muted hover:text-foreground",
             "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
             "disabled:pointer-events-none disabled:opacity-40",
@@ -88,6 +92,127 @@ function ToolbarButton({ onClick, isActive, disabled, tooltip, children }: Toolb
         {tooltip}
       </TooltipContent>
     </Tooltip>
+  )
+}
+
+interface LinkToolbarButtonProps {
+  editor: ReturnType<typeof useEditor> | null
+  disabled?: boolean
+}
+
+function LinkToolbarButton({ editor, disabled }: LinkToolbarButtonProps) {
+  const [open, setOpen] = React.useState(false)
+  const [url, setUrl] = React.useState("")
+
+  const isActive = Boolean(editor?.isActive("link"))
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen && editor) {
+      setUrl(editor.getAttributes("link").href || "")
+    }
+    setOpen(nextOpen)
+  }
+
+  const handleApply = (e: React.FormEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!editor) return
+    const trimmed = url.trim()
+    if (!trimmed) {
+      editor.chain().focus().extendMarkRange("link").unsetLink().run()
+    } else {
+      let validUrl = trimmed
+      if (!/^https?:\/\//i.test(validUrl) && !/^mailto:/i.test(validUrl)) {
+        validUrl = `https://${validUrl}`
+      }
+      editor.chain().focus().extendMarkRange("link").setLink({ href: validUrl }).run()
+    }
+    setOpen(false)
+  }
+
+  const handleRemove = () => {
+    if (!editor) return
+    editor.chain().focus().extendMarkRange("link").unsetLink().run()
+    setOpen(false)
+  }
+
+  return (
+    <Popover open={open} onOpenChange={handleOpenChange}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              disabled={disabled || !editor}
+              data-active={isActive ? "true" : undefined}
+              aria-pressed={isActive}
+              aria-label={isActive ? "Edit link" : "Add link"}
+              className={cn(
+                "inline-flex h-7 w-7 items-center justify-center rounded-none text-xs font-medium transition-colors",
+                "text-muted-foreground hover:bg-muted hover:text-foreground",
+                "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+                "disabled:pointer-events-none disabled:opacity-40",
+                isActive && "bg-accent text-accent-foreground font-semibold"
+              )}
+            >
+              <LinkIcon className="h-3.5 w-3.5" />
+            </button>
+          </PopoverTrigger>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-[11px] py-1 px-2">
+          {isActive ? "Edit link" : "Add link"}
+        </TooltipContent>
+      </Tooltip>
+      <PopoverContent align="start" className="w-72 p-3 space-y-2 rounded-none">
+        <div className="text-xs font-semibold text-foreground">
+          {isActive ? "Edit hyperlink" : "Insert hyperlink"}
+        </div>
+        <form onSubmit={handleApply} className="space-y-2.5">
+          <Input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://example.com"
+            aria-label="Link URL"
+            className="h-8 text-xs font-mono rounded-none"
+            autoFocus
+          />
+          <div className="flex items-center justify-between gap-2 pt-0.5">
+            {isActive ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleRemove}
+                className="h-7 px-2 text-xs text-destructive hover:text-destructive rounded-none"
+              >
+                Remove
+              </Button>
+            ) : (
+              <span />
+            )}
+            <div className="flex items-center gap-1.5">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setOpen(false)}
+                className="h-7 px-2.5 text-xs rounded-none"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                size="sm"
+                className="h-7 px-2.5 text-xs rounded-none"
+              >
+                Apply
+              </Button>
+            </div>
+          </div>
+        </form>
+      </PopoverContent>
+    </Popover>
   )
 }
 
@@ -139,6 +264,7 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
             },
           },
         }),
+        Underline,
         Placeholder.configure({
           placeholder,
         }),
@@ -179,15 +305,15 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
           ...(id ? { id } : {}),
           ...(ariaDescribedBy ? { "aria-describedby": ariaDescribedBy } : {}),
           class: cn(
-            "prose dark:prose-invert max-w-none focus:outline-none p-3 text-sm text-foreground",
+            "max-w-none focus:outline-none p-3 text-sm text-foreground",
             "[&_p]:leading-relaxed [&_p]:my-1",
             "[&_h2]:text-base [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:mt-2 [&_h2]:mb-1",
             "[&_h3]:text-sm [&_h3]:font-semibold [&_h3]:tracking-tight [&_h3]:mt-1.5 [&_h3]:mb-1",
             "[&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1.5 [&_ul]:space-y-0.5",
             "[&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1.5 [&_ol]:space-y-0.5",
-            "[&_blockquote]:border-l-2 [&_blockquote]:border-border-strong [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_blockquote]:my-1.5",
-            "[&_code]:bg-muted [&_code]:text-foreground [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded-sm [&_code]:text-xs [&_code]:font-mono",
-            "[&_pre]:bg-muted/70 [&_pre]:p-2.5 [&_pre]:rounded-md [&_pre]:font-mono [&_pre]:text-xs [&_pre]:my-2",
+            "[&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_blockquote]:my-1.5",
+            "[&_code]:bg-muted [&_code]:text-foreground [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded-none [&_code]:text-xs [&_code]:font-mono",
+            "[&_pre]:bg-muted/70 [&_pre]:p-2.5 [&_pre]:rounded-none [&_pre]:font-mono [&_pre]:text-xs [&_pre]:my-2",
             "[&_table]:w-full [&_table]:border-collapse [&_table]:border [&_table]:border-border [&_table]:my-2 [&_table]:text-xs",
             "[&_th]:border [&_th]:border-border [&_th]:bg-muted/50 [&_th]:p-1.5 [&_th]:text-left [&_th]:font-semibold",
             "[&_td]:border [&_td]:border-border [&_td]:p-1.5 [&_td]:text-left",
@@ -241,25 +367,6 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
       editor.setEditable(!disabled)
     }, [disabled, editor])
 
-    const setLink = React.useCallback(() => {
-      if (!editor) return
-      const previousUrl = editor.getAttributes("link").href
-      const url = window.prompt("Enter destination URL:", previousUrl)
-
-      if (url === null) return
-      if (url.trim() === "") {
-        editor.chain().focus().extendMarkRange("link").unsetLink().run()
-        return
-      }
-
-      let validUrl = url.trim()
-      if (!/^https?:\/\//i.test(validUrl) && !/^mailto:/i.test(validUrl)) {
-        validUrl = `https://${validUrl}`
-      }
-
-      editor.chain().focus().extendMarkRange("link").setLink({ href: validUrl }).run()
-    }, [editor])
-
     const charCount = editor?.storage.characterCount?.characters() || 0
     const wordCount = editor?.storage.characterCount?.words() || 0
 
@@ -270,7 +377,7 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
           data-slot="rich-text-editor"
           data-invalid={isInvalid ? "true" : undefined}
           className={cn(
-            "group relative flex flex-col rounded-md border border-input bg-background text-foreground transition-all duration-150",
+            "group relative flex flex-col rounded-none border border-input bg-background text-foreground transition-all duration-150",
             "focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20",
             isInvalid && "border-destructive focus-within:border-destructive focus-within:ring-destructive/20",
             disabled && "cursor-not-allowed opacity-60 bg-muted/20",
@@ -283,6 +390,8 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
         {/* Header Toolbar */}
         <div
           data-slot="rich-text-toolbar"
+          role="toolbar"
+          aria-label="Text formatting"
           className="flex flex-wrap items-center gap-0.5 border-b border-border/60 bg-muted/30 px-2 py-1 select-none"
         >
           {/* Text Formatting */}
@@ -426,24 +535,7 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
           <Separator orientation="vertical" className="mx-1 h-4 bg-border/60" />
 
           {/* Links */}
-          <ToolbarButton
-            onClick={setLink}
-            isActive={editor?.isActive("link")}
-            disabled={disabled || !editor}
-            tooltip="Add Link"
-          >
-            <LinkIcon className="h-3.5 w-3.5" />
-          </ToolbarButton>
-
-          {editor?.isActive("link") && (
-            <ToolbarButton
-              onClick={() => editor?.chain().focus().unsetLink().run()}
-              disabled={disabled || !editor}
-              tooltip="Remove Link"
-            >
-              <Unlink className="h-3.5 w-3.5" />
-            </ToolbarButton>
-          )}
+          <LinkToolbarButton editor={editor} disabled={disabled} />
 
           <Separator orientation="vertical" className="mx-1 h-4 bg-border/60" />
 

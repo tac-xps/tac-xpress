@@ -11,6 +11,7 @@ import {
 } from "motion/react"
 import { Building2, Route, MapPin } from "lucide-react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
+import { BorderBeam } from "@/components/ui/border-beam"
 import { motionSprings } from "@/lib/motion/motion.theme"
 
 const NETWORK_ANNOTATIONS = [
@@ -73,21 +74,17 @@ export function NetworkSection() {
         {/* Header */}
         <div className="grid grid-cols-1 items-end gap-6 md:grid-cols-12">
           <div className="md:col-span-8">
-            <SectionEyebrow className="mb-4">Physical Network Architecture</SectionEyebrow>
+            <SectionEyebrow className="mb-4">Network · Corridor Architecture</SectionEyebrow>
             <h2
               id="network-heading"
-              style={{ fontSize: "var(--type-display)" }}
-              className="font-heading font-medium tracking-tight text-foreground leading-[1.04] text-balance"
+              className="text-section text-foreground"
             >
-              Connected by more
-              <br />
-              <span className="text-muted-foreground/90">than a destination.</span>
+              Connected across the journey.
             </h2>
           </div>
           <div className="md:col-span-4">
-            <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty">
-              Real physical infrastructure: dedicated airport ramps, sorting bays, trained
-              handlers, and verified arterial linehaul corridors.
+            <p className="text-lead max-w-[55ch]">
+              From dispatch to destination, every stage has a place in the journey.
             </p>
           </div>
         </div>
@@ -97,6 +94,7 @@ export function NetworkSection() {
           style={shouldReduceMotion ? undefined : { y: outerY }}
           className="relative overflow-hidden border border-border/80 bg-card shadow-sm"
         >
+          <BorderBeam size={120} duration={14} colorFrom="var(--color-primary)" colorTo="transparent" borderWidth={1} />
           <motion.div
             style={
               shouldReduceMotion
@@ -113,7 +111,7 @@ export function NetworkSection() {
               sizes="(min-width: 1360px) 1264px, 100vw"
             />
           </motion.div>
-          <div className="flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-mono text-[10px] tracking-wider uppercase text-muted-foreground">
+          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-mono text-[10px] tracking-wider uppercase text-muted-foreground">
             <span>Air Cargo Master Apron · Physical Gateways</span>
             <span className="hidden sm:inline">Continuous Infrastructure Verification</span>
           </div>
@@ -146,14 +144,14 @@ export function NetworkSection() {
                   </div>
                   <h3
                     style={{ fontSize: "var(--type-sub)" }}
-                    className="mt-3 font-heading font-medium tracking-tight text-foreground"
+                    className="mt-3 font-heading font-semibold tracking-[-0.015em] text-foreground"
                   >
                     {item.title}
                   </h3>
-                  <p className="mt-1 font-mono text-xs text-muted-foreground">
+                  <p className="mt-1 font-sans text-xs font-medium text-muted-foreground">
                     {item.role}
                   </p>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-3 text-body-editorial">
                     {item.details}
                   </p>
                 </div>

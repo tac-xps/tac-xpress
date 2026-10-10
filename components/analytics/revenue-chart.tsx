@@ -47,6 +47,7 @@ export function RevenueChart({
   data: Array<{ month: string; amountPaise: number }>
   period?: string
 }) {
+  const gradientId = "fillRevenue-" + React.useId().replace(/:/g, "")
   const chartData = data.map((d) => ({
     month: formatMonth(d.month),
     revenue: d.amountPaise / 100,
@@ -85,15 +86,15 @@ export function RevenueChart({
   return (
     <Card className="flex flex-col h-full">
       <CardHeader>
-        <CardTitle>Revenue Trend</CardTitle>
+        <CardTitle>Revenue trend</CardTitle>
         <CardDescription>
           {descriptionText}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
-        <div className="text-3xl font-bold tracking-tight mb-6">
-          {formatCurrency(totalRevenue)}
-          <span className="text-sm font-normal text-muted-foreground ml-2">total</span>
+        <div className="font-metric-xl mb-6 text-foreground flex items-baseline gap-2">
+          <span>{formatCurrency(totalRevenue)}</span>
+          <span className="font-sans text-sm font-normal text-muted-foreground">total</span>
         </div>
         <ChartContainer config={chartConfig} className="h-[250px] w-full">
           <AreaChart
@@ -129,23 +130,23 @@ export function RevenueChart({
               }
             />
             <defs>
-              <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor="var(--color-revenue)"
-                  stopOpacity={0.8}
+                  stopOpacity={0.35}
                 />
                 <stop
                   offset="95%"
                   stopColor="var(--color-revenue)"
-                  stopOpacity={0.1}
+                  stopOpacity={0.02}
                 />
               </linearGradient>
             </defs>
             <Area
               dataKey="revenue"
               type="linear"
-              fill="url(#fillRevenue)"
+              fill={`url(#${gradientId})`}
               fillOpacity={0.4}
               stroke="var(--color-revenue)"
               strokeWidth={2}

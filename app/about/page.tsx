@@ -19,27 +19,27 @@ export default function AboutPage() {
       />
       <HomeStory ctaHref="/services" ctaText="Explore transit routes" />
       <section className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-8 md:grid-cols-2 md:gap-20 lg:py-24">
-        <h2 className="max-w-md text-3xl font-medium tracking-tight">
+        <h2 className="max-w-md text-section">
           What to expect
           <br />
           when you work with us.
         </h2>
-        <div className="flex flex-col items-start gap-6 text-muted-foreground">
-          <p className="leading-relaxed">
+        <div className="flex flex-col items-start gap-6">
+          <p className="text-body-editorial">
             <strong className="font-medium text-foreground">
               A conversation before a commitment.
             </strong>{" "}
             We ask about the route, contents and handling requirements so that
             the service can be reviewed against your needs.
           </p>
-          <p className="leading-relaxed">
+          <p className="text-body-editorial">
             <strong className="font-medium text-foreground">
               A reference you can follow.
             </strong>{" "}
             Keep your AWB number for recorded tracking updates and for
             conversations about delivery or support.
           </p>
-          <p className="leading-relaxed">
+          <p className="text-body-editorial">
             <strong className="font-medium text-foreground">
               Help with the practical details.
             </strong>{" "}

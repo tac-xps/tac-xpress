@@ -23,19 +23,19 @@ const chartConfig = {
   },
   delivered: {
     label: "Delivered",
-    color: "var(--chart-1)",
+    color: "var(--status-delivered)",
   },
   inTransit: {
-    label: "In Transit",
-    color: "var(--chart-2)",
+    label: "In transit",
+    color: "var(--status-transit)",
   },
   pending: {
     label: "Pending",
-    color: "var(--chart-3)",
+    color: "var(--status-pending)",
   },
   atRisk: {
-    label: "At Risk",
-    color: "var(--chart-4)",
+    label: "At risk",
+    color: "var(--status-failed)",
   },
 } satisfies ChartConfig
 
@@ -62,14 +62,14 @@ export function ShipmentStatusDonut({
   // Primary lifecycle statuses for the legend
   const legendItems = [
     { key: "delivered" as const, label: "Delivered", count: data.delivered, color: chartConfig.delivered.color },
-    { key: "inTransit" as const, label: "In Transit", count: data.inTransit, color: chartConfig.inTransit.color },
+    { key: "inTransit" as const, label: "In transit", count: data.inTransit, color: chartConfig.inTransit.color },
     { key: "pending" as const, label: "Pending", count: data.pending, color: chartConfig.pending.color },
   ]
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0 border-b p-5">
-        <CardTitle>Current Status Breakdown</CardTitle>
+        <CardTitle>Current status breakdown</CardTitle>
         <CardDescription>
           Distribution of shipments booked in this period.
         </CardDescription>
@@ -110,14 +110,14 @@ export function ShipmentStatusDonut({
                             <tspan
                               x={viewBox.cx}
                               y={viewBox.cy}
-                              className="fill-foreground text-3xl font-bold"
+                              className="fill-foreground font-mono text-3xl font-semibold"
                             >
-                              {totalShipments.toLocaleString()}
+                              {totalShipments.toLocaleString("en-IN")}
                             </tspan>
                             <tspan
                               x={viewBox.cx}
                               y={(viewBox.cy || 0) + 24}
-                              className="fill-muted-foreground text-xs"
+                              className="fill-muted-foreground text-xs font-sans"
                             >
                               Total
                             </tspan>
@@ -139,7 +139,7 @@ export function ShipmentStatusDonut({
                     style={{ backgroundColor: item.color }}
                   />
                   <span className="text-muted-foreground truncate">{item.label}</span>
-                  <span className="ml-auto font-semibold tabular-nums text-foreground">
+                  <span className="ml-auto font-mono text-sm font-semibold text-foreground">
                     {item.count}
                   </span>
                 </div>

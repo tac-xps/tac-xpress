@@ -14,6 +14,7 @@ import { Plane, Truck, PackageCheck, ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { LivingCargoLine } from "./living-cargo-line"
+import { BorderBeam } from "@/components/ui/border-beam"
 import { motionSprings } from "@/lib/motion/motion.theme"
 import { cn } from "@/lib/utils"
 
@@ -26,9 +27,9 @@ const SERVICES = [
     title: "Air cargo",
     href: "/services/air-cargo",
     action: "Explore air cargo",
-    tagline: "Shorter transit windows for priority freight.",
+    tagline: "When time matters.",
     description:
-      "Scheduled commercial departures connecting New Delhi and Northeast regional hubs. Ideal for critical inventory, medical supplies, and urgent commercial consignments subject to statutory civil aviation standards.",
+      "Explore the available air-freight options for your shipment.",
     specs: ["24–48h gateway transit", "Statutory Air Waybill (AWB)", "Priority ramp transfer"],
   },
   {
@@ -37,20 +38,20 @@ const SERVICES = [
     title: "Surface cargo",
     href: "/services/surface-cargo",
     action: "Explore surface cargo",
-    tagline: "Cost-optimized movement for bulk shipments.",
+    tagline: "Planned routes.",
     description:
-      "Dependable arterial highway transport engineered for heavier pallet loads, industrial cartons, and planned restocking. Full linehaul tracking with verified transit checkpoints along national corridors.",
+      "Reliable road movement for consignments on planned routes.",
     specs: ["Economical multi-ton freight", "Pallet & carton security", "National corridor tracking"],
   },
   {
     icon: PackageCheck,
     num: "03",
-    title: "Ready for the journey",
+    title: "Door-to-door",
     href: "/shipping-guide",
     action: "Read the shipping guide",
-    tagline: "Direct custodial care from origin to threshold.",
+    tagline: "From pickup to handover.",
     description:
-      "Complete chain-of-custody pickup from your warehouse or store directly to the recipient's premises. Optical barcode verification at every handover eliminates blind spots and handover ambiguity.",
+      "From pickup to handover, with a simpler journey to coordinate.",
     specs: ["Origin dock collection", "Last-mile station delivery", "Digital proof-of-delivery"],
   },
 ]
@@ -105,24 +106,21 @@ export function ServicesSection() {
             <SectionEyebrow className="mb-4">Services &amp; Modalities</SectionEyebrow>
             <h2
               id="services-heading"
-              style={{ fontSize: "var(--type-section)" }}
-              className="font-heading font-medium tracking-tight text-foreground leading-[1.06] text-balance"
+              className="text-section text-foreground"
             >
-              Your cargo.
-              <br />
-              <span className="text-muted-foreground/90">The right journey.</span>
+              Your cargo. The right journey.
             </h2>
           </div>
           <div className="md:col-span-4">
-            <p className="text-sm sm:text-base leading-relaxed text-muted-foreground font-normal text-pretty">
-              Three distinct logistics modes structured around consignment urgency, cargo
-              profile, and destination corridor requirements.
+            <p className="text-lead max-w-[48ch]">
+              Choose a shipping option that fits your consignment, destination and timing.
             </p>
           </div>
         </div>
 
         {/* Master Editorial Image: Official Scroll Image Reveal (journey.webp) */}
         <div className="relative overflow-hidden border border-border/80 bg-card shadow-sm">
+          <BorderBeam size={100} duration={14} colorFrom="var(--color-primary)" colorTo="transparent" borderWidth={1} />
           <motion.div
             style={
               shouldReduceMotion
@@ -151,7 +149,7 @@ export function ServicesSection() {
           </motion.div>
 
           {/* Architectural caption bar */}
-          <div className="flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-mono text-[10px] tracking-wider uppercase text-muted-foreground">
+          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-mono text-[10px] tracking-wider uppercase text-muted-foreground">
             <span>Arterial Linehaul · Commercial Aviation</span>
             <span className="hidden sm:inline">Delhi NCR Corridor · Northeast Expressways</span>
           </div>
@@ -176,20 +174,20 @@ export function ServicesSection() {
                   </div>
                   <h3
                     style={{ fontSize: "var(--type-sub)" }}
-                    className="mt-4 font-heading font-medium tracking-tight text-foreground transition-colors group-hover:text-primary"
+                    className="mt-4 font-heading font-semibold tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary"
                   >
                     {srv.title}
                   </h3>
-                  <p className="mt-1 font-mono text-xs text-muted-foreground">
+                  <p className="mt-1 font-sans text-xs font-medium text-muted-foreground">
                     {srv.tagline}
                   </p>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-3 text-body-editorial">
                     {srv.description}
                   </p>
                 </div>
 
                 <div className="mt-6 sm:mt-8 border-t border-border/60 pt-4">
-                  <ul className="space-y-1.5 font-mono text-[11px] text-muted-foreground">
+                  <ul className="space-y-1.5 font-sans text-xs text-foreground/90">
                     {srv.specs.map((spec) => (
                       <li key={spec} className="flex items-center gap-2">
                         <span className="size-1 rounded-none bg-primary/60 transition-colors group-hover:bg-primary" />
@@ -202,7 +200,7 @@ export function ServicesSection() {
                     <Button
                       asChild
                       variant="link"
-                      className="h-auto p-0 font-mono text-xs uppercase tracking-wider text-primary hover:text-primary/80 group"
+                      className="h-auto p-0 font-sans text-xs font-semibold tracking-[-0.01em] text-primary hover:text-primary/80 group"
                     >
                       <Link href={srv.href}>
                         <span>{srv.action}</span>

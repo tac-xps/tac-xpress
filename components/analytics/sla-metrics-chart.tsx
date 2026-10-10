@@ -43,7 +43,7 @@ export function SlaMetricsChart({
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="items-center pb-0">
-        <CardTitle>On-Time Performance</CardTitle>
+        <CardTitle>On-time performance</CardTitle>
         <CardDescription>Overall SLA adherence</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
@@ -80,7 +80,7 @@ export function SlaMetricsChart({
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-4xl font-bold"
+                          className="fill-foreground font-mono text-3xl font-semibold"
                         >
                           {onTimePerformance === null
                             ? "N/A"
@@ -91,7 +91,7 @@ export function SlaMetricsChart({
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Delivered On-Time
+                          Delivered on-time
                         </tspan>
                       </text>
                     )

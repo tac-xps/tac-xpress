@@ -39,7 +39,7 @@ export function ModalFinancials({ shipmentId, invoice }: ModalFinancialsProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 flex-1 flex flex-col items-center justify-center text-center space-y-2">
-          <div className="size-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+          <div className="size-10 rounded-none bg-muted flex items-center justify-center text-muted-foreground">
             <FileText className="size-5" />
           </div>
           <p className="text-sm font-medium text-foreground">No Invoice Generated</p>

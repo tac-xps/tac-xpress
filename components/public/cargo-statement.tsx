@@ -19,8 +19,8 @@ export function CargoStatement() {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.55, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="cargo-eyebrow mb-8">More than what is in the box</p>
-          <h2 id="statement-title" className="cargo-statement max-w-6xl">
+          <p className="text-eyebrow mb-8">More than what is in the box</p>
+          <h2 id="statement-title" className="text-display max-w-6xl">
             Behind every shipment,
             <br className="hidden md:block" />{" "}
             <span className="bg-gradient-to-r from-foreground via-foreground/90 to-primary bg-clip-text text-transparent">
@@ -36,7 +36,7 @@ export function CargoStatement() {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="max-w-xl text-lg leading-relaxed">
+          <p className="max-w-xl text-lead">
             A business gets ready. A home feels closer. Tell us what needs to
             move, and we’ll help you work through the next step.
           </p>

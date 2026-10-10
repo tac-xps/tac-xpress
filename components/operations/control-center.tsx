@@ -80,7 +80,7 @@ export function ControlCenterPanels({
         ].map(([label, value, detail, href]) => (
           <div key={label} className="min-w-0 p-5">
             <dt className="text-sm text-muted-foreground">{label}</dt>
-            <dd className="my-3 text-2xl font-medium tabular-nums">{value}</dd>
+            <dd className="my-3 font-metric-lg text-foreground">{value}</dd>
             <dd>
               <Link
                 href={href}

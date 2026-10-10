@@ -29,15 +29,15 @@ export function ShipmentDesk() {
           viewport={{ once: true, amount: 0.25 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="cargo-eyebrow mb-4 text-primary">Already on its way?</p>
-          <h2 id="desk-title" className="cargo-heading">
+          <p className="text-eyebrow mb-4 text-primary">Already on its way?</p>
+          <h2 id="desk-title" className="text-section">
             A number.
             <br />
             <span className="bg-gradient-to-r from-foreground via-foreground/90 to-primary bg-clip-text text-transparent">
               A clearer picture.
             </span>
           </h2>
-          <p className="mt-5 max-w-md leading-relaxed text-muted-foreground">
+          <p className="mt-5 max-w-md text-body-editorial">
             Check your shipment’s recorded progress with the AWB number on your
             booking receipt. No account needed.
           </p>

@@ -57,7 +57,7 @@ export function HomeHero() {
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-20 top-1/3 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-3xl dark:bg-primary/15"
+        className="pointer-events-none absolute -right-20 top-1/3 -z-10 h-96 w-96 rounded-none bg-primary/10 blur-3xl dark:bg-primary/15"
       />
 
       <div className="cargo-container relative z-10 w-full">

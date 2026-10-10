@@ -18,8 +18,8 @@ export default function FeedbackPage() {
       >
         <div className="space-y-6">
           <div>
-            <h1 className="cargo-heading mb-5">Help us move forward.</h1>
-            <p className="text-lg text-muted-foreground">
+            <h1 className="text-section mb-5">Help us move forward.</h1>
+            <p className="text-lead">
               We value your feedback. Let us know how we can improve your
               Tac-Xpress experience.
             </p>

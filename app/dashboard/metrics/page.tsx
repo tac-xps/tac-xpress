@@ -41,7 +41,7 @@ export default async function MetricsPage() {
   return (
     <div className="flex min-w-0 flex-col gap-6">
       <PageHeader
-        title="Service Levels & SLA Performance"
+        title="Service levels and SLA performance"
         description="Recorded service performance and operational reliability. Ticket measures cover requests created in the last 30 days."
       />
 
@@ -57,7 +57,7 @@ export default async function MetricsPage() {
                   </Badge>
                 )}
               </div>
-              <dd className="mt-3 text-3xl font-bold tracking-tight text-foreground tabular-nums">
+              <dd className="mt-3 font-metric-xl text-foreground">
                 {card.value}
               </dd>
             </CardContent>

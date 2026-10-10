@@ -40,10 +40,10 @@ export function HomeServices() {
       <div className="cargo-container cargo-section">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
-            <p className="cargo-eyebrow mb-5 text-muted-foreground">
+            <p className="text-eyebrow mb-5 text-muted-foreground">
               01 / Ways to move
             </p>
-            <h2 id="services-title" className="cargo-heading">
+            <h2 id="services-title" className="text-section">
               Your cargo.
               <br />
               <span className="bg-gradient-to-r from-foreground via-foreground/90 to-primary bg-clip-text text-transparent">
@@ -51,7 +51,7 @@ export function HomeServices() {
               </span>
             </h2>
           </div>
-          <p className="max-w-sm leading-relaxed text-muted-foreground">
+          <p className="text-body-editorial max-w-sm">
             Across the sky or along the road. We help you plan around what you
             are sending, where it is going and when it needs to arrive.
           </p>
@@ -109,7 +109,7 @@ export function HomeServices() {
                   0{index + 1}
                 </span>
               </div>
-              <p className="mt-5 leading-relaxed text-muted-foreground">
+              <p className="text-body-editorial mt-5">
                 {card.description}
               </p>
               <Button

@@ -1,7 +1,6 @@
 "use client"
 
-import React, { useRef } from "react"
-import Image from "next/image"
+import React, { useRef, useState, useEffect } from "react"
 import {
   motion,
   useScroll,
@@ -11,6 +10,7 @@ import {
   useReducedMotion,
 } from "motion/react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
+import { BorderBeam } from "@/components/ui/border-beam"
 import { motionSprings } from "@/lib/motion/motion.theme"
 import { cn } from "@/lib/utils"
 
@@ -18,50 +18,40 @@ const STEPS = [
   {
     num: "01",
     label: "BOOK",
-    title: "Consignment Intake & Registration",
-    subtitle: "Share consignment details",
-    description:
-      "Specify collection address, destination hub, piece count, volumetric dimensions, and gross weight with requested delivery schedule.",
-    focalDescription: "Collection dock intake with verified package geometry and airway documentation.",
+    title: "Book",
+    description: "Share the details of your shipment.",
   },
   {
     num: "02",
     label: "CONFIRM",
-    title: "Space Allocation & Rate Finalization",
-    subtitle: "Verify lane & statutory requirements",
-    description:
-      "Our dispatch controllers verify flight or road cargo space, compute transparent itemized GST pricing, and issue your booking confirmation.",
-    focalDescription: "Gateway capacity verified with scheduled airline linehaul departure slots.",
+    title: "Confirm",
+    description: "Review the booking details and next steps.",
   },
   {
     num: "03",
     label: "MOVE",
-    title: "Secure Arterial Linehaul Transit",
-    subtitle: "Secure linehaul transit",
-    description:
-      "Consignments enter our arterial corridor with tamper-evident sealing, weather protection, and continuous custodial chain oversight.",
-    focalDescription: "Arterial transit along dedicated high-speed highway corridors and air lanes.",
+    title: "Move",
+    description: "Your cargo travels through the selected service.",
   },
   {
     num: "04",
     label: "TRACK",
-    title: "Milestone Logging & Handover",
-    subtitle: "Follow verified milestones",
-    description:
-      "Trace optical physical barcode events online through our public console until signed proof-of-delivery handover is achieved.",
-    focalDescription: "Destination station sorting followed by verified recipient signature handover.",
+    title: "Track",
+    description: "Check the latest recorded milestone.",
   },
 ]
 
 /**
- * Process section presenting the 4-stage freight journey with scroll-synced
- * progressive step highlights and focal waypoint indicators.
+ * Process section — The signature motion centerpiece of TAC-XPRESS.
+ * Showcases the 4-stage freight journey driven by the Living Cargo Line
+ * with calibrated desktop scroll progression and compact mobile flow.
  */
 export function ProcessSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = useReducedMotion()
+  const [activeStep, setActiveStep] = useState<number>(0)
 
-  // Primary scroll tracker across the taller storytelling stage
+  // Primary scroll tracker with controlled 150vh travel distance
   const { scrollYProgress, scrollY } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
@@ -70,15 +60,26 @@ export function ProcessSection() {
   // Smooth scroll progression via calibrated spring
   const smoothProgress = useSpring(scrollYProgress, motionSprings.springScroll)
 
+  // Synchronize active step with scroll progress
+  useEffect(() => {
+    return smoothProgress.on("change", (latest) => {
+      if (latest < 0.28) {
+        setActiveStep(0)
+      } else if (latest < 0.55) {
+        setActiveStep(1)
+      } else if (latest < 0.82) {
+        setActiveStep(2)
+      } else {
+        setActiveStep(3)
+      }
+    })
+  }, [smoothProgress])
+
   // Subtle velocity responsiveness for cargo line marker elongation
   const scrollVelocity = useVelocity(scrollY)
-  const velocityScaleX = useTransform(scrollVelocity, [-1200, 0, 1200], [1.7, 1.0, 1.7], {
+  const velocityScaleX = useTransform(scrollVelocity, [-1200, 0, 1200], [1.6, 1.0, 1.6], {
     clamp: true,
   })
-
-  // Illustration focal crop & subtle perspective shift across the 4 steps
-  const imageScale = useTransform(smoothProgress, [0, 0.33, 0.66, 1], [1.0, 1.03, 1.04, 1.01])
-  const imageY = useTransform(smoothProgress, [0, 0.33, 0.66, 1], [0, -6, -12, -8])
 
   return (
     <EditorialContainer
@@ -88,82 +89,126 @@ export function ProcessSection() {
     >
       <div
         ref={containerRef}
-        className="relative w-full lg:min-h-[240vh]"
+        className="relative w-full lg:min-h-[150vh]"
       >
-        <div className="flex w-full flex-col justify-between py-10 sm:py-16 lg:sticky lg:top-20 lg:min-h-[calc(100vh-5rem)] lg:py-12">
+        <div className="flex w-full flex-col justify-between py-12 sm:py-16 lg:sticky lg:top-20 lg:py-14">
           {/* Top Row: Section Header */}
           <div className="flex flex-col gap-4 border-b border-border/80 pb-6 md:flex-row md:items-end md:justify-between">
             <div>
               <SectionEyebrow className="mb-3">
-                03 Journey · Primary Motion Centerpiece
+                Living Cargo Line · Dispatch Lifecycle
               </SectionEyebrow>
               <h2
                 id="process-heading"
-                style={{ fontSize: "var(--type-section)" }}
-                className="font-heading font-medium tracking-tight text-foreground leading-[1.06] text-balance"
+                className="text-section text-foreground"
               >
                 Four steps. One clear journey.
               </h2>
             </div>
-            <p className="max-w-md text-sm leading-relaxed text-muted-foreground font-normal text-pretty md:text-right">
-              Scroll controls the Living Cargo Line, step progression, and custodial milestone resolution.
+            <p className="max-w-md text-lead md:text-right">
+              From consignment booking to handover.
             </p>
           </div>
 
-          {/* Middle Stage: Split Visual & Editorial Narrative */}
-          <div className="my-8 grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
-            {/* Step Narrative Cards */}
-            <div className="order-2 space-y-6 lg:order-1 lg:col-span-5">
-              {STEPS.map((step) => (
+          {/* Middle Stage: 4-Step Architectural Journey Cards */}
+          <div className="my-8 sm:my-10 grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {STEPS.map((step, idx) => {
+              const isActive = activeStep === idx
+              const isPassed = activeStep > idx
+
+              return (
                 <div
                   key={step.num}
-                  className="border-l-2 border-primary/60 pl-5 transition-colors"
+                  className={cn(
+                    "relative overflow-hidden flex flex-col justify-between border p-5 sm:p-6 transition-all duration-300",
+                    isActive
+                      ? "border-primary bg-primary/5 shadow-xs"
+                      : isPassed
+                      ? "border-border/80 bg-card"
+                      : "border-border/60 bg-card/60"
+                  )}
                 >
-                  <div className="flex items-center gap-2.5 font-mono text-xs">
-                    <span className="font-semibold text-primary">{step.num}</span>
-                    <span className="uppercase tracking-wider text-muted-foreground font-medium">
-                      {step.label}
-                    </span>
-                  </div>
-                  <h3 className="mt-1 font-heading text-xl font-medium tracking-tight text-foreground">
-                    {step.title}
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                    {step.description}
-                  </p>
-                </div>
-              ))}
-            </div>
+                  {isActive && (
+                    <BorderBeam
+                      size={60}
+                      duration={6}
+                      colorFrom="var(--color-primary)"
+                      colorTo="transparent"
+                      borderWidth={1}
+                    />
+                  )}
+                  <div>
+                    {/* Step Identifier */}
+                    <div className="flex items-center justify-between font-mono text-xs">
+                      <span
+                        className={cn(
+                          "font-semibold transition-colors",
+                          isActive ? "text-primary font-bold" : "text-muted-foreground"
+                        )}
+                      >
+                        {step.num}
+                      </span>
+                      <span
+                        className={cn(
+                          "rounded-none px-2 py-0.5 font-sans text-[10px] uppercase tracking-wider font-semibold transition-colors",
+                          isActive
+                            ? "border border-primary/30 bg-primary/10 text-primary"
+                            : "border border-border/60 bg-muted/40 text-muted-foreground"
+                        )}
+                      >
+                        {step.label}
+                      </span>
+                    </div>
 
-            {/* Architectural Illustration with Focal Transition (Single Image in DOM, visible on all screens) */}
-            <div className="order-1 lg:order-2 lg:col-span-7">
-              <div className="relative overflow-hidden border border-border/80 bg-card shadow-sm">
-                <motion.div
-                  style={
-                    shouldReduceMotion
-                      ? undefined
-                      : { scale: imageScale, y: imageY }
-                  }
-                  className="relative aspect-16/10 w-full overflow-hidden"
-                >
-                  <Image
-                    src="/images/logistics/journey.webp"
-                    alt="Living Logistics Corridor illustration detailing multi-modal progression"
-                    fill
-                    className="object-cover select-none motion-reduce:transform-none motion-reduce:transition-none"
-                    sizes="(min-width: 1280px) 720px, 100vw"
-                  />
-                </motion.div>
-                <div className="flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-mono text-[10px] tracking-wider uppercase text-muted-foreground">
-                  <span>Corridor Custodial Continuum</span>
-                  <span>Living Cargo Line Active</span>
+                    {/* Step Title */}
+                    <h3
+                      style={{ fontSize: "var(--type-sub)" }}
+                      className={cn(
+                        "mt-4 font-heading font-semibold tracking-[-0.015em] transition-colors",
+                        isActive ? "text-primary" : "text-foreground"
+                      )}
+                    >
+                      {step.title}
+                    </h3>
+
+                    {/* Step Description */}
+                    <p className="mt-2 text-body-editorial">
+                      {step.description}
+                    </p>
+                  </div>
+
+                  {/* Active Step Indicator Accent */}
+                  <div className="mt-6 border-t border-border/60 pt-3">
+                    <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider">
+                      <span
+                        className={cn(
+                          "size-1.5 transition-colors",
+                          isActive
+                            ? "bg-primary"
+                            : isPassed
+                            ? "bg-status-delivered"
+                            : "bg-muted-foreground/40"
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          "transition-colors",
+                          isActive
+                            ? "text-primary font-semibold"
+                            : "text-muted-foreground font-medium"
+                        )}
+                      >
+                        {isActive ? "Active step" : isPassed ? "Completed" : "Queued"}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              )
+            })}
           </div>
 
-          {/* Bottom Rail: The Living Cargo Line Signature Stepper (Desktop Only) */}
-          <div className="relative hidden border-t border-border/80 pt-6 lg:block">
+          {/* Bottom Stage: The Living Cargo Line Continuous Progress Track */}
+          <div className="relative border-t border-border/80 pt-6">
             <div className="relative flex w-full items-center justify-between">
               {/* Background 1px Stone Track */}
               <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-border/80" />
@@ -178,24 +223,46 @@ export function ProcessSection() {
               />
 
               {/* Waypoint Milestones */}
-              {STEPS.map((step) => (
-                <div key={step.num} className="relative z-10 flex flex-col items-center">
-                  <div className="flex size-4 items-center justify-center rounded-full bg-background">
-                    <motion.div
-                      style={
-                        shouldReduceMotion
-                          ? undefined
-                          : { scaleX: velocityScaleX }
-                      }
-                      className="size-2 rounded-full bg-primary"
-                    />
+              {STEPS.map((step, idx) => {
+                const isActive = activeStep === idx
+                const isPassed = activeStep >= idx
+
+                return (
+                  <div key={step.num} className="relative z-10 flex flex-col items-center">
+                    <div className="flex size-4 items-center justify-center rounded-none bg-background">
+                      <motion.div
+                        style={
+                          shouldReduceMotion
+                            ? undefined
+                            : { scaleX: velocityScaleX }
+                        }
+                        className={cn(
+                          "size-2 rounded-none transition-colors duration-200",
+                          isPassed ? "bg-primary" : "border border-border bg-muted"
+                        )}
+                      />
+                    </div>
+                    <div className="mt-2 font-mono text-[11px] tracking-wider">
+                      <span
+                        className={cn(
+                          "font-semibold transition-colors",
+                          isActive ? "text-primary" : "text-muted-foreground"
+                        )}
+                      >
+                        {step.num}
+                      </span>{" "}
+                      <span
+                        className={cn(
+                          "transition-colors",
+                          isActive ? "text-foreground font-medium" : "text-muted-foreground"
+                        )}
+                      >
+                        {step.label}
+                      </span>
+                    </div>
                   </div>
-                  <div className="mt-2 font-mono text-[11px] tracking-wider">
-                    <span className="font-semibold text-primary">{step.num}</span>{" "}
-                    <span className="text-foreground">{step.label}</span>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>

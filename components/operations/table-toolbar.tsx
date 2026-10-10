@@ -51,7 +51,7 @@ export function TableToolbar({
           defaultValue={query}
           maxLength={100}
           placeholder={placeholder}
-          className="h-8.5 rounded-xs border-border/80 bg-background pl-8 text-xs shadow-none placeholder:text-muted-foreground/60"
+          className="h-8.5 rounded-none border-border/80 bg-background pl-8 text-xs shadow-none placeholder:text-muted-foreground/60"
         />
       </div>
 

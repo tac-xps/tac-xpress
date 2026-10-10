@@ -106,7 +106,7 @@ export function LandingNav() {
               key={link.href}
               href={link.href}
               onMouseEnter={() => setHoveredLink(link.href)}
-              className="relative px-3 py-1.5 font-sans text-sm font-normal text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="relative px-3 py-1.5 font-sans text-sm font-medium text-foreground/75 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
               {hoveredLink === link.href && (
                 <motion.span
@@ -129,7 +129,7 @@ export function LandingNav() {
               asChild
               variant="ghost"
               size="sm"
-              className="hidden font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground sm:inline-flex"
+              className="hidden font-sans text-xs font-medium text-foreground/80 hover:text-foreground sm:inline-flex"
             >
               <Link href="#visibility-chapter">
                 <Search className="mr-1.5 size-3.5" />
@@ -143,7 +143,7 @@ export function LandingNav() {
               <Button
                 asChild
                 size="sm"
-                className="rounded-none bg-primary px-4 font-mono text-xs font-semibold uppercase tracking-wider text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                className="rounded-none bg-primary px-4 font-sans text-xs font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               >
                 <Link href="#contact">
                   Book Cargo

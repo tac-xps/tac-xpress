@@ -48,7 +48,7 @@ export function ModalTimeline({ events }: ModalTimelineProps) {
             <div className="relative pl-4 space-y-4 border-l-2 border-border/80 text-xs">
               {safeEvents.map((evt, idx) => (
                 <div key={evt.id || idx} className="relative group">
-                  <div className="absolute -left-[21px] top-1 size-2.5 rounded-full border-2 border-background bg-primary" />
+                  <div className="absolute -left-[21px] top-1 size-2.5 rounded-none border-2 border-background bg-primary" />
                   <div className="space-y-1">
                     <div className="flex items-center justify-between gap-2">
                       <StatusBadge status={evt.status} className="scale-90 origin-left" />

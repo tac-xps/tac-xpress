@@ -84,8 +84,8 @@ export function WorkQueue({ counts }: { counts: WorkQueueCounts }) {
                   className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted"
                 >
                   <span
-                    className={`w-10 shrink-0 text-2xl font-medium tabular-nums ${
-                      item.count > 0 ? "text-foreground font-bold" : "text-muted-foreground"
+                    className={`min-w-10 shrink-0 font-metric-lg ${
+                      item.count > 0 ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
                     {item.count}

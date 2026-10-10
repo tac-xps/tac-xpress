@@ -22,28 +22,33 @@ The public frontend retains the user's Cargo Home 4 composition: cinematic trans
 
 See [the reference and research notes](../artifacts/cargo-2026/research.md), [the implementation plan](../implementation_plan.md), and [the image manifest](../artifacts/cargo-2026/image-manifest.json).
 
-## Nordic Mineral — Cloud White / Blue Basalt specification
+## Nordic Mineral — Nocturne Obsidian & Luminous Nordic Teal specification
 
-The visual system implements the "Nordic Mineral — Cloud White / Blue Basalt" architecture. An airy structural white canvas inspired by Pantone's 2026 Cloud Dancer pairs with a technical medium-deep Blue Basalt dark mode.
+The visual system implements the 2026 "Nocturne Obsidian & Luminous Nordic Teal" architecture: Radix Slate (H 256) neutral structure, Radix Teal (H 180) primary brand accent in light mode, Nocturne Obsidian (H 255, C <= 0.010) deep bedrock in dark mode, and Luminous Nordic Teal (H 178, C 0.135) for high-contrast jewel actions.
 
 ### Material and surface hierarchy
 
-- Light canvas uses soft architectural Cloud White (`--mn-cloud: oklch(0.985 0.006 95)`).
-- Card surfaces use Crisp Paper (`--mn-paper: oklch(0.995 0.003 95)`).
-- Secondary muted containers use Cool Mist (`--mn-mist: oklch(0.955 0.008 95)`).
-- Structural borders use Hairline Stone (`--mn-stone: oklch(0.900 0.010 95)`).
-- Form and input boundaries use Stone Strong (`--mn-stone-strong: oklch(0.630 0.015 250)`).
-- Text primary uses dense blue-neutral Ink (`--mn-ink: oklch(0.230 0.012 250)`).
-- Text secondary uses restrained blue-slate (`--mn-slate: oklch(0.470 0.012 250)`).
-- Dark canvas uses Blue Basalt (`--background: oklch(0.240 0.030 255)`).
-- Dark surface containers use Lifted Basalt (`--surface: oklch(0.270 0.030 255)`).
-- Dark card containers use Elevated Basalt Card (`--card: oklch(0.290 0.035 255)`).
-- Dark popover containers use Distinct Popover Basalt (`--popover: oklch(0.320 0.035 255)`).
-- Dark strong borders use Stone 580 (`oklch(0.580 0.018 245)`), exceeding 3.0:1 non-text contrast against cards.
+- Light canvas uses Radix Slate Cloud (`--mn-cloud: oklch(0.982 0.002 256)`).
+- Card surfaces use Crisp Paper (`--mn-paper: oklch(0.993 0.002 256)`).
+- Secondary muted containers use Radix Slate Mist (`--mn-mist: oklch(0.936 0.006 256)`).
+- Structural borders use Hairline Stone (`--mn-stone: oklch(0.889 0.010 256)`).
+- Form and input boundaries use Stone Strong (`--mn-stone-strong: oklch(0.601 0.020 256)`), exceeding 3.0:1 non-text contrast against cloud.
+- Text primary uses dense blue-neutral Ink (`--mn-ink: oklch(0.256 0.011 264)`), exceeding 14.5:1 on cloud canvas.
+- Text secondary uses calibrated Slate (`--mn-slate: oklch(0.498 0.018 256)`), satisfying APCA |Lc| >= 75 body text on paper card.
+- Dark canvas uses Nocturne Obsidian (`--background: oklch(0.125 0.007 255)`), providing authentic depth without blue mud.
+- Dark surface containers use Graphite Surface (`--surface: oklch(0.150 0.008 255)`), receding calmly behind content.
+- Dark card containers use Tactile Basalt Card (`--card: oklch(0.180 0.010 255)`), providing clean micro-elevation without washed-out gray slabs.
+- Dark popover containers use Distinct Popover Basalt (`--popover: oklch(0.220 0.012 255)`).
+- Dark strong borders use Obsidian Stone Strong (`oklch(0.500 0.015 255)`), exceeding 3.1:1 non-text contrast against card.
+- Dark text primary uses Cloud White (`oklch(0.982 0.002 256)`), achieving >17.8:1 contrast on card.
+- Dark text secondary uses Cool Slate (`oklch(0.740 0.016 256)`), achieving >8.1:1 contrast on card.
 
 ### Color discipline and semantic separation
 
-- Primary UI accent uses Mineral Indigo H 278 (`oklch(0.510 0.140 278)` in light, `oklch(0.730 0.105 278)` in dark).
+- Primary UI accent in light mode uses Radix Teal H 180 (`oklch(0.461 0.146 180)`).
+- Primary UI accent in dark mode uses Luminous Nordic Teal H 178 (`oklch(0.680 0.135 178)`), paired with deep obsidian ink text (`oklch(0.125 0.007 255)`) achieving 7.57:1 AAA contrast.
+- Neutral foundation provenance: [oklch.fyi/color-palettes/slate](https://oklch.fyi/color-palettes/slate) (H 256°).
+- Dark environment provenance: 2026 Nocturne Obsidian & Graphite standard (H 255°, C 0.007–0.010).
 - Brand Blue (`--tx-brand-blue: oklch(0.48 0.15 255)`) remains reserved strictly for the TAC-XPRESS logo.
 - Interactive highlights use Mist wash (`--accent`), separating interaction from semantic status.
 - Cargo in-transit uses Fjord H 215 (`oklch(0.500 0.075 215)` in light, `oklch(0.740 0.065 215)` in dark).
@@ -54,12 +59,12 @@ The visual system implements the "Nordic Mineral — Cloud White / Blue Basalt" 
 ### Elevation and shadows
 
 - Light mode uses restrained blue-neutral shadows tinted with ink (`oklch(0.230 0.012 250 / ...)`).
-- Dark mode eliminates pure black RGB shadows and uses Blue-Basalt dark shadow tokens (`--mn-shadow-dark: oklch(0.120 0.025 255)`).
-- Dark hierarchy relies on surface lightness progression rather than heavy black shadows.
+- Dark mode uses Nocturne Obsidian dark shadow tokens (`--mn-shadow-dark: oklch(0.080 0.005 255)`), avoiding artificial navy-blue cast.
+- Dark hierarchy relies on subtle surface lightness stepping (0.125 -> 0.150 -> 0.180 -> 0.220) rather than heavy black cast shadows.
 
 ### Categorical data visualization palette
 
-1. Series 1: Mineral Indigo (`oklch(0.510 0.140 278)`)
+1. Series 1: Radix Teal (`oklch(0.461 0.146 180)`)
 2. Series 2: Moss (`oklch(0.490 0.060 138)`)
 3. Series 3: Ochre (`oklch(0.530 0.105 68)`)
 4. Series 4: Clay (`oklch(0.500 0.110 32)`)
@@ -67,9 +72,8 @@ The visual system implements the "Nordic Mineral — Cloud White / Blue Basalt" 
 
 ### Geometry hierarchy
 
-- Architectural containers, cards, tables, and panels use 0px (`rounded-none`).
-- Interactive controls (buttons, inputs, selects, tabs, chips) use 3px (`--radius-control: 3px`).
-- Overlays (dialogs, popovers, dropdown menus, tooltips) use 6px (`--radius-overlay: 6px`).
+- Every surface, control, overlay, container, and interactive element uses 0px (`rounded-none`). No exceptions.
+- All `--radius-*` tokens resolve to `0px`. Do not reintroduce any non-zero radius value.
 - All active controls use a two-tone focus ring with 4px soft bloom.
 
 ### Dual-layer accessibility standards
@@ -90,6 +94,7 @@ The visual system implements the "Nordic Mineral — Cloud White / Blue Basalt" 
 - Every radius token is zero. Do not reintroduce pill utilities, arbitrary pixel radii or rounded chart bars. Preserve the geometry of icons, map paths and illustrations.
 - Responsive content containers, bounded readable paragraphs and horizontal table scrolling inside their own region.
 - The desktop sidebar remains sticky and full viewport height. Mobile navigation uses the shadcn Sheet.
+- Operations navigation uses a consolidated active state: 10% primary wash background, primary foreground text, and a crisp 3px orthogonal indicator bar on the active route.
 
 ## Information and interaction
 

@@ -41,9 +41,9 @@ export function PageIntro({
         }
       >
         <div>
-          <p className="cargo-eyebrow mb-5 text-muted-foreground">{eyebrow}</p>
-          <h1 className="cargo-heading max-w-3xl">{title}</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+          <p className="text-eyebrow mb-5 text-muted-foreground">{eyebrow}</p>
+          <h1 className="text-section max-w-3xl">{title}</h1>
+          <p className="text-lead mt-6 max-w-2xl">
             {description}
           </p>
         </div>

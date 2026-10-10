@@ -37,6 +37,9 @@ const config = {
 } satisfies ChartConfig
 
 export function VolumeChart({ data }: { data: ShipmentVolumePoint[] }) {
+  const baseId = React.useId().replace(/:/g, "")
+  const airGradientId = `fillAirCargo-${baseId}`
+  const surfaceGradientId = `fillSurfaceCargo-${baseId}`
   const [timeRange, setTimeRange] = React.useState("90")
 
   const filteredData = React.useMemo(() => {
@@ -66,7 +69,7 @@ export function VolumeChart({ data }: { data: ShipmentVolumePoint[] }) {
     <Card className="h-full border border-border/80 shadow-xs pt-0">
       <CardHeader className="flex flex-col gap-0 border-b py-5 sm:flex-row sm:items-center sm:gap-2 sm:space-y-0">
         <div className="grid flex-1 gap-1">
-          <CardTitle>Shipment volume</CardTitle>
+          <CardTitle>Shipment volume trend</CardTitle>
           <CardDescription>
             {total.toLocaleString("en-IN")}{" "}
             {total === 1 ? "booking" : "bookings"} in the displayed period
@@ -127,28 +130,28 @@ export function VolumeChart({ data }: { data: ShipmentVolumePoint[] }) {
             margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
           >
             <defs>
-              <linearGradient id="fillAirCargo" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={airGradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor="var(--color-airCargo)"
-                  stopOpacity={0.5}
+                  stopOpacity={0.35}
                 />
                 <stop
                   offset="95%"
                   stopColor="var(--color-airCargo)"
-                  stopOpacity={0.05}
+                  stopOpacity={0.02}
                 />
               </linearGradient>
-              <linearGradient id="fillSurfaceCargo" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={surfaceGradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor="var(--color-surfaceCargo)"
-                  stopOpacity={0.5}
+                  stopOpacity={0.35}
                 />
                 <stop
                   offset="95%"
                   stopColor="var(--color-surfaceCargo)"
-                  stopOpacity={0.05}
+                  stopOpacity={0.02}
                 />
               </linearGradient>
             </defs>
@@ -199,7 +202,7 @@ export function VolumeChart({ data }: { data: ShipmentVolumePoint[] }) {
             <Area
               dataKey="surfaceCargo"
               type="linear"
-              fill="url(#fillSurfaceCargo)"
+              fill={`url(#${surfaceGradientId})`}
               stroke="var(--color-surfaceCargo)"
               strokeWidth={1.5}
               stackId="volume"
@@ -208,7 +211,7 @@ export function VolumeChart({ data }: { data: ShipmentVolumePoint[] }) {
             <Area
               dataKey="airCargo"
               type="linear"
-              fill="url(#fillAirCargo)"
+              fill={`url(#${airGradientId})`}
               stroke="var(--color-airCargo)"
               strokeWidth={1.5}
               stackId="volume"
