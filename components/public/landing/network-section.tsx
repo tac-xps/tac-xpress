@@ -12,7 +12,11 @@ import {
 import { Building2, Route, MapPin } from "lucide-react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { BorderBeam } from "@/components/ui/border-beam"
-import { motionSprings } from "@/lib/motion/motion.theme"
+import {
+  motionSprings,
+  motionDurations,
+  motionEasings,
+} from "@/lib/motion/motion.theme"
 import { cn } from "@/lib/utils"
 
 const NETWORK_ANNOTATIONS = [
@@ -91,7 +95,16 @@ export function NetworkSection() {
     >
       <div ref={containerRef} className="space-y-10 lg:space-y-14">
         {/* Header */}
-        <div className="grid grid-cols-1 items-end gap-6 md:grid-cols-12">
+        <motion.div
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{
+            duration: motionDurations.editorial,
+            ease: motionEasings.editorial,
+          }}
+          className="grid grid-cols-1 items-end gap-6 md:grid-cols-12"
+        >
           <div className="md:col-span-8">
             <SectionEyebrow className="mb-4">Network · Corridor Architecture</SectionEyebrow>
             <h2
@@ -102,12 +115,11 @@ export function NetworkSection() {
             </h2>
           </div>
           <div className="md:col-span-4">
-            <p className="text-lead max-w-[55ch]">
-              <strong className="font-semibold text-foreground">Dedicated freight infrastructure. </strong>
-              High-density sortation facilities, scheduled flight allocations, and regional gateway reconciliation ensure uninterrupted custody.
+            <p className="text-lead max-w-[55ch] text-muted-foreground leading-relaxed font-normal">
+              Dedicated freight infrastructure. High-density sortation facilities, scheduled flight allocations, and regional gateway reconciliation ensure uninterrupted custody.
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Master Editorial Visual: Adaptive aspect ratio without forced vertical crop on mobile */}
         <motion.div
@@ -174,9 +186,8 @@ export function NetworkSection() {
                   <p className="mt-1 font-sans text-xs font-medium text-muted-foreground">
                     {item.role}
                   </p>
-                  <p className="mt-3 text-body-editorial">
-                    <strong className="font-semibold text-foreground">{item.lead} </strong>
-                    {item.details}
+                  <p className="mt-3 text-body-editorial text-muted-foreground leading-relaxed font-normal">
+                    {item.lead} {item.details}
                   </p>
                 </div>
 

@@ -11,7 +11,12 @@ import {
 } from "motion/react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { BorderBeam } from "@/components/ui/border-beam"
-import { motionSprings } from "@/lib/motion/motion.theme"
+import {
+  motionSprings,
+  motionDurations,
+  motionEasings,
+  editorialReveal,
+} from "@/lib/motion/motion.theme"
 import { cn } from "@/lib/utils"
 
 const STEPS = [
@@ -113,7 +118,16 @@ export function ProcessSection() {
       >
         <div className="flex w-full flex-col justify-between py-12 sm:py-16 lg:sticky lg:top-20 lg:py-14">
           {/* Top Row: Section Header */}
-          <div className="flex flex-col gap-4 border-b border-border/80 pb-6 md:flex-row md:items-end md:justify-between">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{
+              duration: motionDurations.editorial,
+              ease: motionEasings.editorial,
+            }}
+            className="flex flex-col gap-4 border-b border-border/80 pb-6 md:flex-row md:items-end md:justify-between"
+          >
             <div>
               <SectionEyebrow className="mb-3">
                 Living Cargo Line · Dispatch Lifecycle
@@ -125,11 +139,10 @@ export function ProcessSection() {
                 Four steps. One clear journey.
               </h2>
             </div>
-            <p className="max-w-md text-lead md:text-right">
-              <strong className="font-semibold text-foreground">Continuous chain-of-custody. </strong>
-              Four coordinated operational phases guarantee transparent statutory intake, manifest security clearance, linehaul dispatch, and signed destination handover.
+            <p className="max-w-md text-lead md:text-right text-muted-foreground leading-relaxed font-normal">
+              Continuous chain-of-custody. Four coordinated operational phases guarantee transparent statutory intake, manifest security clearance, linehaul dispatch, and signed destination handover.
             </p>
-          </div>
+          </motion.div>
 
           {/* Middle Stage: 4-Step Architectural Journey Cards */}
           <div className="my-8 sm:my-10 grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -138,10 +151,27 @@ export function ProcessSection() {
               const isPassed = activeStep > idx
 
               return (
-                  <div
+                  <motion.div
                     key={step.num}
+                    initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-30px" }}
+                    animate={
+                      shouldReduceMotion
+                        ? undefined
+                        : {
+                            scale: isActive ? 1.0 : 0.985,
+                            opacity: isActive ? 1 : 0.88,
+                          }
+                    }
+                    transition={{
+                      duration: motionDurations.reveal,
+                      delay: idx * 0.08,
+                      ease: motionEasings.editorial,
+                      scale: motionSprings.springTactile,
+                    }}
                     className={cn(
-                      "relative overflow-hidden flex flex-col justify-between border p-5 sm:p-6 transition-all duration-300",
+                      "relative overflow-hidden flex flex-col justify-between border p-5 sm:p-6 transition-colors duration-300",
                       isActive
                         ? cn(step.activeBorder, "bg-card shadow-sm")
                         : isPassed
@@ -201,11 +231,8 @@ export function ProcessSection() {
                       </h3>
 
                       {/* Step Description */}
-                      <p className="mt-2.5 text-body-editorial">
-                        <strong className="font-semibold text-foreground">
-                          {step.lead}{" "}
-                        </strong>
-                        <span>{step.description}</span>
+                      <p className="mt-2.5 text-body-editorial text-muted-foreground leading-relaxed font-normal">
+                        {step.lead} {step.description}
                       </p>
                     </div>
 
@@ -240,7 +267,7 @@ export function ProcessSection() {
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )
               })}
             </div>

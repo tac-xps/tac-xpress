@@ -1247,4 +1247,17 @@
 ) {
   border-radius: var(--radius-sm);
 }
+
+/* ═══ Global Smooth Scroll ═══
+   Enables smooth anchor transitions for the landing page editorial flow.
+   Falls back to instant scroll for prefers-reduced-motion. */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
 

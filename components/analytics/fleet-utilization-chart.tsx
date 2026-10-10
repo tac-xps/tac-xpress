@@ -77,7 +77,7 @@ export function FleetUtilizationChart({
             <button
               key={item.key}
               data-active={activeChart === item.key}
-              className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t border-border px-6 py-4 text-left transition-colors even:border-l hover:bg-muted/30 data-[active=true]:bg-muted/50 sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
+              className="relative z-1 flex flex-1 flex-col justify-center gap-1 border-t border-border px-6 py-4 text-left transition-colors even:border-l hover:bg-muted/30 data-[active=true]:bg-muted/50 sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
               onClick={() => setActiveChart(item.key)}
               type="button"
             >

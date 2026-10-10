@@ -281,7 +281,7 @@ export function TheCargoLine({ className, variant = "hero" }: TheCargoLineProps)
 }
 
 /** Verifiable operational capabilities shown in the proof strip */
-const PROOF_CLAIMS = [
+export const PROOF_CLAIMS = [
   { label: "15+ Years Linehaul", detail: "Delhi ⇄ Northeast corridor", colorClass: "text-primary" },
   { label: "Optical Gate Audit", detail: "Physical barcode scan trails", colorClass: "text-info" },
   { label: "Statutory Carriage", detail: "Air Waybills & GST e-way bills", colorClass: "text-status-delivered" },
@@ -289,7 +289,7 @@ const PROOF_CLAIMS = [
 ]
 
 /** Dedicated corridors requested: IMF to DEL, DEL to IMF, New Delhi – Northeast, Northeast to Imphal */
-const CORRIDOR_MARQUEE_ITEMS = [
+export const CORRIDOR_MARQUEE_ITEMS = [
   {
     corridor: "IMF to DEL",
     tag: "Priority Air Express",
@@ -309,62 +309,84 @@ const CORRIDOR_MARQUEE_ITEMS = [
 ]
 
 /**
- * Proof Strip — Immediate trust reinforcement beneath Hero,
- * plus a live route network marquee featuring the core corridors.
+ * ProofStats — Immediate trust reinforcement metrics.
+ * 4-column balanced operational capability grid docked cleanly to section baselines.
  */
-export function ProofStrip({ className }: { className?: string } = {}) {
+export function ProofStats({ className }: { className?: string } = {}) {
   return (
     <div className={cn("w-full border-t border-border/80 bg-card/60 backdrop-blur-xs", className)}>
       {/* Capability Row — Aligned with 1360px container */}
-      <div className="mx-auto grid w-full max-w-[1360px] grid-cols-2 divide-y divide-border/80 border-b border-border/80 px-4 sm:px-6 lg:px-12 md:grid-cols-4 md:divide-x md:divide-y-0">
+      <div className="mx-auto grid w-full max-w-[1360px] grid-cols-2 divide-y divide-border/80 px-4 sm:px-6 lg:px-12 md:grid-cols-4 md:divide-x md:divide-y-0">
         {PROOF_CLAIMS.map((claim) => (
           <motion.div
             key={claim.label}
             whileHover={{ y: -1 }}
             transition={{ duration: 0.2 }}
-            className="group flex flex-col justify-center py-3.5 sm:py-4 md:px-6 transition-colors hover:bg-muted/40"
+            className="group flex flex-col justify-center py-4 sm:py-5 md:px-6 transition-colors hover:bg-muted/40"
           >
             <span className={cn("font-mono text-xs font-bold uppercase tracking-[0.16em] transition-colors", claim.colorClass)}>
               {claim.label}
             </span>
-            <span className="mt-0.5 font-sans text-xs text-muted-foreground font-medium">
+            <span className="mt-1 font-sans text-xs text-muted-foreground font-medium">
               {claim.detail}
             </span>
           </motion.div>
         ))}
       </div>
+    </div>
+  )
+}
 
-      {/* Live Corridor Marquee with Seamless Edge Gradient Masks */}
-      <div
-        className="relative w-full max-w-full overflow-hidden bg-background/40"
+/**
+ * CorridorMarquee — Continuous living linehaul route ticker ribbon.
+ * Dedicated full-width chapter transition conduit with gradient edge fades.
+ */
+export function CorridorMarquee({ className }: { className?: string } = {}) {
+  return (
+    <div
+      className={cn(
+        "relative w-full overflow-hidden border-y border-border/80 bg-muted/20 py-1 sm:py-1.5 transition-colors",
+        className
+      )}
+      aria-label="Daily scheduled corridor routes"
+    >
+      {/* Soft edge gradient masks blending seamlessly into background */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-28 bg-gradient-to-r from-background via-background/80 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-28 bg-gradient-to-l from-background via-background/80 to-transparent" />
+
+      <Marquee
+        repeat={4}
+        pauseOnHover
+        className="[--duration:42s] [--gap:0rem] py-0"
         aria-hidden="true"
       >
-        {/* Soft edge gradient masks blending seamlessly into background */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 sm:w-32 bg-gradient-to-r from-background via-background/80 to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 sm:w-32 bg-gradient-to-l from-background via-background/80 to-transparent" />
+        {CORRIDOR_MARQUEE_ITEMS.map((item, idx) => (
+          <div
+            key={`${item.corridor}-${idx}`}
+            className="flex items-center gap-3.5 border-r border-border/70 px-6 sm:px-8 py-2 font-mono text-xs"
+          >
+            <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
+            <span className="font-semibold text-foreground tracking-wide text-xs sm:text-sm">
+              {item.corridor}
+            </span>
+            <span className="border border-border/80 bg-card/90 px-2 py-0.5 font-sans text-xs text-muted-foreground font-medium tracking-normal">
+              {item.tag}
+            </span>
+          </div>
+        ))}
+      </Marquee>
+    </div>
+  )
+}
 
-        <Marquee
-          repeat={3}
-          pauseOnHover
-          className="[--duration:44s] [--gap:0rem] py-0"
-          aria-hidden="true"
-        >
-          {CORRIDOR_MARQUEE_ITEMS.map((item, idx) => (
-            <div
-              key={`${item.corridor}-${idx}`}
-              className="flex items-center gap-3.5 border-r border-border/70 px-8 sm:px-10 py-2.5 font-mono text-xs"
-            >
-              <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
-              <span className="font-semibold text-foreground tracking-wide text-xs sm:text-sm">
-                {item.corridor}
-              </span>
-              <span className="border border-border/80 bg-card/80 px-2 py-0.5 font-sans text-xs text-muted-foreground font-medium tracking-normal">
-                {item.tag}
-              </span>
-            </div>
-          ))}
-        </Marquee>
-      </div>
+/**
+ * Backwards compatible alias combining ProofStats and CorridorMarquee
+ */
+export function ProofStrip({ className }: { className?: string } = {}) {
+  return (
+    <div className={cn("w-full", className)}>
+      <ProofStats />
+      <CorridorMarquee />
     </div>
   )
 }
