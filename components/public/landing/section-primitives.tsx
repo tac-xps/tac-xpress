@@ -283,8 +283,8 @@ export function TheCargoLine({ className, variant = "hero" }: TheCargoLineProps)
 
 /** Operational stats shown in the proof strip */
 const PROOF_STATS = [
-  { value: 2400, suffix: "+", label: "Active shipments", detail: "This month" },
-  { value: 98, suffix: "%", label: "On-time delivery", detail: "3-month average" },
+  { value: 2400, suffix: "+", label: "Shipments handled", detail: "Across all corridors" },
+  { value: 98, suffix: "%", label: "On-time delivery", detail: "Historical average" },
   { value: 340, suffix: "+", label: "Corridors served", detail: "Air & surface" },
   { value: 24, suffix: "/7", label: "Operations desk", detail: "Direct controller" },
 ]

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, type ComponentPropsWithoutRef } from "react"
-import { useInView, useMotionValue, useSpring } from "motion/react"
+import { useInView, useMotionValue, useSpring, useReducedMotion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
@@ -17,12 +17,13 @@ export function NumberTicker({
   value,
   startValue = 0,
   direction = "up",
-  delay = 0,
   className,
   decimalPlaces = 0,
+  delay = 0,
   ...props
 }: NumberTickerProps) {
   const ref = useRef<HTMLSpanElement>(null)
+  const prefersReducedMotion = useReducedMotion()
   const motionValue = useMotionValue(direction === "down" ? value : startValue)
   const springValue = useSpring(motionValue, {
     damping: 60,
@@ -31,20 +32,26 @@ export function NumberTicker({
   const isInView = useInView(ref, { once: true, margin: "0px" })
 
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | null = null
+    if (!isInView) return
 
-    if (isInView) {
-      timer = setTimeout(() => {
-        motionValue.set(direction === "down" ? startValue : value)
-      }, delay * 1000)
-    }
-
-    return () => {
-      if (timer !== null) {
-        clearTimeout(timer)
+    // When reduced motion is preferred, set final value immediately
+    if (prefersReducedMotion) {
+      motionValue.set(direction === "down" ? startValue : value)
+      if (ref.current) {
+        ref.current.textContent = Intl.NumberFormat("en-US", {
+          minimumFractionDigits: decimalPlaces,
+          maximumFractionDigits: decimalPlaces,
+        }).format(value)
       }
+      return
     }
-  }, [motionValue, isInView, delay, value, direction, startValue])
+
+    const timer = setTimeout(() => {
+      motionValue.set(direction === "down" ? startValue : value)
+    }, delay * 1000)
+
+    return () => clearTimeout(timer)
+  }, [motionValue, isInView, delay, value, direction, startValue, prefersReducedMotion, decimalPlaces])
 
   useEffect(
     () =>
@@ -59,6 +66,11 @@ export function NumberTicker({
     [springValue, decimalPlaces]
   )
 
+  const formattedValue = Intl.NumberFormat("en-US", {
+    minimumFractionDigits: decimalPlaces,
+    maximumFractionDigits: decimalPlaces,
+  }).format(prefersReducedMotion ? value : startValue)
+
   return (
     <span
       ref={ref}
@@ -68,7 +80,8 @@ export function NumberTicker({
       )}
       {...props}
     >
-      {startValue}
+      {formattedValue}
     </span>
   )
 }
+

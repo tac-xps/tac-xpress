@@ -116,6 +116,7 @@ function LinkToolbarButton({ editor, disabled }: LinkToolbarButtonProps) {
 
   const handleApply = (e: React.FormEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     if (!editor) return
     const trimmed = url.trim()
     if (!trimmed) {
@@ -169,7 +170,7 @@ function LinkToolbarButton({ editor, disabled }: LinkToolbarButtonProps) {
         </div>
         <form onSubmit={handleApply} className="space-y-2.5">
           <Input
-            type="url"
+            type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://example.com"

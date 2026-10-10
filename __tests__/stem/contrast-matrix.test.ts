@@ -131,7 +131,7 @@ describe("Nordic Mineral — Nocturne Obsidian & Luminous Nordic Teal Semantic C
     })
 
     it("ensures dark strong border satisfies WCAG 2.2 SC 1.4.11 (>= 3.0:1) on Deep Sea card and bg", () => {
-      expect(getWcagContrast(yBasaltBorderStrong, yBasaltCard)).toBeGreaterThanOrEqual(2.5)
+      expect(getWcagContrast(yBasaltBorderStrong, yBasaltCard)).toBeGreaterThanOrEqual(3.0)
       expect(getWcagContrast(yBasaltBorderStrong, yBasaltBg)).toBeGreaterThanOrEqual(3.0)
     })
 

@@ -156,7 +156,7 @@ export function TrackingSection() {
                   htmlFor="home-awb"
                   className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-semibold"
                 >
-                  AWB / tracking number
+                  AWB / shipment reference
                 </label>
                 <div
                   className={`relative flex items-center border bg-background transition-colors ${
@@ -167,7 +167,7 @@ export function TrackingSection() {
                   <Input
                     id="home-awb"
                     name="awb"
-                    aria-label="AWB / tracking number"
+                    aria-label="AWB / shipment reference"
                     value={awbInput}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
