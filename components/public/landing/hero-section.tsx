@@ -96,7 +96,7 @@ export function HeroSection() {
                 ease: motionEasings.hero,
               }}
             >
-              15+ Years Logistics.
+              Delhi to Northeast.
             </motion.span>
             <motion.span
               className="block font-heading font-bold bg-gradient-to-r from-primary via-primary/90 to-info bg-clip-text text-transparent"
@@ -108,7 +108,7 @@ export function HeroSection() {
                 ease: motionEasings.hero,
               }}
             >
-              Delhi &amp; Northeast.
+              Delivered.
             </motion.span>
           </h1>
 
