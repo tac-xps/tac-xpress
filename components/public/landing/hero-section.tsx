@@ -60,7 +60,7 @@ export function HeroSection() {
         className="opacity-25 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)]"
       />
       <div className="relative z-10 mx-auto flex w-full max-w-[1360px] flex-1 items-center px-4 sm:px-6 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10 lg:pb-12">
-        <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10 xl:gap-14">
+        <div className="grid w-full grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
         {/* Left Column: Editorial Copy & Chapter Origin */}
         <motion.div
           style={shouldReduceMotion ? undefined : { y: headlineY }}
@@ -83,11 +83,11 @@ export function HeroSection() {
           {/* Headline (fluid display with unclipped typography reveal) */}
           <h1
             id="hero-heading"
-            style={{ fontSize: "clamp(2.75rem, 5vw + 0.5rem, 5.5rem)" }}
+            style={{ fontSize: "clamp(2.5rem, 3.8vw + 0.25rem, 4.25rem)" }}
             className="font-heading font-bold tracking-[-0.035em] text-foreground leading-[1.08] text-balance"
           >
             <motion.span
-              className="block font-heading font-bold text-foreground"
+              className="block font-heading font-bold text-foreground lg:whitespace-nowrap"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
@@ -197,7 +197,7 @@ export function HeroSection() {
           </motion.div>
         </motion.div>
 
-        {/* Right Column: Hero Master Illustration */}
+        {/* Right Column: Hero Master Dossier & Telemetry Panel */}
         <div className="lg:col-span-5 xl:col-span-5">
           <motion.div
             initial={
@@ -224,8 +224,15 @@ export function HeroSection() {
                 borderWidth={1}
               />
 
-              {/* Master Image with Stable Aspect Ratio Wrapper */}
-              <div className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] w-full overflow-hidden">
+              {/* Master Image with Aspect Wrapper */}
+              <div className="relative aspect-[16/11] sm:aspect-[16/10] lg:aspect-[16/11] w-full overflow-hidden">
+                {/* Live Corridor Status Tag */}
+                <div className="absolute top-3 left-3 z-20 inline-flex items-center gap-1.5 border border-border/80 bg-background/95 backdrop-blur-xs px-2.5 py-1 font-mono text-xs tracking-wider uppercase text-foreground">
+                  <span className="size-1.5 rounded-none bg-status-delivered animate-pulse" aria-hidden="true" />
+                  <span className="font-semibold text-foreground">DEL ⇄ IMF / GAU</span>
+                  <span className="text-muted-foreground">· Active</span>
+                </div>
+
                 <motion.div
                   style={
                     shouldReduceMotion
@@ -245,13 +252,38 @@ export function HeroSection() {
                 </motion.div>
               </div>
 
-              {/* Architectural Caption Bar — static markup avoids SSR/hydration flicker */}
+              {/* Architectural Caption Bar */}
               <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-mono text-xs tracking-wider uppercase text-foreground/80">
                 <span className="flex items-center gap-2">
                   <span className="inline-block size-2 rounded-none bg-status-delivered" aria-hidden="true" />
-                  <span className="font-semibold text-foreground">15+ Years Delhi ⇄ Northeast</span>
+                  <span className="font-semibold text-foreground">15+ Years Linehaul</span>
                 </span>
-                <span className="text-muted-foreground font-medium">Daily Scheduled Routes</span>
+                <span className="text-muted-foreground font-medium">Daily Scheduled</span>
+              </div>
+
+              {/* Tactical Corridor Telemetry Panel */}
+              <div className="border-t border-border/80 bg-muted/20 p-3 sm:p-4 grid grid-cols-2 gap-2.5 font-mono text-xs">
+                <div className="border border-border/70 bg-card p-2.5">
+                  <span className="block text-xs uppercase tracking-wider text-muted-foreground">Corridor Routes</span>
+                  <span className="mt-1 flex items-center gap-1.5 font-bold text-foreground">
+                    <span className="size-1.5 rounded-none bg-primary" aria-hidden="true" />
+                    DEL ⇄ IMF &amp; GAU
+                  </span>
+                </div>
+                <div className="border border-border/70 bg-card p-2.5">
+                  <span className="block text-xs uppercase tracking-wider text-muted-foreground">Flight Cutoff</span>
+                  <span className="mt-1 flex items-center gap-1.5 font-bold text-info">
+                    <span className="size-1.5 rounded-none bg-info" aria-hidden="true" />
+                    16:00 IST Daily
+                  </span>
+                </div>
+                <div className="col-span-2 flex items-center justify-between border border-border/70 bg-card px-3 py-2 text-xs">
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
+                    Optical Gate Scan Audit
+                  </span>
+                  <span className="font-semibold text-foreground">100% Chain-of-Custody</span>
+                </div>
               </div>
             </div>
           </motion.div>
