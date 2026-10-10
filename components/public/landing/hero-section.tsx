@@ -60,7 +60,7 @@ export function HeroSection() {
         className="opacity-25 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)]"
       />
       <div className="relative z-10 mx-auto flex w-full max-w-[1360px] flex-1 items-center px-4 sm:px-6 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10 lg:pb-12">
-        <div className="grid w-full grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
+        <div className="grid w-full grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
         {/* Left Column: Editorial Copy & Chapter Origin */}
         <motion.div
           style={shouldReduceMotion ? undefined : { y: headlineY }}
@@ -123,12 +123,12 @@ export function HeroSection() {
                 delay: 0.26,
                 ease: motionEasings.editorial,
               }}
-              className="max-w-[56ch] text-lead"
+              className="max-w-[54ch] text-lead text-muted-foreground"
             >
               <strong className="font-semibold text-foreground">
-                Over 15 years of continuous freight linehaul connecting New Delhi and Northeast India.
+                Scheduled freight linehaul connecting New Delhi and Northeast India.
               </strong>{" "}
-              Scheduled commercial air belly-hold space, arterial surface transport, and statutory Air Waybill (AWB) compliance with optical gate scan audit trails and dedicated operations desk support.
+              Commercial air belly-hold space and arterial surface transport with statutory Air Waybill compliance, optical gate scan verification, and dedicated dispatch support.
             </motion.p>
           </div>
 
@@ -141,7 +141,7 @@ export function HeroSection() {
               delay: 0.34,
               ease: motionEasings.editorial,
             }}
-            className="mt-8 sm:mt-9 flex flex-wrap items-center gap-3 sm:gap-4"
+            className="mt-8 sm:mt-10 flex flex-wrap items-center gap-3 sm:gap-4"
           >
             <motion.div {...tactileInteraction}>
               <Button
@@ -170,34 +170,9 @@ export function HeroSection() {
               </Button>
             </motion.div>
           </motion.div>
-
-          {/* 15+ Years Verified Corridor Telemetry Strip */}
-          <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: motionDurations.reveal,
-              delay: 0.42,
-              ease: motionEasings.editorial,
-            }}
-            className="mt-8 pt-6 border-t border-border/70 grid grid-cols-3 gap-4 max-w-lg"
-          >
-            <div>
-              <span className="font-mono text-xl sm:text-2xl font-bold text-primary">15+</span>
-              <span className="block font-mono text-xs uppercase tracking-wider text-muted-foreground mt-0.5 font-medium">Years Active</span>
-            </div>
-            <div>
-              <span className="font-mono text-xl sm:text-2xl font-bold text-info">24–48h</span>
-              <span className="block font-mono text-xs uppercase tracking-wider text-muted-foreground mt-0.5 font-medium">Air SLA</span>
-            </div>
-            <div>
-              <span className="font-mono text-xl sm:text-2xl font-bold text-status-delivered">100%</span>
-              <span className="block font-mono text-xs uppercase tracking-wider text-muted-foreground mt-0.5 font-medium">AWB Custody</span>
-            </div>
-          </motion.div>
         </motion.div>
 
-        {/* Right Column: Hero Master Dossier & Telemetry Panel */}
+        {/* Right Column: Master Cinematic Motion Window */}
         <div className="lg:col-span-5 xl:col-span-5">
           <motion.div
             initial={
@@ -224,15 +199,8 @@ export function HeroSection() {
                 borderWidth={1}
               />
 
-              {/* Master Image with Aspect Wrapper */}
-              <div className="relative aspect-[16/11] sm:aspect-[16/10] lg:aspect-[16/11] w-full overflow-hidden">
-                {/* Live Corridor Status Tag */}
-                <div className="absolute top-3 left-3 z-20 inline-flex items-center gap-1.5 border border-border/80 bg-background/95 backdrop-blur-xs px-2.5 py-1 font-mono text-xs tracking-wider uppercase text-foreground">
-                  <span className="size-1.5 rounded-none bg-status-delivered animate-pulse" aria-hidden="true" />
-                  <span className="font-semibold text-foreground">DEL ⇄ IMF / GAU</span>
-                  <span className="text-muted-foreground">· Active</span>
-                </div>
-
+              {/* Master Cinematic Video Wrapper (1:1 / 4:3) */}
+              <div className="relative aspect-[4/3] sm:aspect-square lg:aspect-[4/3] xl:aspect-[4/3] w-full overflow-hidden bg-muted/10">
                 <motion.div
                   style={
                     shouldReduceMotion
@@ -241,49 +209,38 @@ export function HeroSection() {
                   }
                   className="relative h-full w-full will-change-transform transform-gpu"
                 >
-                  <Image
-                    src="/images/logistics/hero.webp"
-                    alt="Contemporary Asian logistics specialist with modern delivery van on urban avenue at dawn with elevated viaduct and volumetric sunbeams"
-                    fill
-                    priority
-                    className="object-cover select-none"
-                    sizes="(min-width: 1280px) 520px, (min-width: 1024px) 42vw, 100vw"
-                  />
+                  {shouldReduceMotion ? (
+                    <Image
+                      src="/images/logistics/hero.webp"
+                      alt="TAC Express commercial logistics corridor connecting Delhi and Northeast India"
+                      fill
+                      priority
+                      className="object-cover select-none"
+                      sizes="(min-width: 1280px) 520px, (min-width: 1024px) 42vw, 100vw"
+                    />
+                  ) : (
+                    <video
+                      src="/video/hero-bg.mp4"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      preload="auto"
+                      poster="/images/logistics/hero.webp"
+                      className="h-full w-full object-cover select-none"
+                      aria-label="TAC Express linehaul transport in motion"
+                    />
+                  )}
                 </motion.div>
               </div>
 
-              {/* Architectural Caption Bar */}
+              {/* Restrained Architectural Baseline Tag */}
               <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-mono text-xs tracking-wider uppercase text-foreground/80">
                 <span className="flex items-center gap-2">
-                  <span className="inline-block size-2 rounded-none bg-status-delivered" aria-hidden="true" />
-                  <span className="font-semibold text-foreground">15+ Years Linehaul</span>
+                  <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
+                  <span className="font-semibold text-foreground">DEL ⇄ Northeast Linehaul</span>
                 </span>
                 <span className="text-muted-foreground font-medium">Daily Scheduled</span>
-              </div>
-
-              {/* Tactical Corridor Telemetry Panel */}
-              <div className="border-t border-border/80 bg-muted/20 p-3 sm:p-4 grid grid-cols-2 gap-2.5 font-mono text-xs">
-                <div className="border border-border/70 bg-card p-2.5">
-                  <span className="block text-xs uppercase tracking-wider text-muted-foreground">Corridor Routes</span>
-                  <span className="mt-1 flex items-center gap-1.5 font-bold text-foreground">
-                    <span className="size-1.5 rounded-none bg-primary" aria-hidden="true" />
-                    DEL ⇄ IMF &amp; GAU
-                  </span>
-                </div>
-                <div className="border border-border/70 bg-card p-2.5">
-                  <span className="block text-xs uppercase tracking-wider text-muted-foreground">Flight Cutoff</span>
-                  <span className="mt-1 flex items-center gap-1.5 font-bold text-info">
-                    <span className="size-1.5 rounded-none bg-info" aria-hidden="true" />
-                    16:00 IST Daily
-                  </span>
-                </div>
-                <div className="col-span-2 flex items-center justify-between border border-border/70 bg-card px-3 py-2 text-xs">
-                  <span className="flex items-center gap-1.5 text-muted-foreground">
-                    <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
-                    Optical Gate Scan Audit
-                  </span>
-                  <span className="font-semibold text-foreground">100% Chain-of-Custody</span>
-                </div>
               </div>
             </div>
           </motion.div>
