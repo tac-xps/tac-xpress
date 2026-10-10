@@ -1,4 +1,7 @@
+"use client"
+
 import React from "react"
+import { motion, useReducedMotion } from "motion/react"
 import { Plus } from "lucide-react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { GridPattern } from "@/components/ui/grid-pattern"
@@ -8,6 +11,11 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion"
+import {
+  motionDurations,
+  motionEasings,
+  editorialReveal,
+} from "@/lib/motion/motion.theme"
 
 const FAQS = [
   {
@@ -47,6 +55,8 @@ const FAQS = [
  * chargeable weight calculations, and statutory dangerous goods declarations.
  */
 export function FAQSection() {
+  const shouldReduceMotion = useReducedMotion()
+
   return (
     <EditorialContainer
       id="faq"
@@ -61,7 +71,15 @@ export function FAQSection() {
       />
       <div className="relative z-10 mx-auto max-w-4xl space-y-10 lg:space-y-12">
         {/* Section Header */}
-        <div>
+        <motion.div
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{
+            duration: motionDurations.editorial,
+            ease: motionEasings.editorial,
+          }}
+        >
           <SectionEyebrow className="mb-4">Frequent Inquiries</SectionEyebrow>
           <h2
             id="faq-heading"
@@ -69,13 +87,12 @@ export function FAQSection() {
           >
             Questions, answered.
           </h2>
-          <p className="mt-4 text-lead max-w-[55ch]">
-            <strong className="font-semibold text-foreground">Operational advisory. </strong>
-            Clear guidelines on consignment booking procedures, corridor transit timelines, chargeable weight calculations, and statutory documentation rules.
+          <p className="mt-4 text-lead max-w-[55ch] text-muted-foreground leading-relaxed font-normal">
+            Operational advisory. Clear guidelines on consignment booking procedures, corridor transit timelines, chargeable weight calculations, and statutory documentation rules.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Shadcn Accordion — Radix primitive with correct a11y */}
+        {/* Shadcn Accordion — Radix primitive with motion entrance */}
         <Accordion
           type="single"
           collapsible
@@ -83,40 +100,50 @@ export function FAQSection() {
           className="divide-y divide-border/80 border-y border-border/80"
         >
           {FAQS.map((faq, idx) => (
-            <AccordionItem
+            <motion.div
               key={faq.q}
-              value={`faq-${idx}`}
-              className="border-b-0 py-4 sm:py-6"
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-20px" }}
+              transition={{
+                duration: motionDurations.reveal,
+                delay: idx * 0.05,
+                ease: motionEasings.editorial,
+              }}
             >
-              <AccordionTrigger
-                className="py-0 text-left hover:no-underline [&>svg]:hidden group"
+              <AccordionItem
+                value={`faq-${idx}`}
+                className="border-b-0 py-4 sm:py-6"
               >
-                <span
-                  style={{ fontSize: "var(--type-sub)" }}
-                  className="pr-6 font-heading font-semibold tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary flex items-baseline"
+                <AccordionTrigger
+                  className="py-0 text-left hover:no-underline [&>svg]:hidden group"
                 >
                   <span
-                    className={
-                      idx % 3 === 0
-                        ? "font-mono text-xs font-semibold text-primary mr-3.5 shrink-0"
-                        : idx % 3 === 1
-                        ? "font-mono text-xs font-semibold text-info mr-3.5 shrink-0"
-                        : "font-mono text-xs font-semibold text-status-delivered mr-3.5 shrink-0"
-                    }
+                    style={{ fontSize: "var(--type-sub)" }}
+                    className="pr-6 font-heading font-semibold tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary flex items-baseline"
                   >
-                    0{idx + 1}
+                    <span
+                      className={
+                        idx % 3 === 0
+                          ? "font-mono text-xs font-semibold text-primary mr-3.5 shrink-0"
+                          : idx % 3 === 1
+                          ? "font-mono text-xs font-semibold text-info mr-3.5 shrink-0"
+                          : "font-mono text-xs font-semibold text-status-delivered mr-3.5 shrink-0"
+                      }
+                    >
+                      0{idx + 1}
+                    </span>
+                    <span>{faq.q}</span>
                   </span>
-                  <span>{faq.q}</span>
-                </span>
-                <span className="mt-1 flex size-6 shrink-0 items-center justify-center border border-border bg-card text-muted-foreground transition-all group-hover:border-primary group-hover:text-primary group-data-[state=open]:rotate-45">
-                  <Plus className="size-3.5" />
-                </span>
-              </AccordionTrigger>
-              <AccordionContent className="pt-4 pr-12 text-body-editorial">
-                <strong className="font-semibold text-foreground">{faq.lead} </strong>
-                {faq.a}
-              </AccordionContent>
-            </AccordionItem>
+                  <span className="mt-1 flex size-6 shrink-0 items-center justify-center border border-border bg-card text-muted-foreground transition-all group-hover:border-primary group-hover:text-primary group-data-[state=open]:rotate-45">
+                    <Plus className="size-3.5" />
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4 pr-12 text-body-editorial text-muted-foreground leading-relaxed font-normal">
+                  {faq.lead} {faq.a}
+                </AccordionContent>
+              </AccordionItem>
+            </motion.div>
           ))}
         </Accordion>
       </div>

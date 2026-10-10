@@ -2,10 +2,11 @@
 
 import React from "react"
 import Link from "next/link"
-import { motion } from "motion/react"
-import { ArrowUpRight } from "lucide-react"
+import { motion, useReducedMotion } from "motion/react"
+import { ArrowUpRight, ArrowUp } from "lucide-react"
 import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
+import { motionDurations, motionEasings } from "@/lib/motion/motion.theme"
 
 const FOOTER_GROUPS = [
   {
@@ -41,9 +42,20 @@ const FOOTER_GROUPS = [
  * direct quote CTAs, and statutory registration credentials.
  */
 export function LandingFooter() {
+  const shouldReduceMotion = useReducedMotion()
+
   return (
     <footer className="w-full border-t border-border/80 bg-surface/50 text-foreground transition-colors">
-      <div className="mx-auto w-full max-w-[1360px] px-4 py-12 sm:px-6 sm:py-16 lg:px-12 lg:py-20">
+      <motion.div
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{
+          duration: motionDurations.editorial,
+          ease: motionEasings.editorial,
+        }}
+        className="mx-auto w-full max-w-[1360px] px-4 py-12 sm:px-6 sm:py-16 lg:px-12 lg:py-20"
+      >
         {/* Top Editorial Callout */}
         <div className="mb-12 flex flex-col justify-between gap-6 border-b border-border/80 pb-10 md:flex-row md:items-end">
           <div>
@@ -109,15 +121,25 @@ export function LandingFooter() {
         {/* Copyright and Metadata */}
         <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-border/80 pt-8 sm:flex-row sm:items-center font-mono text-xs text-muted-foreground">
           <p>© {new Date().getFullYear()} TAC-XPRESS LOGISTICS LLP. All rights reserved.</p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <span>GST Registered</span>
             <span>·</span>
             <span>IATA Associated</span>
             <span>·</span>
             <span className="text-primary font-medium">Delhi ⇄ Imphal Corridor</span>
+            <span>·</span>
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="group inline-flex items-center gap-1.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+              aria-label="Scroll to top of page"
+            >
+              <span>Back to top</span>
+              <ArrowUp className="size-3 text-primary transition-transform duration-200 group-hover:-translate-y-0.5" strokeWidth={2} />
+            </button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </footer>
   )
 }

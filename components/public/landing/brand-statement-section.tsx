@@ -116,10 +116,9 @@ export function BrandStatementSection() {
               delay: 0.2,
               ease: motionEasings.editorial,
             }}
-            className="mx-auto mt-5 max-w-[54ch] text-lead text-center"
+            className="mx-auto mt-5 max-w-[54ch] text-lead text-center text-muted-foreground leading-relaxed font-normal"
           >
-            <strong className="font-semibold text-foreground">Operational purpose. </strong>
-            Behind every consignment is essential enterprise: commercial supply continuity, critical regional inventory, and verified delivery custody.
+            Operational purpose. Behind every consignment is essential enterprise: commercial supply continuity, critical regional inventory, and verified delivery custody.
           </motion.p>
         </div>
 
