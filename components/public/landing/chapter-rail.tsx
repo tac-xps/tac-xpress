@@ -93,7 +93,7 @@ export function ChapterRail() {
                 <div className="flex items-center gap-1.5 pl-0.5">
                   <span
                     className={cn(
-                      "font-mono text-[10px] tracking-widest transition-colors",
+                      "font-mono text-xs tracking-widest transition-colors",
                       isActive
                         ? "font-semibold text-primary"
                         : "text-muted-foreground group-hover:text-foreground"
@@ -103,7 +103,7 @@ export function ChapterRail() {
                   </span>
                   <span
                     className={cn(
-                      "font-mono text-[10px] uppercase tracking-wider transition-colors",
+                      "font-mono text-xs uppercase tracking-wider transition-colors",
                       isActive
                         ? "font-semibold text-foreground"
                         : isHovered

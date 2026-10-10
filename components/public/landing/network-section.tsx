@@ -13,6 +13,7 @@ import { Building2, Route, MapPin } from "lucide-react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { BorderBeam } from "@/components/ui/border-beam"
 import { motionSprings } from "@/lib/motion/motion.theme"
+import { cn } from "@/lib/utils"
 
 const NETWORK_ANNOTATIONS = [
   {
@@ -24,6 +25,10 @@ const NETWORK_ANNOTATIONS = [
     details:
       "High-throughput sorting facility servicing daily commercial flight departures and regional inter-state linehaul fleets.",
     footer: "Air Gateway Hub · Direct AWB Manifest",
+    color: "text-primary",
+    badge: "border-primary/30 bg-primary/10 text-primary",
+    dot: "bg-primary",
+    hoverBorder: "hover:border-t-primary",
   },
   {
     icon: Route,
@@ -34,6 +39,10 @@ const NETWORK_ANNOTATIONS = [
     details:
       "Dedicated commercial freight routes optimized for cargo transit speed, safety, and all-weather operational continuity.",
     footer: "Arterial Corridor · Monitored Transit",
+    color: "text-info",
+    badge: "border-info/30 bg-info/10 text-info",
+    dot: "bg-info",
+    hoverBorder: "hover:border-t-info",
   },
   {
     icon: MapPin,
@@ -44,6 +53,10 @@ const NETWORK_ANNOTATIONS = [
     details:
       "Direct terminal receiving scheduled air and surface consignments for rapid regional distribution across Manipur and neighboring corridors.",
     footer: "Regional Gateway · Proof-of-Delivery Desk",
+    color: "text-status-delivered",
+    badge: "border-status-delivered/30 bg-status-delivered/10 text-status-delivered",
+    dot: "bg-status-delivered",
+    hoverBorder: "hover:border-t-status-delivered",
   },
 ]
 
@@ -118,9 +131,9 @@ export function NetworkSection() {
               sizes="(min-width: 1360px) 1264px, 100vw"
             />
           </motion.div>
-          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-mono text-[10px] tracking-wider uppercase text-muted-foreground">
-            <span>Air Cargo Master Apron · Physical Gateways</span>
-            <span className="hidden sm:inline">Continuous Infrastructure Verification</span>
+          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-mono text-xs tracking-wider uppercase text-muted-foreground">
+            <span className="font-medium">Air Cargo Master Apron · Physical Gateways</span>
+            <span className="hidden sm:inline font-medium">Continuous Infrastructure Verification</span>
           </div>
         </motion.div>
 
@@ -139,13 +152,16 @@ export function NetworkSection() {
                   delay: idx * 0.1,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="group flex flex-col justify-between p-5 sm:p-7 lg:p-8 border-t-2 border-t-transparent hover:border-t-primary/70 transition-all duration-200 hover:bg-muted/30"
+                className={cn(
+                  "group flex flex-col justify-between p-5 sm:p-7 lg:p-8 border-t-2 border-t-transparent transition-all duration-200 hover:bg-muted/30",
+                  item.hoverBorder
+                )}
               >
                 <div>
-                  <div className="flex items-center gap-2.5 font-mono text-xs text-muted-foreground">
-                    <span className="size-1.5 rounded-none bg-primary" aria-hidden="true" />
-                    <Icon className="size-4 text-primary" />
-                    <span className="uppercase tracking-wider font-semibold text-primary">
+                  <div className="flex items-center gap-2.5 font-mono text-xs">
+                    <span className={cn("size-1.5 rounded-none", item.dot)} aria-hidden="true" />
+                    <Icon className={cn("size-4", item.color)} />
+                    <span className={cn("uppercase tracking-wider font-semibold", item.color)}>
                       {item.tag}
                     </span>
                   </div>
@@ -164,9 +180,9 @@ export function NetworkSection() {
                   </p>
                 </div>
 
-                <div className="mt-6 border-t border-border/60 pt-3 font-mono text-[11px] text-muted-foreground flex items-center justify-between">
-                  <span>{item.footer}</span>
-                  <span className="size-1 rounded-none bg-primary/60" aria-hidden="true" />
+                <div className="mt-6 border-t border-border/60 pt-3 font-mono text-xs text-muted-foreground flex items-center justify-between">
+                  <span className="font-medium">{item.footer}</span>
+                  <span className={cn("size-1.5 rounded-none", item.dot)} aria-hidden="true" />
                 </div>
               </motion.div>
             )

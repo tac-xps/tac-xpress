@@ -122,7 +122,7 @@ export function LivingCargoLine({
                 </div>
 
                 {/* Step Metadata */}
-                <div className="mt-2 flex items-center gap-1 font-mono text-[10px] tracking-widest">
+                <div className="mt-2 flex items-center gap-1 font-mono text-xs tracking-widest">
                   <span
                     className={cn(
                       "font-semibold transition-colors duration-200",

@@ -15,6 +15,7 @@ import { Marquee } from "@/components/ui/marquee"
 import { BorderBeam } from "@/components/ui/border-beam"
 import { GridPattern } from "@/components/ui/grid-pattern"
 import { motionDurations, motionEasings, motionSprings } from "@/lib/motion/motion.theme"
+import { cn } from "@/lib/utils"
 
 /** Brand pillar words scrolled as a marquee across the statement section */
 const BRAND_PILLARS = [
@@ -128,12 +129,22 @@ export function BrandStatementSection() {
             pauseOnHover
             className="[--duration:28s] [--gap:0rem] py-0"
           >
-            {BRAND_PILLARS.map((pillar) => (
+            {BRAND_PILLARS.map((pillar, idx) => (
               <div
                 key={pillar}
                 className="flex items-center gap-6 px-8 py-3 font-sans text-xs uppercase tracking-[0.24em] font-semibold text-muted-foreground"
               >
-                <span className="inline-block size-1.5 rounded-none bg-primary/40" aria-hidden="true" />
+                <span
+                  className={cn(
+                    "inline-block size-1.5 rounded-none",
+                    idx % 3 === 0
+                      ? "bg-primary"
+                      : idx % 3 === 1
+                      ? "bg-info"
+                      : "bg-status-delivered"
+                  )}
+                  aria-hidden="true"
+                />
                 <span>{pillar}</span>
               </div>
             ))}
@@ -159,9 +170,9 @@ export function BrandStatementSection() {
               sizes="(min-width: 1024px) 896px, 100vw"
             />
           </motion.div>
-          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-            <span>Custodial Discipline</span>
-            <span>Clarity · Dependability · Care</span>
+          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            <span className="font-medium">Custodial Discipline</span>
+            <span className="font-medium">Clarity · Dependability · Care</span>
           </div>
         </div>
       </div>

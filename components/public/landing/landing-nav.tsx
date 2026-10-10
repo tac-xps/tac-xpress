@@ -90,7 +90,7 @@ export function LandingNav() {
           >
             <Logo className="h-7 w-auto" />
           </Link>
-          <span className="hidden font-mono text-[11px] uppercase tracking-wider text-muted-foreground lg:inline-block">
+          <span className="hidden font-mono text-xs uppercase tracking-wider text-muted-foreground lg:inline-block border-l border-border/80 pl-4 py-0.5">
             Cargo &amp; Freight Desk
           </span>
         </div>

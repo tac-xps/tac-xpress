@@ -76,7 +76,7 @@ export function HeroSection() {
             }}
           >
             <SectionEyebrow className="mb-5 sm:mb-6">
-              Cargo · Dispatch & Linehaul Network
+              15+ Years Corridor Authority · Delhi ⇄ Northeast
             </SectionEyebrow>
           </motion.div>
 
@@ -87,7 +87,7 @@ export function HeroSection() {
             className="font-heading font-bold tracking-[-0.035em] text-foreground leading-[1.08] text-balance"
           >
             <motion.span
-              className="block"
+              className="block font-heading font-bold text-foreground"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
@@ -96,10 +96,10 @@ export function HeroSection() {
                 ease: motionEasings.hero,
               }}
             >
-              Move cargo.
+              15+ Years Logistics.
             </motion.span>
             <motion.span
-              className="block text-muted-foreground"
+              className="block font-heading font-bold bg-gradient-to-r from-primary via-primary/90 to-info bg-clip-text text-transparent"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
@@ -108,7 +108,7 @@ export function HeroSection() {
                 ease: motionEasings.hero,
               }}
             >
-              With clarity.
+              Delhi &amp; Northeast.
             </motion.span>
           </h1>
 
@@ -123,12 +123,12 @@ export function HeroSection() {
                 delay: 0.26,
                 ease: motionEasings.editorial,
               }}
-              className="max-w-[54ch] text-lead"
+              className="max-w-[56ch] text-lead"
             >
               <strong className="font-semibold text-foreground">
-                High-frequency linehaul connecting New Delhi and Northeast India.
+                Over 15 years of continuous freight linehaul connecting New Delhi and Northeast India.
               </strong>{" "}
-              Scheduled air and surface freight with statutory Air Waybill (AWB) issuance, optical gate scan audit trails, and dedicated controller support.
+              Scheduled commercial air belly-hold space, arterial surface transport, and statutory Air Waybill (AWB) compliance with optical gate scan audit trails and dedicated operations desk support.
             </motion.p>
           </div>
 
@@ -169,6 +169,31 @@ export function HeroSection() {
                 </Link>
               </Button>
             </motion.div>
+          </motion.div>
+
+          {/* 15+ Years Verified Corridor Telemetry Strip */}
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: motionDurations.reveal,
+              delay: 0.42,
+              ease: motionEasings.editorial,
+            }}
+            className="mt-8 pt-6 border-t border-border/70 grid grid-cols-3 gap-4 max-w-lg"
+          >
+            <div>
+              <span className="font-mono text-xl sm:text-2xl font-bold text-primary">15+</span>
+              <span className="block font-mono text-xs uppercase tracking-wider text-muted-foreground mt-0.5 font-medium">Years Active</span>
+            </div>
+            <div>
+              <span className="font-mono text-xl sm:text-2xl font-bold text-info">24–48h</span>
+              <span className="block font-mono text-xs uppercase tracking-wider text-muted-foreground mt-0.5 font-medium">Air SLA</span>
+            </div>
+            <div>
+              <span className="font-mono text-xl sm:text-2xl font-bold text-status-delivered">100%</span>
+              <span className="block font-mono text-xs uppercase tracking-wider text-muted-foreground mt-0.5 font-medium">AWB Custody</span>
+            </div>
           </motion.div>
         </motion.div>
 
@@ -221,12 +246,12 @@ export function HeroSection() {
               </div>
 
               {/* Architectural Caption Bar — static markup avoids SSR/hydration flicker */}
-              <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-mono text-[10px] tracking-wider uppercase text-muted-foreground">
+              <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-mono text-xs tracking-wider uppercase text-foreground/80">
                 <span className="flex items-center gap-2">
-                  <span className="inline-block size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
-                  <span>Scheduled dispatch · Daily routes</span>
+                  <span className="inline-block size-2 rounded-none bg-status-delivered" aria-hidden="true" />
+                  <span className="font-semibold text-foreground">15+ Years Delhi ⇄ Northeast</span>
                 </span>
-                <span>Monitored handover</span>
+                <span className="text-muted-foreground font-medium">Daily Scheduled Routes</span>
               </div>
             </div>
           </motion.div>

@@ -88,53 +88,63 @@ export function CareSection() {
 
           <div className="mt-6 border border-border/80 bg-card/60 p-4 space-y-2.5 font-mono text-xs shadow-2xs">
             <div className="flex items-center justify-between border-b border-border/60 pb-2">
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Linehaul SLA</span>
-              <span className="font-semibold text-foreground">100% Optical Gate Screening</span>
+              <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Linehaul SLA</span>
+              <span className="font-semibold text-primary">100% Optical Gate Screening</span>
             </div>
             <div className="flex items-center justify-between border-b border-border/60 pb-2">
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Signature Capture</span>
-              <span className="font-semibold text-foreground">&lt;120s Real-time POD Sync</span>
+              <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Signature Capture</span>
+              <span className="font-semibold text-info">&lt;120s Real-time POD Sync</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Custodial Protocol</span>
-              <span className="font-semibold text-foreground">Sealed Container Fleet</span>
+              <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Custodial Protocol</span>
+              <span className="font-semibold text-status-delivered">Sealed Container Fleet</span>
             </div>
           </div>
         </div>
 
         {/* Right Column: Four Operational Standards with Tonal Card Backing */}
         <div className="border border-border/80 bg-card/60 divide-y divide-border/70 lg:col-span-7">
-          {CARE_STANDARDS.map((std, idx) => (
-            <motion.div
-              key={std.stage}
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-20px" }}
-              transition={{
-                duration: motionDurations.reveal,
-                delay: idx * 0.08,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="p-5 sm:p-6 group transition-colors hover:bg-muted/20"
-            >
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="font-mono text-xs font-semibold text-primary">
-                    {std.stage}
-                  </span>
-                  <h3 className="font-heading text-lg font-semibold tracking-[-0.015em] text-foreground">
-                    {std.label}
-                  </h3>
+          {CARE_STANDARDS.map((std, idx) => {
+            const stageColors = [
+              "text-primary",
+              "text-info",
+              "text-status-pending",
+              "text-status-delivered",
+            ]
+            const stageColor = stageColors[idx % stageColors.length]
+
+            return (
+              <motion.div
+                key={std.stage}
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-20px" }}
+                transition={{
+                  duration: motionDurations.reveal,
+                  delay: idx * 0.08,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="p-5 sm:p-6 group transition-colors hover:bg-muted/20"
+              >
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className={`font-mono text-xs font-semibold ${stageColor}`}>
+                      {std.stage}
+                    </span>
+                    <h3 className="font-heading text-lg font-semibold tracking-[-0.015em] text-foreground">
+                      {std.label}
+                    </h3>
+                  </div>
+                  <p className="max-w-md text-body-editorial">
+                    <strong className="font-semibold text-foreground">
+                      {std.lead}{" "}
+                    </strong>
+                    <span>{std.detail}</span>
+                  </p>
                 </div>
-                <p className="max-w-md text-body-editorial">
-                  <strong className="font-semibold text-foreground">
-                    {std.lead}{" "}
-                  </strong>
-                  <span>{std.detail}</span>
-                </p>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            )
+          })}
         </div>
       </div>
     </EditorialContainer>

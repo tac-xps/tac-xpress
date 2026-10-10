@@ -21,11 +21,11 @@ export function EditorialEyebrow({ children, className, id }: EditorialEyebrowPr
     <div
       id={id}
       className={cn(
-        "inline-flex items-center gap-2 border border-border/80 bg-muted/40 px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.18em] font-medium text-foreground/80 select-none",
+        "inline-flex items-center gap-2 border border-border/80 bg-muted/50 px-3 py-1 font-mono text-xs uppercase tracking-[0.18em] font-medium text-foreground select-none",
         className
       )}
     >
-      <span className="inline-block size-1.5 rounded-none bg-primary" aria-hidden="true" />
+      <span className="inline-block size-2 rounded-none bg-primary" aria-hidden="true" />
       {children}
     </div>
   )
@@ -282,37 +282,59 @@ export function TheCargoLine({ className, variant = "hero" }: TheCargoLineProps)
 
 /** Verifiable operational capabilities shown in the proof strip */
 const PROOF_CLAIMS = [
-  { label: "Optical Gate Audit", detail: "Physical barcode scan trails" },
-  { label: "Arterial Linehaul", detail: "Scheduled commercial departures" },
-  { label: "Statutory Compliance", detail: "Air Waybills & GST e-way bills" },
-  { label: "Controller Support", detail: "Direct operations desk routing" },
+  { label: "15+ Years Linehaul", detail: "Delhi ⇄ Northeast corridor", colorClass: "text-primary" },
+  { label: "Optical Gate Audit", detail: "Physical barcode scan trails", colorClass: "text-info" },
+  { label: "Statutory Carriage", detail: "Air Waybills & GST e-way bills", colorClass: "text-status-delivered" },
+  { label: "Dedicated Dispatch", detail: "Direct operations desk routing", colorClass: "text-status-pending" },
 ]
 
-/** Route corridor names for the live network ticker */
-const NETWORK_ROUTES = [
-  "DEL → IMF · Air Cargo",
-  "DEL → GAU · Surface",
-  "DEL → IXB · Air Cargo",
-  "DEL → SHL · Surface",
-  "DEL → DMU · Air Cargo",
-  "DEL → DIB · Surface",
-  "DEL → CCU · Air Cargo",
-  "DEL → BBI · Surface",
-  "DEL → HYD · Air Cargo",
-  "DEL → COK · Surface",
-  "DEL → MAA · Air Cargo",
-  "DEL → BOM · Surface",
+/** Dedicated corridors requested: IMF to DEL, DEL to IMF, New Delhi – Northeast, Northeast to Imphal */
+const CORRIDOR_MARQUEE_ITEMS = [
+  {
+    corridor: "IMF to DEL",
+    tag: "Priority Air Express",
+    color: "text-primary",
+    dot: "bg-primary",
+    badge: "border-primary/40 bg-primary/10 text-primary",
+  },
+  {
+    corridor: "DEL to IMF",
+    tag: "Belly-Hold Linehaul",
+    color: "text-info",
+    dot: "bg-info",
+    badge: "border-info/40 bg-info/10 text-info",
+  },
+  {
+    corridor: "New Delhi – Northeast",
+    tag: "Arterial Highway Fleet",
+    color: "text-status-delivered",
+    dot: "bg-status-delivered",
+    badge: "border-status-delivered/40 bg-status-delivered/10 text-status-delivered",
+  },
+  {
+    corridor: "Northeast to Imphal",
+    tag: "Regional Station Delivery",
+    color: "text-status-pending",
+    dot: "bg-status-pending",
+    badge: "border-status-pending/40 bg-status-pending/10 text-status-pending",
+  },
+]
+
+/** Repeated corridors for smooth, uninterrupted continuous marquee */
+const REPEATED_CORRIDORS = [
+  ...CORRIDOR_MARQUEE_ITEMS,
+  ...CORRIDOR_MARQUEE_ITEMS,
+  ...CORRIDOR_MARQUEE_ITEMS,
 ]
 
 /**
  * Proof Strip — Immediate trust reinforcement beneath Hero,
- * plus a live route network marquee.
- * Verifiable service capabilities only; zero fabricated numerical metrics.
+ * plus a live route network marquee featuring the core corridors.
  */
 export function ProofStrip({ className }: { className?: string } = {}) {
   return (
     <div className={cn("w-full border-t border-border/80 bg-card/60 backdrop-blur-xs", className)}>
-      {/* Capability Row — Aligned with 1360px container, zero ghost side boxes */}
+      {/* Capability Row — Aligned with 1360px container */}
       <div className="mx-auto grid w-full max-w-[1360px] grid-cols-2 divide-y divide-border/80 border-b border-border/80 px-4 sm:px-6 lg:px-12 md:grid-cols-4 md:divide-x md:divide-y-0">
         {PROOF_CLAIMS.map((claim) => (
           <motion.div
@@ -321,17 +343,17 @@ export function ProofStrip({ className }: { className?: string } = {}) {
             transition={{ duration: 0.2 }}
             className="group flex flex-col justify-center py-3.5 sm:py-4 md:px-6 transition-colors hover:bg-muted/40"
           >
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground transition-colors group-hover:text-primary">
+            <span className={cn("font-mono text-xs font-bold uppercase tracking-[0.16em] transition-colors", claim.colorClass)}>
               {claim.label}
             </span>
-            <span className="mt-0.5 font-sans text-xs text-muted-foreground">
+            <span className="mt-0.5 font-sans text-xs text-muted-foreground font-medium">
               {claim.detail}
             </span>
           </motion.div>
         ))}
       </div>
 
-      {/* Live Network Route Marquee with Left & Right Gradient Fade Masks */}
+      {/* Live Corridor Marquee with Left & Right Gradient Fade Masks */}
       <div
         className="relative w-full max-w-full overflow-hidden bg-muted/20"
         aria-hidden="true"
@@ -342,16 +364,21 @@ export function ProofStrip({ className }: { className?: string } = {}) {
 
         <Marquee
           pauseOnHover
-          className="[--duration:35s] [--gap:0rem] py-0"
+          className="[--duration:28s] [--gap:0rem] py-0"
           aria-hidden="true"
         >
-          {NETWORK_ROUTES.map((route) => (
+          {REPEATED_CORRIDORS.map((item, idx) => (
             <div
-              key={route}
-              className="flex items-center gap-6 px-6 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+              key={`${item.corridor}-${idx}`}
+              className="flex items-center gap-3 px-6 py-2.5 font-mono text-xs uppercase tracking-[0.14em]"
             >
-              <span className="inline-block size-1 rounded-none bg-primary/60" aria-hidden="true" />
-              <span>{route}</span>
+              <span className={cn("inline-block size-2 rounded-none", item.dot)} aria-hidden="true" />
+              <span className={cn("font-bold text-xs sm:text-sm tracking-wide", item.color)}>
+                {item.corridor}
+              </span>
+              <span className={cn("border px-2 py-0.5 font-mono text-xs font-semibold tracking-wider", item.badge)}>
+                {item.tag}
+              </span>
             </div>
           ))}
         </Marquee>

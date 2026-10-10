@@ -47,7 +47,7 @@ export function LandingFooter() {
         {/* Top Editorial Callout */}
         <div className="mb-12 flex flex-col justify-between gap-6 border-b border-border/80 pb-10 md:flex-row md:items-end">
           <div>
-            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+            <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-semibold">
               Freight Commitment
             </span>
             <p className="mt-2 text-section text-foreground">
@@ -114,7 +114,7 @@ export function LandingFooter() {
             <span>·</span>
             <span>IATA Associated</span>
             <span>·</span>
-            <span>Delhi ⇄ Imphal Corridor</span>
+            <span className="text-primary font-medium">Delhi ⇄ Imphal Corridor</span>
           </div>
         </div>
       </div>

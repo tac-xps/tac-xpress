@@ -93,9 +93,20 @@ export function FAQSection() {
               >
                 <span
                   style={{ fontSize: "var(--type-sub)" }}
-                  className="pr-6 font-heading font-semibold tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary"
+                  className="pr-6 font-heading font-semibold tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary flex items-baseline"
                 >
-                  {faq.q}
+                  <span
+                    className={
+                      idx % 3 === 0
+                        ? "font-mono text-xs font-semibold text-primary mr-3.5 shrink-0"
+                        : idx % 3 === 1
+                        ? "font-mono text-xs font-semibold text-info mr-3.5 shrink-0"
+                        : "font-mono text-xs font-semibold text-status-delivered mr-3.5 shrink-0"
+                    }
+                  >
+                    0{idx + 1}
+                  </span>
+                  <span>{faq.q}</span>
                 </span>
                 <span className="mt-1 flex size-6 shrink-0 items-center justify-center border border-border bg-card text-muted-foreground transition-all group-hover:border-primary group-hover:text-primary group-data-[state=open]:rotate-45">
                   <Plus className="size-3.5" />

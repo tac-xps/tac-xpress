@@ -29,6 +29,9 @@ const SERVICES = [
     action: "Explore air cargo",
     tagline: "24–48h Gateway Linehaul",
     lead: "Scheduled airport departures.",
+    color: "text-primary",
+    accentBorder: "hover:border-t-primary",
+    badge: "border-primary/40 bg-primary/10 text-primary",
     description:
       "Guaranteed belly-hold allocation connecting Delhi NCR and Northeast India with statutory Air Waybill (AWB) issuance, BCAS security screening, and priority ramp handover.",
     specs: [
@@ -45,6 +48,9 @@ const SERVICES = [
     action: "Explore surface cargo",
     tagline: "National Arterial Expressways",
     lead: "Heavy multi-ton linehaul.",
+    color: "text-info",
+    accentBorder: "hover:border-t-info",
+    badge: "border-info/40 bg-info/10 text-info",
     description:
       "High-capacity container transport along dedicated highway corridors with optical gate checkpoint scans, sealed vehicle security, and scheduled hub cross-docking.",
     specs: [
@@ -61,6 +67,9 @@ const SERVICES = [
     action: "Read the shipping guide",
     tagline: "Unified First & Last Mile",
     lead: "Single-custody consignment.",
+    color: "text-status-delivered",
+    accentBorder: "hover:border-t-status-delivered",
+    badge: "border-status-delivered/40 bg-status-delivered/10 text-status-delivered",
     description:
       "End-to-end custody coordination from origin dock pickup through commercial destination handover, eliminating third-party handoffs with real-time digital proof of delivery.",
     specs: [
@@ -165,9 +174,9 @@ export function ServicesSection() {
           </motion.div>
 
           {/* Architectural caption bar */}
-          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-mono text-[10px] tracking-wider uppercase text-muted-foreground">
-            <span>Arterial Linehaul · Commercial Aviation</span>
-            <span className="hidden sm:inline">Delhi NCR Corridor · Northeast Expressways</span>
+          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-mono text-xs tracking-wider uppercase text-foreground/80">
+            <span className="font-semibold text-foreground">Arterial Linehaul · Commercial Aviation</span>
+            <span className="hidden sm:inline text-muted-foreground font-medium">Delhi NCR Corridor · Northeast Expressways</span>
           </div>
         </div>
 
@@ -181,15 +190,18 @@ export function ServicesSection() {
             return (
               <div
                 key={srv.num}
-                className="group flex flex-col justify-between p-6 sm:p-7 lg:p-8 bg-card/60 transition-all duration-300 hover:bg-card border-t-2 border-t-transparent hover:border-t-primary/70"
+                className={cn(
+                  "group flex flex-col justify-between p-6 sm:p-7 lg:p-8 bg-card/60 transition-all duration-300 hover:bg-card border-t-2 border-t-transparent",
+                  srv.accentBorder
+                )}
               >
                 <div>
-                  <div className="flex items-center justify-between font-mono text-xs">
-                    <span className="font-semibold text-primary">{srv.num}</span>
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                  <div className="flex items-center justify-between font-mono">
+                    <span className={cn("font-bold text-sm", srv.color)}>{srv.num}</span>
+                    <span className={cn("border px-2 py-0.5 font-mono text-xs uppercase tracking-wider font-semibold", srv.badge)}>
                       {srv.tagline}
                     </span>
-                    <Icon className="size-4 text-muted-foreground transition-colors group-hover:text-primary" />
+                    <Icon className={cn("size-4 text-muted-foreground transition-colors", `group-hover:${srv.color}`)} />
                   </div>
                   <h3
                     style={{ fontSize: "var(--type-sub)" }}
@@ -206,16 +218,16 @@ export function ServicesSection() {
                 </div>
 
                 <div className="mt-6 sm:mt-8 border-t border-border/70 pt-4">
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {srv.specs.map((spec) => (
                       <div
                         key={spec.label}
-                        className="flex items-center justify-between text-xs"
+                        className="flex items-center justify-between"
                       >
-                        <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground font-medium">
                           {spec.label}
                         </span>
-                        <span className="font-sans font-medium text-foreground">
+                        <span className="font-sans text-xs font-semibold text-foreground">
                           {spec.value}
                         </span>
                       </div>

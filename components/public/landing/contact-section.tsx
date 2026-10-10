@@ -46,22 +46,22 @@ export function ContactSection() {
             <div className="flex items-start gap-3">
               <Phone className="size-4 shrink-0 text-primary mt-0.5" />
               <div>
-                <span className="text-muted-foreground block font-sans uppercase tracking-wider text-[11px] font-semibold">
+                <span className="text-primary block font-sans uppercase tracking-wider text-xs font-semibold">
                   Dispatch Hotline
                 </span>
                 <span className="font-semibold text-foreground text-base">
                   +91 98561 73829
                 </span>
-                <span className="text-muted-foreground block font-mono text-[11px]">
+                <span className="text-muted-foreground block font-mono text-xs mt-0.5">
                   Mon – Sat · 08:00 to 20:00 IST
                 </span>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <Mail className="size-4 shrink-0 text-primary mt-0.5" />
+              <Mail className="size-4 shrink-0 text-info mt-0.5" />
               <div>
-                <span className="text-muted-foreground block font-sans uppercase tracking-wider text-[11px] font-semibold">
+                <span className="text-info block font-sans uppercase tracking-wider text-xs font-semibold">
                   Direct Electronic Inquiries
                 </span>
                 <span className="font-semibold text-foreground text-base">
@@ -71,16 +71,16 @@ export function ContactSection() {
             </div>
 
             <div className="flex items-start gap-3">
-              <MapPin className="size-4 shrink-0 text-primary mt-0.5" />
+              <MapPin className="size-4 shrink-0 text-status-delivered mt-0.5" />
               <div>
-                <span className="text-muted-foreground block font-sans uppercase tracking-wider text-[11px] font-semibold">
+                <span className="text-status-delivered block font-sans uppercase tracking-wider text-xs font-semibold">
                   Principal Gateway Stations
                 </span>
-                <span className="text-foreground block text-sm">
-                  Delhi Hub: Cargo Terminal 2, IGI Airport, New Delhi
+                <span className="text-foreground block text-sm mt-1">
+                  <strong className="text-primary font-medium">Delhi Hub:</strong> Cargo Terminal 2, IGI Airport, New Delhi
                 </span>
-                <span className="text-foreground block text-sm">
-                  Imphal Hub: RDS Station, Airport Road, Imphal
+                <span className="text-foreground block text-sm mt-0.5">
+                  <strong className="text-status-delivered font-medium">Imphal Hub:</strong> RDS Station, Airport Road, Imphal
                 </span>
               </div>
             </div>
