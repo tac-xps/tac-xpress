@@ -3,7 +3,6 @@
 import React from "react"
 import { motion, useReducedMotion } from "motion/react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
-import { NumberTicker } from "@/components/ui/number-ticker"
 import { motionDurations } from "@/lib/motion/motion.theme"
 
 const CARE_STANDARDS = [
@@ -60,30 +59,20 @@ export function CareSection() {
 
           <div className="mt-8 flex items-center gap-6 border-t border-border/80 pt-6">
             <div>
-              <div className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight text-foreground flex items-baseline">
-                {shouldReduceMotion ? (
-                  <span>99.4</span>
-                ) : (
-                  <NumberTicker value={99.4} decimalPlaces={1} />
-                )}
-                <span className="text-primary font-mono text-xl sm:text-2xl font-bold ml-0.5">%</span>
+              <div className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                Continuous Linehaul
               </div>
               <p className="mt-1 font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
-                Safe Custody Rate
+                Verified Custodial Chain
               </p>
             </div>
             <div className="h-8 w-px bg-border/80" />
             <div>
-              <div className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight text-foreground flex items-baseline">
-                {shouldReduceMotion ? (
-                  <span>100</span>
-                ) : (
-                  <NumberTicker value={100} />
-                )}
-                <span className="text-primary font-mono text-xl sm:text-2xl font-bold ml-0.5">%</span>
+              <div className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                Digital POD
               </div>
               <p className="mt-1 font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
-                Digital POD Capture
+                Physical Signature Capture
               </p>
             </div>
           </div>

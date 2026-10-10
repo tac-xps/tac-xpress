@@ -3,7 +3,6 @@
 import React from "react"
 import { motion, useReducedMotion } from "motion/react"
 import { cn } from "@/lib/utils"
-import { NumberTicker } from "@/components/ui/number-ticker"
 import { Marquee } from "@/components/ui/marquee"
 
 import Link from "next/link"
@@ -281,12 +280,12 @@ export function TheCargoLine({ className, variant = "hero" }: TheCargoLineProps)
   )
 }
 
-/** Operational stats shown in the proof strip */
-const PROOF_STATS = [
-  { value: 2400, suffix: "+", label: "Shipments handled", detail: "Across all corridors" },
-  { value: 98, suffix: "%", label: "On-time delivery", detail: "Historical average" },
-  { value: 340, suffix: "+", label: "Corridors served", detail: "Air & surface" },
-  { value: 24, suffix: "/7", label: "Operations desk", detail: "Direct controller" },
+/** Verifiable operational capabilities shown in the proof strip */
+const PROOF_CLAIMS = [
+  { label: "Clear Tracking", detail: "Real milestone events" },
+  { label: "Operations Desk", detail: "Direct controller desk" },
+  { label: "Arterial Transport", detail: "Air & surface linehaul" },
+  { label: "Secure Handling", detail: "Verified custodial chain" },
 ]
 
 /** Route corridor names for the live network ticker */
@@ -306,41 +305,27 @@ const NETWORK_ROUTES = [
 ]
 
 /**
- * Proof Strip — Animated trust reinforcement with NumberTicker statistics
- * below the hero, plus a live route network marquee.
+ * Proof Strip — Immediate trust reinforcement beneath Hero,
+ * plus a live route network marquee.
  * Verifiable service capabilities only; zero fabricated numerical metrics.
  */
 export function ProofStrip({ className }: { className?: string } = {}) {
-  const shouldReduceMotion = useReducedMotion()
-
   return (
     <div className={cn("w-full border-t border-border/80 bg-card/60 backdrop-blur-xs", className)}>
-      {/* Animated KPI Stats Row — Aligned with 1360px container, zero ghost side boxes */}
+      {/* Capability Row — Aligned with 1360px container, zero ghost side boxes */}
       <div className="mx-auto grid w-full max-w-[1360px] grid-cols-2 divide-y divide-border/80 border-b border-border/80 px-4 sm:px-6 lg:px-12 md:grid-cols-4 md:divide-x md:divide-y-0">
-        {PROOF_STATS.map((stat, idx) => (
+        {PROOF_CLAIMS.map((claim) => (
           <motion.div
-            key={stat.label}
+            key={claim.label}
             whileHover={{ y: -1 }}
             transition={{ duration: 0.2 }}
             className="group flex flex-col justify-center py-3.5 sm:py-4 md:px-6 transition-colors hover:bg-muted/40"
           >
-            <div className="flex items-baseline gap-0.5 font-heading font-semibold tracking-tight leading-none">
-              {shouldReduceMotion ? (
-                <span className="text-xl sm:text-2xl text-foreground">{stat.value}</span>
-              ) : (
-                <NumberTicker
-                  value={stat.value}
-                  delay={idx * 0.15}
-                  className="text-xl sm:text-2xl text-foreground transition-colors group-hover:text-primary"
-                />
-              )}
-              <span className="text-lg sm:text-xl text-primary">{stat.suffix}</span>
-            </div>
-            <span className="mt-1 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground transition-colors group-hover:text-primary">
-              {stat.label}
+            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground transition-colors group-hover:text-primary">
+              {claim.label}
             </span>
-            <span className="mt-0.5 font-sans text-[10px] text-muted-foreground">
-              {stat.detail}
+            <span className="mt-0.5 font-sans text-xs text-muted-foreground">
+              {claim.detail}
             </span>
           </motion.div>
         ))}
