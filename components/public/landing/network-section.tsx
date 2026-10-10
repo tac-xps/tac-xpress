@@ -74,7 +74,7 @@ export function NetworkSection() {
     <EditorialContainer
       id="network"
       aria-labelledby="network-heading"
-      className="py-12 sm:py-20 lg:py-24"
+      className="py-12 sm:py-20 lg:py-24 bg-muted/15"
     >
       <div ref={containerRef} className="space-y-10 lg:space-y-14">
         {/* Header */}
@@ -90,7 +90,8 @@ export function NetworkSection() {
           </div>
           <div className="md:col-span-4">
             <p className="text-lead max-w-[55ch]">
-              High-density sorting, dedicated arterial lanes, and regional gateway reconciliation ensure uninterrupted custody.
+              <strong className="font-semibold text-foreground">Dedicated freight infrastructure. </strong>
+              High-density sortation facilities, scheduled flight allocations, and regional gateway reconciliation ensure uninterrupted custody.
             </p>
           </div>
         </div>

@@ -112,7 +112,7 @@ export function ServicesSection() {
       ref={containerRef}
       id="services"
       aria-labelledby="services-heading"
-      className="py-12 sm:py-20 lg:py-24"
+      className="py-12 sm:py-20 lg:py-24 bg-muted/15"
     >
       <div className="flex flex-col space-y-10 lg:space-y-14">
         {/* Section Header */}
@@ -128,7 +128,8 @@ export function ServicesSection() {
           </div>
           <div className="md:col-span-4">
             <p className="text-lead max-w-[48ch]">
-              Choose a shipping option that fits your consignment, destination and timing.
+              <strong className="font-semibold text-foreground">Calibrated transit modalities. </strong>
+              Select high-priority commercial aviation or cost-optimized arterial linehaul matched to payload dimensions, destination cutoffs, and regulatory requirements.
             </p>
           </div>
         </div>

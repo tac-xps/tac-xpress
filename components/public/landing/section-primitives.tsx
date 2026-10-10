@@ -21,7 +21,7 @@ export function EditorialEyebrow({ children, className, id }: EditorialEyebrowPr
     <div
       id={id}
       className={cn(
-        "inline-flex items-center gap-2 text-eyebrow text-muted-foreground select-none",
+        "inline-flex items-center gap-2 border border-border/80 bg-muted/40 px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.18em] font-medium text-foreground/80 select-none",
         className
       )}
     >

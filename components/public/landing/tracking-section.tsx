@@ -135,7 +135,8 @@ export function TrackingSection() {
             A number. A clearer picture.
           </h2>
           <p className="mt-4 text-lead max-w-[56ch]">
-            Enter your tracking number to see the latest available shipment update.
+            <strong className="font-semibold text-foreground">Verified milestone telemetry. </strong>
+            Query statutory Air Waybill (AWB) or surface consignment numbers to review gate intake scans, hub cross-dock transfers, and departure manifests in real time.
           </p>
         </div>
 

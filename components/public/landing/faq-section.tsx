@@ -51,7 +51,7 @@ export function FAQSection() {
     <EditorialContainer
       id="faq"
       aria-labelledby="faq-heading"
-      className="relative overflow-hidden py-12 sm:py-20 lg:py-24"
+      className="relative overflow-hidden py-12 sm:py-20 lg:py-24 bg-muted/15 border-t border-border/80"
     >
       <GridPattern
         width={32}
@@ -70,6 +70,7 @@ export function FAQSection() {
             Questions, answered.
           </h2>
           <p className="mt-4 text-lead max-w-[55ch]">
+            <strong className="font-semibold text-foreground">Operational advisory. </strong>
             Clear guidelines on consignment booking procedures, corridor transit timelines, chargeable weight calculations, and statutory documentation rules.
           </p>
         </div>

@@ -62,7 +62,8 @@ export function CareSection() {
             Care begins with the details.
           </h2>
           <p className="mt-5 text-lead max-w-[50ch]">
-            Clear documentation. Careful handling. Help when you need it.
+            <strong className="font-semibold text-foreground">Strict handling protocols. </strong>
+            Standardized corrugated packaging, weatherproof barcode labeling, and multi-checkpoint custodial audits protect consignments across every transfer.
           </p>
 
           <div className="mt-8 flex items-center gap-6 border-t border-border/80 pt-6">
@@ -85,8 +86,19 @@ export function CareSection() {
             </div>
           </div>
 
-          <div className="mt-6 border-t border-border/80 pt-4 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-            <span>Verified Custody Chain · Zero Handling Ambiguity</span>
+          <div className="mt-6 border border-border/80 bg-card/60 p-4 space-y-2.5 font-mono text-xs shadow-2xs">
+            <div className="flex items-center justify-between border-b border-border/60 pb-2">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Linehaul SLA</span>
+              <span className="font-semibold text-foreground">100% Optical Gate Screening</span>
+            </div>
+            <div className="flex items-center justify-between border-b border-border/60 pb-2">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Signature Capture</span>
+              <span className="font-semibold text-foreground">&lt;120s Real-time POD Sync</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Custodial Protocol</span>
+              <span className="font-semibold text-foreground">Sealed Container Fleet</span>
+            </div>
           </div>
         </div>
 

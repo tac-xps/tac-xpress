@@ -114,7 +114,8 @@ export function ProcessSection() {
               </h2>
             </div>
             <p className="max-w-md text-lead md:text-right">
-              From consignment booking to handover.
+              <strong className="font-semibold text-foreground">Continuous chain-of-custody. </strong>
+              Four coordinated operational phases guarantee transparent statutory intake, manifest security clearance, linehaul dispatch, and signed destination handover.
             </p>
           </div>
 

@@ -13,6 +13,7 @@ import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { LivingCargoLine } from "./living-cargo-line"
 import { Marquee } from "@/components/ui/marquee"
 import { BorderBeam } from "@/components/ui/border-beam"
+import { GridPattern } from "@/components/ui/grid-pattern"
 import { motionDurations, motionEasings, motionSprings } from "@/lib/motion/motion.theme"
 
 /** Brand pillar words scrolled as a marquee across the statement section */
@@ -53,9 +54,15 @@ export function BrandStatementSection() {
     <EditorialContainer
       id="brand"
       aria-labelledby="brand-statement-heading"
-      className="py-12 sm:py-16 lg:py-20"
+      className="relative overflow-hidden py-14 sm:py-20 lg:py-24 bg-card/40 border-y border-border/80"
     >
-      <div ref={containerRef} className="mx-auto max-w-4xl text-center">
+      <GridPattern
+        width={32}
+        height={32}
+        strokeDasharray="4 4"
+        className="opacity-15 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]"
+      />
+      <div ref={containerRef} className="relative z-10 mx-auto max-w-4xl text-center">
         {/* Eyebrow & Final Cargo Line Endpoint */}
         <div className="flex flex-col items-center">
           <SectionEyebrow className="justify-center mb-3">
@@ -73,26 +80,25 @@ export function BrandStatementSection() {
             className="text-display text-foreground text-center"
           >
             <motion.span
-              className="block"
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+              className="block font-heading font-bold tracking-tight text-foreground"
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "0px" }}
+              viewport={{ once: true, amount: 0.1 }}
               transition={{
                 duration: motionDurations.statement,
-                delay: 0.08,
                 ease: motionEasings.editorial,
               }}
             >
               Every shipment
             </motion.span>
             <motion.span
-              className="block text-muted-foreground"
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+              className="block font-heading font-medium text-foreground/80"
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "0px" }}
+              viewport={{ once: true, amount: 0.1 }}
               transition={{
                 duration: motionDurations.statement,
-                delay: 0.2,
+                delay: 0.12,
                 ease: motionEasings.editorial,
               }}
             >
@@ -101,22 +107,23 @@ export function BrandStatementSection() {
           </h2>
 
           <motion.p
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "0px" }}
+            viewport={{ once: true, amount: 0.1 }}
             transition={{
               duration: motionDurations.editorial,
-              delay: 0.3,
+              delay: 0.2,
               ease: motionEasings.editorial,
             }}
-            className="mx-auto mt-4 sm:mt-5 max-w-[50ch] text-lead text-center"
+            className="mx-auto mt-5 max-w-[54ch] text-lead text-center"
           >
+            <strong className="font-semibold text-foreground">Operational purpose. </strong>
             Behind every consignment is essential enterprise: commercial supply continuity, critical regional inventory, and verified delivery custody.
           </motion.p>
         </div>
 
         {/* Brand Pillar Marquee — scrolling operational values */}
-        <div className="w-full max-w-full overflow-hidden mt-8 mb-2 border-y border-border/80" aria-hidden="true">
+        <div className="w-full max-w-full overflow-hidden mt-9 mb-3 border-y border-border/80 bg-background/50" aria-hidden="true">
           <Marquee
             pauseOnHover
             className="[--duration:28s] [--gap:0rem] py-0"
