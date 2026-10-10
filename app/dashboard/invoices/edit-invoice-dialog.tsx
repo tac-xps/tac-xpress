@@ -36,6 +36,7 @@ import { toast } from "sonner"
 import { Loader2, ReceiptText } from "lucide-react"
 import { updateFullInvoiceAction } from "./actions"
 import { cn } from "@/lib/utils"
+import { stripHtmlToPlainText } from "@/lib/sanitize"
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
 
@@ -68,20 +69,6 @@ function fromPaise(v: number | null | undefined) {
 }
 function toPaise(v: number) {
   return Math.round(v * 100)
-}
-function stripHtml(html?: string | null): string {
-  if (!html) return ""
-  return html
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/p>/gi, "\n")
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/gi, "'")
-    .trim()
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -135,7 +122,7 @@ export function EditInvoiceDialog({
       otherCharges: fromPaise(invoice.otherCharges),
       gstRate: invoice.gstRate ?? 0,
       advancePaid: fromPaise(invoice.advancePaid),
-      remarks: stripHtml(invoice.remarks),
+      remarks: stripHtmlToPlainText(invoice.remarks),
       shipmentId: invoice.shipment?.id ?? invoice.shipmentId ?? undefined,
       consignorName: invoice.shipment?.consignorName ?? "",
       consignorPhone: invoice.shipment?.consignorPhone ?? "",
@@ -158,7 +145,7 @@ export function EditInvoiceDialog({
       otherCharges: fromPaise(invoice.otherCharges),
       gstRate: invoice.gstRate ?? 0,
       advancePaid: fromPaise(invoice.advancePaid),
-      remarks: stripHtml(invoice.remarks),
+      remarks: stripHtmlToPlainText(invoice.remarks),
       shipmentId: invoice.shipment?.id ?? invoice.shipmentId ?? undefined,
       consignorName: invoice.shipment?.consignorName ?? "",
       consignorPhone: invoice.shipment?.consignorPhone ?? "",

@@ -61,7 +61,11 @@ export function CareSection() {
           <div className="mt-8 flex items-center gap-6 border-t border-border/80 pt-6">
             <div>
               <div className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight text-foreground flex items-baseline">
-                <NumberTicker value={99.4} decimalPlaces={1} />
+                {shouldReduceMotion ? (
+                  <span>99.4</span>
+                ) : (
+                  <NumberTicker value={99.4} decimalPlaces={1} />
+                )}
                 <span className="text-primary font-mono text-xl sm:text-2xl font-bold ml-0.5">%</span>
               </div>
               <p className="mt-1 font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
@@ -71,7 +75,11 @@ export function CareSection() {
             <div className="h-8 w-px bg-border/80" />
             <div>
               <div className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight text-foreground flex items-baseline">
-                <NumberTicker value={100} />
+                {shouldReduceMotion ? (
+                  <span>100</span>
+                ) : (
+                  <NumberTicker value={100} />
+                )}
                 <span className="text-primary font-mono text-xl sm:text-2xl font-bold ml-0.5">%</span>
               </div>
               <p className="mt-1 font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">

@@ -117,3 +117,30 @@ export function getVisibleText(content?: string | null): string {
     .replace(/&#39;/gi, "'")
     .trim()
 }
+
+/**
+ * Strips HTML formatting from legacy rich-text content while converting paragraph
+ * and break boundaries into newlines. If content does not match recognized HTML
+ * structural tags, it is treated as plain text and preserved verbatim (including
+ * mathematical comparisons like "< 500" or custom tokens like "<AWB123>").
+ */
+export function stripHtmlToPlainText(content?: string | null): string {
+  if (!content) return ""
+
+  // If content has no recognized HTML structural tags, preserve plain text as-is
+  if (!HTML_STRUCTURE_REGEX.test(content)) {
+    return content
+  }
+
+  return content
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .trim()
+}
