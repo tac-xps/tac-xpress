@@ -18,8 +18,6 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { motion, useReducedMotion } from "motion/react"
-import { springs } from "@/lib/animations"
 import { workspaceNavigation, isWorkspaceRouteActive } from "./navigation"
 
 export function AppSidebar({
@@ -28,7 +26,6 @@ export function AppSidebar({
 }: React.ComponentProps<typeof Sidebar> & { userRole?: string }) {
   const pathname = usePathname()
   const { setOpenMobile } = useSidebar()
-  const shouldReduceMotion = useReducedMotion()
   return (
     <Sidebar
       id="tour-sidebar"
@@ -74,7 +71,7 @@ export function AppSidebar({
                           asChild
                           tooltip={title}
                           isActive={isActive}
-                          className="relative z-10 h-9 font-normal data-[active=true]:font-medium transition-colors"
+                          className="relative h-9 font-normal transition-colors duration-150 data-[active=true]:bg-sidebar-primary/10 data-[active=true]:text-sidebar-primary data-[active=true]:font-medium data-[active=true]:before:absolute data-[active=true]:before:left-0 data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5 data-[active=true]:before:w-[3px] data-[active=true]:before:bg-sidebar-primary data-[active=true]:before:rounded-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-hidden"
                         >
                           <Link
                             href={href}
@@ -82,18 +79,13 @@ export function AppSidebar({
                             onClick={() => setOpenMobile(false)}
                             className="group/item flex items-center gap-2"
                           >
-                            <Icon className="size-4 shrink-0 transition-transform duration-150 group-hover/item:scale-110 group-hover/item:translate-x-0.5" />
+                            <Icon
+                              aria-hidden="true"
+                              className="size-4 shrink-0 transition-transform duration-150 group-hover/item:scale-110 group-hover/item:translate-x-0.5"
+                            />
                             <span>{title}</span>
                           </Link>
                         </SidebarMenuButton>
-                        {isActive && (
-                          <motion.span
-                            layoutId="active-sidebar-pill"
-                            className="absolute inset-0 rounded-none bg-accent/80 pointer-events-none z-0"
-                            transition={shouldReduceMotion ? { duration: 0 } : springs.smooth}
-                            aria-hidden="true"
-                          />
-                        )}
                       </SidebarMenuItem>
                     )
                   })}

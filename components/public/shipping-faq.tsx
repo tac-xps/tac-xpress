@@ -13,15 +13,15 @@ export function ShippingFaq() {
     <section className="border-t bg-background" aria-labelledby="faq-title">
       <div className="cargo-container cargo-section flex flex-col gap-8 md:flex-row md:items-start md:gap-20">
         <div className="shrink-0 md:sticky md:top-28 md:w-72">
-          <p className="cargo-eyebrow mb-5 text-muted-foreground">
+          <p className="text-eyebrow mb-5 text-muted-foreground">
             Before you send
           </p>
-          <h2 id="faq-title" className="cargo-heading">
+          <h2 id="faq-title" className="text-section">
             Questions,
             <br />
             answered.
           </h2>
-          <p className="mt-5 leading-relaxed text-muted-foreground">
+          <p className="text-body-editorial mt-5">
             Useful details about booking, tracking and preparing your goods.
           </p>
           <p className="mt-6 text-sm text-muted-foreground">

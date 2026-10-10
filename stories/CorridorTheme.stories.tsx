@@ -16,7 +16,7 @@ function CorridorDemoWorkbench() {
   ]
 
   return (
-    <div className="flex flex-col gap-6 max-w-xl p-6 rounded-xl border border-border bg-card shadow-sm">
+    <div className="flex flex-col gap-6 max-w-xl p-6 rounded-none border border-border bg-card shadow-sm">
       <div>
         <h3 className="text-lg font-semibold text-foreground">
           Dynamic OKLCH Corridor Theming
@@ -43,13 +43,13 @@ function CorridorDemoWorkbench() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="p-4 rounded-lg border border-border bg-muted/30">
+        <div className="p-4 rounded-none border border-border bg-muted/30">
           <span className="text-xs text-muted-foreground block">Active Corridor</span>
           <span className="text-sm font-semibold font-mono text-foreground">
             {origin && destination ? `${origin} → ${destination}` : "Default (DEL-IMF)"}
           </span>
         </div>
-        <div className="p-4 rounded-lg border border-border bg-muted/30">
+        <div className="p-4 rounded-none border border-border bg-muted/30">
           <span className="text-xs text-muted-foreground block">OKLCH Hue Angle</span>
           <span className="text-sm font-semibold font-mono text-foreground">
             {hue}°
@@ -57,7 +57,7 @@ function CorridorDemoWorkbench() {
         </div>
       </div>
 
-      <div className={`p-4 rounded-lg border ${corridorClasses.border} ${corridorClasses.bgSubtle} transition-colors duration-300`}>
+      <div className={`p-4 rounded-none border ${corridorClasses.border} ${corridorClasses.bgSubtle} transition-colors duration-300`}>
         <div className="flex items-center justify-between">
           <span className={`text-xs font-semibold uppercase tracking-wider ${corridorClasses.text}`}>
             Corridor Express Waybill

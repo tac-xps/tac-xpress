@@ -44,12 +44,12 @@ function KpiCard({
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-muted-foreground">{label}</p>
             <div
-              className={`flex size-9 items-center justify-center rounded-none transition-transform duration-200 group-hover:scale-110 group-hover:rotate-3 ${iconClassName}`}
+              className={`flex size-9 items-center justify-center rounded-none transition-colors duration-150 ${iconClassName}`}
             >
               {icon}
             </div>
           </div>
-          <p className="text-3xl font-bold tracking-tight tabular-nums text-foreground">
+          <p className="font-metric-xl text-foreground">
             <AnimatedCounter
               value={numericValue}
               prefix={prefix}

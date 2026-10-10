@@ -23,12 +23,13 @@ export function FlawlessExecutionsChart({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
-        <p className="text-4xl font-medium tabular-nums">
+        <p className="font-metric-xl text-foreground">
           {rate === null ? "No data" : `${rate.toFixed(1)}%`}
         </p>
         <Progress value={rate ?? 0} aria-label="On-time delivery percentage" />
-        <p className="text-sm">
-          {onTimeCount} of {deliveredCount} assessed deliveries
+        <p className="text-sm text-muted-foreground">
+          <span className="font-mono font-medium text-foreground">{onTimeCount.toLocaleString("en-IN")}</span> of{" "}
+          <span className="font-mono font-medium text-foreground">{deliveredCount.toLocaleString("en-IN")}</span> assessed deliveries
         </p>
         <p className="text-xs leading-relaxed text-muted-foreground">
           Compares the first delivered tracking event with the expected delivery

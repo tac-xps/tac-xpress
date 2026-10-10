@@ -271,7 +271,7 @@ export function AnalyticsSkeleton({ className }: { className?: string }) {
             <Skeleton className="h-3.5 w-56" />
           </div>
           <div className="flex items-center justify-center py-6">
-            <Skeleton className="size-44 rounded-full" />
+            <Skeleton className="size-44 rounded-none" />
           </div>
         </div>
       </div>

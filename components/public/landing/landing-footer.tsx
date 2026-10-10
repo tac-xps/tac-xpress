@@ -50,20 +50,15 @@ export function LandingFooter() {
             <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
               Freight Commitment
             </span>
-            <p
-              style={{ fontSize: "var(--type-section)" }}
-              className="mt-2 font-heading font-medium tracking-tight text-balance text-foreground leading-[1.06]"
-            >
-              Move cargo.
-              <br />
-              <span className="text-muted-foreground/80">With clarity.</span>
+            <p className="mt-2 text-section text-foreground">
+              Move cargo. With clarity.
             </p>
           </div>
           <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
             <Button
               asChild
               size="lg"
-              className="w-fit rounded-none bg-primary px-6 font-mono text-xs font-semibold uppercase tracking-wider text-primary-foreground hover:bg-primary/90"
+              className="w-fit rounded-none bg-primary px-6 font-sans text-sm font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90"
             >
               <Link href="#contact">
                 Start a shipment inquiry
@@ -84,7 +79,7 @@ export function LandingFooter() {
               Direct scheduled linehaul connecting New Delhi and Northeast India through
               thoughtful air and surface freight custody.
             </p>
-            <p className="mt-4 font-mono text-xs text-muted-foreground">
+            <p className="mt-4 font-sans text-xs text-muted-foreground font-medium">
               Your cargo. Our continuous responsibility.
             </p>
           </div>
@@ -92,7 +87,7 @@ export function LandingFooter() {
           {/* Links Columns */}
           {FOOTER_GROUPS.map((grp) => (
             <div key={grp.title}>
-              <h4 className="font-mono text-[11px] uppercase tracking-wider text-foreground">
+              <h4 className="font-sans text-xs uppercase tracking-wider text-foreground font-semibold">
                 {grp.title}
               </h4>
               <ul className="mt-4 space-y-2.5 text-sm">

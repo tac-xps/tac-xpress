@@ -31,6 +31,7 @@
     "@ss-components": "https://shadcnstudio.com/r/components/{name}.json",
     "@ss-blocks": "https://shadcnstudio.com/r/blocks/{name}.json",
     "@tac-xpress": "./.registry/{name}.json",
-    "@kibo-ui": "https://www.kibo-ui.com/r/{name}.json"
+    "@kibo-ui": "https://www.kibo-ui.com/r/{name}.json",
+    "@magicui": "https://magicui.design/r/{name}.json"
   }
 }

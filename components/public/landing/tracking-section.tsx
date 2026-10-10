@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState, useTransition } from "react"
-import Image from "next/image"
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import {
   Search,
@@ -10,13 +9,14 @@ import {
   Circle,
   AlertCircle,
   Loader2,
-  FileText,
   ShieldCheck,
+  Package,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { LivingCargoLine } from "./living-cargo-line"
+import { BorderBeam } from "@/components/ui/border-beam"
 import {
   motionDurations,
   motionEasings,
@@ -122,111 +122,146 @@ export function TrackingSection() {
       aria-labelledby="tracking-heading"
       className="py-12 sm:py-20 lg:py-24"
     >
-      <div id="shipment-desk" className="space-y-10 lg:space-y-14">
+      <div id="shipment-desk" className="space-y-10 lg:space-y-12">
         {/* Section Header */}
         <div className="max-w-2xl">
           <SectionEyebrow className="mb-4">
-            02 Visibility · Real-Time Consignment Intel
+            Consignment Console · Milestone Verification
           </SectionEyebrow>
           <h2
             id="tracking-heading"
-            style={{ fontSize: "var(--type-section)" }}
-            className="font-heading font-medium tracking-tight text-foreground leading-[1.06] text-balance"
+            className="text-section text-foreground"
           >
-            A number.
-            <br />
-            <span className="text-muted-foreground/90">A clearer picture.</span>
+            A number. A clearer picture.
           </h2>
-          <p className="mt-4 text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty">
-            Recorded milestone visibility from physical intake scan to final doorstep signature.
-            Every custody transition is logged with location, timestamp, and personnel sign-off.
+          <p className="mt-4 text-lead max-w-[56ch]">
+            Enter your tracking number to see the latest available shipment update.
           </p>
         </div>
 
-        {/* Dual Column Layout: Mobile prioritizes console first, desktop side-by-side */}
-        <div className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-12 lg:gap-10">
-          {/* Left: Physical Logistics Custody Overview (Order 2 on mobile, Order 1 on desktop) */}
-          <div className="order-2 flex flex-col justify-between overflow-hidden border border-border/80 bg-card lg:order-1 lg:col-span-5">
-            <div className="relative aspect-4/3 w-full overflow-hidden">
-              <Image
-                src="/images/logistics/network.webp"
-                alt="IGI Air Cargo terminal apron with cargo container dollies and linehaul transport"
-                fill
-                className="object-cover select-none"
-                sizes="(min-width: 1024px) 42vw, 100vw"
-              />
-            </div>
-            <div className="space-y-4 border-t border-border/80 bg-background/95 p-5 sm:p-6 font-mono text-xs">
-              <div className="flex items-center justify-between uppercase tracking-wider text-muted-foreground">
-                <span className="flex items-center gap-2">
-                  <ShieldCheck className="size-4 text-primary" />
-                  Physical Custody
-                </span>
-                <span>Gate Bay 14</span>
-              </div>
-              <p className="font-sans text-xs leading-relaxed text-muted-foreground">
-                Consignments are scanned at primary apron gates, linehaul transfer nodes, and destination sorting stations with verifiable custody audit trails.
-              </p>
-              <div className="border-t border-border/60 pt-3 text-[11px] text-muted-foreground">
-                <span className="text-foreground">Sample Reference:</span> TAC-2409-18472 (Air Linehaul)
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Primary Tracking Console (Order 1 on mobile, Order 2 on desktop) */}
-          <div className="order-1 flex flex-col justify-between border border-border/80 bg-card p-4 sm:p-7 lg:order-2 lg:col-span-7 shadow-xs">
-            <div>
-              {/* Form Input with Restrained Focus State */}
+        {/* Dedicated Two-Column Product Interface */}
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-10">
+          {/* Left Column: Search Form & Consignment Profile (lg:col-span-5) */}
+          <div className="space-y-6 lg:col-span-5">
+            <div className="relative border border-border/80 bg-card p-5 sm:p-7 shadow-xs">
+              <BorderBeam size={60} duration={8} colorFrom="var(--color-primary)" colorTo="transparent" borderWidth={1} />
               <form
                 action="/track"
                 method="get"
                 aria-label="Track your shipment"
                 onSubmit={handleTrackSubmit}
-                className="space-y-3"
+                className="space-y-4"
               >
                 <label
                   htmlFor="home-awb"
-                  className="block font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-medium"
+                  className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-semibold"
                 >
-                  AWB / shipment reference
+                  AWB / tracking number
                 </label>
-                <div className="flex gap-2">
-                  <div
-                    className={`relative flex-1 border transition-colors ${
-                      isFocused ? "border-primary" : "border-border"
-                    }`}
-                  >
-                    <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="home-awb"
-                      name="awb"
-                      aria-label="AWB / shipment reference"
-                      value={awbInput}
-                      onFocus={() => setIsFocused(true)}
-                      onBlur={() => setIsFocused(false)}
-                      onChange={(e) => setAwbInput(e.target.value)}
-                      placeholder="e.g. TAC-2409-18472"
-                      className="border-0 bg-background pl-9 font-mono text-sm tracking-wide text-foreground uppercase placeholder:normal-case focus-visible:ring-0"
-                    />
-                  </div>
+                <div
+                  className={`relative flex items-center border bg-background transition-colors ${
+                    isFocused ? "border-primary ring-1 ring-primary/40" : "border-border/80"
+                  }`}
+                >
+                  <Search className="absolute left-3.5 size-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    id="home-awb"
+                    name="awb"
+                    aria-label="AWB / tracking number"
+                    value={awbInput}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    onChange={(e) => setAwbInput(e.target.value)}
+                    placeholder="Enter shipment number"
+                    className="h-11 border-0 bg-transparent pl-10 pr-3 font-mono text-sm tracking-wide text-foreground uppercase placeholder:normal-case focus-visible:ring-0"
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
                   <motion.div {...tactileInteraction}>
                     <Button
                       type="submit"
                       disabled={isPending}
-                      className="rounded-none bg-primary px-4 sm:px-6 font-mono text-xs uppercase tracking-wider text-primary-foreground hover:bg-primary/90"
+                      className="rounded-none bg-primary px-6 font-sans text-xs font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90"
                     >
                       {isPending ? (
                         <>
                           <Loader2 className="mr-1.5 size-3.5 animate-spin" />
-                          Verifying...
+                          Verifying…
                         </>
                       ) : (
                         "Track shipment"
                       )}
                     </Button>
                   </motion.div>
+
+                  <button
+                    type="button"
+                    onClick={handleResetToSample}
+                    className="font-sans text-xs text-muted-foreground hover:text-foreground underline underline-offset-4"
+                  >
+                    Reset sample
+                  </button>
                 </div>
               </form>
+
+              {/* Active Consignment Meta Details */}
+              <div className="mt-6 border-t border-border/80 pt-5 space-y-4 font-mono text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    Active reference
+                  </span>
+                  <span className="font-semibold text-foreground">{activeAwb}</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 border-y border-border/60 py-3 text-[11px]">
+                  <div>
+                    <span className="block text-[10px] uppercase text-muted-foreground font-medium">Corridor</span>
+                    <span className="text-foreground">
+                      {liveData ? `${liveData.origin} → ${liveData.destination}` : "Delhi (DEL) → Imphal (IMF)"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="block text-[10px] uppercase text-muted-foreground font-medium">Service mode</span>
+                    <span className="text-foreground">
+                      {liveData ? liveData.service : "Air Express · Priority"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                    <ShieldCheck className="size-3.5 text-status-delivered" />
+                    Custodial chain verified
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 border border-status-transit/30 bg-status-transit/10 px-2 py-0.5 text-[10px] font-medium text-status-transit">
+                    <span className="size-1 bg-status-transit" />
+                    {liveData ? liveData.status.toUpperCase() : "IN TRANSIT"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Milestone Log & Progress Console (lg:col-span-7) */}
+          <div className="relative border border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-xs">
+            <BorderBeam size={80} duration={10} colorFrom="var(--color-primary)" colorTo="transparent" delay={3} borderWidth={1} />
+            <div>
+              <div className="flex items-center justify-between border-b border-border/80 pb-4">
+                <div>
+                  <h3 className="font-heading text-lg font-medium tracking-tight text-foreground">
+                    Milestone audit trail
+                  </h3>
+                  <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
+                    {isSample ? "5 recorded optical scan events" : "Physical gate milestone sequence"}
+                  </p>
+                </div>
+                {isSample && (
+                  <span className="border border-border bg-muted/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    Sample preview
+                  </span>
+                )}
+              </div>
 
               {/* AnimatePresence for Smooth State Progression */}
               <AnimatePresence mode="wait">
@@ -265,58 +300,15 @@ export function TrackingSection() {
                     animate={{ y: 0 }}
                     exit={{ y: -6 }}
                     transition={{ duration: motionDurations.control }}
-                    className="mt-6 border-t border-border/80 pt-6"
+                    className="mt-4"
                   >
-                    {/* Header Row */}
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                            Consignment Reference
-                          </span>
-                          {isSample && (
-                            <span className="border border-border bg-muted/60 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
-                              Sample Preview
-                            </span>
-                          )}
-                        </div>
-                        <p className="font-mono text-base font-semibold text-foreground">
-                          {activeAwb}
-                        </p>
-                      </div>
-                      <span className="inline-flex items-center gap-1.5 border border-status-transit/30 bg-status-transit/10 px-2.5 py-1 font-mono text-xs font-medium text-status-transit">
-                        <span className="size-1.5 rounded-none bg-status-transit" />
-                        {liveData ? liveData.status.toUpperCase() : "IN TRANSIT"}
-                      </span>
-                    </div>
-
                     {/* Living Cargo Progress Line */}
-                    <div className="mt-3">
+                    <div className="mb-6">
                       <LivingCargoLine variant="rule" />
                     </div>
 
-                    {/* Corridor & Service Specs */}
-                    <div className="mt-4 grid grid-cols-2 gap-4 border-y border-border/60 py-3 font-mono text-[11px] text-muted-foreground">
-                      <div>
-                        <span className="block text-[10px] uppercase text-muted-foreground font-medium">
-                          Corridor
-                        </span>
-                        <span className="text-foreground">
-                          {liveData ? `${liveData.origin} → ${liveData.destination}` : "DEL → IMF"}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="block text-[10px] uppercase text-muted-foreground font-medium">
-                          Modality / Weight
-                        </span>
-                        <span className="text-foreground">
-                          {liveData ? liveData.service : "Air Express · 34.5 kg"}
-                        </span>
-                      </div>
-                    </div>
-
                     {/* Progressive Milestone Resolution */}
-                    <div className="mt-6 space-y-4">
+                    <div className="space-y-4">
                       {isPending ? (
                         <div className="flex items-center gap-2 py-6 text-xs text-muted-foreground">
                           <Loader2 className="size-4 animate-spin" />

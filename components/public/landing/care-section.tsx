@@ -1,142 +1,120 @@
 "use client"
 
-import React, { useRef } from "react"
-import Image from "next/image"
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useSpring,
-  useReducedMotion,
-} from "motion/react"
+import React from "react"
+import { motion, useReducedMotion } from "motion/react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
-import { motionDurations, motionSprings } from "@/lib/motion/motion.theme"
+import { NumberTicker } from "@/components/ui/number-ticker"
+import { motionDurations } from "@/lib/motion/motion.theme"
 
-const CARE_ROWS = [
+const CARE_STANDARDS = [
   {
     stage: "01",
     label: "Packaging",
-    detail: "Double-wall corrugated cartons with impact-dampening interior cushioning.",
+    detail: "Double-wall corrugated cartons with impact-dampening interior cushioning for fragile and sensitive cargo.",
   },
   {
     stage: "02",
     label: "Handling",
-    detail: "Strict weight distribution rules, pallet securement, and specialized orientation.",
+    detail: "Strict weight distribution rules, pallet securement, and orientation controls throughout linehaul transit.",
   },
   {
     stage: "03",
     label: "Documentation",
-    detail: "Statutory GST invoices, E-Way bills, and airway manifests audited before dispatch.",
+    detail: "Statutory GST invoices, E-Way bills, and airway carriage documentation audited prior to corridor dispatch.",
   },
   {
     stage: "04",
-    label: "Delivery",
-    detail: "Digital recipient signature, physical condition verification, and instant consignor receipt.",
+    label: "Handover",
+    detail: "Recipient signature verification, package condition sign-off, and instantaneous digital proof-of-delivery.",
   },
 ]
 
 /**
- * Custody and care section detailing the 4 operational packaging and handling standards
- * alongside physical handover documentation.
+ * Custody and care section presenting operational packaging, handling,
+ * and handover standards with clean editorial rules and generous breathing room.
  */
 export function CareSection() {
-  const containerRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = useReducedMotion()
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  })
-
-  const smoothProgress = useSpring(scrollYProgress, motionSprings.springScroll)
-
-  // Subtle focal crop shift on Brand-and-Care.webp as user scrolls through care points
-  const imageScale = useTransform(smoothProgress, [0.1, 0.7], [1.02, 1.0])
-  const imageY = useTransform(smoothProgress, [0.1, 0.7], [4, -4])
 
   return (
     <EditorialContainer
       id="delivery-chapter"
       aria-labelledby="care-heading"
-      className="py-12 sm:py-20 lg:py-24"
+      className="py-14 sm:py-20 lg:py-28"
     >
-      <div ref={containerRef} className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-16">
-        {/* Left Column: Focused Master Illustration (Brand-and-Care.webp) */}
+      <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-16">
+        {/* Left Column: Editorial Statement */}
         <div className="lg:col-span-5">
-          <div className="relative overflow-hidden border border-border/80 bg-card shadow-sm">
-            <motion.div
-              style={
-                shouldReduceMotion
-                  ? undefined
-                  : { scale: imageScale, y: imageY }
-              }
-              className="relative aspect-4/3 w-full overflow-hidden"
-            >
-              <Image
-                src="/images/logistics/Brand-and-Care.webp"
-                alt="Contemporary Asian logistics courier delivering sealed consignment directly to client at commercial entrance"
-                fill
-                className="object-cover select-none"
-                sizes="(min-width: 1024px) 42vw, 100vw"
-              />
-            </motion.div>
-            <div className="flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-              <span>Direct Custodial Handover</span>
-              <span className="hidden sm:inline">Physical Signature Receipt</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Editorial Focus & Restrained Horizontal Line Reveals */}
-        <div className="flex flex-col justify-center lg:col-span-7">
           <SectionEyebrow className="mb-4">
-            04 Delivery · Quality of Custody
+            Custody &amp; Handling Standards
           </SectionEyebrow>
           <h2
             id="care-heading"
-            style={{ fontSize: "var(--type-section)" }}
-            className="font-heading font-medium tracking-tight text-foreground leading-[1.06] text-balance"
+            className="text-section text-foreground"
           >
-            Care begins
-            <br />
-            <span className="text-muted-foreground/90">with the details.</span>
+            Care begins with the details.
           </h2>
-          <p className="mt-4 max-w-xl text-sm sm:text-base leading-relaxed text-muted-foreground font-normal text-pretty">
-            Cargo is not simply freight in motion; it is trust in physical form. Every
-            handover is measured by the discipline of each operational step.
+          <p className="mt-5 text-lead max-w-[50ch]">
+            Clear documentation. Careful handling. Help when you need it.
           </p>
 
-          {/* Four Care Rows: Fine Horizontal Rule Reveals */}
-          <div className="mt-10 space-y-5">
-            {CARE_ROWS.map((row, idx) => (
-              <motion.div
-                key={row.label}
-                initial={shouldReduceMotion ? false : { opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-20px" }}
-                transition={{
-                  duration: motionDurations.reveal,
-                  delay: idx * 0.1,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="border-t border-border/80 pt-3.5"
-              >
-                <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-xs font-semibold text-primary">
-                      {row.stage}
-                    </span>
-                    <h3 className="font-heading text-base font-medium text-foreground">
-                      {row.label}
-                    </h3>
-                  </div>
-                  <p className="font-sans text-xs sm:text-sm text-muted-foreground sm:max-w-md sm:text-right">
-                    {row.detail}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+          <div className="mt-8 flex items-center gap-6 border-t border-border/80 pt-6">
+            <div>
+              <div className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight text-foreground flex items-baseline">
+                <NumberTicker value={99.4} decimalPlaces={1} />
+                <span className="text-primary font-mono text-xl sm:text-2xl font-bold ml-0.5">%</span>
+              </div>
+              <p className="mt-1 font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
+                Safe Custody Rate
+              </p>
+            </div>
+            <div className="h-8 w-px bg-border/80" />
+            <div>
+              <div className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight text-foreground flex items-baseline">
+                <NumberTicker value={100} />
+                <span className="text-primary font-mono text-xl sm:text-2xl font-bold ml-0.5">%</span>
+              </div>
+              <p className="mt-1 font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
+                Digital POD Capture
+              </p>
+            </div>
           </div>
+
+          <div className="mt-6 border-t border-border/80 pt-4 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+            <span>Verified Custody Chain · Zero Handling Ambiguity</span>
+          </div>
+        </div>
+
+        {/* Right Column: Four Operational Standards with Thin Hairlines */}
+        <div className="divide-y divide-border/80 border-y border-border/80 lg:col-span-7">
+          {CARE_STANDARDS.map((std, idx) => (
+            <motion.div
+              key={std.stage}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-20px" }}
+              transition={{
+                duration: motionDurations.reveal,
+                delay: idx * 0.08,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="py-5 sm:py-6 first:pt-4 last:pb-4 group transition-colors hover:bg-muted/10"
+            >
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-xs font-semibold text-primary">
+                    {std.stage}
+                  </span>
+                  <h3 className="font-heading text-lg font-semibold tracking-[-0.015em] text-foreground">
+                    {std.label}
+                  </h3>
+                </div>
+                <p className="max-w-md text-body-editorial">
+                  {std.detail}
+                </p>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </EditorialContainer>

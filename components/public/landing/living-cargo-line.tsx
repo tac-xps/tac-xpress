@@ -102,10 +102,10 @@ export function LivingCargoLine({
                 {/* Waypoint Dot */}
                 <div
                   className={cn(
-                    "flex size-3 items-center justify-center rounded-full bg-background transition-colors duration-200",
+                    "flex size-3 items-center justify-center rounded-none bg-background transition-colors duration-200",
                     isCompleted
                       ? "text-primary"
-                      : "text-muted-foreground/60"
+                      : "text-muted-foreground"
                   )}
                 >
                   <motion.div
@@ -115,7 +115,7 @@ export function LivingCargoLine({
                         : undefined
                     }
                     className={cn(
-                      "size-1.5 rounded-full transition-colors duration-200",
+                      "size-1.5 rounded-none transition-colors duration-200",
                       isCompleted ? "bg-primary" : "border border-border bg-muted/60"
                     )}
                   />
@@ -126,7 +126,7 @@ export function LivingCargoLine({
                   <span
                     className={cn(
                       "font-semibold transition-colors duration-200",
-                      isCompleted ? "text-primary" : "text-muted-foreground/60"
+                      isCompleted ? "text-primary" : "text-muted-foreground"
                     )}
                   >
                     {step.number}
@@ -134,7 +134,7 @@ export function LivingCargoLine({
                   <span
                     className={cn(
                       "transition-colors duration-200",
-                      isCompleted ? "text-foreground" : "text-muted-foreground/60"
+                      isCompleted ? "text-foreground" : "text-muted-foreground"
                     )}
                   >
                     {step.label}

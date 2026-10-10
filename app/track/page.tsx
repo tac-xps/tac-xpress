@@ -30,9 +30,9 @@ export default async function TrackingPage({
         className="mx-auto w-full max-w-3xl flex-1 px-4 py-12 sm:px-8 sm:py-16"
       >
         <div className="mb-8 flex flex-col gap-4">
-          <p className="text-sm font-medium text-primary">From here to there</p>
-          <h1 className="cargo-heading">Where is your cargo?</h1>
-          <p className="text-muted-foreground">
+          <p className="text-eyebrow text-primary">From here to there</p>
+          <h1 className="text-section">Where is your cargo?</h1>
+          <p className="text-body-editorial">
             Use the AWB number on your receipt to see your latest recorded
             shipment updates.
           </p>

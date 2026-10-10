@@ -53,8 +53,8 @@ export function FleetUtilizationChart({
     <Card className="col-span-1 overflow-hidden md:col-span-2">
       <CardHeader className="flex flex-col items-stretch border-b border-border p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-5">
-          <CardTitle className="text-base font-semibold tracking-tight">
-            Fleet Availability Snapshot
+          <CardTitle>
+            Fleet availability snapshot
           </CardTitle>
           <CardDescription>
             Current operational split across managed vehicles and the wider
@@ -81,14 +81,14 @@ export function FleetUtilizationChart({
               onClick={() => setActiveChart(item.key)}
               type="button"
             >
-              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <span className="text-xs font-medium text-muted-foreground">
                 {chartConfig[item.key].label}
               </span>
-              <span className="text-xl leading-none font-bold text-foreground sm:text-3xl">
-                {item.total.toLocaleString()}
+              <span className="font-metric-xl text-foreground">
+                {item.total.toLocaleString("en-IN")}
               </span>
-              <span className="text-xs text-muted-foreground">
-                {item.operational.toLocaleString()} operational
+              <span className="font-mono text-xs text-muted-foreground">
+                {item.operational.toLocaleString("en-IN")} operational
               </span>
             </button>
           ))}

@@ -11,17 +11,17 @@ export function HomeSupport() {
     >
       <div className="cargo-container cargo-section grid items-start gap-10 lg:grid-cols-12 lg:gap-16">
         <div className="flex flex-col gap-6 lg:col-span-5">
-          <p className="text-sm font-mono uppercase tracking-wider font-semibold text-primary">
+          <p className="text-eyebrow text-primary">
             Let’s talk cargo
           </p>
-          <h2 id="support-title" className="cargo-heading">
+          <h2 id="support-title" className="text-section">
             A person to help
             <br />
             <span className="bg-gradient-to-r from-foreground via-foreground/90 to-primary bg-clip-text text-transparent">
               with the next step.
             </span>
           </h2>
-          <p className="max-w-md leading-relaxed text-muted-foreground text-sm">
+          <p className="max-w-md text-body-editorial">
             Planning a shipment, checking on a delivery, or sorting out an
             invoice? Tell us what you need. Include your AWB number if you have
             one.
@@ -40,7 +40,7 @@ export function HomeSupport() {
           className="min-w-0 lg:col-span-7 flex justify-start lg:justify-end"
         >
           <div className="w-full max-w-xl">
-            <TicketForm className="[border-image:linear-gradient(135deg,var(--primary),var(--border)_60%,transparent)1]" />
+            <TicketForm hideHeader className="[border-image:linear-gradient(135deg,var(--primary),var(--border)_60%,transparent)1]" />
           </div>
         </div>
       </div>

@@ -125,6 +125,33 @@ describe("RichTextEditor Component", () => {
     const textbox = container.querySelector('[role="textbox"]')
     expect(textbox?.getAttribute("aria-label")).toBe("Enter invoice notes")
   })
+
+  it("provides accessible toolbar role and formatting aria-pressed attributes", () => {
+    act(() => {
+      root.render(<RichTextEditor value="<p>Test content</p>" />)
+    })
+    const toolbar = container.querySelector('[data-slot="rich-text-toolbar"]')
+    expect(toolbar?.getAttribute("role")).toBe("toolbar")
+    expect(toolbar?.getAttribute("aria-label")).toBe("Text formatting")
+
+    const boldBtn = container.querySelector('button[aria-label="Bold (Ctrl+B)"]')
+    expect(boldBtn).not.toBeNull()
+    expect(boldBtn?.getAttribute("aria-pressed")).toBe("false")
+
+    const underlineBtn = container.querySelector('button[aria-label="Underline (Ctrl+U)"]')
+    expect(underlineBtn).not.toBeNull()
+    expect(underlineBtn?.getAttribute("aria-pressed")).toBe("false")
+  })
+
+  it("renders full variant specific tools only when variant='full'", () => {
+    act(() => {
+      root.render(<RichTextEditor variant="full" />)
+    })
+    const tableBtn = container.querySelector('button[aria-label="Insert Table (3x3)"]')
+    const taskBtn = container.querySelector('button[aria-label="Task Checklist"]')
+    expect(tableBtn).not.toBeNull()
+    expect(taskBtn).not.toBeNull()
+  })
 })
 
 describe("Sanitizer & Renderer security improvements", () => {

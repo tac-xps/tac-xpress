@@ -33,12 +33,12 @@ export default async function ServicePage({ params }: Props) {
       <section className="border-y bg-card">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-8 md:grid-cols-2 md:gap-20">
           <div>
-            <h2 className="text-3xl font-medium tracking-tight">
+            <h2 className="text-section">
               Before we arrange
               <br />
               the journey.
             </h2>
-            <p className="mt-6 max-w-md leading-relaxed text-muted-foreground">
+            <p className="mt-6 max-w-md text-body-editorial">
               The right service starts with accurate information. Our team
               reviews the consignment before confirming acceptance, charges and
               the movement plan.
@@ -54,8 +54,8 @@ export default async function ServicePage({ params }: Props) {
               ["How to prepare", item.preparation],
             ].map(([label, text]) => (
               <div key={label} className="border-t pt-5">
-                <dt className="text-xl font-medium">{label}</dt>
-                <dd className="mt-3 leading-relaxed text-muted-foreground">
+                <dt className="text-subhead">{label}</dt>
+                <dd className="mt-3 text-body-editorial">
                   {text}
                 </dd>
               </div>

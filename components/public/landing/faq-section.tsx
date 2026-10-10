@@ -1,6 +1,7 @@
 import React from "react"
 import { Plus } from "lucide-react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
+import { GridPattern } from "@/components/ui/grid-pattern"
 import {
   Accordion,
   AccordionItem,
@@ -44,24 +45,26 @@ export function FAQSection() {
     <EditorialContainer
       id="faq"
       aria-labelledby="faq-heading"
-      className="py-12 sm:py-20 lg:py-24"
+      className="relative overflow-hidden py-12 sm:py-20 lg:py-24"
     >
-      <div className="mx-auto max-w-4xl space-y-10 lg:space-y-12">
+      <GridPattern
+        width={32}
+        height={32}
+        strokeDasharray="4 4"
+        className="opacity-20 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)]"
+      />
+      <div className="relative z-10 mx-auto max-w-4xl space-y-10 lg:space-y-12">
         {/* Section Header */}
         <div>
           <SectionEyebrow className="mb-4">Frequent Inquiries</SectionEyebrow>
           <h2
             id="faq-heading"
-            style={{ fontSize: "var(--type-section)" }}
-            className="font-heading font-medium tracking-tight text-foreground leading-[1.06] text-balance"
+            className="text-section text-foreground"
           >
-            Questions,
-            <br />
-            <span className="text-muted-foreground/90">answered.</span>
+            Questions, answered.
           </h2>
-          <p className="mt-4 text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty">
-            Clear guidelines on booking procedures, corridor timelines, and cargo handling
-            rules.
+          <p className="mt-4 text-lead max-w-[55ch]">
+            Clear guidelines on consignment booking procedures, corridor transit timelines, chargeable weight calculations, and statutory documentation rules.
           </p>
         </div>
 
@@ -83,7 +86,7 @@ export function FAQSection() {
               >
                 <span
                   style={{ fontSize: "var(--type-sub)" }}
-                  className="pr-6 font-heading font-medium tracking-tight text-foreground transition-colors group-hover:text-primary"
+                  className="pr-6 font-heading font-semibold tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary"
                 >
                   {faq.q}
                 </span>
@@ -91,7 +94,7 @@ export function FAQSection() {
                   <Plus className="size-3.5" />
                 </span>
               </AccordionTrigger>
-              <AccordionContent className="pt-4 pr-12 text-sm sm:text-base leading-relaxed text-muted-foreground font-normal">
+              <AccordionContent className="pt-4 pr-12 text-body-editorial">
                 {faq.a}
               </AccordionContent>
             </AccordionItem>

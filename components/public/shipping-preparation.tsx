@@ -22,15 +22,15 @@ export function ShippingPreparation() {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            <p className="cargo-eyebrow mb-5 text-muted-foreground">
+            <p className="text-eyebrow mb-5 text-muted-foreground">
               03 / Before the first mile
             </p>
-            <h2 id="preparation-title" className="cargo-heading">
+            <h2 id="preparation-title" className="text-section">
               Care begins
               <br />
               with the details.
             </h2>
-            <p className="mt-6 max-w-md leading-relaxed text-muted-foreground">
+            <p className="text-body-editorial mt-6 max-w-md">
               Strong packaging. Clear labels. The right information. A little
               preparation helps your goods travel well.
             </p>

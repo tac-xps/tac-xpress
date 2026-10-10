@@ -28,7 +28,7 @@ const chartConfig = {
   },
   surface: {
     label: "Surface Cargo",
-    color: "var(--chart-3)",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
@@ -53,7 +53,7 @@ export function ShipmentVolumeBarChart({
     <Card className="flex flex-col">
       <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <CardTitle>Daily Network Volume</CardTitle>
+          <CardTitle>Daily network volume</CardTitle>
           <CardDescription>
             Showing daily bookings by service type in the selected period.
           </CardDescription>
@@ -75,7 +75,7 @@ export function ShipmentVolumeBarChart({
                 />
                 {(chartConfig[key as keyof typeof chartConfig] as { label: string }).label}
               </span>
-              <span className="font-mono text-lg font-bold leading-none sm:text-2xl">
+              <span className="font-metric-lg text-foreground">
                 {totals[key].toLocaleString("en-IN")}
               </span>
             </button>

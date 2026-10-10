@@ -64,9 +64,9 @@
   --color-mn-slate: var(--mn-slate);
   --color-mn-bone: var(--mn-cloud);
   --color-mn-oat: var(--mn-mist);
-  --color-mn-indigo: var(--mn-indigo);
-  --color-mn-indigo-hover: var(--mn-indigo-hover);
-  --color-mn-indigo-wash: var(--mn-indigo-wash);
+  --color-mn-teal: var(--mn-teal);
+  --color-mn-teal-hover: var(--mn-teal-hover);
+  --color-mn-teal-wash: var(--mn-teal-wash);
   --color-mn-fjord: var(--mn-fjord);
   --color-mn-fjord-wash: var(--mn-fjord-wash);
   --color-mn-moss: var(--mn-moss);
@@ -109,14 +109,16 @@
   --color-invoice-navy: oklch(0.20 0.025 255);
 
   /* Typography Scale */
-  --font-sans: var(--font-geist), var(--font-sans-fallback, ui-sans-serif), system-ui, sans-serif;
-  --font-heading: var(--font-manrope), var(--font-heading-fallback, var(--font-geist)), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), var(--font-ibm-plex-mono, ui-monospace), monospace;
+  --font-sans: var(--font-dm-sans), var(--font-geist), var(--font-sans-fallback, ui-sans-serif), system-ui, sans-serif;
+  --font-heading: var(--font-dm-sans), var(--font-manrope), var(--font-heading-fallback, var(--font-geist)), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), var(--font-geist-mono), ui-monospace, monospace;
 
-  /* Editorial Landing Page Hierarchy (fluid clamp) */
-  --type-display: clamp(1.875rem, 3.5vw + 0.5rem, 4.25rem);   /* 30px → 68px: Hero, Brand, Network */
-  --type-section: clamp(1.5rem, 2.5vw + 0.25rem, 3rem);        /* 24px → 48px: Services, Care, Contact, FAQ */
-  --type-sub: clamp(1.125rem, 1.2vw + 0.25rem, 1.375rem);      /* 18px → 22px: Card titles, step titles */
+  /* Editorial Landing Page Hierarchy (calibrated fluid clamp) */
+  --type-display: clamp(3rem, 5.5vw, 5.25rem);       /* 48px → 84px: Hero, Brand Statement */
+  --type-section: clamp(2.25rem, 3.8vw, 3.5rem);     /* 36px → 56px: Services, Tracking, Process, Network, Care, Contact, FAQ */
+  --type-subhead: clamp(1.25rem, 1.4vw, 1.5rem);     /* 20px → 24px: Subheadings, card titles */
+  --type-sub: clamp(1.25rem, 1.4vw, 1.5rem);         /* Backwards-compatible alias */
+  --type-lead: clamp(1.0625rem, 0.35vw + 1rem, 1.25rem); /* 17px → 20px: Narrative decks / subheads */
 
   /* Legacy (retained for dashboard/app pages) */
   --text-display-xl: clamp(2.5rem, 5vw, 4rem);
@@ -132,15 +134,15 @@
 
   /* Geometry Hierarchy */
   --radius-none: 0px;
-  --radius-control: 3px;
-  --radius-overlay: 6px;
-  --radius-full: 9999px;
+  --radius-control: 0px;
+  --radius-overlay: 0px;
+  --radius-full: 0px;
   --radius-xs: 0px;
-  --radius-sm: 2px;
-  --radius-md: 3px;
-  --radius-lg: 4px;
-  --radius-xl: 6px;
-  --radius-2xl: 6px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
   --radius: 0px;
 
   /* Controlled Elevation Shadows */
@@ -155,31 +157,142 @@
   --shadow-lg: var(--shadow-lg-val);
   --shadow-xl: var(--shadow-xl-val);
   --shadow-2xl: var(--shadow-2xl-val);
+
+  /* Magic UI: Marquee Animations */
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - var(--gap))); }
+}
+
+@keyframes marquee-vertical {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100% - var(--gap))); }
+}
+
+@utility text-display {
+  font-family: var(--font-heading);
+  font-size: var(--type-display);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+@utility text-section {
+  font-family: var(--font-heading);
+  font-size: var(--type-section);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+
+@utility text-subhead {
+  font-family: var(--font-sans);
+  font-size: var(--type-subhead);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+@utility text-lead {
+  font-family: var(--font-sans);
+  font-size: var(--type-lead);
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: -0.012em;
+  text-wrap: pretty;
+  color: color-mix(in oklch, var(--foreground) 90%, transparent);
+}
+
+@utility text-body-editorial {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.006em;
+  text-wrap: pretty;
+  color: color-mix(in oklch, var(--foreground) 80%, transparent);
+}
+
+@utility text-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@utility text-data {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums slashed-zero;
+  line-height: 1.35;
+}
+
+@utility font-metric-xl {
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 1rem + 1vw, 1.875rem);
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+@utility font-metric-lg {
+  font-family: var(--font-mono);
+  font-size: clamp(1.375rem, 1rem + 0.6vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+@utility font-metric-md {
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+@utility font-metric-sm {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums slashed-zero;
 }
 
 :root {
   color-scheme: light;
 
   /* ──────────────────────────────────────────────────────────────────────────
-     NORDIC MINERAL / CLOUD WHITE & BLUE BASALT — LIGHT (Cloud White)
-     Airy Structural White + Evil Martians OKLCH + WCAG 2.2 SC 1.4.3 & 1.4.11 Pass
+     NORDIC MINERAL / CLOUD WHITE & BLUE BASALT — LIGHT (Cloud White / Slate H 256)
+     Airy Structural White + Radix Slate & Teal + WCAG 2.2 SC 1.4.3 & 1.4.11 Pass
      ────────────────────────────────────────────────────────────────────────── */
-  --mn-cloud: oklch(0.985 0.006 95);         /* Canvas: Soft architectural cloud white (approx #FBFAF6) */
-  --mn-paper: oklch(0.995 0.003 95);         /* Surface: Crisp paper card (approx #FEFDFB) */
-  --mn-mist: oklch(0.955 0.008 95);          /* Secondary / Muted: Subtle cool mist (approx #F2F0EA) */
-  --mn-stone: oklch(0.900 0.010 95);         /* Structural Border: Hairline stone (approx #E0DED7) */
-  --mn-stone-strong: oklch(0.630 0.015 250); /* Control Border: Blue-slate boundary (3.35:1 on cloud) */
-  --mn-ink: oklch(0.230 0.012 250);          /* Primary Text: Blue-neutral dense ink (16.2:1, Lc 98.6) */
-  --mn-slate: oklch(0.470 0.012 250);        /* Secondary Text: Restrained blue-slate (6.5:1, Lc 77.1) */
+  --mn-cloud: oklch(0.982 0.002 256);        /* Canvas: Radix Slate step 2 */
+  --mn-paper: oklch(0.993 0.002 256);        /* Surface: Radix Slate step 1 */
+  --mn-mist: oklch(0.936 0.006 256);         /* Secondary / Muted: Radix Slate step 4 */
+  --mn-stone: oklch(0.889 0.010 256);        /* Structural Border: Radix Slate step 6 */
+  --mn-stone-strong: oklch(0.601 0.020 256); /* Control Border: Radix Slate step 10 (3.35:1 on cloud) */
+  --mn-ink: oklch(0.256 0.011 264);          /* Primary Text: Radix Slate step 12 ink (≥15:1 on cloud) */
+  --mn-slate: oklch(0.498 0.018 256);        /* Secondary Text: Radix Slate step 11 calibrated (Lc ≥ 75 on paper) */
 
   /* Backwards compatibility aliases */
   --mn-bone: var(--mn-cloud);
   --mn-oat: var(--mn-mist);
 
+  /* Brand Accent — Radix Teal H 180 */
+  --mn-teal: oklch(0.461 0.146 180);         /* UI Primary: Radix Teal step 11 */
+  --mn-teal-hover: oklch(0.414 0.150 180);   /* UI Primary Hover: Darkened teal */
+  --mn-teal-wash: oklch(0.954 0.044 180);    /* UI Primary Wash: Radix Teal step 3 */
+
   /* Minerals */
-  --mn-indigo: oklch(0.510 0.140 278);       /* UI Primary: Quiet indigo (5.9:1 on white button) */
-  --mn-indigo-hover: oklch(0.440 0.140 278); /* UI Primary Hover */
-  --mn-indigo-wash: oklch(0.940 0.028 278);  /* Primary Wash (5.0:1 with text) */
   --mn-fjord: oklch(0.500 0.075 215);        /* Info / Transit: Quiet northern fjord (5.0:1 on wash) */
   --mn-fjord-wash: oklch(0.945 0.018 215);   /* Fjord Wash */
   --mn-moss: oklch(0.490 0.060 138);         /* Success / Delivered: Calming muted moss (5.1:1 on wash) */
@@ -190,27 +303,27 @@
   --mn-clay-wash: oklch(0.950 0.016 35);     /* Clay Wash */
 
   /* Dark Mineral Primitives (Layer 1 - Available across all themes for inverse panels) */
-  --mn-basalt: oklch(0.240 0.030 255);         /* Background: Blue Basalt (approx #15202D) */
-  --mn-basalt-surface: oklch(0.270 0.030 255); /* Surface: Lifted Blue Basalt (approx #1C2735) */
-  --mn-basalt-card: oklch(0.290 0.035 255);    /* Card: Subtle blue elevation (approx #1F2C3D) */
-  --mn-basalt-popover: oklch(0.320 0.035 255); /* Popover: Distinct blue tier (approx #273445) */
-  --mn-dark-fg: oklch(0.940 0.012 95);         /* Cloud White Foreground (13.8:1 on basalt) */
-  --mn-dark-muted: oklch(0.760 0.018 240);     /* Cool Blue-Gray Muted Text (7.7:1 on basalt) */
-  --mn-dark-border: oklch(0.420 0.020 250);    /* Structural Border */
-  --mn-dark-border-strong: oklch(0.580 0.018 245); /* Control Boundary (3.3:1 on card, SC 1.4.11) */
-  --mn-dark-indigo: oklch(0.730 0.105 278);    /* Primary Action */
-  --mn-dark-indigo-hover: oklch(0.770 0.095 278);
-  --mn-dark-indigo-wash: oklch(0.300 0.040 278);
-  --mn-dark-indigo-fg: oklch(0.200 0.025 255); /* Dark ink on light primary button (7.4:1) */
-  --mn-dark-fjord: oklch(0.740 0.065 215);     /* Transit Status (6.0:1 on wash) */
-  --mn-dark-fjord-wash: oklch(0.300 0.030 215);
-  --mn-dark-moss: oklch(0.740 0.065 138);      /* Delivered Status (6.0:1 on wash) */
-  --mn-dark-moss-wash: oklch(0.300 0.030 138);
-  --mn-dark-ochre: oklch(0.760 0.090 72);      /* Pending Status (6.1:1 on wash) */
-  --mn-dark-ochre-wash: oklch(0.310 0.040 72);
-  --mn-dark-clay: oklch(0.730 0.095 32);       /* Failed Status (5.6:1 on wash) */
-  --mn-dark-clay-wash: oklch(0.300 0.040 32);
-  --mn-shadow-dark: oklch(0.120 0.025 255);
+  --mn-basalt: oklch(0.125 0.007 255);         /* Background: Nocturne Obsidian (deepest canvas) */
+  --mn-basalt-surface: oklch(0.150 0.008 255); /* Surface: Receding dark graphite chrome */
+  --mn-basalt-card: oklch(0.180 0.010 255);    /* Card: Subtle tactile elevation */
+  --mn-basalt-popover: oklch(0.220 0.012 255); /* Popover: Elevated overlays */
+  --mn-dark-fg: oklch(0.982 0.002 256);      /* Cloud White Foreground */
+  --mn-dark-muted: oklch(0.740 0.016 256);   /* Cool Slate Muted Text */
+  --mn-dark-border: oklch(0.260 0.008 255);  /* Hairline Structural Border */
+  --mn-dark-border-strong: oklch(0.500 0.015 255); /* Control Boundary (3.14:1 on card) */
+  --mn-dark-teal: oklch(0.680 0.135 178);    /* Luminous Nordic Teal Jewel */
+  --mn-dark-teal-hover: oklch(0.730 0.130 178); /* Primary Action Hover */
+  --mn-dark-teal-wash: oklch(0.220 0.025 180);  /* Deep teal wash */
+  --mn-dark-teal-fg: oklch(0.125 0.007 255);   /* Dark obsidian ink on primary button (7.57:1) */
+  --mn-dark-fjord: oklch(0.740 0.065 215);     /* Transit Status (7.2:1 on wash) */
+  --mn-dark-fjord-wash: oklch(0.230 0.020 215);
+  --mn-dark-moss: oklch(0.740 0.065 138);      /* Delivered Status (7.2:1 on wash) */
+  --mn-dark-moss-wash: oklch(0.230 0.020 138);
+  --mn-dark-ochre: oklch(0.760 0.090 72);      /* Pending Status (7.5:1 on wash) */
+  --mn-dark-ochre-wash: oklch(0.230 0.025 72);
+  --mn-dark-clay: oklch(0.730 0.095 32);       /* Failed Status (6.7:1 on wash) */
+  --mn-dark-clay-wash: oklch(0.230 0.025 32);
+  --mn-shadow-dark: oklch(0.080 0.005 255);
 
   /* Semantic System Mapping */
   --background: var(--mn-cloud);
@@ -219,10 +332,10 @@
   --card-foreground: var(--mn-ink);
   --popover: var(--mn-paper);
   --popover-foreground: var(--mn-ink);
-  --primary: var(--mn-indigo);
-  --primary-foreground: oklch(0.995 0.003 95);
-  --primary-hover: var(--mn-indigo-hover);
-  --primary-wash: var(--mn-indigo-wash);
+  --primary: var(--mn-teal);
+  --primary-foreground: oklch(0.993 0.002 256);
+  --primary-hover: var(--mn-teal-hover);
+  --primary-wash: var(--mn-teal-wash);
   --secondary: var(--mn-mist);
   --secondary-foreground: var(--mn-ink);
   --muted: var(--mn-mist);
@@ -230,14 +343,14 @@
   --accent: var(--mn-mist);
   --accent-foreground: var(--mn-ink);
   --destructive: var(--mn-clay);
-  --destructive-foreground: oklch(0.995 0.003 95);
+  --destructive-foreground: oklch(0.993 0.002 256);
   --destructive-wash: var(--mn-clay-wash);
   --border: var(--mn-stone);
   --border-strong: var(--mn-stone-strong);
   --input: var(--mn-stone-strong);
-  --ring: var(--mn-indigo);
+  --ring: var(--mn-teal);
   --surface: var(--mn-paper);
-  --card-accent: var(--mn-indigo);
+  --card-accent: var(--mn-teal);
   --info: var(--mn-fjord);
   --info-wash: var(--mn-fjord-wash);
   --success: var(--mn-moss);
@@ -267,7 +380,7 @@
   --corridor-fg-c: 0.005;
 
   /* 5-Color Categorical Mineral Chart Palette */
-  --chart-1: oklch(0.510 0.140 278);
+  --chart-1: oklch(0.461 0.146 180);
   --chart-2: oklch(0.490 0.060 138);
   --chart-3: oklch(0.530 0.105 68);
   --chart-4: oklch(0.500 0.110 32);
@@ -276,27 +389,32 @@
   /* Sidebar */
   --sidebar: var(--mn-paper);
   --sidebar-foreground: var(--mn-ink);
-  --sidebar-primary: var(--mn-indigo);
-  --sidebar-primary-foreground: oklch(0.995 0.003 95);
+  --sidebar-primary: var(--mn-teal);
+  --sidebar-primary-foreground: oklch(0.993 0.002 256);
   --sidebar-accent: var(--mn-mist);
   --sidebar-accent-foreground: var(--mn-ink);
   --sidebar-border: var(--mn-stone);
-  --sidebar-ring: var(--mn-indigo);
+  --sidebar-ring: var(--mn-teal);
 
   /* Geometry & Motion */
-  --radius-control: 3px;
-  --radius-overlay: 6px;
+  --radius-control: 0px;
+  --radius-overlay: 0px;
   --radius: 0px;
   --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
   --ease-press: cubic-bezier(0.4, 0, 1, 1);
+  --ease-interaction: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-fast: 120ms;
   --duration-normal: 180ms;
   --duration-slow: 280ms;
   --duration-press: 150ms;
   --duration-shift: 400ms;
+  --duration-interaction: 150ms;
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+
+  /* Layered Card Edge Highlight */
+  --card-edge-highlight: transparent;
 
   /* Restrained Blue-Neutral Elevation */
   --mn-shadow-light: oklch(0.230 0.012 250);
@@ -317,29 +435,31 @@
   color-scheme: dark;
 
   /* ──────────────────────────────────────────────────────────────────────────
-     NORDIC MINERAL / CLOUD WHITE & BLUE BASALT — DARK (Blue Basalt H 255)
-     Technical Blue Basalt Depth + WCAG 2.2 Contractual Pass + Lc >= 60
+     NORDIC MINERAL / NOCTURNE OBSIDIAN & LUMINOUS TEAL — DARK
+     Deep Obsidian Bedrock + Luminous Nordic Teal Accent + WCAG 2.2 AAA / AA Pass
      ────────────────────────────────────────────────────────────────────────── */
-  --mn-basalt: oklch(0.240 0.030 255);         /* Background: Blue Basalt (approx #15202D) */
-  --mn-basalt-surface: oklch(0.270 0.030 255); /* Surface: Lifted Blue Basalt (approx #1C2735) */
-  --mn-basalt-card: oklch(0.290 0.035 255);    /* Card: Subtle blue elevation (approx #1F2C3D) */
-  --mn-basalt-popover: oklch(0.320 0.035 255); /* Popover: Distinct blue tier (approx #273445) */
-  --mn-dark-fg: oklch(0.940 0.012 95);         /* Cloud White Foreground (13.8:1 on basalt) */
-  --mn-dark-muted: oklch(0.760 0.018 240);     /* Cool Blue-Gray Muted Text (7.7:1 on basalt) */
-  --mn-dark-border: oklch(0.420 0.020 250);    /* Structural Border */
-  --mn-dark-border-strong: oklch(0.580 0.018 245); /* Control Boundary (3.3:1 on card, SC 1.4.11) */
-  --mn-dark-indigo: oklch(0.730 0.105 278);    /* Primary Action */
-  --mn-dark-indigo-hover: oklch(0.770 0.095 278);
-  --mn-dark-indigo-wash: oklch(0.300 0.040 278);
-  --mn-dark-indigo-fg: oklch(0.200 0.025 255); /* Dark ink on light primary button (7.4:1) */
-  --mn-dark-fjord: oklch(0.740 0.065 215);     /* Transit Status (6.0:1 on wash) */
-  --mn-dark-fjord-wash: oklch(0.300 0.030 215);
-  --mn-dark-moss: oklch(0.740 0.065 138);      /* Delivered Status (6.0:1 on wash) */
-  --mn-dark-moss-wash: oklch(0.300 0.030 138);
-  --mn-dark-ochre: oklch(0.760 0.090 72);      /* Pending Status (6.1:1 on wash) */
-  --mn-dark-ochre-wash: oklch(0.310 0.040 72);
-  --mn-dark-clay: oklch(0.730 0.095 32);       /* Failed Status (5.6:1 on wash) */
-  --mn-dark-clay-wash: oklch(0.300 0.040 32);
+  --mn-basalt: oklch(0.125 0.007 255);         /* Background: Nocturne Obsidian (deepest canvas) */
+  --mn-basalt-surface: oklch(0.150 0.008 255); /* Surface: Receding dark graphite chrome */
+  --mn-basalt-card: oklch(0.180 0.010 255);    /* Card: Subtle tactile elevation */
+  --mn-basalt-popover: oklch(0.220 0.012 255); /* Popover: Elevated overlays */
+  --mn-dark-fg: oklch(0.982 0.002 256);      /* Cloud White Foreground */
+  --mn-dark-muted: oklch(0.740 0.016 256);   /* Cool Slate Muted Text */
+  --mn-dark-border: oklch(0.260 0.008 255);  /* Hairline Structural Border */
+  --mn-dark-border-strong: oklch(0.500 0.015 255); /* Control Boundary (3.14:1 on card) */
+
+  /* Luminous Jewel Nordic Teal for Dark Surfaces */
+  --mn-dark-teal: oklch(0.680 0.135 178);    /* Luminous Nordic Teal Jewel */
+  --mn-dark-teal-hover: oklch(0.730 0.130 178); /* Primary Action Hover */
+  --mn-dark-teal-wash: oklch(0.220 0.025 180);  /* Deep teal wash */
+  --mn-dark-teal-fg: oklch(0.125 0.007 255);   /* Dark obsidian ink on primary button (7.57:1) */
+  --mn-dark-fjord: oklch(0.740 0.065 215);     /* Transit Status (7.2:1 on wash) */
+  --mn-dark-fjord-wash: oklch(0.230 0.020 215);
+  --mn-dark-moss: oklch(0.740 0.065 138);      /* Delivered Status (7.2:1 on wash) */
+  --mn-dark-moss-wash: oklch(0.230 0.020 138);
+  --mn-dark-ochre: oklch(0.760 0.090 72);      /* Pending Status (7.5:1 on wash) */
+  --mn-dark-ochre-wash: oklch(0.230 0.025 72);
+  --mn-dark-clay: oklch(0.730 0.095 32);       /* Failed Status (6.7:1 on wash) */
+  --mn-dark-clay-wash: oklch(0.230 0.025 32);
 
   /* Semantic System Mapping Dark */
   --background: var(--mn-basalt);
@@ -356,17 +476,17 @@
   --accent: var(--mn-basalt-surface);
   --accent-foreground: var(--mn-dark-fg);
   --destructive: var(--mn-dark-clay);
-  --destructive-foreground: var(--mn-dark-indigo-fg);
+  --destructive-foreground: var(--mn-dark-teal-fg);
   --destructive-wash: var(--mn-dark-clay-wash);
   --border: var(--mn-dark-border);
   --border-strong: var(--mn-dark-border-strong);
   --input: var(--mn-dark-border-strong);
-  --primary: var(--mn-dark-indigo);
-  --primary-foreground: var(--mn-dark-indigo-fg);
-  --primary-hover: var(--mn-dark-indigo-hover);
-  --primary-wash: var(--mn-dark-indigo-wash);
-  --ring: var(--mn-dark-indigo);
-  --card-accent: var(--mn-dark-indigo);
+  --primary: var(--mn-dark-teal);
+  --primary-foreground: var(--mn-dark-teal-fg);
+  --primary-hover: var(--mn-dark-teal-hover);
+  --primary-wash: var(--mn-dark-teal-wash);
+  --ring: var(--mn-dark-teal);
+  --card-accent: var(--mn-dark-teal);
   --info: var(--mn-dark-fjord);
   --info-wash: var(--mn-dark-fjord-wash);
   --success: var(--mn-dark-moss);
@@ -388,15 +508,15 @@
   --corridor-h: 278;
   --corridor-l: 0.73;
   --corridor-c: 0.075;
-  --corridor-subtle-l: 0.30;
-  --corridor-subtle-c: 0.03;
-  --corridor-border-l: 0.45;
-  --corridor-border-c: 0.05;
-  --corridor-fg-l: 0.18;
-  --corridor-fg-c: 0.02;
+  --corridor-subtle-l: 0.24;
+  --corridor-subtle-c: 0.02;
+  --corridor-border-l: 0.38;
+  --corridor-border-c: 0.03;
+  --corridor-fg-l: 0.125;
+  --corridor-fg-c: 0.01;
 
   /* 5-Color Categorical Mineral Chart Palette Dark */
-  --chart-1: var(--mn-dark-indigo);
+  --chart-1: var(--mn-dark-teal);
   --chart-2: var(--mn-dark-moss);
   --chart-3: var(--mn-dark-ochre);
   --chart-4: var(--mn-dark-clay);
@@ -405,38 +525,56 @@
   /* Sidebar Dark */
   --sidebar: var(--mn-basalt-surface);
   --sidebar-foreground: var(--mn-dark-fg);
-  --sidebar-primary: var(--mn-dark-indigo);
-  --sidebar-primary-foreground: var(--mn-dark-indigo-fg);
+  --sidebar-primary: var(--mn-dark-teal);
+  --sidebar-primary-foreground: var(--mn-dark-teal-fg);
   --sidebar-accent: var(--mn-basalt-card);
   --sidebar-accent-foreground: var(--mn-dark-fg);
   --sidebar-border: var(--mn-dark-border);
-  --sidebar-ring: var(--mn-dark-indigo);
+  --sidebar-ring: var(--mn-dark-teal);
 
-  /* Blue-Basalt Dark Elevation (No pure black RGB shadows) */
-  --mn-shadow-dark: oklch(0.120 0.025 255);
-  --shadow-card-val: 0 1px 3px oklch(0.120 0.025 255 / 0.15), 0 1px 2px oklch(0.120 0.025 255 / 0.10);
-  --shadow-ambient-val: 0 16px 36px -16px oklch(0.120 0.025 255 / 0.25);
-  --shadow-float-val: 0 12px 28px -10px oklch(0.120 0.025 255 / 0.30);
-  --shadow-overlay-val: 0 16px 40px oklch(0.120 0.025 255 / 0.35);
-  --shadow-2xs-val: 0 1px 2px oklch(0.120 0.025 255 / 0.10);
-  --shadow-xs-val: 0 1px 2px oklch(0.120 0.025 255 / 0.12);
-  --shadow-sm-val: 0 2px 4px oklch(0.120 0.025 255 / 0.15);
-  --shadow-md-val: 0 4px 8px oklch(0.120 0.025 255 / 0.18);
-  --shadow-lg-val: 0 8px 16px oklch(0.120 0.025 255 / 0.22);
-  --shadow-xl-val: 0 16px 28px oklch(0.120 0.025 255 / 0.26);
-  --shadow-2xl-val: 0 24px 44px oklch(0.120 0.025 255 / 0.30);
+  /* Nocturne Obsidian Elevation */
+  --card-edge-highlight: color-mix(in oklch, var(--foreground) 5%, transparent);
+  --mn-shadow-dark: oklch(0.080 0.005 255);
+  --shadow-card-val: inset 0 1px 0 var(--card-edge-highlight), 0 1px 3px oklch(0.080 0.005 255 / 0.35), 0 1px 2px oklch(0.080 0.005 255 / 0.20);
+  --shadow-ambient-val: 0 16px 36px -16px oklch(0.080 0.005 255 / 0.40);
+  --shadow-float-val: 0 12px 28px -10px oklch(0.080 0.005 255 / 0.45);
+  --shadow-overlay-val: 0 16px 40px oklch(0.080 0.005 255 / 0.50);
+  --shadow-2xs-val: 0 1px 2px oklch(0.080 0.005 255 / 0.20);
+  --shadow-xs-val: inset 0 1px 0 var(--card-edge-highlight), 0 1px 2px oklch(0.080 0.005 255 / 0.25);
+  --shadow-sm-val: 0 2px 4px oklch(0.080 0.005 255 / 0.30);
+  --shadow-md-val: 0 4px 8px oklch(0.080 0.005 255 / 0.35);
+  --shadow-lg-val: 0 8px 16px oklch(0.080 0.005 255 / 0.40);
+  --shadow-xl-val: 0 16px 28px oklch(0.080 0.005 255 / 0.45);
+  --shadow-2xl-val: 0 24px 44px oklch(0.080 0.005 255 / 0.50);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-interaction: 0ms;
+  }
 }
 
 @layer base {
   /* Geometry Hierarchy:
-     Layout containers and cards retain orthogonal physical geometry (0px).
-     Interactive controls (buttons, inputs, native selects, chips) use tactile 3px.
-     Floating overlays (dialogs, popovers, dropdowns, tooltips) use 6px.
+     Universal Orthogonal Geometry (0px / rounded-none) across all surfaces,
+     controls, badges, overlays, and indicators. Zero rounded corners or curve lines.
   */
   *,
   *::before,
   *::after {
     border-color: var(--border);
+  }
+
+  /* Standardized Micro-Interaction Baseline for Controls (150ms) */
+  [data-slot="button"],
+  [data-slot="input"],
+  [data-slot="select-trigger"],
+  [data-slot="sidebar-menu-button"] {
+    transition:
+      color var(--duration-interaction) var(--ease-interaction),
+      background-color var(--duration-interaction) var(--ease-interaction),
+      border-color var(--duration-interaction) var(--ease-interaction),
+      box-shadow var(--duration-interaction) var(--ease-interaction);
   }
 
   html {
@@ -452,7 +590,8 @@
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "kern" 1;
+    font-optical-sizing: auto;
 
     @apply bg-background text-foreground;
   }
@@ -570,9 +709,20 @@
   }
 
   [data-slot="sidebar-menu-button"][data-active="true"] {
-    background: var(--sidebar-accent);
-    color: var(--sidebar-accent-foreground);
+    background: color-mix(in oklch, var(--sidebar-primary) 10%, transparent);
+    color: var(--sidebar-primary);
     font-weight: 500;
+    position: relative;
+  }
+
+  [data-slot="sidebar-menu-button"][data-active="true"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    background: var(--sidebar-primary);
   }
 
   ::-webkit-scrollbar {
@@ -582,7 +732,7 @@
 
   ::-webkit-scrollbar-thumb {
     border: 2px solid transparent;
-    border-radius: var(--radius-control);
+    border-radius: 0;
     background: color-mix(in oklch, var(--muted-foreground) 35%, transparent);
     background-clip: padding-box;
   }
@@ -631,12 +781,12 @@
 
   &::-webkit-scrollbar-track {
     background: color-mix(in oklch, var(--muted) 80%, transparent);
-    border-radius: 4px;
+    border-radius: 0;
   }
 
   &::-webkit-scrollbar-thumb {
     background: color-mix(in oklch, var(--foreground) 40%, transparent);
-    border-radius: 4px;
+    border-radius: 0;
   }
 
   &::-webkit-scrollbar-thumb:hover {
@@ -781,18 +931,18 @@
   --popover-foreground: var(--mn-dark-fg);
   --muted: var(--mn-basalt-surface);
   --muted-foreground: var(--mn-dark-muted);
-  --primary: var(--mn-dark-indigo);
-  --primary-foreground: var(--mn-dark-indigo-fg);
+  --primary: var(--mn-dark-teal);
+  --primary-foreground: var(--mn-dark-teal-fg);
   --secondary: var(--mn-basalt-surface);
   --secondary-foreground: var(--mn-dark-fg);
   --accent: var(--mn-basalt-surface);
   --accent-foreground: var(--mn-dark-fg);
   --destructive: var(--mn-dark-clay);
-  --destructive-foreground: var(--mn-dark-indigo-fg);
+  --destructive-foreground: var(--mn-dark-teal-fg);
   --border: var(--mn-dark-border);
   --border-strong: var(--mn-dark-border-strong);
   --input: var(--mn-dark-border-strong);
-  --ring: var(--mn-dark-indigo);
+  --ring: var(--mn-dark-teal);
   --surface: var(--mn-basalt-surface);
 
   color: var(--foreground);
@@ -1050,10 +1200,6 @@
 }
 
 @media (width <= 767px) {
-  .cargo-hero {
-    min-height: 820px;
-  }
-
   .cargo-hero-media img {
     object-position: 62% center;
   }

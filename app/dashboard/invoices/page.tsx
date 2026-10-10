@@ -154,7 +154,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
                 </dt>
                 <dd className="mt-3">
                   <span
-                    className={`text-2xl font-semibold tracking-tight tabular-nums sm:text-3xl ${
+                    className={`font-metric-xl ${
                       item.highlight ? "text-destructive" : "text-foreground"
                     }`}
                   >

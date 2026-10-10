@@ -34,7 +34,7 @@ export function SiteFooter() {
     <footer className="border-t border-border bg-surface/50 py-12 lg:pt-20 text-foreground transition-colors">
       <div className="cargo-container">
         <div className="mb-14 flex flex-col justify-between gap-6 border-b border-border pb-12 md:flex-row md:items-end">
-          <p className="cargo-heading max-w-2xl text-foreground">
+          <p className="text-section max-w-2xl text-foreground">
             Let’s move
             <br />
             something forward.

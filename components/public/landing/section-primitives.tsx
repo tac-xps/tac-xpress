@@ -3,22 +3,26 @@
 import React from "react"
 import { motion, useReducedMotion } from "motion/react"
 import { cn } from "@/lib/utils"
+import { NumberTicker } from "@/components/ui/number-ticker"
+import { Marquee } from "@/components/ui/marquee"
 
-interface SectionEyebrowProps {
+import Link from "next/link"
+
+export interface EditorialEyebrowProps {
   children: React.ReactNode
   className?: string
   id?: string
 }
 
 /**
- * Monospace section eyebrow marker with leading geometric square accent.
+ * Classifies the section with small, tracked uppercase monospace text.
  */
-export function SectionEyebrow({ children, className, id }: SectionEyebrowProps) {
+export function EditorialEyebrow({ children, className, id }: EditorialEyebrowProps) {
   return (
     <div
       id={id}
       className={cn(
-        "inline-flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground select-none",
+        "inline-flex items-center gap-2 text-eyebrow text-muted-foreground select-none",
         className
       )}
     >
@@ -28,48 +32,180 @@ export function SectionEyebrow({ children, className, id }: SectionEyebrowProps)
   )
 }
 
-interface EditorialHeadingProps {
+/**
+ * Backwards compatible alias for SectionEyebrow.
+ */
+export const SectionEyebrow = EditorialEyebrow
+
+export interface EditorialTitleProps {
   children: React.ReactNode
   className?: string
   level?: "display" | "section" | "sub"
   as?: "h1" | "h2" | "h3" | "h4" | "p"
+  id?: string
 }
 
 /**
- * Editorial heading component mapped to fluid clamp typography variables.
+ * Carries the primary message using Manrope display font and balanced rags.
  */
-export function EditorialHeading({
+export function EditorialTitle({
   children,
   className,
   level = "section",
   as: Component = "h2",
-}: EditorialHeadingProps) {
-  const config = {
-    display: {
-      sizeVar: "var(--type-display)",
-      className: "font-heading font-medium tracking-tight leading-[1.04] text-balance text-foreground",
-    },
-    section: {
-      sizeVar: "var(--type-section)",
-      className: "font-heading font-medium tracking-tight leading-[1.08] text-balance text-foreground",
-    },
-    sub: {
-      sizeVar: "var(--type-sub)",
-      className: "font-heading font-medium tracking-tight leading-snug text-balance text-foreground",
-    },
-  }
-
-  const { sizeVar, className: levelClass } = config[level]
+  id,
+}: EditorialTitleProps) {
+  const levelClass =
+    level === "display"
+      ? "text-display"
+      : level === "sub"
+      ? "text-subhead"
+      : "text-section"
 
   return (
     <Component
-      style={{ fontSize: sizeVar }}
-      className={cn(levelClass, className)}
+      id={id}
+      className={cn(levelClass, "text-foreground", className)}
     >
       {children}
     </Component>
   )
 }
+
+export const EditorialHeading = EditorialTitle
+
+export interface EditorialLeadProps {
+  children: React.ReactNode
+  className?: string
+  as?: "p" | "div"
+}
+
+/**
+ * Explains the promise with human tone and generous reading leading.
+ */
+export function EditorialLead({
+  children,
+  className,
+  as: Component = "p",
+}: EditorialLeadProps) {
+  return (
+    <Component
+      className={cn(
+        "text-lead max-w-[54ch]",
+        className
+      )}
+    >
+      {children}
+    </Component>
+  )
+}
+
+export interface EditorialBodyProps {
+  children: React.ReactNode
+  className?: string
+  as?: "p" | "div"
+}
+
+/**
+ * Provides supporting information with comfortable reading measure and rhythm.
+ */
+export function EditorialBody({
+  children,
+  className,
+  as: Component = "p",
+}: EditorialBodyProps) {
+  return (
+    <Component
+      className={cn(
+        "text-body-editorial max-w-[65ch]",
+        className
+      )}
+    >
+      {children}
+    </Component>
+  )
+}
+
+export interface EditorialMetaProps {
+  children: React.ReactNode
+  className?: string
+  as?: "span" | "div" | "p"
+}
+
+/**
+ * Supplies contextual labels, secondary timestamps, and quiet descriptors.
+ */
+export function EditorialMeta({
+  children,
+  className,
+  as: Component = "span",
+}: EditorialMetaProps) {
+  return (
+    <Component
+      className={cn(
+        "font-sans text-xs text-muted-foreground leading-normal",
+        className
+      )}
+    >
+      {children}
+    </Component>
+  )
+}
+
+export interface EditorialStatementProps {
+  children: React.ReactNode
+  className?: string
+  as?: "h1" | "h2" | "p"
+  id?: string
+}
+
+/**
+ * Creates an emotional pause using large display typography.
+ */
+export function EditorialStatement({
+  children,
+  className,
+  as: Component = "h2",
+  id,
+}: EditorialStatementProps) {
+  return (
+    <Component
+      id={id}
+      className={cn("text-display text-foreground text-center", className)}
+    >
+      {children}
+    </Component>
+  )
+}
+
+export interface EditorialLinkProps {
+  children: React.ReactNode
+  href: string
+  className?: string
+}
+
+/**
+ * Offers next actions with clear, restrained typographic emphasis.
+ */
+export function EditorialLink({
+  children,
+  href,
+  className,
+}: EditorialLinkProps) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "inline-flex items-center gap-1.5 font-sans text-sm font-medium text-foreground underline-offset-4 hover:underline transition-colors",
+        className
+      )}
+    >
+      {children}
+    </Link>
+  )
+}
+
+
 
 interface EditorialContainerProps {
   children: React.ReactNode
@@ -121,8 +257,7 @@ interface TheCargoLineProps {
 
 /**
  * The Cargo Line — TAC-XPRESS Signature Interaction & Structural Primitive
- * A 1px geometric rule in Quiet Indigo representing movement:
- * Hero (Movement Origin) -> Services (Connector) -> Tracking (Live Wire) -> Process (Progress Rail) -> Brand (Statement Resolution)
+ * A 1px geometric rule in Quiet Indigo representing movement.
  */
 export function TheCargoLine({ className, variant = "hero" }: TheCargoLineProps) {
   const shouldReduceMotion = useReducedMotion()
@@ -146,36 +281,96 @@ export function TheCargoLine({ className, variant = "hero" }: TheCargoLineProps)
   )
 }
 
+/** Operational stats shown in the proof strip */
+const PROOF_STATS = [
+  { value: 2400, suffix: "+", label: "Active shipments", detail: "This month" },
+  { value: 98, suffix: "%", label: "On-time delivery", detail: "3-month average" },
+  { value: 340, suffix: "+", label: "Corridors served", detail: "Air & surface" },
+  { value: 24, suffix: "/7", label: "Operations desk", detail: "Direct controller" },
+]
+
+/** Route corridor names for the live network ticker */
+const NETWORK_ROUTES = [
+  "DEL → IMF · Air Cargo",
+  "DEL → GAU · Surface",
+  "DEL → IXB · Air Cargo",
+  "DEL → SHL · Surface",
+  "DEL → DMU · Air Cargo",
+  "DEL → DIB · Surface",
+  "DEL → CCU · Air Cargo",
+  "DEL → BBI · Surface",
+  "DEL → HYD · Air Cargo",
+  "DEL → COK · Surface",
+  "DEL → MAA · Air Cargo",
+  "DEL → BOM · Surface",
+]
+
 /**
- * Proof Strip — Immediate Trust Reinforcement beneath Hero
+ * Proof Strip — Animated trust reinforcement with NumberTicker statistics
+ * below the hero, plus a live route network marquee.
  * Verifiable service capabilities only; zero fabricated numerical metrics.
  */
-export function ProofStrip() {
-  const claims = [
-    { label: "Clear Tracking", detail: "Real milestone events" },
-    { label: "Human Support", detail: "Direct controller desk" },
-    { label: "Arterial Transport", detail: "Air & surface linehaul" },
-    { label: "Secure Handling", detail: "Verified custodial chain" },
-  ]
+export function ProofStrip({ className }: { className?: string } = {}) {
+  const shouldReduceMotion = useReducedMotion()
 
   return (
-    <div className="w-full border-b border-border/80 bg-card/60 backdrop-blur-xs">
-      <div className="mx-auto grid w-full max-w-[1360px] grid-cols-2 divide-y divide-border/80 border-x border-border/80 md:grid-cols-4 md:divide-x md:divide-y-0">
-        {claims.map((claim) => (
+    <div className={cn("w-full border-t border-border/80 bg-card/60 backdrop-blur-xs", className)}>
+      {/* Animated KPI Stats Row — Aligned with 1360px container, zero ghost side boxes */}
+      <div className="mx-auto grid w-full max-w-[1360px] grid-cols-2 divide-y divide-border/80 border-b border-border/80 px-4 sm:px-6 lg:px-12 md:grid-cols-4 md:divide-x md:divide-y-0">
+        {PROOF_STATS.map((stat, idx) => (
           <motion.div
-            key={claim.label}
+            key={stat.label}
             whileHover={{ y: -1 }}
             transition={{ duration: 0.2 }}
-            className="group flex flex-col justify-center px-3.5 py-3 transition-colors hover:bg-muted/40 sm:px-6 sm:py-4"
+            className="group flex flex-col justify-center py-3.5 sm:py-4 md:px-6 transition-colors hover:bg-muted/40"
           >
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground transition-colors group-hover:text-primary">
-              {claim.label}
+            <div className="flex items-baseline gap-0.5 font-heading font-semibold tracking-tight leading-none">
+              {shouldReduceMotion ? (
+                <span className="text-xl sm:text-2xl text-foreground">{stat.value}</span>
+              ) : (
+                <NumberTicker
+                  value={stat.value}
+                  delay={idx * 0.15}
+                  className="text-xl sm:text-2xl text-foreground transition-colors group-hover:text-primary"
+                />
+              )}
+              <span className="text-lg sm:text-xl text-primary">{stat.suffix}</span>
+            </div>
+            <span className="mt-1 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground transition-colors group-hover:text-primary">
+              {stat.label}
             </span>
-            <span className="mt-0.5 font-sans text-xs text-muted-foreground">
-              {claim.detail}
+            <span className="mt-0.5 font-sans text-[10px] text-muted-foreground">
+              {stat.detail}
             </span>
           </motion.div>
         ))}
+      </div>
+
+      {/* Live Network Route Marquee with Left & Right Gradient Fade Masks */}
+      <div
+        role="region"
+        className="relative w-full max-w-full overflow-hidden bg-muted/20"
+        aria-label="Active cargo corridor network"
+      >
+        {/* Soft edge gradient masks */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-24 bg-gradient-to-r from-card to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-24 bg-gradient-to-l from-card to-transparent" />
+
+        <Marquee
+          pauseOnHover
+          className="[--duration:35s] [--gap:0rem] py-0"
+          aria-hidden="true"
+        >
+          {NETWORK_ROUTES.map((route) => (
+            <div
+              key={route}
+              className="flex items-center gap-6 px-6 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              <span className="inline-block size-1 rounded-none bg-primary/60" aria-hidden="true" />
+              <span>{route}</span>
+            </div>
+          ))}
+        </Marquee>
       </div>
     </div>
   )
@@ -209,4 +404,3 @@ export function Reveal({ children, className, delay = 0 }: RevealProps) {
     </motion.div>
   )
 }
-

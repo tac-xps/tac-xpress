@@ -66,7 +66,7 @@ export function HomeStory({
               aria-hidden="true"
             />
             <p
-              className="cargo-eyebrow font-mono text-xs font-semibold uppercase tracking-[0.18em] text-primary"
+              className="text-eyebrow text-primary"
             >
               Our route. Our reason.
             </p>
@@ -75,7 +75,7 @@ export function HomeStory({
           {/* Heading — two-tone color */}
           <h2
             id="about-title"
-            className="cargo-heading leading-tight"
+            className="text-section"
           >
             <span className="text-foreground">Connected by more</span>
             <br />
@@ -85,11 +85,11 @@ export function HomeStory({
           </h2>
 
           {/* Body copy — slightly better contrast */}
-          <p className="mt-7 text-lg leading-relaxed text-foreground/75">
+          <p className="text-lead mt-7">
             A shop waiting for stock. A family sending a little piece of home.
             Every consignment connects people as well as places.
           </p>
-          <p className="mt-5 leading-relaxed text-muted-foreground">
+          <p className="text-body-editorial mt-5">
             TAC-XPRESS supports the movement of goods between New Delhi and
             Northeast India, with Imphal at the heart of our story. We start
             with the details that matter: what you are sending, the route, the

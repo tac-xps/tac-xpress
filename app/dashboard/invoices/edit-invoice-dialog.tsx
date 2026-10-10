@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { useAction } from "next-safe-action/hooks"
 import { toast } from "sonner"
@@ -503,13 +503,12 @@ export function EditInvoiceDialog({
                           Remarks / Billing Notes (Optional)
                         </FormLabel>
                         <FormControl>
-                          <RichTextEditor
-                            variant="compact"
-                            minHeight="96px"
+                          <Textarea
+                            rows={3}
                             placeholder="Add billing remarks, payment terms, or special invoice instructions..."
                             aria-label="Remarks / Billing Notes"
-                            value={field.value || ""}
-                            onChange={field.onChange}
+                            className="min-h-[96px] resize-y"
+                            {...field}
                           />
                         </FormControl>
                         <FormMessage />

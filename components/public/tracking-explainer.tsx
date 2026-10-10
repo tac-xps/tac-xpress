@@ -7,10 +7,10 @@ export function TrackingExplainer() {
       <div className="cargo-container cargo-section">
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
           <div className="max-w-xl">
-            <p className="cargo-eyebrow mb-5 text-muted-foreground">
+            <p className="text-eyebrow mb-5 text-muted-foreground">
               04 / Stay informed
             </p>
-            <h2 id="tracking-info-title" className="cargo-heading">
+            <h2 id="tracking-info-title" className="text-section">
               Know the last recorded step.
             </h2>
           </div>

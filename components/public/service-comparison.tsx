@@ -40,10 +40,10 @@ export function ServiceComparison() {
       className="mx-auto max-w-7xl px-4 py-16 sm:px-8 lg:py-24"
       aria-labelledby="comparison-title"
     >
-      <h2 id="comparison-title" className="text-3xl font-medium tracking-tight">
+      <h2 id="comparison-title" className="text-section">
         Choose with the details in view.
       </h2>
-      <p className="mt-5 max-w-2xl leading-relaxed text-muted-foreground">
+      <p className="mt-5 max-w-2xl text-body-editorial">
         These are planning considerations, not a promise of availability or a
         fixed transit time. Confirm the service and terms for your particular
         goods with our team.

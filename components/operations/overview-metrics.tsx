@@ -73,7 +73,7 @@ export function OverviewMetrics({ stats }: { stats: DashboardStats }) {
                   {metric.label}
                 </Link>
               </dt>
-              <dd className="mt-3 text-3xl font-bold tracking-tight tabular-nums text-foreground">
+              <dd className="mt-3 font-metric-xl text-foreground">
                 <AnimatedCounter value={metric.value} />
               </dd>
             </motion.div>

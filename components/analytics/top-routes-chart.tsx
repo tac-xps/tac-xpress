@@ -35,7 +35,7 @@ export function TopRoutesChart({
   return (
     <Card>
       <CardHeader className="border-b p-5">
-        <CardTitle>Top Routes</CardTitle>
+        <CardTitle>Top routes</CardTitle>
         <CardDescription>Highest volume origin-destination pairs.</CardDescription>
       </CardHeader>
       <CardContent className="p-6">

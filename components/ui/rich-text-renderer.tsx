@@ -55,7 +55,7 @@ export function RichTextRenderer({
     <div
       data-slot="rich-text-renderer"
       className={cn(
-        "typeset typeset-docs rich-text-content text-foreground break-words",
+        "typeset text-foreground break-words",
         "[&_ul[data-type='taskList']]:list-none [&_ul[data-type='taskList']]:pl-0 [&_ul[data-type='taskList']]:space-y-1.5",
         "[&_li[data-type='taskItem']]:flex [&_li[data-type='taskItem']]:items-start [&_li[data-type='taskItem']]:gap-2",
         className

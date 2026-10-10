@@ -11,11 +11,25 @@ import {
 } from "motion/react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { LivingCargoLine } from "./living-cargo-line"
+import { Marquee } from "@/components/ui/marquee"
+import { BorderBeam } from "@/components/ui/border-beam"
 import { motionDurations, motionEasings, motionSprings } from "@/lib/motion/motion.theme"
+
+/** Brand pillar words scrolled as a marquee across the statement section */
+const BRAND_PILLARS = [
+  "Clarity",
+  "Dependability",
+  "Care",
+  "Precision",
+  "Trust",
+  "Integrity",
+  "Speed",
+  "Accountability",
+]
 
 /**
  * Editorial brand narrative statement section delivering mission closure
- * with scroll-settling hero imagery and final cargo rule resolution.
+ * with scroll-settling hero imagery, brand pillar marquee, and final cargo rule resolution.
  */
 export function BrandStatementSection() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -39,78 +53,89 @@ export function BrandStatementSection() {
     <EditorialContainer
       id="brand"
       aria-labelledby="brand-statement-heading"
-      className="py-16 sm:py-28 lg:py-36"
+      className="py-12 sm:py-16 lg:py-20"
     >
       <div ref={containerRef} className="mx-auto max-w-4xl text-center">
         {/* Eyebrow & Final Cargo Line Endpoint */}
-        <div className="flex flex-col items-center space-y-4">
-          <SectionEyebrow className="justify-center">
-            Narrative Closure · Our Commitment
+        <div className="flex flex-col items-center">
+          <SectionEyebrow className="justify-center mb-3">
+            Brand · The Meaning Behind Cargo
           </SectionEyebrow>
 
           {/* Living Cargo Line Final Endpoint */}
-          <div className="w-32 py-2">
+          <div className="w-28 py-1 mb-4">
             <LivingCargoLine progress={lineProgress} variant="rule" />
           </div>
 
-          {/* Masked Line-Level Editorial Headline (Phases 2 & 3) */}
+          {/* Editorial Headline — unclipped typography with reliable reveal */}
           <h2
             id="brand-statement-heading"
-            style={{ fontSize: "var(--type-display)" }}
-            className="font-heading font-medium tracking-tight text-foreground leading-[1.03] text-balance"
+            className="text-display text-foreground text-center"
           >
-            <span className="block overflow-hidden py-0.5">
-              <motion.span
-                className="block"
-                initial={shouldReduceMotion ? false : { y: "110%", opacity: 0.05 }}
-                whileInView={{ y: "0%", opacity: 1 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{
-                  duration: motionDurations.statement,
-                  delay: 0.1,
-                  ease: motionEasings.editorial,
-                }}
-              >
-                Every shipment
-              </motion.span>
-            </span>
-            <span className="block overflow-hidden py-0.5">
-              <motion.span
-                className="block text-muted-foreground/90"
-                initial={shouldReduceMotion ? false : { y: "110%", opacity: 0.05 }}
-                whileInView={{ y: "0%", opacity: 1 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{
-                  duration: motionDurations.statement,
-                  delay: 0.25,
-                  ease: motionEasings.editorial,
-                }}
-              >
-                moves something forward.
-              </motion.span>
-            </span>
+            <motion.span
+              className="block"
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "0px" }}
+              transition={{
+                duration: motionDurations.statement,
+                delay: 0.08,
+                ease: motionEasings.editorial,
+              }}
+            >
+              Every shipment
+            </motion.span>
+            <motion.span
+              className="block text-muted-foreground"
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "0px" }}
+              transition={{
+                duration: motionDurations.statement,
+                delay: 0.2,
+                ease: motionEasings.editorial,
+              }}
+            >
+              moves something forward.
+            </motion.span>
           </h2>
 
           <motion.p
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-30px" }}
+            viewport={{ once: true, margin: "0px" }}
             transition={{
               duration: motionDurations.editorial,
-              delay: 0.4,
+              delay: 0.3,
               ease: motionEasings.editorial,
             }}
-            className="mx-auto mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-muted-foreground font-normal text-pretty"
+            className="mx-auto mt-4 sm:mt-5 max-w-[50ch] text-lead text-center"
           >
-            Behind every consignment is an essential connection: a business fulfilling an
-            urgent contract, a regional clinic awaiting diagnostic inventory, or a family
-            receiving something indispensable. We honor that trust with deliberate
-            operational rigor.
+            Behind each parcel is something worth moving: someone&apos;s work, a personal connection or the next step in a plan.
           </motion.p>
         </div>
 
-        {/* Centerpiece Visual Frame (Phase 1 to 4) */}
-        <div className="relative mx-auto mt-14 overflow-hidden border border-border/80 bg-card shadow-sm sm:mt-18">
+        {/* Brand Pillar Marquee — scrolling operational values */}
+        <div className="w-full max-w-full overflow-hidden mt-8 mb-2 border-y border-border/80" aria-hidden="true">
+          <Marquee
+            pauseOnHover
+            className="[--duration:28s] [--gap:0rem] py-0"
+          >
+            {BRAND_PILLARS.map((pillar) => (
+              <div
+                key={pillar}
+                className="flex items-center gap-6 px-8 py-3 font-sans text-xs uppercase tracking-[0.24em] font-semibold text-muted-foreground"
+              >
+                <span className="inline-block size-1.5 rounded-none bg-primary/40" aria-hidden="true" />
+                <span>{pillar}</span>
+              </div>
+            ))}
+          </Marquee>
+        </div>
+
+        {/* Centerpiece Visual Frame (brand.webp) */}
+        <div className="relative mx-auto mt-8 overflow-hidden border border-border/80 bg-card shadow-sm sm:mt-10">
+          <BorderBeam size={120} duration={14} colorFrom="var(--color-primary)" colorTo="transparent" borderWidth={1} />
           <motion.div
             style={
               shouldReduceMotion
@@ -120,15 +145,15 @@ export function BrandStatementSection() {
             className="relative aspect-16/10 max-h-[540px] w-full overflow-hidden"
           >
             <Image
-              src="/images/logistics/Brand-and-Care.webp"
+              src="/images/logistics/brand.webp"
               alt="Contemporary Asian logistics specialist delivering critical consignment with care at commercial entrance"
               fill
               className="object-cover select-none"
               sizes="(min-width: 1024px) 896px, 100vw"
             />
           </motion.div>
-          <div className="flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-            <span>Custodial Discipline Complete</span>
+          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            <span>Custodial Discipline</span>
             <span>Clarity · Dependability · Care</span>
           </div>
         </div>

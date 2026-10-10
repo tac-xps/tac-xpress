@@ -73,7 +73,7 @@ export function DailyDeliveryStatusChart({
   return (
     <Card className="flex h-full flex-col shadow-none">
       <CardHeader className="items-center pt-6 pb-0">
-        <CardTitle className="text-base font-semibold tracking-tight">
+        <CardTitle>
           Bookings today
         </CardTitle>
         <CardDescription>Current status / booking day in UTC</CardDescription>
@@ -108,9 +108,9 @@ export function DailyDeliveryStatusChart({
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
+                          className="fill-foreground font-mono text-3xl font-semibold"
                         >
-                          {totalShipments.toLocaleString()}
+                          {totalShipments.toLocaleString("en-IN")}
                         </tspan>
                         <tspan
                           x={viewBox.cx}

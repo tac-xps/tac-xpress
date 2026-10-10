@@ -94,21 +94,21 @@ export function ShippingSteps() {
           >
             <motion.p
               variants={textVariant}
-              className="cargo-eyebrow mb-5 text-muted-foreground"
+              className="text-eyebrow mb-5 text-muted-foreground"
             >
               02 / From enquiry to delivery
             </motion.p>
             <motion.h2
               variants={textVariant}
               id="booking-title"
-              className="cargo-heading"
+              className="text-section"
             >
               A little preparation.
               <br />A clearer journey.
             </motion.h2>
             <motion.p
               variants={textVariant}
-              className="mt-5 leading-relaxed text-muted-foreground"
+              className="text-body-editorial mt-5"
             >
               Here is what happens before and after your goods are handed over.
             </motion.p>

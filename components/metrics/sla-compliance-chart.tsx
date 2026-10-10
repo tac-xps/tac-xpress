@@ -26,7 +26,7 @@ export function SlaComplianceChart({
         <CardDescription>Requests created in the last 30 days</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="mb-4 text-3xl font-medium tabular-nums">
+        <p className="mb-4 font-metric-xl text-foreground">
           {complianceRate === null
             ? "No data"
             : `${complianceRate.toFixed(1)}%`}

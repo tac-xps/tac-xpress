@@ -47,7 +47,7 @@ function DlqPayloadViewer({ payload }: { payload: unknown }) {
       <button
         type="button"
         onClick={handleCopy}
-        className="absolute right-2 top-2 z-10 rounded-sm p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+        className="absolute right-2 top-2 z-10 rounded-none p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
         title="Copy payload to clipboard"
         aria-label="Copy payload"
       >
@@ -57,7 +57,7 @@ function DlqPayloadViewer({ payload }: { payload: unknown }) {
           <Copy className="size-3.5" />
         )}
       </button>
-      <pre className="max-h-[350px] overflow-auto rounded-md border bg-muted p-4 pr-8 font-mono text-xs leading-relaxed text-foreground">
+      <pre className="max-h-[350px] overflow-auto rounded-none border bg-muted p-4 pr-8 font-mono text-xs leading-relaxed text-foreground">
         {formatted}
       </pre>
     </div>

@@ -175,7 +175,7 @@ export function HubActivity({ hubs }: { hubs: HubVolumePoint[] }) {
                 {hub.location}
               </p>
             </div>
-            <span className="text-lg font-mono font-bold tabular-nums">
+            <span className="font-metric-md text-foreground">
               {hub.totalShipments.toLocaleString("en-IN")}
             </span>
           </div>
