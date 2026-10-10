@@ -69,7 +69,7 @@ export function NumberTicker({
   const formattedValue = Intl.NumberFormat("en-US", {
     minimumFractionDigits: decimalPlaces,
     maximumFractionDigits: decimalPlaces,
-  }).format(prefersReducedMotion ? value : startValue)
+  }).format(prefersReducedMotion || direction === "down" ? value : startValue)
 
   return (
     <span

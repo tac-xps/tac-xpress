@@ -230,10 +230,17 @@ export function TrackingSection() {
                 </div>
 
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-                    <ShieldCheck className="size-3.5 text-status-delivered" />
-                    Custodial chain verified
-                  </span>
+                  {isSample ? (
+                    <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                      <ShieldCheck className="size-3.5 text-status-delivered" />
+                      Sample custody record
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                      <ShieldCheck className="size-3.5 text-muted-foreground" />
+                      Consignment status
+                    </span>
+                  )}
                   <span className="inline-flex items-center gap-1.5 border border-status-transit/30 bg-status-transit/10 px-2 py-0.5 text-[10px] font-medium text-status-transit">
                     <span className="size-1 bg-status-transit" />
                     {liveData ? liveData.status.toUpperCase() : "IN TRANSIT"}
@@ -426,7 +433,11 @@ export function TrackingSection() {
             </div>
 
             <div className="mt-6 border-t border-border/80 pt-4 font-mono text-[11px] text-muted-foreground">
-              <span>Verified intake record · Synchronized within 120 seconds of physical gate read</span>
+              <span>
+                {isSample
+                  ? "Verified sample intake record · Synchronized within 120 seconds of physical gate read"
+                  : "Consignment record synchronized with central tracking log"}
+              </span>
             </div>
           </div>
         </div>

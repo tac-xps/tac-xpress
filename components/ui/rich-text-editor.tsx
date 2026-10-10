@@ -25,7 +25,6 @@ import {
   Code,
   Table as TableIcon,
   Link as LinkIcon,
-  Unlink,
   Undo2,
   Redo2,
   Minus,
@@ -537,16 +536,6 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
 
           {/* Links */}
           <LinkToolbarButton editor={editor} disabled={disabled} />
-
-          {editor?.isActive("link") && (
-            <ToolbarButton
-              onClick={() => editor?.chain().focus().unsetLink().run()}
-              disabled={disabled || !editor}
-              tooltip="Remove Link"
-            >
-              <Unlink className="h-3.5 w-3.5" />
-            </ToolbarButton>
-          )}
 
           <Separator orientation="vertical" className="mx-1 h-4 bg-border/60" />
 

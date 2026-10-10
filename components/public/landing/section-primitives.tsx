@@ -333,9 +333,8 @@ export function ProofStrip({ className }: { className?: string } = {}) {
 
       {/* Live Network Route Marquee with Left & Right Gradient Fade Masks */}
       <div
-        role="region"
         className="relative w-full max-w-full overflow-hidden bg-muted/20"
-        aria-label="Active cargo corridor network"
+        aria-hidden="true"
       >
         {/* Soft edge gradient masks */}
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-24 bg-gradient-to-r from-card to-transparent" />

@@ -178,7 +178,7 @@ export function TicketForm({
         <div className="mb-4 flex items-center justify-between border-b border-border/70 pb-3">
           <div className="flex items-center gap-2">
             <span className="relative flex size-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-status-delivered opacity-75" />
+              <span className="absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-none bg-status-delivered opacity-75" />
               <span className="relative inline-flex size-2 rounded-none bg-status-delivered" />
             </span>
             <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-foreground">

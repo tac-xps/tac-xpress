@@ -29,7 +29,7 @@ const SERVICES = [
     action: "Explore air cargo",
     tagline: "When time matters.",
     description:
-      "When time matters. Explore the available air-freight options for your shipment.",
+      "Explore the available air-freight options for your shipment.",
     specs: ["24–48h gateway transit", "Statutory Air Waybill (AWB)", "Priority ramp transfer"],
   },
   {
