@@ -21,7 +21,7 @@ export function EditorialEyebrow({ children, className, id }: EditorialEyebrowPr
     <div
       id={id}
       className={cn(
-        "inline-flex items-center gap-2 border border-border/80 bg-muted/50 px-3 py-1 font-mono text-xs uppercase tracking-[0.18em] font-medium text-foreground select-none",
+        "inline-flex items-center gap-2 border border-border/80 bg-muted/50 px-3 py-1 font-sans text-xs uppercase tracking-[0.06em] font-semibold text-foreground select-none",
         className
       )}
     >
@@ -324,10 +324,10 @@ export function ProofStats({ className }: { className?: string } = {}) {
             transition={{ duration: 0.2 }}
             className="group flex flex-col justify-center py-4 sm:py-5 md:px-6 transition-colors hover:bg-muted/40"
           >
-            <span className={cn("font-mono text-xs font-bold uppercase tracking-[0.16em] transition-colors", claim.colorClass)}>
+            <span className={cn("font-sans text-xs sm:text-[13px] font-semibold uppercase tracking-[0.06em] transition-colors", claim.colorClass)}>
               {claim.label}
             </span>
-            <span className="mt-1 font-sans text-xs text-muted-foreground font-medium">
+            <span className="mt-1 font-sans text-xs sm:text-[13px] text-muted-foreground font-normal leading-normal">
               {claim.detail}
             </span>
           </motion.div>
@@ -345,7 +345,7 @@ export function CorridorMarquee({ className }: { className?: string } = {}) {
   return (
     <section
       className={cn(
-        "relative w-full overflow-hidden border-y border-border/80 bg-muted/20 py-1 sm:py-1.5 transition-colors",
+        "relative w-full overflow-hidden border-y border-border/80 bg-muted/20 py-1.5 sm:py-2 transition-colors",
         className
       )}
       aria-label="Daily scheduled corridor routes"
@@ -363,8 +363,8 @@ export function CorridorMarquee({ className }: { className?: string } = {}) {
       </div>
 
       {/* Soft edge gradient masks blending seamlessly into background */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-28 bg-gradient-to-r from-background via-background/80 to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-28 bg-gradient-to-l from-background via-background/80 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 sm:w-16 bg-gradient-to-r from-background via-background/70 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 sm:w-16 bg-gradient-to-l from-background via-background/70 to-transparent" />
 
       <Marquee
         repeat={4}
@@ -375,10 +375,10 @@ export function CorridorMarquee({ className }: { className?: string } = {}) {
         {CORRIDOR_MARQUEE_ITEMS.map((item, idx) => (
           <div
             key={`${item.corridor}-${idx}`}
-            className="flex items-center gap-3.5 border-r border-border/70 px-6 sm:px-8 py-2 font-mono text-xs"
+            className="flex items-center gap-3.5 border-r border-border/70 px-6 sm:px-8 py-2 font-sans text-xs sm:text-sm"
           >
             <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
-            <span className="font-semibold text-foreground tracking-wide text-xs sm:text-sm">
+            <span className="font-semibold text-foreground tracking-normal text-xs sm:text-sm">
               {item.corridor}
             </span>
             <span className="border border-border/80 bg-card/90 px-2 py-0.5 font-sans text-xs text-muted-foreground font-medium tracking-normal">

@@ -60,7 +60,7 @@ function StarRating({ count }: { count: number }) {
           key={i}
           className={`size-3.5 ${
             i < count
-              ? "fill-amber-400 text-amber-400"
+              ? "fill-warning text-warning"
               : "fill-muted text-muted-foreground/30"
           }`}
           strokeWidth={1.5}

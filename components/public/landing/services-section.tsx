@@ -34,12 +34,12 @@ const SERVICES = [
     href: "/services/air-cargo",
     action: "Explore air cargo",
     tagline: "24–48h Gateway Linehaul",
-    lead: "Scheduled airport departures.",
+    lead: "Scheduled air freight. Reliable connections.",
     color: "text-primary",
     accentBorder: "hover:border-t-primary",
-    badge: "border-primary/40 bg-primary/10 text-primary",
+    badge: "border-border/80 bg-muted/40 text-muted-foreground",
     description:
-      "Guaranteed belly-hold allocation connecting Delhi NCR and Northeast India with statutory Air Waybill (AWB) issuance, BCAS security screening, and priority ramp handover.",
+      "Scheduled departures connect Delhi NCR with Northeast India, supported by priority belly-hold allocation and compliant Air Waybill processing.",
     specs: [
       { label: "Transit", value: "24–48h airport gateway" },
       { label: "Carriage", value: "Statutory AWB issuance" },
@@ -53,12 +53,12 @@ const SERVICES = [
     href: "/services/surface-cargo",
     action: "Explore surface cargo",
     tagline: "National Arterial Expressways",
-    lead: "Heavy multi-ton linehaul.",
+    lead: "Dedicated corridors for heavy freight.",
     color: "text-info",
     accentBorder: "hover:border-t-info",
-    badge: "border-info/40 bg-info/10 text-info",
+    badge: "border-border/80 bg-muted/40 text-muted-foreground",
     description:
-      "High-capacity container transport along dedicated highway corridors with optical gate checkpoint scans, sealed vehicle security, and scheduled hub cross-docking.",
+      "Highway linehaul for palletized and multi-ton consignments, supported by sealed vehicles and checkpoint scan records.",
     specs: [
       { label: "Freight", value: "Palletized & multi-ton" },
       { label: "Corridor", value: "National highway linehaul" },
@@ -72,12 +72,12 @@ const SERVICES = [
     href: "/shipping-guide",
     action: "Read the shipping guide",
     tagline: "Unified First & Last Mile",
-    lead: "Single-custody consignment.",
+    lead: "One accountable delivery chain.",
     color: "text-status-delivered",
     accentBorder: "hover:border-t-status-delivered",
-    badge: "border-status-delivered/40 bg-status-delivered/10 text-status-delivered",
+    badge: "border-border/80 bg-muted/40 text-muted-foreground",
     description:
-      "End-to-end custody coordination from origin dock pickup through commercial destination handover, eliminating third-party handoffs with real-time digital proof of delivery.",
+      "Coordinated handling from origin pickup to final handover, with digitally recorded proof of delivery.",
     specs: [
       { label: "Intake", value: "Origin dock collection" },
       { label: "Delivery", value: "Last-mile station handover" },
@@ -220,21 +220,23 @@ export function ServicesSection() {
                 )}
               >
                 <div>
-                  <div className="flex items-center justify-between font-mono">
-                    <span className={cn("font-bold text-sm", srv.color)}>{srv.num}</span>
-                    <span className={cn("border px-2 py-0.5 font-mono text-xs uppercase tracking-wider font-semibold", srv.badge)}>
+                  <div className="flex items-center justify-between">
+                    <span className={cn("font-mono font-bold text-sm", srv.color)}>{srv.num}</span>
+                    <span className={cn("border px-2.5 py-0.5 font-sans text-xs uppercase tracking-[0.06em] font-medium", srv.badge)}>
                       {srv.tagline}
                     </span>
                     <Icon className={cn("size-4 text-muted-foreground transition-colors", `group-hover:${srv.color}`)} />
                   </div>
                   <h3
-                    style={{ fontSize: "var(--type-sub)" }}
-                    className="mt-4 font-heading font-semibold tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary"
+                    className="mt-4 font-heading text-xl sm:text-2xl font-semibold tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary"
                   >
                     {srv.title}
                   </h3>
-                  <p className="mt-3 text-body-editorial text-muted-foreground leading-relaxed font-normal">
-                    {srv.lead} {srv.description}
+                  <p className="mt-2 text-sm sm:text-[15px] font-semibold text-foreground/90 leading-snug">
+                    {srv.lead}
+                  </p>
+                  <p className="mt-2 text-body-editorial text-foreground/80 text-[15px] sm:text-base leading-relaxed font-normal">
+                    {srv.description}
                   </p>
                 </div>
 
@@ -245,10 +247,10 @@ export function ServicesSection() {
                         key={spec.label}
                         className="flex items-center justify-between"
                       >
-                        <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground font-medium">
+                        <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
                           {spec.label}
                         </span>
-                        <span className="font-sans text-xs font-semibold text-foreground">
+                        <span className="font-sans text-xs sm:text-sm font-semibold text-foreground">
                           {spec.value}
                         </span>
                       </div>

@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { DM_Sans, IBM_Plex_Mono, Manrope, Geist, Geist_Mono } from "next/font/google"
+import { IBM_Plex_Sans, IBM_Plex_Mono, DM_Sans, Manrope, Geist, Geist_Mono } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -13,15 +13,23 @@ import { Toaster } from "sonner"
 import * as Sentry from "@sentry/nextjs"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 
-const dmSans = DM_Sans({
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
-  variable: "--font-dm-sans",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-tac-sans",
+  display: "swap",
 })
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-ibm-plex-mono",
+  variable: "--font-tac-mono",
+  display: "swap",
+})
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
 })
 
 const geist = Geist({
@@ -67,8 +75,9 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={cn(
         "font-sans",
-        dmSans.variable,
+        ibmPlexSans.variable,
         ibmPlexMono.variable,
+        dmSans.variable,
         manropeHeading.variable,
         geist.variable,
         geistMono.variable
@@ -77,8 +86,9 @@ export default async function RootLayout({
       <body
         className={cn(
           "antialiased font-sans",
-          dmSans.variable,
+          ibmPlexSans.variable,
           ibmPlexMono.variable,
+          dmSans.variable,
           manropeHeading.variable,
           geist.variable,
           geistMono.variable

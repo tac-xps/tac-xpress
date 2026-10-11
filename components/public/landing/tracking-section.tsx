@@ -412,23 +412,23 @@ export function TrackingSection() {
 
               {/* Active Consignment Meta Details Well */}
               <div className="mt-6 border border-border/80 bg-muted/20 p-4 space-y-3.5">
-                <div className="flex items-center justify-between border-b border-border/60 pb-2.5 font-mono">
-                  <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+                  <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-semibold">
                     Consignment Reference
                   </span>
-                  <span className="text-sm font-bold tracking-wider text-primary">{activeAwb}</span>
+                  <span className="font-mono text-sm font-bold tracking-wider text-primary tabular-nums">{activeAwb}</span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 font-mono text-xs">
+                <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">Corridor</span>
-                    <span className="font-bold text-foreground">
+                    <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Corridor</span>
+                    <span className="font-sans font-semibold text-foreground text-xs sm:text-[13px]">
                       {liveData ? `${liveData.origin} → ${liveData.destination}` : "Delhi (DEL) → Imphal (IMF)"}
                     </span>
                   </div>
                   <div>
-                    <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">Service Mode</span>
-                    <span className="font-bold text-info">
+                    <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Service Mode</span>
+                    <span className="font-sans font-semibold text-info text-xs sm:text-[13px]">
                       {liveData ? liveData.service : "Air Express · Priority"}
                     </span>
                   </div>
@@ -436,17 +436,17 @@ export function TrackingSection() {
 
                 <div className="flex items-center justify-between border-t border-border/60 pt-2.5 text-xs">
                   {isSample ? (
-                    <span className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground font-medium">
+                    <span className="inline-flex items-center gap-1.5 font-sans text-xs text-muted-foreground font-medium">
                       <ShieldCheck className="size-4 text-status-delivered" />
                       Sample custody record
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground font-medium">
+                    <span className="inline-flex items-center gap-1.5 font-sans text-xs text-muted-foreground font-medium">
                       <ShieldCheck className="size-4 text-muted-foreground" />
                       Consignment status
                     </span>
                   )}
-                  <span className="inline-flex items-center gap-1.5 border border-status-transit/40 bg-status-transit/10 px-2.5 py-1 font-mono text-xs font-bold text-status-transit">
+                  <span className="inline-flex items-center gap-1.5 border border-status-transit/40 bg-status-transit/10 px-2.5 py-1 font-sans text-xs font-semibold uppercase tracking-wider text-status-transit">
                     <span className="size-1.5 bg-status-transit" />
                     {liveData ? liveData.status.toUpperCase() : "IN TRANSIT"}
                   </span>
@@ -564,11 +564,11 @@ export function TrackingSection() {
 
                               <div className="flex-1 pb-1">
                                 <div className="flex flex-wrap items-baseline justify-between gap-2">
-                                  <p className="text-xs font-semibold text-foreground">
+                                  <p className="font-sans text-sm font-semibold text-foreground">
                                     {evt.description || evt.status || "Milestone Scan"}
                                   </p>
                                   {evt.event_time && (
-                                    <span className="border border-border/70 bg-muted/60 px-2 py-0.5 font-mono text-xs text-foreground/90 font-medium">
+                                    <span className="border border-border/70 bg-muted/60 px-2 py-0.5 font-mono text-xs text-foreground/90 font-medium tabular-nums">
                                       {new Date(evt.event_time).toLocaleString("en-IN", {
                                         timeZone: "Asia/Kolkata",
                                         month: "short",
@@ -579,7 +579,7 @@ export function TrackingSection() {
                                     </span>
                                   )}
                                 </div>
-                                <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                                <p className="mt-1 font-sans text-xs sm:text-[13px] text-muted-foreground">
                                   {evt.location || "Gateway Hub"}
                                 </p>
                               </div>
@@ -587,7 +587,7 @@ export function TrackingSection() {
                           )
                         })
                       ) : !isSample ? (
-                        <p className="py-6 font-mono text-xs text-muted-foreground">
+                        <p className="py-6 font-sans text-xs text-muted-foreground">
                           No public tracking events are available yet.
                         </p>
                       ) : (
@@ -635,27 +635,27 @@ export function TrackingSection() {
                               <div className="flex-1 pb-1">
                                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                                   <p
-                                    className={`text-xs ${
+                                    className={`font-sans text-sm ${
                                       isCurrent
                                         ? "text-foreground font-semibold"
                                         : isCompleted
                                         ? "text-foreground font-medium"
-                                        : "text-muted-foreground"
+                                        : "text-muted-foreground font-normal"
                                     }`}
                                   >
                                     {item.title}
                                   </p>
                                   <span
-                                    className={`border px-2 py-0.5 font-mono text-xs font-medium ${
+                                    className={`border px-2 py-0.5 font-mono text-xs font-medium tabular-nums ${
                                       isCurrent
-                                        ? "border-primary/40 bg-primary/[0.06] text-foreground"
+                                        ? "border-primary/40 bg-primary/[0.06] text-foreground font-semibold"
                                         : "border-border/70 bg-muted/60 text-foreground/90"
                                     }`}
                                   >
                                     {item.timestamp}
                                   </span>
                                 </div>
-                                <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                                <p className="mt-1 font-sans text-xs sm:text-[13px] text-muted-foreground">
                                   {item.location}
                                 </p>
                               </div>
@@ -669,16 +669,16 @@ export function TrackingSection() {
               </AnimatePresence>
             </div>
 
-            <div className="mt-6 border-t border-border/80 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono text-xs text-muted-foreground">
+            <div className="mt-6 border-t border-border/80 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-sans text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 <RadarSyncDot shouldReduceMotion={!!shouldReduceMotion} />
-                <span className="font-medium">
+                <span className="font-normal text-muted-foreground">
                   {isSample
                     ? "Verified physical scan trail · Synced within 120s of gate intake"
                     : "Consignment record synchronized with central tracking log"}
                 </span>
               </div>
-              <span className="font-mono text-xs uppercase tracking-wider text-primary font-semibold">
+              <span className="font-sans text-xs uppercase tracking-[0.06em] text-primary font-semibold">
                 Optical Gate Audit
               </span>
             </div>

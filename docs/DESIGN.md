@@ -86,15 +86,45 @@ The visual system implements the 2026 "Nocturne Obsidian & Luminous Nordic Teal"
 - Stylelint rejects raw hex codes, RGB/RGBA functions, and named colors in CSS (`pnpm run stylelint`).
 - Design Token Audit scans TSX files to block Tailwind spectrum classes (`pnpm run audit:tokens`).
 
-## Operations typography and space
+## Typography and spatial hierarchy
 
-- DM Sans for headings and interface text; sentence case and normal letter spacing.
-- IBM Plex Mono for AWBs and compact machine identifiers; tabular numerals for comparable values.
-- Four-pixel spacing scale. Action heights: extra-small 24px, small 28px, default 32px and large 36px; icon buttons use the same scale. Public primary actions and paired form fields use 36px. Preserve at least 24px targets, separation between adjacent actions and visible keyboard focus. Avoid local height/padding overrides when a shared size variant fits.
-- Every radius token is zero. Do not reintroduce pill utilities, arbitrary pixel radii or rounded chart bars. Preserve the geometry of icons, map paths and illustrations.
-- Responsive content containers, bounded readable paragraphs and horizontal table scrolling inside their own region.
-- The desktop sidebar remains sticky and full viewport height. Mobile navigation uses the shadcn Sheet.
-- Operations navigation uses a consolidated active state: 10% primary wash background, primary foreground text, and a crisp 3px orthogonal indicator bar on the active route.
+TAC-XPRESS uses a disciplined two-family typography system. Interface elements use IBM Plex Sans. Operational data uses IBM Plex Mono.
+
+### Typeface assignment
+
+- **Primary Interface Font (`--font-tac-sans`):** IBM Plex Sans (weights 400, 500, 600, 700). Applied to headings, body copy, navigation, buttons, forms, and service cards.
+- **Operational Data Font (`--font-tac-mono`):** IBM Plex Mono (weights 400, 500, 600, 700). Restricted strictly to AWB references, shipment IDs, route codes, timestamps, and dense audit values.
+- Prohibit monospaced styling on general UI navigation, category tags, section titles, and descriptive text.
+
+### Typographic scale and treatments
+
+| Role | Desktop Size | Weight | Line Height | Tracking | Font Family | Treatment |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Hero heading | 48–60px | 600 | 1.08–1.15 | -0.02em | IBM Plex Sans | Confident display hierarchy |
+| Section heading | 36–42px | 600 | 1.15 | -0.02em | IBM Plex Sans | Clear section delineation |
+| Service card heading | 22–24px | 600 | 1.20 | -0.01em | IBM Plex Sans | Compact, prominent |
+| Body copy | 16–17px | 400 | 1.55–1.65 | normal | IBM Plex Sans | Dark, comfortable line height |
+| Supporting copy | 14–15px | 400 | 1.45–1.55 | normal | IBM Plex Sans | Legible secondary guidance |
+| Operational labels | 12–13px | 500–600 | 1.35 | +0.06em | IBM Plex Sans | Uppercase micro-labels |
+| Dense metadata | 12px min | 400–500 | 1.40 | normal | IBM Plex Mono | Tabular numerals only |
+
+### Semantic text color tokens
+
+| Token | Hex Equivalent | Purpose | Contrast vs Canvas |
+| :--- | :--- | :--- | :--- |
+| `--color-canvas` | `#F7F9FA` | Cool-neutral page canvas | Base background |
+| `--color-ink` | `#17212B` | Headings, primary titles | 15.4:1 (WCAG AAA) |
+| `--color-body` | `#344256` | Editorial paragraphs, body copy | 9.7:1 (WCAG AAA) |
+| `--color-body-muted` | `#536477` | Supporting labels, secondary metadata | 5.8:1 (WCAG AA) |
+| `--color-line` | `#D7DEE5` | Structural hairline dividers | 1.3:1 non-text boundary |
+| `--color-accent` | `#007A68` | Action jewels, verified indicators | 5.0:1 (WCAG AA) |
+
+### Spatial standards
+
+- Four-pixel spacing scale. Action heights: extra-small 24px, small 28px, default 32px, large 36px.
+- Zero radius (`rounded-none`) across all surfaces, cards, tags, and inputs.
+- Sticky full-viewport desktop sidebar (`sticky top-0 h-svh`).
+- Maximum public layout container: 1440px with fluid side padding.
 
 ## Information and interaction
 
