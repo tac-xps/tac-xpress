@@ -23,5 +23,6 @@ Sentry.init({
     "Invalid login credentials",
     "NEXT_REDIRECT",
     "NEXT_NOT_FOUND",
+    "received GOAWAY without any open streams",
   ],
 });

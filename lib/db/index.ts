@@ -45,9 +45,9 @@ const isServerless = Boolean(
 
 function normalizeConnectionString(raw: string): string {
   // If connection points to Supabase pooler on port 5432 (session mode limit: 15),
-  // route to port 6543 (transaction mode) which supports high concurrency.
-  if (raw.includes("pooler.supabase.com:5432")) {
-    return raw.replace("pooler.supabase.com:5432", "pooler.supabase.com:6543")
+  // route to port 6543 (transaction mode) which supports high concurrency in serverless.
+  if (raw.includes("pooler.supabase.com")) {
+    return raw.replace(/(:5432)(\b|\/|\?)/, ":6543$2")
   }
   return raw
 }
