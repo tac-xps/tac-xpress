@@ -161,7 +161,6 @@ export function ProcessSection() {
                         ? undefined
                         : {
                             scale: isActive ? 1.0 : 0.985,
-                            opacity: isActive ? 1 : 0.88,
                           }
                     }
                     transition={{
@@ -176,7 +175,7 @@ export function ProcessSection() {
                         ? cn(step.activeBorder, "bg-card shadow-sm")
                         : isPassed
                         ? "border-border/80 bg-card"
-                        : "border-border/60 bg-card/60"
+                        : "border-border/60 bg-card"
                     )}
                   >
                     {isActive && (

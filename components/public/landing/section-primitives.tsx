@@ -343,13 +343,25 @@ export function ProofStats({ className }: { className?: string } = {}) {
  */
 export function CorridorMarquee({ className }: { className?: string } = {}) {
   return (
-    <div
+    <section
       className={cn(
         "relative w-full overflow-hidden border-y border-border/80 bg-muted/20 py-1 sm:py-1.5 transition-colors",
         className
       )}
       aria-label="Daily scheduled corridor routes"
     >
+      {/* Accessible semantic list for screen readers while marquee animation is aria-hidden */}
+      <div className="sr-only">
+        <h2>Daily scheduled corridor routes</h2>
+        <ul>
+          {CORRIDOR_MARQUEE_ITEMS.map((item, idx) => (
+            <li key={`${item.corridor}-${idx}`}>
+              {item.corridor} — {item.tag}
+            </li>
+          ))}
+        </ul>
+      </div>
+
       {/* Soft edge gradient masks blending seamlessly into background */}
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-28 bg-gradient-to-r from-background via-background/80 to-transparent" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-28 bg-gradient-to-l from-background via-background/80 to-transparent" />
@@ -375,7 +387,7 @@ export function CorridorMarquee({ className }: { className?: string } = {}) {
           </div>
         ))}
       </Marquee>
-    </div>
+    </section>
   )
 }
 

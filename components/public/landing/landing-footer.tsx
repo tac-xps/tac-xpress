@@ -130,7 +130,12 @@ export function LandingFooter() {
             <span>·</span>
             <button
               type="button"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              onClick={() =>
+                window.scrollTo({
+                  top: 0,
+                  behavior: shouldReduceMotion ? "instant" : "smooth",
+                })
+              }
               className="group inline-flex items-center gap-1.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
               aria-label="Scroll to top of page"
             >

@@ -87,6 +87,7 @@ export function HeroSection() {
             style={{ fontSize: "clamp(2.5rem, 3.8vw + 0.25rem, 4.25rem)" }}
             className="font-heading font-bold tracking-[-0.035em] text-foreground leading-[1.08] text-balance"
           >
+            <span className="sr-only">Move cargo. With clarity. — </span>
             <span className="block overflow-hidden py-0.5">
               <motion.span
                 className="block font-heading font-bold text-foreground lg:whitespace-nowrap"
@@ -205,28 +206,14 @@ export function HeroSection() {
                   }
                   className="relative h-full w-full will-change-transform transform-gpu"
                 >
-                  {shouldReduceMotion ? (
-                    <Image
-                      src="/images/logistics/hero.webp"
-                      alt="TAC Express commercial logistics corridor connecting Delhi and Northeast India"
-                      fill
-                      priority
-                      className="object-cover select-none"
-                      sizes="(min-width: 1280px) 520px, (min-width: 1024px) 42vw, 100vw"
-                    />
-                  ) : (
-                    <video
-                      src="/video/hero-bg.mp4"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      preload="auto"
-                      poster="/images/logistics/hero.webp"
-                      className="h-full w-full object-cover select-none"
-                      aria-label="TAC Express linehaul transport in motion"
-                    />
-                  )}
+                  <Image
+                    src="/images/logistics/hero.webp"
+                    alt="TAC Express commercial logistics corridor connecting Delhi and Northeast India"
+                    fill
+                    priority
+                    className="object-cover select-none"
+                    sizes="(min-width: 1280px) 520px, (min-width: 1024px) 42vw, 100vw"
+                  />
                 </motion.div>
               </div>
 

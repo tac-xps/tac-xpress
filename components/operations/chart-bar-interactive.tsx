@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import type { ShipmentVolumePoint } from "@/lib/dashboard-metrics"
 
 const chartData = [
   { date: "2024-04-01", desktop: 222, mobile: 150 },
@@ -134,22 +135,41 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function Component(_props?: { data?: unknown }) {
+export interface ChartBarInteractiveProps {
+  data?: ShipmentVolumePoint[]
+}
+
+export function Component({ data }: ChartBarInteractiveProps = {}) {
   const [timeRange, setTimeRange] = React.useState("90d")
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date)
-    const referenceDate = new Date("2024-06-30")
-    let daysToSubtract = 90
-    if (timeRange === "30d") {
-      daysToSubtract = 30
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7
+  const rawData = React.useMemo(() => {
+    if (data && data.length > 0) {
+      return data.map((item) => ({
+        date: item.date,
+        desktop: item.airCargo,
+        mobile: item.surfaceCargo,
+      }))
     }
+    return chartData
+  }, [data])
+
+  const filteredData = React.useMemo(() => {
+    if (rawData.length === 0) return []
+    const lastItem = rawData[rawData.length - 1]
+    const referenceDate = new Date(
+      lastItem.date.includes("T") ? lastItem.date : `${lastItem.date}T00:00:00Z`
+    )
+    const daysToSubtract = timeRange === "7d" ? 6 : timeRange === "30d" ? 29 : 89
     const startDate = new Date(referenceDate)
-    startDate.setDate(startDate.getDate() - daysToSubtract)
-    return date >= startDate
-  })
+    startDate.setUTCDate(startDate.getUTCDate() - daysToSubtract)
+
+    return rawData.filter((item) => {
+      const date = new Date(
+        item.date.includes("T") ? item.date : `${item.date}T00:00:00Z`
+      )
+      return date >= startDate
+    })
+  }, [rawData, timeRange])
 
   return (
     <Card className="rounded-none">
@@ -220,10 +240,15 @@ export function Component(_props?: { data?: unknown }) {
               tickMargin={8}
               minTickGap={32}
               tickFormatter={(value) => {
-                const date = new Date(value)
+                const date = new Date(
+                  typeof value === "string" && !value.includes("T")
+                    ? `${value}T00:00:00Z`
+                    : value
+                )
                 return date.toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
+                  timeZone: "UTC",
                 })
               }}
             />
@@ -232,9 +257,15 @@ export function Component(_props?: { data?: unknown }) {
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
+                    const date = new Date(
+                      typeof value === "string" && !value.includes("T")
+                        ? `${value}T00:00:00Z`
+                        : value
+                    )
+                    return date.toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
+                      timeZone: "UTC",
                     })
                   }}
                   indicator="dot"
