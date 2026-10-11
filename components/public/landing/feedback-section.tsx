@@ -101,7 +101,7 @@ function TestimonialCard({
             strokeWidth={1.5}
             aria-hidden="true"
           />
-          <span className="font-mono text-[10px] uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5">
+          <span className="font-mono text-xs font-semibold uppercase tracking-[0.06em] text-primary bg-primary/10 px-2 py-0.5">
             {testimonial.corridor}
           </span>
         </div>
@@ -116,7 +116,7 @@ function TestimonialCard({
           <span className="block text-sm font-semibold text-foreground">
             {testimonial.name}
           </span>
-          <span className="block font-mono text-[10px] text-muted-foreground tracking-wide">
+          <span className="block font-sans text-xs text-muted-foreground">
             {testimonial.role}
           </span>
         </div>
@@ -211,7 +211,7 @@ export function FeedbackSection() {
               <span className="font-mono text-xl font-bold tabular-nums text-foreground">
                 4.8 / 5
               </span>
-              <span className="block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span className="block font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium">
                 Avg. Corridor Rating
               </span>
             </div>
@@ -219,7 +219,7 @@ export function FeedbackSection() {
               <span className="font-mono text-xl font-bold tabular-nums text-foreground">
                 &lt; 24h
               </span>
-              <span className="block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span className="block font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium">
                 SLA Review Response
               </span>
             </div>
@@ -227,7 +227,7 @@ export function FeedbackSection() {
               <span className="font-mono text-xl font-bold tabular-nums text-foreground">
                 +72
               </span>
-              <span className="block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span className="block font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium">
                 Net Promoter Score
               </span>
             </div>
@@ -235,7 +235,7 @@ export function FeedbackSection() {
               <span className="font-mono text-xl font-bold tabular-nums text-foreground">
                 99.4%
               </span>
-              <span className="block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span className="block font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium">
                 On-Time Reliability
               </span>
             </div>
@@ -246,7 +246,7 @@ export function FeedbackSection() {
             <Button
               type="button"
               onClick={scrollToFeedbackForm}
-              className="gap-2 rounded-none font-mono text-xs uppercase tracking-wider"
+              className="gap-2 rounded-none font-sans text-xs font-semibold uppercase tracking-wider"
             >
               <Sparkles className="size-3.5" />
               Share Feedback on Operations Desk

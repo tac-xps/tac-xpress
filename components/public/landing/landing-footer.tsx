@@ -60,7 +60,7 @@ export function LandingFooter() {
         {/* Top Editorial Callout */}
         <div className="mb-12 flex flex-col justify-between gap-6 border-b border-border/80 pb-10 md:flex-row md:items-end">
           <div>
-            <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-semibold">
+            <span className="font-sans text-xs uppercase tracking-[0.06em] text-primary font-semibold">
               Freight Commitment
             </span>
             <p className="mt-2 text-section text-foreground">
@@ -120,7 +120,7 @@ export function LandingFooter() {
         </div>
 
         {/* Copyright and Metadata */}
-        <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-border/80 pt-8 sm:flex-row sm:items-center font-mono text-xs text-muted-foreground">
+        <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-border/80 pt-8 sm:flex-row sm:items-center font-sans text-xs text-muted-foreground">
           <p>© {new Date().getFullYear()} TAC-XPRESS LOGISTICS LLP. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-4">
             <span>GST Registered</span>

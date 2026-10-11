@@ -188,7 +188,7 @@ export function ServicesSection() {
           </motion.div>
 
           {/* Architectural caption bar */}
-          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-mono text-xs tracking-wider uppercase text-foreground/80">
+          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-sans text-xs tracking-[0.06em] uppercase text-foreground/80">
             <span className="font-semibold text-foreground">Arterial Linehaul · Commercial Aviation</span>
             <span className="hidden sm:inline text-muted-foreground font-medium">Delhi NCR Corridor · Northeast Expressways</span>
           </div>
@@ -232,10 +232,10 @@ export function ServicesSection() {
                   >
                     {srv.title}
                   </h3>
-                  <p className="mt-2 text-sm sm:text-[15px] font-semibold text-foreground/90 leading-snug">
+                  <p className="mt-2 text-sm sm:text-base font-semibold text-foreground leading-snug">
                     {srv.lead}
                   </p>
-                  <p className="mt-2 text-body-editorial text-foreground/80 text-[15px] sm:text-base leading-relaxed font-normal">
+                  <p className="mt-2 text-body-editorial">
                     {srv.description}
                   </p>
                 </div>

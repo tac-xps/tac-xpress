@@ -143,7 +143,7 @@ export function NetworkSection() {
               sizes="(min-width: 1360px) 1264px, 100vw"
             />
           </motion.div>
-          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-mono text-xs tracking-wider uppercase text-muted-foreground">
+          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-sans text-xs tracking-[0.06em] uppercase text-muted-foreground">
             <span className="font-medium">Air Cargo Master Apron · Physical Gateways</span>
             <span className="hidden sm:inline font-medium">Continuous Infrastructure Verification</span>
           </div>

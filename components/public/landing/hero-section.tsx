@@ -218,7 +218,7 @@ export function HeroSection() {
               </div>
 
               {/* Restrained Architectural Baseline Tag */}
-              <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-mono text-xs tracking-wider uppercase text-foreground/80">
+              <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-sans text-xs tracking-[0.06em] uppercase text-foreground/80">
                 <span className="flex items-center gap-2">
                   <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
                   <span className="font-semibold text-foreground">DEL ⇄ Northeast Linehaul</span>

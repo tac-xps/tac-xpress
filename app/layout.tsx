@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { IBM_Plex_Sans, IBM_Plex_Mono, DM_Sans, Manrope, Geist, Geist_Mono } from "next/font/google"
+import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -13,38 +13,18 @@ import { Toaster } from "sonner"
 import * as Sentry from "@sentry/nextjs"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 
-const ibmPlexSans = IBM_Plex_Sans({
+const tacSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-tac-sans",
   display: "swap",
 })
 
-const ibmPlexMono = IBM_Plex_Mono({
+const tacMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-tac-mono",
   display: "swap",
-})
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-})
-
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist",
-})
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
-})
-
-const manropeHeading = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
 })
 
 export const metadata: Metadata = {
@@ -73,26 +53,10 @@ export default async function RootLayout({
       lang="en"
       data-scroll-behavior="smooth"
       suppressHydrationWarning
-      className={cn(
-        "font-sans",
-        ibmPlexSans.variable,
-        ibmPlexMono.variable,
-        dmSans.variable,
-        manropeHeading.variable,
-        geist.variable,
-        geistMono.variable
-      )}
+      className={cn("font-sans", tacSans.variable, tacMono.variable)}
     >
       <body
-        className={cn(
-          "antialiased font-sans",
-          ibmPlexSans.variable,
-          ibmPlexMono.variable,
-          dmSans.variable,
-          manropeHeading.variable,
-          geist.variable,
-          geistMono.variable
-        )}
+        className={cn("font-sans", tacSans.variable, tacMono.variable)}
       >
         <PostHogProvider>
           <QueryProvider>

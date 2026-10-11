@@ -143,8 +143,8 @@ export function CareSection() {
                       {std.label}
                     </h3>
                   </div>
-                  <p className="max-w-md text-body-editorial text-foreground/80 text-[15px] sm:text-base leading-relaxed font-normal">
-                    <span className="font-semibold text-foreground/95 mr-1.5">{std.lead}</span>
+                  <p className="max-w-md text-body-editorial">
+                    <span className="font-semibold text-foreground mr-1.5">{std.lead}</span>
                     {std.detail}
                   </p>
                 </div>

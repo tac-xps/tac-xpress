@@ -14,7 +14,7 @@ export interface EditorialEyebrowProps {
 }
 
 /**
- * Classifies the section with small, tracked uppercase monospace text.
+ * Classifies the section with small, tracked uppercase sans-serif text.
  */
 export function EditorialEyebrow({ children, className, id }: EditorialEyebrowProps) {
   return (
@@ -45,7 +45,7 @@ export interface EditorialTitleProps {
 }
 
 /**
- * Carries the primary message using Manrope display font and balanced rags.
+ * Carries the primary message using IBM Plex Sans display hierarchy and balanced rags.
  */
 export function EditorialTitle({
   children,
@@ -324,10 +324,10 @@ export function ProofStats({ className }: { className?: string } = {}) {
             transition={{ duration: 0.2 }}
             className="group flex flex-col justify-center py-4 sm:py-5 md:px-6 transition-colors hover:bg-muted/40"
           >
-            <span className={cn("font-sans text-xs sm:text-[13px] font-semibold uppercase tracking-[0.06em] transition-colors", claim.colorClass)}>
+            <span className={cn("font-sans text-xs sm:text-sm font-semibold uppercase tracking-[0.06em] transition-colors", claim.colorClass)}>
               {claim.label}
             </span>
-            <span className="mt-1 font-sans text-xs sm:text-[13px] text-muted-foreground font-normal leading-normal">
+            <span className="mt-1 font-sans text-xs sm:text-sm text-muted-foreground font-normal leading-normal">
               {claim.detail}
             </span>
           </motion.div>

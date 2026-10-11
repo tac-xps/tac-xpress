@@ -179,12 +179,12 @@ function MilestoneProgressRail({
 
   return (
     <div className="mb-6 space-y-2 select-none" aria-hidden="true">
-      <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-        <span className="flex items-center gap-1.5 font-medium">
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <span className="flex items-center gap-1.5 font-sans uppercase tracking-[0.06em] font-medium">
           <span className="size-1.5 rounded-none bg-primary" />
           Milestone Fulfillment
         </span>
-        <span className="font-semibold text-foreground">
+        <span className="font-mono font-semibold tabular-nums text-foreground">
           {percentage}% · Phase {completedSteps} of {totalSteps}
         </span>
       </div>
@@ -422,13 +422,13 @@ export function TrackingSection() {
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
                     <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Corridor</span>
-                    <span className="font-sans font-semibold text-foreground text-xs sm:text-[13px]">
+                    <span className="font-sans font-semibold text-foreground text-xs sm:text-sm">
                       {liveData ? `${liveData.origin} → ${liveData.destination}` : "Delhi (DEL) → Imphal (IMF)"}
                     </span>
                   </div>
                   <div>
                     <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Service Mode</span>
-                    <span className="font-sans font-semibold text-info text-xs sm:text-[13px]">
+                    <span className="font-sans font-semibold text-info text-xs sm:text-sm">
                       {liveData ? liveData.service : "Air Express · Priority"}
                     </span>
                   </div>
@@ -507,7 +507,7 @@ export function TrackingSection() {
                         <button
                           type="button"
                           onClick={handleResetToSample}
-                          className="mt-3 font-mono text-xs underline underline-offset-4 hover:text-foreground"
+                          className="mt-3 font-sans text-xs font-medium underline underline-offset-4 hover:text-foreground"
                         >
                           Restore sample consignment preview
                         </button>
@@ -536,7 +536,7 @@ export function TrackingSection() {
                       {isPending ? (
                         <div className="flex items-center gap-2 py-6 text-xs text-muted-foreground">
                           <Loader2 className="size-4 animate-spin" />
-                          <span className="font-mono">Retrieving consignment milestones…</span>
+                          <span className="font-sans">Retrieving consignment milestones…</span>
                         </div>
                       ) : liveData && liveData.events && liveData.events.length > 0 ? (
                         liveData.events.map((evt, index) => {
@@ -579,7 +579,7 @@ export function TrackingSection() {
                                     </span>
                                   )}
                                 </div>
-                                <p className="mt-1 font-sans text-xs sm:text-[13px] text-muted-foreground">
+                                <p className="mt-1 font-sans text-xs sm:text-sm text-muted-foreground">
                                   {evt.location || "Gateway Hub"}
                                 </p>
                               </div>
@@ -655,7 +655,7 @@ export function TrackingSection() {
                                     {item.timestamp}
                                   </span>
                                 </div>
-                                <p className="mt-1 font-sans text-xs sm:text-[13px] text-muted-foreground">
+                                <p className="mt-1 font-sans text-xs sm:text-sm text-muted-foreground">
                                   {item.location}
                                 </p>
                               </div>

@@ -75,7 +75,7 @@ export function BackToTop() {
             <TooltipContent
               side="left"
               sideOffset={12}
-              className="rounded-none border border-border/80 bg-popover px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-popover-foreground shadow-md"
+              className="rounded-none border border-border/80 bg-popover px-3 py-1.5 font-sans text-xs font-medium text-popover-foreground shadow-md"
             >
               Back to top
             </TooltipContent>
