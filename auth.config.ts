@@ -44,5 +44,5 @@ export const authConfig = {
   pages: {
     signIn: "/signin",
   },
-  debug: process.env.NODE_ENV !== "production",
+  debug: process.env.AUTH_DEBUG === "true",
 } satisfies NextAuthConfig

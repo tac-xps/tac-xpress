@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (
-    session.user.role === "customer" &&
+    (session.user.role as string) === "customer" &&
     shipment.customerId !== session.user.id
   ) {
     return new Response("Unauthorized", { status: 401 })

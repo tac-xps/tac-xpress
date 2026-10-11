@@ -11,22 +11,27 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true
     let loading = false
-    async function refresh() {
+    let lastFetched = 0
+    async function refresh(force = false) {
+      const now = Date.now()
+      if (!force && now - lastFetched < 30_000) return
       if (loading || document.visibilityState === "hidden") return
       loading = true
       try {
         const response = await getWorkspaceActivity()
         if (active) {
+          lastFetched = Date.now()
           setNotifications(response.items.map((item) => ({ ...item, read: false })))
           setError("")
         }
       } catch { if (active) setError("Recent activity is unavailable. Open the relevant workspace page or try again later.") }
       finally { loading = false }
     }
-    void refresh()
-    const timer = window.setInterval(refresh, 60_000)
-    window.addEventListener("focus", refresh)
-    return () => { active = false; window.clearInterval(timer); window.removeEventListener("focus", refresh) }
+    void refresh(true)
+    const timer = window.setInterval(() => refresh(true), 60_000)
+    const handleFocus = () => refresh(false)
+    window.addEventListener("focus", handleFocus)
+    return () => { active = false; window.clearInterval(timer); window.removeEventListener("focus", handleFocus) }
   }, [])
   const visible = notifications.map((item) => ({ ...item, read: readIds.includes(item.id) }))
   return <NotificationContext.Provider value={{

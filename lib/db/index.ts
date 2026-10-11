@@ -72,12 +72,12 @@ function createDb(): DbInstance {
     postgres(resolvedConnectionString, {
       prepare: false,
       ssl: isLocalhost ? false : "require",
-      max: isServerless ? 1 : 5,
+      max: isServerless ? 1 : 10,
       // Bound every wait so a stalled database can never hang a request forever.
       // Without these, a connect or query that never returns leaves server
       // components awaiting indefinitely and the page never finishes rendering.
       connect_timeout: 10,
-      idle_timeout: isServerless ? 5 : 20,
+      idle_timeout: isServerless ? 5 : 60,
       max_lifetime: isServerless ? 60 : undefined,
       connection: {
         statement_timeout: 15000,

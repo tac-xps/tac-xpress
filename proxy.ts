@@ -260,13 +260,22 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
   )
     return authMiddleware(request, event)
 
-  // Bypass Arcjet entirely in local development if no real key is provided
+  // In development, bypass Arcjet unless explicitly enabled to eliminate 250ms+ remote network latency per request
   if (
     process.env.NODE_ENV === "development" &&
-    (!process.env.ARCJET_KEY ||
-      /placeholder|dummy|example/i.test(process.env.ARCJET_KEY))
+    process.env.ARCJET_DEV_ENABLE !== "true"
   ) {
-    // Manually invoke the NextAuth wrapper when skipping Arcjet
+    // Only invoke NextAuth perimeter check on routes that actually require it
+    const pathname = request.nextUrl.pathname
+    const isPerimeterRoute =
+      /^\/(?:dashboard|driver|portal|login|signin|onboarding)(?:\/|$)/.test(
+        pathname
+      )
+
+    if (!isPerimeterRoute) {
+      return NextResponse.next()
+    }
+
     return authMiddleware(request, event)
   }
 
@@ -288,7 +297,7 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
 export const config = {
   matcher: [
     // Exclude static assets, auth, cron, webhooks, public API routes, PostHog ingest, and Next.js internals from middleware
-    "/((?!api/auth|api/cron|api/webhooks|api/public|api/chat|ingest|_next/static|_next/image|favicon.ico|monitoring|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|woff|woff2|ttf|eot)$).*)",
+    "/((?!api/auth|api/cron|api/webhooks|api/public|api/chat|ingest|_next/static|_next/image|favicon.ico|monitoring|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|woff|woff2|ttf|eot|webmanifest|json|map)$).*)",
   ],
 }
 
