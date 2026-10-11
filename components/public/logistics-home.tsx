@@ -2,6 +2,7 @@ import React from "react"
 import { MotionProvider } from "./landing/motion-provider"
 import { LandingNav } from "./landing/landing-nav"
 import { HeroSection } from "./landing/hero-section"
+import { CorridorMarquee } from "./landing/section-primitives"
 import { ServicesSection } from "./landing/services-section"
 import { TrackingSection } from "./landing/tracking-section"
 import { ProcessSection } from "./landing/process-section"
@@ -12,6 +13,7 @@ import { FAQSection } from "./landing/faq-section"
 import { ContactSection } from "./landing/contact-section"
 import { LandingFooter } from "./landing/landing-footer"
 import { SupportChat } from "./support-chat"
+import { BackToTop } from "./landing/back-to-top"
 
 /**
  * TAC Express — Master Landing Page (Motion System 2.0: Living Logistics)
@@ -39,6 +41,10 @@ export function LogisticsHome() {
         <main id="main-content" className="relative">
           {/* Chapter 01: Cargo */}
           <HeroSection />
+
+          {/* Living Corridor Movement Ticker Ribbon */}
+          <CorridorMarquee />
+
           <ServicesSection />
 
           {/* Chapter 02: Visibility */}
@@ -62,6 +68,9 @@ export function LogisticsHome() {
 
         {/* On-Demand Support Assistant */}
         <SupportChat />
+
+        {/* Global Scroll-to-Top Floating Trigger */}
+        <BackToTop />
       </div>
     </MotionProvider>
   )

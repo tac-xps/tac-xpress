@@ -117,7 +117,7 @@ export function ShipmentBarInteractive({ rows }: ShipmentBarInteractiveProps) {
               key={key}
               data-active={activeChart === key}
               onClick={() => setActiveChart(key)}
-              className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-5 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-t-0 sm:border-l sm:px-7 sm:py-5 transition-colors hover:bg-muted/30"
+              className="relative z-1 flex flex-1 flex-col justify-center gap-1 border-t px-5 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-t-0 sm:border-l sm:px-7 sm:py-5 transition-colors hover:bg-muted/30"
             >
               <span className="flex items-center gap-1.5 text-xs text-muted-foreground whitespace-nowrap">
                 <span

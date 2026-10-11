@@ -3,7 +3,7 @@
 import React from "react"
 import { motion, useReducedMotion } from "motion/react"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
-import { motionDurations } from "@/lib/motion/motion.theme"
+import { motionDurations, motionEasings } from "@/lib/motion/motion.theme"
 
 const CARE_STANDARDS = [
   {
@@ -50,8 +50,17 @@ export function CareSection() {
       className="py-14 sm:py-20 lg:py-28"
     >
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-16">
-        {/* Left Column: Editorial Statement */}
-        <div className="lg:col-span-5">
+        {/* Left Column: Editorial Statement (S5: whileInView entrance) */}
+        <motion.div
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{
+            duration: motionDurations.editorial,
+            ease: motionEasings.editorial,
+          }}
+          className="lg:col-span-5"
+        >
           <SectionEyebrow className="mb-4">
             Custody &amp; Handling Standards
           </SectionEyebrow>
@@ -61,9 +70,8 @@ export function CareSection() {
           >
             Care begins with the details.
           </h2>
-          <p className="mt-5 text-lead max-w-[50ch]">
-            <strong className="font-semibold text-foreground">Strict handling protocols. </strong>
-            Standardized corrugated packaging, weatherproof barcode labeling, and multi-checkpoint custodial audits protect consignments across every transfer.
+          <p className="mt-5 text-lead max-w-[50ch] text-muted-foreground leading-relaxed font-normal">
+            Strict handling protocols. Standardized corrugated packaging, weatherproof barcode labeling, and multi-checkpoint custodial audits protect consignments across every transfer.
           </p>
 
           <div className="mt-8 flex items-center gap-6 border-t border-border/80 pt-6">
@@ -100,7 +108,7 @@ export function CareSection() {
               <span className="font-semibold text-status-delivered">Sealed Container Fleet</span>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Column: Four Operational Standards with Tonal Card Backing */}
         <div className="border border-border/80 bg-card/60 divide-y divide-border/70 lg:col-span-7">
@@ -122,7 +130,7 @@ export function CareSection() {
                 transition={{
                   duration: motionDurations.reveal,
                   delay: idx * 0.08,
-                  ease: [0.16, 1, 0.3, 1],
+                  ease: motionEasings.editorial,
                 }}
                 className="p-5 sm:p-6 group transition-colors hover:bg-muted/20"
               >
@@ -135,11 +143,8 @@ export function CareSection() {
                       {std.label}
                     </h3>
                   </div>
-                  <p className="max-w-md text-body-editorial">
-                    <strong className="font-semibold text-foreground">
-                      {std.lead}{" "}
-                    </strong>
-                    <span>{std.detail}</span>
+                  <p className="max-w-md text-body-editorial text-muted-foreground leading-relaxed font-normal">
+                    {std.lead} {std.detail}
                   </p>
                 </div>
               </motion.div>

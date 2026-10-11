@@ -15,7 +15,13 @@ import { Button } from "@/components/ui/button"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { LivingCargoLine } from "./living-cargo-line"
 import { BorderBeam } from "@/components/ui/border-beam"
-import { motionSprings } from "@/lib/motion/motion.theme"
+import {
+  motionSprings,
+  motionDurations,
+  motionEasings,
+  editorialReveal,
+  tactileInteraction,
+} from "@/lib/motion/motion.theme"
 import { cn } from "@/lib/utils"
 
 const MotionImage = motion.create(Image)
@@ -124,8 +130,17 @@ export function ServicesSection() {
       className="py-12 sm:py-20 lg:py-24 bg-muted/15"
     >
       <div className="flex flex-col space-y-10 lg:space-y-14">
-        {/* Section Header */}
-        <div className="grid grid-cols-1 items-end gap-6 md:grid-cols-12">
+        {/* Section Header — S1: whileInView entrance */}
+        <motion.div
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{
+            duration: motionDurations.editorial,
+            ease: motionEasings.editorial,
+          }}
+          className="grid grid-cols-1 items-end gap-6 md:grid-cols-12"
+        >
           <div className="md:col-span-8">
             <SectionEyebrow className="mb-4">Services &amp; Modalities</SectionEyebrow>
             <h2
@@ -136,12 +151,11 @@ export function ServicesSection() {
             </h2>
           </div>
           <div className="md:col-span-4">
-            <p className="text-lead max-w-[48ch]">
-              <strong className="font-semibold text-foreground">Calibrated transit modalities. </strong>
-              Select high-priority commercial aviation or cost-optimized arterial linehaul matched to payload dimensions, destination cutoffs, and regulatory requirements.
+            <p className="text-lead max-w-[48ch] text-muted-foreground leading-relaxed font-normal">
+              Calibrated transit modalities. Select high-priority commercial aviation or cost-optimized arterial linehaul matched to payload dimensions, destination cutoffs, and regulatory requirements.
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Master Editorial Image: Official Scroll Image Reveal (journey.webp) */}
         <div className="relative overflow-hidden border border-border/80 bg-card shadow-sm">
@@ -184,14 +198,24 @@ export function ServicesSection() {
         <LivingCargoLine variant="rule" />
 
         {/* Three Service Modalities with Waypoint Activation on Scroll */}
+        {/* S2+M5: Staggered entrance + hover spring on service cards */}
         <div className="grid grid-cols-1 divide-y divide-border/80 border-y border-border/80 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
-          {SERVICES.map((srv) => {
+          {SERVICES.map((srv, idx) => {
             const Icon = srv.icon
             return (
-              <div
+              <motion.div
                 key={srv.num}
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-30px" }}
+                transition={{
+                  duration: motionDurations.reveal,
+                  delay: idx * 0.08,
+                  ease: motionEasings.editorial,
+                }}
+                whileHover={shouldReduceMotion ? undefined : { y: -2 }}
                 className={cn(
-                  "group flex flex-col justify-between p-6 sm:p-7 lg:p-8 bg-card/60 transition-all duration-300 hover:bg-card border-t-2 border-t-transparent",
+                  "group flex flex-col justify-between p-6 sm:p-7 lg:p-8 bg-card/60 hover:bg-card border-t-2 border-t-transparent",
                   srv.accentBorder
                 )}
               >
@@ -209,11 +233,8 @@ export function ServicesSection() {
                   >
                     {srv.title}
                   </h3>
-                  <p className="mt-3 text-body-editorial">
-                    <strong className="font-semibold text-foreground">
-                      {srv.lead}{" "}
-                    </strong>
-                    <span>{srv.description}</span>
+                  <p className="mt-3 text-body-editorial text-muted-foreground leading-relaxed font-normal">
+                    {srv.lead} {srv.description}
                   </p>
                 </div>
 
@@ -247,7 +268,7 @@ export function ServicesSection() {
                     </Button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )
           })}
         </div>

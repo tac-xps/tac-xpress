@@ -12,7 +12,7 @@ import {
 } from "motion/react"
 import { ArrowUpRight, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { SectionEyebrow, ProofStrip } from "./section-primitives"
+import { SectionEyebrow, ProofStats } from "./section-primitives"
 import { LivingCargoLine } from "./living-cargo-line"
 import { GridPattern } from "@/components/ui/grid-pattern"
 import { BorderBeam } from "@/components/ui/border-beam"
@@ -20,6 +20,7 @@ import {
   motionDurations,
   motionEasings,
   motionSprings,
+  lineMaskReveal,
   tactileInteraction,
 } from "@/lib/motion/motion.theme"
 
@@ -86,30 +87,29 @@ export function HeroSection() {
             style={{ fontSize: "clamp(2.5rem, 3.8vw + 0.25rem, 4.25rem)" }}
             className="font-heading font-bold tracking-[-0.035em] text-foreground leading-[1.08] text-balance"
           >
-            <motion.span
-              className="block font-heading font-bold text-foreground lg:whitespace-nowrap"
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: motionDurations.hero,
-                delay: 0.06,
-                ease: motionEasings.hero,
-              }}
-            >
-              Delhi to Northeast.
-            </motion.span>
-            <motion.span
-              className="block font-heading font-bold bg-gradient-to-r from-primary via-primary/90 to-info bg-clip-text text-transparent"
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: motionDurations.hero,
-                delay: 0.16,
-                ease: motionEasings.hero,
-              }}
-            >
-              Delivered.
-            </motion.span>
+            <span className="sr-only">Move cargo. With clarity. — </span>
+            <span className="block overflow-hidden py-0.5">
+              <motion.span
+                className="block font-heading font-bold text-foreground lg:whitespace-nowrap"
+                custom={0}
+                initial={shouldReduceMotion ? false : "hidden"}
+                animate="visible"
+                variants={lineMaskReveal}
+              >
+                Delhi to Northeast.
+              </motion.span>
+            </span>
+            <span className="block overflow-hidden py-0.5">
+              <motion.span
+                className="block font-heading font-bold bg-gradient-to-r from-primary via-primary/90 to-info bg-clip-text text-transparent"
+                custom={1}
+                initial={shouldReduceMotion ? false : "hidden"}
+                animate="visible"
+                variants={lineMaskReveal}
+              >
+                Delivered.
+              </motion.span>
+            </span>
           </h1>
 
           {/* Supporting Copy & Living Cargo Line */}
@@ -123,12 +123,9 @@ export function HeroSection() {
                 delay: 0.26,
                 ease: motionEasings.editorial,
               }}
-              className="max-w-[54ch] text-lead text-muted-foreground"
+              className="max-w-[54ch] text-lead text-muted-foreground leading-relaxed font-normal"
             >
-              <strong className="font-semibold text-foreground">
-                Scheduled freight linehaul connecting New Delhi and Northeast India.
-              </strong>{" "}
-              Commercial air belly-hold space and arterial surface transport with statutory Air Waybill compliance, optical gate scan verification, and dedicated dispatch support.
+              Scheduled freight linehaul connecting New Delhi and Northeast India. Commercial air belly-hold space and arterial surface transport with statutory Air Waybill compliance, optical gate scan verification, and dedicated dispatch support.
             </motion.p>
           </div>
 
@@ -209,28 +206,14 @@ export function HeroSection() {
                   }
                   className="relative h-full w-full will-change-transform transform-gpu"
                 >
-                  {shouldReduceMotion ? (
-                    <Image
-                      src="/images/logistics/hero.webp"
-                      alt="TAC Express commercial logistics corridor connecting Delhi and Northeast India"
-                      fill
-                      priority
-                      className="object-cover select-none"
-                      sizes="(min-width: 1280px) 520px, (min-width: 1024px) 42vw, 100vw"
-                    />
-                  ) : (
-                    <video
-                      src="/video/hero-bg.mp4"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      preload="auto"
-                      poster="/images/logistics/hero.webp"
-                      className="h-full w-full object-cover select-none"
-                      aria-label="TAC Express linehaul transport in motion"
-                    />
-                  )}
+                  <Image
+                    src="/images/logistics/hero.webp"
+                    alt="TAC Express commercial logistics corridor connecting Delhi and Northeast India"
+                    fill
+                    priority
+                    className="object-cover select-none"
+                    sizes="(min-width: 1280px) 520px, (min-width: 1024px) 42vw, 100vw"
+                  />
                 </motion.div>
               </div>
 
@@ -248,8 +231,8 @@ export function HeroSection() {
       </div>
     </div>
 
-    {/* Docked Hero Baseline: Proof Strip (KPI Stats Row on top + Route Marquee underneath) */}
-    <ProofStrip className="relative z-10 border-b-0" />
+    {/* Docked Hero Baseline: Proof Stats (4-column operational KPI metrics) */}
+    <ProofStats className="relative z-10 border-b-0" />
   </section>
 )
 }

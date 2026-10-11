@@ -16,7 +16,7 @@ import { workspacePageTitle } from "./navigation"
 export function WorkspaceHeader({ children }: { children: ReactNode }) {
   const title = workspacePageTitle(usePathname())
   return (
-    <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4 sm:gap-3 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b border-border/80 bg-background/95 backdrop-blur-md shadow-xs px-4 sm:gap-3 sm:px-6 transition-colors">
       <a href="#tour-main-content" className="sr-only focus:not-sr-only">
         Skip to workspace
       </a>

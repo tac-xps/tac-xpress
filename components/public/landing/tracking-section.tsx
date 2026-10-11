@@ -123,8 +123,17 @@ export function TrackingSection() {
       className="py-12 sm:py-20 lg:py-24"
     >
       <div id="shipment-desk" className="space-y-10 lg:space-y-12">
-        {/* Section Header */}
-        <div className="max-w-2xl">
+        {/* Section Header — S1: whileInView entrance */}
+        <motion.div
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{
+            duration: motionDurations.editorial,
+            ease: motionEasings.editorial,
+          }}
+          className="max-w-2xl"
+        >
           <SectionEyebrow className="mb-4">
             Consignment Console · Milestone Verification
           </SectionEyebrow>
@@ -134,16 +143,24 @@ export function TrackingSection() {
           >
             A number. A clearer picture.
           </h2>
-          <p className="mt-4 text-lead max-w-[56ch]">
-            <strong className="font-semibold text-foreground">Verified milestone telemetry. </strong>
-            Query statutory Air Waybill (AWB) or surface consignment numbers to review gate intake scans, hub cross-dock transfers, and departure manifests in real time.
+          <p className="mt-4 text-lead max-w-[56ch] text-muted-foreground leading-relaxed font-normal">
+            Verified milestone telemetry. Query statutory Air Waybill (AWB) or surface consignment numbers to review gate intake scans, hub cross-dock transfers, and departure manifests in real time.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Dedicated Two-Column Product Interface */}
+        {/* S3: Staggered two-column layout entrance */}
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-10">
           {/* Left Column: Search Form & Consignment Profile (lg:col-span-5) */}
-          <div className="space-y-6 lg:col-span-5">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-30px" }}
+            transition={{
+              duration: motionDurations.reveal,
+              ease: motionEasings.editorial,
+            }}
+            className="space-y-6 lg:col-span-5"
+          >
             <div className="relative border border-border/80 bg-card p-5 sm:p-7 shadow-xs">
               <BorderBeam size={60} duration={8} colorFrom="var(--color-primary)" colorTo="transparent" borderWidth={1} />
               <form
@@ -249,10 +266,20 @@ export function TrackingSection() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Column: Milestone Log & Progress Console (lg:col-span-7) */}
-          <div className="relative border border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-xs">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-30px" }}
+            transition={{
+              duration: motionDurations.reveal,
+              delay: 0.1,
+              ease: motionEasings.editorial,
+            }}
+            className="relative border border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-xs"
+          >
             <BorderBeam size={80} duration={10} colorFrom="var(--color-primary)" colorTo="transparent" delay={3} borderWidth={1} />
             <div>
               <div className="flex items-center justify-between border-b border-border/80 pb-4">
@@ -452,7 +479,7 @@ export function TrackingSection() {
                 Optical Gate Audit
               </span>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </EditorialContainer>
