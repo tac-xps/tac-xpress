@@ -25,6 +25,7 @@ const FOOTER_GROUPS = [
       { label: "How It Works", href: "#journey-chapter" },
       { label: "Network Stations", href: "#network" },
       { label: "Custody & Care", href: "#delivery-chapter" },
+      { label: "Customer Feedback", href: "#feedback" },
     ],
   },
   {

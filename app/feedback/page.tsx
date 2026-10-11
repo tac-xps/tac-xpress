@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { FeedbackForm } from "@/components/feedback-form"
+import { TicketForm } from "@/components/public/ticket-form"
 import { SiteNavigation } from "@/components/public/site-navigation"
 import { SiteFooter } from "@/components/public/site-footer"
 
@@ -24,9 +24,7 @@ export default function FeedbackPage() {
               Tac-Xpress experience.
             </p>
           </div>
-          <div className="rounded-none border bg-card p-6 text-card-foreground shadow-sm md:p-8">
-            <FeedbackForm />
-          </div>
+          <TicketForm defaultMode="feedback" />
         </div>
       </main>
       <SiteFooter />

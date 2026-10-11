@@ -181,7 +181,7 @@ export async function sendTicketNotification(payload: EmailPayload) {
         "[Email] RESEND_API_KEY not set — email skipped:",
         payload.type
       )
-      return { skipped: true }
+      return { success: true, skipped: true }
     }
 
     const { to, ticketId, subject, type, body } = payload

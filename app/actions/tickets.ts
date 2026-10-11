@@ -16,6 +16,8 @@ import {
   LANDING_TICKET_CATEGORIES,
   mapLandingCategoryToTriage,
 } from "@/lib/support/tickets"
+import { db } from "@/lib/db"
+import { feedback } from "@/lib/db/schema"
 
 import arcjet, { slidingWindow, request } from "@arcjet/next"
 
@@ -97,6 +99,20 @@ export async function createTicket(formData: FormData) {
   let insertedTicket: { id: string }
   try {
     insertedTicket = await saveContactTicket(parsed.data)
+
+    // When inquiry category is feedback, automatically sync to feedback database table
+    if (parsed.data.category === "feedback") {
+      try {
+        await db.insert(feedback).values({
+          name: parsed.data.customer_name,
+          email: parsed.data.customer_email,
+          message: parsed.data.message,
+        })
+        revalidatePath("/dashboard/feedback")
+      } catch (fbError) {
+        console.warn("Failed to persist to feedback table:", fbError)
+      }
+    }
   } catch (error) {
     Sentry.captureException(error, { tags: { area: "create_ticket" } })
     return { error: { _form: ["We could not save your request. Please try again or contact our team directly."] } }

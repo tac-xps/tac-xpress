@@ -9,6 +9,7 @@ import { ProcessSection } from "./landing/process-section"
 import { NetworkSection } from "./landing/network-section"
 import { CareSection } from "./landing/care-section"
 import { BrandStatementSection } from "./landing/brand-statement-section"
+import { FeedbackSection } from "./landing/feedback-section"
 import { FAQSection } from "./landing/faq-section"
 import { ContactSection } from "./landing/contact-section"
 import { LandingFooter } from "./landing/landing-footer"
@@ -57,6 +58,9 @@ export function LogisticsHome() {
           {/* Chapter 04: Delivery */}
           <CareSection />
           <BrandStatementSection />
+
+          {/* Chapter 05: Feedback Signal Loop */}
+          <FeedbackSection />
           <ContactSection />
 
           {/* Utility: Operational Clarity */}

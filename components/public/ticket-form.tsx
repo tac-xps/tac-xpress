@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import * as Sentry from "@sentry/nextjs"
 import { createTicket } from "@/app/actions/tickets"
 import { cn } from "@/lib/utils"
-import { Loader2, Plus, ArrowUpRight } from "lucide-react"
+import { Loader2, Plus, ArrowUpRight, Sparkles, Send, MessageSquareHeart } from "lucide-react"
 import { CheckCircleCustomIcon } from "@/components/icons/landing-icons"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -55,13 +55,16 @@ interface TicketFormProps {
   className?: string
   compact?: boolean
   hideHeader?: boolean
+  defaultMode?: "contact" | "feedback"
 }
 
 export function TicketForm({
   className,
   compact = false,
   hideHeader = false,
+  defaultMode = "contact",
 }: TicketFormProps = {}) {
+  const [mode, setMode] = useState<"contact" | "feedback">(defaultMode)
   const [pending, setPending] = useState(false)
   const [showOptional, setShowOptional] = useState(false)
   const [result, setResult] = useState<{
@@ -76,13 +79,44 @@ export function TicketForm({
       customer_name: "",
       customer_email: "",
       customer_phone: "",
-      category: "general",
+      category: defaultMode === "feedback" ? "feedback" : "general",
       related_awb: "",
-      subject: "",
+      subject: defaultMode === "feedback" ? "Customer Service Feedback" : "",
       message: "",
       website: "",
     },
   })
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash
+      const params = new URLSearchParams(window.location.search)
+      if (hash === "#feedback" || params.get("intent") === "feedback") {
+        setMode("feedback")
+        form.setValue("category", "feedback")
+        if (!form.getValues("subject")) {
+          form.setValue("subject", "Customer Service Feedback")
+        }
+      }
+    }
+  }, [form])
+
+  const handleModeChange = (newMode: "contact" | "feedback") => {
+    setMode(newMode)
+    if (newMode === "feedback") {
+      form.setValue("category", "feedback")
+      if (!form.getValues("subject")) {
+        form.setValue("subject", "Customer Service Feedback")
+      }
+    } else {
+      if (form.getValues("category") === "feedback") {
+        form.setValue("category", "general")
+      }
+      if (form.getValues("subject") === "Customer Service Feedback") {
+        form.setValue("subject", "")
+      }
+    }
+  }
 
   async function onSubmit(values: z.infer<typeof ticketSchema>) {
     setPending(true)
@@ -104,7 +138,12 @@ export function TicketForm({
       setResult(res)
 
       if (res.success) {
-        toast.success("Request received.")
+        const isFeedback = values.category === "feedback" || mode === "feedback"
+        toast.success(
+          isFeedback
+            ? "Feedback received! Thank you for helping us improve."
+            : "Request received."
+        )
         form.reset()
       } else if (res.error) {
         const formErrors =
@@ -119,7 +158,7 @@ export function TicketForm({
       }
     } catch (error) {
       Sentry.captureException(error)
-      toast.error("Failed to submit ticket. Please try again.")
+      toast.error("Failed to submit request. Please try again.")
       setResult({ success: false, error: "Unexpected error" })
     } finally {
       setPending(false)
@@ -131,6 +170,7 @@ export function TicketForm({
   const isExpanded = showOptional || category === "shipment" || hasOptionalValues
 
   if (result?.success) {
+    const isFeedback = form.getValues("category") === "feedback" || mode === "feedback"
     return (
       <div
         className={cn(
@@ -143,18 +183,31 @@ export function TicketForm({
         </div>
         <div className="space-y-1.5">
           <h3 className="text-lg font-bold tracking-tight text-foreground">
-            Request Received
+            {isFeedback ? "Feedback Received" : "Request Received"}
           </h3>
           <p className="mx-auto max-w-[320px] text-xs leading-relaxed text-muted-foreground">
-            Your ticket{" "}
-            {result.ticketId ? (
-              <span className="font-mono font-medium text-foreground">
-                #{result.ticketId.slice(0, 8).toUpperCase()}
-              </span>
+            {isFeedback ? (
+              <>
+                Thank you! Your feedback has been recorded and routed directly to our operations quality console.
+                {result.ticketId && (
+                  <span className="block mt-1 font-mono font-medium text-foreground">
+                    Ref #{result.ticketId.slice(0, 8).toUpperCase()}
+                  </span>
+                )}
+              </>
             ) : (
-              ""
-            )}{" "}
-            has been submitted. Our operations team will review it and reply by email.
+              <>
+                Your ticket{" "}
+                {result.ticketId ? (
+                  <span className="font-mono font-medium text-foreground">
+                    #{result.ticketId.slice(0, 8).toUpperCase()}
+                  </span>
+                ) : (
+                  ""
+                )}{" "}
+                has been submitted. Our operations team will review it and reply by email.
+              </>
+            )}
           </p>
         </div>
         <Button
@@ -166,7 +219,7 @@ export function TicketForm({
             form.reset()
           }}
         >
-          Send another request
+          {isFeedback ? "Submit another note" : "Send another request"}
         </Button>
       </div>
     )
@@ -182,27 +235,61 @@ export function TicketForm({
               <span className="relative inline-flex size-2 rounded-none bg-status-delivered" />
             </span>
             <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-foreground">
-              Live Operations Desk
+              {mode === "feedback" ? "Customer Feedback Desk" : "Live Operations Desk"}
             </span>
           </div>
           <span className="font-mono text-[10px] text-muted-foreground">
-            Direct controller routing
+            {mode === "feedback" ? "Quality & Experience Signal" : "Direct controller routing"}
           </span>
         </div>
       ) : (
         <div className="mb-4 flex flex-col gap-1 border-b border-border/70 pb-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="text-base font-bold tracking-tight text-foreground">Contact our team</h3>
+            <h3 className="text-base font-bold tracking-tight text-foreground">
+              {mode === "feedback" ? "Share your feedback" : "Contact our team"}
+            </h3>
             <p className="text-xs text-muted-foreground">
-              Cargo inquiries, quotes, and consignment assistance.
+              {mode === "feedback"
+                ? "Help us calibrate transit speed, handling, and logistics precision."
+                : "Cargo inquiries, quotes, and consignment assistance."}
             </p>
           </div>
           <div className="flex items-center gap-1.5 self-start pt-1 font-mono text-[10px] text-muted-foreground sm:self-auto sm:pt-0">
             <span className="size-1.5 rounded-none bg-status-delivered" />
-            <span>Direct controller routing</span>
+            <span>{mode === "feedback" ? "Direct quality signal" : "Direct controller routing"}</span>
           </div>
         </div>
       )}
+
+      {/* Mode Selector Tabs — Combines Contact & Feedback into 1 seamless interface */}
+      <div className="mb-4 grid grid-cols-2 gap-1 border border-border/80 bg-muted/40 p-1">
+        <button
+          type="button"
+          onClick={() => handleModeChange("contact")}
+          className={cn(
+            "flex items-center justify-center gap-1.5 py-1.5 text-xs font-mono transition-all",
+            mode === "contact"
+              ? "bg-card text-foreground shadow-xs font-semibold"
+              : "text-muted-foreground hover:text-foreground font-medium"
+          )}
+        >
+          <Send className="size-3" />
+          <span>Cargo & Inquiry</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => handleModeChange("feedback")}
+          className={cn(
+            "flex items-center justify-center gap-1.5 py-1.5 text-xs font-mono transition-all",
+            mode === "feedback"
+              ? "bg-card text-foreground shadow-xs font-semibold"
+              : "text-muted-foreground hover:text-foreground font-medium"
+          )}
+        >
+          <Sparkles className="size-3 text-primary" />
+          <span>Share Feedback</span>
+        </button>
+      </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
@@ -282,8 +369,9 @@ export function TicketForm({
                     onValueChange={(val) => {
                       field.onChange(val)
                       if (val === "shipment") setShowOptional(true)
+                      if (val === "feedback") setMode("feedback")
                     }}
-                    defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger className="h-9 w-full rounded-none border-border bg-background px-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary/20">
@@ -296,6 +384,7 @@ export function TicketForm({
                       <SelectItem value="billing">Billing Question</SelectItem>
                       <SelectItem value="complaint">Complaint</SelectItem>
                       <SelectItem value="partnership">Partnership</SelectItem>
+                      <SelectItem value="feedback">Customer Feedback</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage className="text-xs" />
@@ -314,7 +403,7 @@ export function TicketForm({
                   <FormControl>
                     <Input
                       className="h-9 rounded-none border-border bg-background px-3 text-sm focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
-                      placeholder="What is this regarding?"
+                      placeholder={mode === "feedback" ? "e.g. Service speed / Portal experience" : "What is this regarding?"}
                       {...field}
                     />
                   </FormControl>
@@ -387,12 +476,16 @@ export function TicketForm({
             render={({ field }) => (
               <FormItem className="space-y-1.5">
                 <FormLabel className="text-[11px] font-mono font-medium uppercase tracking-wider text-muted-foreground">
-                  Message *
+                  {mode === "feedback" ? "Feedback & Observations *" : "Message *"}
                 </FormLabel>
                 <FormControl>
                   <Textarea
                     rows={3}
-                    placeholder="Describe your cargo requirements, route, or inquiry in detail..."
+                    placeholder={
+                      mode === "feedback"
+                        ? "How was your logistics experience? Tell us what worked well, transit reliability, or areas for improvement..."
+                        : "Describe your cargo requirements, route, or inquiry in detail..."
+                    }
                     aria-label="Message"
                     className="min-h-[72px] resize-y rounded-none border-border bg-background p-3 text-sm focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
                     {...field}
@@ -422,13 +515,19 @@ export function TicketForm({
                 </>
               ) : (
                 <span className="flex items-center gap-1.5">
-                  Send request
-                  <ArrowUpRight className="size-3.5" />
+                  {mode === "feedback" ? "Submit Feedback" : "Send request"}
+                  {mode === "feedback" ? (
+                    <Sparkles className="size-3.5" />
+                  ) : (
+                    <ArrowUpRight className="size-3.5" />
+                  )}
                 </span>
               )}
             </Button>
             <span className="font-mono text-[11px] text-muted-foreground">
-              No account required · Email reply
+              {mode === "feedback"
+                ? "Direct quality telemetry · No account required"
+                : "No account required · Email reply"}
             </span>
           </div>
 

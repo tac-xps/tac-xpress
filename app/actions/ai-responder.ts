@@ -224,7 +224,7 @@ export async function generateAutoReply(
         type: "ai_replied",
         body: reply,
       })
-      if (!delivery.success) {
+      if (!delivery.success && !delivery.skipped) {
         Sentry.captureMessage("AI reply email delivery was not accepted", {
           level: "error",
           tags: { area: "ai_reply_email" },

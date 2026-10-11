@@ -83,12 +83,19 @@ export default async function IntegrationsPage() {
           </Card>
         ))}
 
-        <Card className="shadow-none">
+        <Card className="shadow-none lg:col-span-2">
           <CardHeader>
-            <CardTitle>Barcode & QR scanner</CardTitle>
-            <CardDescription>
-              Test camera permission and a shipment code on this device.
-            </CardDescription>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <CardTitle className="text-base font-bold">Barcode & QR Hardware Scanner</CardTitle>
+                <CardDescription className="mt-1 text-xs">
+                  Test camera permissions, evaluate mobile iOS & Android scanning, and verify consignment AWB barcodes.
+                </CardDescription>
+              </div>
+              <Badge variant="outline" className="font-mono text-xs">
+                WebRTC & Native Capture
+              </Badge>
+            </div>
           </CardHeader>
           <CardContent>
             <ScannerTest />

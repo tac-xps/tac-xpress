@@ -30,6 +30,7 @@ const NAV_LINKS = [
   { href: "#journey-chapter", label: "Process" },
   { href: "#network", label: "Network" },
   { href: "#delivery-chapter", label: "Care" },
+  { href: "#feedback", label: "Feedback" },
   { href: "#faq", label: "FAQ" },
   { href: "#contact", label: "Contact" },
 ]
