@@ -307,36 +307,46 @@ export function TrackingSection() {
     <EditorialContainer
       id="visibility-chapter"
       aria-labelledby="tracking-heading"
-      className="py-12 sm:py-20 lg:py-24"
+      className="py-16 sm:py-24 lg:py-32 bg-muted/30"
     >
-      <div id="shipment-desk" className="space-y-10 lg:space-y-12">
+      <div id="shipment-desk" className="space-y-12 lg:space-y-16">
         {/* Section Header — S1: whileInView entrance */}
         <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{
             duration: motionDurations.editorial,
             ease: motionEasings.editorial,
           }}
-          className="max-w-2xl"
+          className="max-w-2xl space-y-5"
         >
-          <SectionEyebrow className="mb-4">
+          <SectionEyebrow className="mb-1">
             Consignment Console · Milestone Verification
           </SectionEyebrow>
           <h2
             id="tracking-heading"
-            className="text-section text-foreground"
+            className="text-section bg-gradient-to-br from-foreground via-foreground/90 to-foreground/60 bg-clip-text text-transparent"
           >
-            A number. A clearer picture.
+            A number.{" "}
+            <br className="hidden sm:inline" />
+            A clearer picture.
           </h2>
-          <p className="mt-4 text-lead max-w-[56ch] text-muted-foreground leading-relaxed font-normal">
-            Verified milestone telemetry. Query statutory Air Waybill (AWB) or surface consignment numbers to review gate intake scans, hub cross-dock transfers, and departure manifests in real time.
+          <p className="text-lead max-w-[52ch]">
+            Verified milestone telemetry. Query statutory{" "}
+            <strong className="font-semibold text-foreground">Air Waybill (AWB)</strong> or surface
+            consignment numbers to review gate intake scans, hub cross-dock transfers,
+            and departure manifests <strong className="font-semibold text-foreground">in real time</strong>.
           </p>
+          {/* Decorative rule — visual separator before interactive console */}
+          <div className="flex items-center gap-3 pt-2" aria-hidden="true">
+            <div className="h-px w-12 bg-primary" />
+            <div className="h-px flex-1 max-w-32 bg-border" />
+          </div>
         </motion.div>
 
         {/* S3: Staggered two-column layout entrance */}
-        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-10">
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-12">
           {/* Left Column: Search Form & Consignment Profile (lg:col-span-5) */}
           <motion.div
             initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
@@ -348,7 +358,7 @@ export function TrackingSection() {
             }}
             className="space-y-6 lg:col-span-5"
           >
-            <div className="relative border border-border/80 bg-card p-5 sm:p-7 shadow-xs">
+            <div className="relative border border-border/80 bg-card p-5 sm:p-7 shadow-sm hover:shadow-md transition-shadow duration-300">
               <BorderBeam size={60} duration={8} colorFrom="var(--color-primary)" colorTo="transparent" borderWidth={1} />
               <form
                 action="/track"
@@ -465,7 +475,7 @@ export function TrackingSection() {
               delay: 0.1,
               ease: motionEasings.editorial,
             }}
-            className="relative border border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-xs"
+            className="relative border border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-sm hover:shadow-md transition-shadow duration-300"
           >
             <BorderBeam size={80} duration={10} colorFrom="var(--color-primary)" colorTo="transparent" delay={3} borderWidth={1} />
             <div>
