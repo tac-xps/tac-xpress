@@ -3,13 +3,15 @@ import type { ZodType } from "zod"
 export function useRecordLookup<T>(
   endpoint: string,
   schema: ZodType<T>,
-  selectedId?: string
+  selectedId?: string,
+  enabled: boolean = true
 ) {
   const [query, setQuery] = useState("")
   const [records, setRecords] = useState<T[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   useEffect(() => {
+    if (!enabled) return
     const controller = new AbortController()
     const timer = window.setTimeout(async () => {
       setLoading(true)
@@ -39,6 +41,6 @@ export function useRecordLookup<T>(
       window.clearTimeout(timer)
       controller.abort()
     }
-  }, [endpoint, schema, query, selectedId])
+  }, [endpoint, schema, query, selectedId, enabled])
   return { records, loading, error, setQuery }
 }

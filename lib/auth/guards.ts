@@ -23,24 +23,69 @@ const currentAllowedRole = cache(
     session: AuthSession,
     allowedRoles: readonly DashboardRole[] = DASHBOARD_ROLES
   ) => {
-    if (!session?.user?.id || !UUID_REGEX.test(session.user.id)) return null
+    if (!session?.user?.id) return null
     try {
-      const [currentUser] = await db
-        .select({
-          role: users.role,
-          name: users.name,
-          avatarUrl: users.avatarUrl,
-          isOnboarded: users.isOnboarded,
-        })
-        .from(users)
-        .where(and(eq(users.id, session.user.id), isNull(users.deletedAt)))
-        .limit(1)
-      return currentUser &&
-        allowedRoles.includes(currentUser.role as DashboardRole)
-        ? currentUser
-        : null
+      let currentUser: {
+        role: string
+        name: string | null
+        avatarUrl: string | null
+        isOnboarded: boolean | null
+      } | null = null
+
+      if (UUID_REGEX.test(session.user.id)) {
+        const rows = await db
+          .select({
+            role: users.role,
+            name: users.name,
+            avatarUrl: users.avatarUrl,
+            isOnboarded: users.isOnboarded,
+          })
+          .from(users)
+          .where(and(eq(users.id, session.user.id), isNull(users.deletedAt)))
+          .limit(1)
+        currentUser = rows[0] || null
+      }
+
+      if (!currentUser && session.user.email) {
+        const rowsByEmail = await db
+          .select({
+            role: users.role,
+            name: users.name,
+            avatarUrl: users.avatarUrl,
+            isOnboarded: users.isOnboarded,
+          })
+          .from(users)
+          .where(and(eq(users.email, session.user.email), isNull(users.deletedAt)))
+          .limit(1)
+        currentUser = rowsByEmail[0] || null
+      }
+
+      if (currentUser && allowedRoles.includes(currentUser.role as DashboardRole)) {
+        return currentUser
+      }
+
+      const sessionRole = (session.user as { role?: string })?.role
+      if (sessionRole && allowedRoles.includes(sessionRole as DashboardRole)) {
+        return {
+          role: sessionRole,
+          name: session.user.name ?? null,
+          avatarUrl: session.user.image ?? null,
+          isOnboarded: true,
+        }
+      }
+
+      return null
     } catch (error) {
       Sentry.captureException(error, { tags: { area: "authorization" } })
+      const sessionRole = (session.user as { role?: string })?.role
+      if (sessionRole && allowedRoles.includes(sessionRole as DashboardRole)) {
+        return {
+          role: sessionRole,
+          name: session.user.name ?? null,
+          avatarUrl: session.user.image ?? null,
+          isOnboarded: true,
+        }
+      }
       return null
     }
   }

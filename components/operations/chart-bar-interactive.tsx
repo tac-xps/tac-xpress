@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 
 import {
   Card,
@@ -11,23 +11,16 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
-  type ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from "@/components/ui/chart"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import type { ShipmentVolumePoint } from "@/lib/dashboard-metrics"
 
-const chartData = [
+// ─── Static fallback (shown when no live data is available yet) ───────────────
+
+const fallbackData = [
   { date: "2024-04-01", desktop: 222, mobile: 150 },
   { date: "2024-04-02", desktop: 97, mobile: 180 },
   { date: "2024-04-03", desktop: 167, mobile: 120 },
@@ -122,16 +115,16 @@ const chartData = [
 ]
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  views: {
+    label: "Shipments",
   },
   desktop: {
-    label: "Desktop",
-    color: "var(--chart-1)",
+    label: "Air cargo",
+    color: "var(--chart-2)",
   },
   mobile: {
-    label: "Mobile",
-    color: "var(--chart-2)",
+    label: "Surface cargo",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig
 
@@ -139,10 +132,12 @@ export interface ChartBarInteractiveProps {
   data?: ShipmentVolumePoint[]
 }
 
-export function Component({ data }: ChartBarInteractiveProps = {}) {
-  const [timeRange, setTimeRange] = React.useState("90d")
+export function ChartBarInteractive({ data }: ChartBarInteractiveProps = {}) {
+  const [activeChart, setActiveChart] =
+    React.useState<keyof typeof chartConfig>("desktop")
 
-  const rawData = React.useMemo(() => {
+  // Map live data to the desktop/mobile shape; fall back to static demo data.
+  const chartData = React.useMemo(() => {
     if (data && data.length > 0) {
       return data.map((item) => ({
         date: item.date,
@@ -150,88 +145,60 @@ export function Component({ data }: ChartBarInteractiveProps = {}) {
         mobile: item.surfaceCargo,
       }))
     }
-    return chartData
+    return fallbackData
   }, [data])
 
-  const filteredData = React.useMemo(() => {
-    if (rawData.length === 0) return []
-    const lastItem = rawData[rawData.length - 1]
-    const referenceDate = new Date(
-      lastItem.date.includes("T") ? lastItem.date : `${lastItem.date}T00:00:00Z`
-    )
-    const daysToSubtract = timeRange === "7d" ? 6 : timeRange === "30d" ? 29 : 89
-    const startDate = new Date(referenceDate)
-    startDate.setUTCDate(startDate.getUTCDate() - daysToSubtract)
-
-    return rawData.filter((item) => {
-      const date = new Date(
-        item.date.includes("T") ? item.date : `${item.date}T00:00:00Z`
-      )
-      return date >= startDate
-    })
-  }, [rawData, timeRange])
+  const total = React.useMemo(
+    () => ({
+      desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
+      mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0),
+    }),
+    [chartData]
+  )
 
   return (
-    <Card className="rounded-none">
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-        <div className="grid flex-1 gap-1 text-center sm:text-left">
-          <CardTitle>Area Chart - Interactive</CardTitle>
+    <Card className="py-0">
+      <CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
+        <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-0!">
+          <CardTitle>Shipment volume trend</CardTitle>
           <CardDescription>
-            Showing total visitors for the last 3 months
+            Air cargo vs surface cargo — last 3 months
           </CardDescription>
         </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger
-            className="w-[160px] rounded-none sm:ml-auto"
-            aria-label="Select a value"
-          >
-            <SelectValue placeholder="Last 3 months" />
-          </SelectTrigger>
-          <SelectContent className="rounded-none">
-            <SelectItem value="90d" className="rounded-none">
-              Last 3 months
-            </SelectItem>
-            <SelectItem value="30d" className="rounded-none">
-              Last 30 days
-            </SelectItem>
-            <SelectItem value="7d" className="rounded-none">
-              Last 7 days
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex">
+          {(["desktop", "mobile"] as const).map((key) => {
+            const chart = key as keyof typeof chartConfig
+            return (
+              <button
+                key={chart}
+                data-active={activeChart === chart}
+                className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
+                onClick={() => setActiveChart(chart)}
+              >
+                <span className="text-xs text-muted-foreground">
+                  {chartConfig[chart].label}
+                </span>
+                <span className="text-lg leading-none font-bold sm:text-3xl">
+                  {total[key].toLocaleString()}
+                </span>
+              </button>
+            )
+          })}
+        </div>
       </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+      <CardContent className="px-2 sm:p-6">
         <ChartContainer
           config={chartConfig}
           className="aspect-auto h-[250px] w-full"
         >
-          <AreaChart data={filteredData}>
-            <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            </defs>
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            margin={{
+              left: 12,
+              right: 12,
+            }}
+          >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="date"
@@ -253,9 +220,10 @@ export function Component({ data }: ChartBarInteractiveProps = {}) {
               }}
             />
             <ChartTooltip
-              cursor={false}
               content={
                 <ChartTooltipContent
+                  className="w-[150px]"
+                  nameKey="views"
                   labelFormatter={(value) => {
                     const date = new Date(
                       typeof value === "string" && !value.includes("T")
@@ -265,34 +233,22 @@ export function Component({ data }: ChartBarInteractiveProps = {}) {
                     return date.toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
+                      year: "numeric",
                       timeZone: "UTC",
                     })
                   }}
-                  indicator="dot"
                 />
               }
             />
-            <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
-              stackId="a"
+            <Bar
+              dataKey={activeChart}
+              fill={`var(--color-${activeChart})`}
             />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="url(#fillDesktop)"
-              stroke="var(--color-desktop)"
-              stackId="a"
-            />
-            <ChartLegend content={<ChartLegendContent />} />
-          </AreaChart>
+          </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
   )
 }
 
-export const ChartBarInteractive = Component
-export default Component
+export default ChartBarInteractive

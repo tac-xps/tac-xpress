@@ -169,20 +169,23 @@ export async function renderInvoicePdf(
       req.continue()
     })
 
-    // Fast navigation without waiting for arbitrary background network tasks
+    // Fast navigation with generous timeout during development cold compilation
+    const navTimeout = process.env.NODE_ENV === "development" ? 60_000 : 25_000
     const response = await page.goto(url, {
       waitUntil: "domcontentloaded",
-      timeout: 15_000,
+      timeout: navTimeout,
     })
 
     if (
       response?.status() !== 200 ||
       new URL(page.url()).pathname !== `/invoice/${id}`
     ) {
-      throw new Error("Invoice render did not reach the authorized document.")
+      throw new Error(
+        `Invoice render did not reach the authorized document. Status: ${response?.status()}, URL: ${page.url()}`
+      )
     }
 
-    await page.waitForSelector("[data-invoice-document]", { timeout: 10_000 })
+    await page.waitForSelector("[data-invoice-document]", { timeout: navTimeout })
     await page.evaluate(() => document.fonts.ready)
 
     const pdfUint8Array = await page.pdf({

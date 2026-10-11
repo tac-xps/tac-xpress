@@ -1,7 +1,12 @@
 import "server-only"
+import { EventEmitter } from "events"
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 import * as schema from "./schema"
+
+if (EventEmitter.defaultMaxListeners < 50) {
+  EventEmitter.defaultMaxListeners = 50
+}
 
 // db/index.ts
 // Connection limit workaround for serverless environments
@@ -77,12 +82,27 @@ function createDb(): DbInstance {
       // Without these, a connect or query that never returns leaves server
       // components awaiting indefinitely and the page never finishes rendering.
       connect_timeout: 10,
-      idle_timeout: isServerless ? 5 : 60,
-      max_lifetime: isServerless ? 60 : undefined,
+      idle_timeout: isServerless ? 5 : 20,
+      // In development (Turbopack HMR), abandoned sockets are never closed by the
+      // process. Set max_lifetime=30 so postgres.js recycles them before
+      // Supabase PgBouncer's ~15-minute idle-connection timeout expires and
+      // blocks every new connection request for minutes.
+      max_lifetime: isServerless ? 60 : 30,
       connection: {
-        statement_timeout: 15000,
+        statement_timeout: 30000,
       },
     })
+
+  // Cleanly close the connection pool on process shutdown so that Turbopack
+  // HMR restarts do not leave zombie sockets in Supabase PgBouncer.
+  if (!isServerless && !globalThis._postgresClient) {
+    const cleanup = () => {
+      client.end({ timeout: 5 }).catch(() => {})
+    }
+    process.once("SIGTERM", cleanup)
+    process.once("SIGINT", cleanup)
+    process.once("beforeExit", cleanup)
+  }
 
   globalThis._postgresClient = client
 

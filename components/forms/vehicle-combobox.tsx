@@ -20,7 +20,8 @@ export function VehicleCombobox({
   const { records, loading, error, setQuery } = useRecordLookup(
     "/api/vehicles",
     vehicleSchema,
-    value
+    value,
+    !disabled
   )
   return (
     <SearchSelect
