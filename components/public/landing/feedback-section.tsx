@@ -101,7 +101,7 @@ function TestimonialCard({
             strokeWidth={1.5}
             aria-hidden="true"
           />
-          <span className="font-mono text-xs font-semibold uppercase tracking-[0.06em] text-primary bg-primary/10 px-2 py-0.5">
+          <span className="font-mono text-xs font-medium uppercase tracking-[0.06em] text-primary bg-primary/10 px-2 py-0.5">
             {testimonial.corridor}
           </span>
         </div>
@@ -113,7 +113,7 @@ function TestimonialCard({
 
       <div className="mt-6 flex items-center justify-between gap-3 border-t border-border/40 pt-4">
         <div className="min-w-0">
-          <span className="block text-sm font-semibold text-foreground">
+          <span className="block text-sm font-medium text-foreground">
             {testimonial.name}
           </span>
           <span className="block font-sans text-xs text-muted-foreground">
@@ -170,11 +170,11 @@ export function FeedbackSection() {
         </SectionEyebrow>
         <h2
           id="feedback-heading"
-          className="text-section text-foreground"
+          className="text-section text-foreground text-balance"
         >
           Every shipment tells a story. Driven by reliability.
         </h2>
-        <p className="mt-4 text-lead max-w-[55ch] text-muted-foreground leading-relaxed font-normal">
+        <p className="mt-4 text-lead max-w-[55ch] text-muted-foreground leading-relaxed font-normal text-pretty">
           Real customer experiences across our Northeast corridors. Every shipment
           calibrates our transit schedules and strengthens our quality controls.
         </p>

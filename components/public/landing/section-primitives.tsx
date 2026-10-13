@@ -324,7 +324,7 @@ export function ProofStats({ className }: { className?: string } = {}) {
             transition={{ duration: 0.2 }}
             className="group flex flex-col justify-center py-4 sm:py-5 md:px-6 transition-colors hover:bg-muted/40"
           >
-            <span className={cn("font-sans text-xs sm:text-sm font-semibold uppercase tracking-[0.06em] transition-colors", claim.colorClass)}>
+            <span className={cn("font-sans text-xs sm:text-sm font-medium uppercase tracking-[0.06em] transition-colors", claim.colorClass)}>
               {claim.label}
             </span>
             <span className="mt-1 font-sans text-xs sm:text-sm text-muted-foreground font-normal leading-normal">
@@ -378,7 +378,7 @@ export function CorridorMarquee({ className }: { className?: string } = {}) {
             className="flex items-center gap-3.5 border-r border-border/70 px-6 sm:px-8 py-2 font-sans text-xs sm:text-sm"
           >
             <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
-            <span className="font-semibold text-foreground tracking-normal text-xs sm:text-sm">
+            <span className="font-medium text-foreground tracking-normal text-xs sm:text-sm">
               {item.corridor}
             </span>
             <span className="border border-border/80 bg-card/90 px-2 py-0.5 font-sans text-xs text-muted-foreground font-medium tracking-normal">

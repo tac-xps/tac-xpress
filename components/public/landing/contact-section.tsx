@@ -44,11 +44,11 @@ export function ContactSection() {
           <SectionEyebrow className="mb-4">Contact · Operations Desk</SectionEyebrow>
           <h2
             id="contact-heading"
-            className="text-section text-foreground"
+            className="text-section text-foreground text-balance"
           >
             A person to help with the next step.
           </h2>
-          <p className="mt-4 text-lead max-w-[50ch] text-muted-foreground leading-relaxed font-normal">
+          <p className="mt-4 text-lead max-w-[50ch] text-muted-foreground leading-relaxed font-normal text-pretty">
             Dedicated logistics desk. Submit corridor parameters, dimensional cargo manifests,
             or dispatch inquiries. Our operations team computes volumetric ratings and responds directly.
           </p>
@@ -78,7 +78,7 @@ export function ContactSection() {
                 <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-primary">
                   Dispatch Hotline
                 </span>
-                <span className="mt-1 block font-sans text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                <span className="mt-1 block font-sans text-sm font-medium tabular-nums text-foreground group-hover:text-primary transition-colors">
                   +91 98561 73829
                 </span>
               </div>

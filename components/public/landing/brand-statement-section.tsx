@@ -116,7 +116,7 @@ export function BrandStatementSection() {
               delay: 0.2,
               ease: motionEasings.editorial,
             }}
-            className="mx-auto mt-5 max-w-[54ch] text-lead text-center text-muted-foreground leading-relaxed font-normal"
+            className="mx-auto mt-5 max-w-[54ch] text-lead text-center text-muted-foreground leading-relaxed font-normal text-pretty"
           >
             Operational purpose. Behind every consignment is essential enterprise: commercial supply continuity, critical regional inventory, and verified delivery custody.
           </motion.p>
@@ -131,7 +131,7 @@ export function BrandStatementSection() {
             {BRAND_PILLARS.map((pillar, idx) => (
               <div
                 key={pillar}
-                className="flex items-center gap-6 px-8 py-3 font-sans text-xs uppercase tracking-[0.24em] font-semibold text-muted-foreground"
+                className="flex items-center gap-6 px-8 py-3 font-sans text-xs uppercase tracking-[0.24em] font-medium text-muted-foreground"
               >
                 <span
                   className={cn(
@@ -170,7 +170,7 @@ export function BrandStatementSection() {
             />
           </motion.div>
           <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium">
-            <span className="font-semibold text-foreground">Custodial Discipline</span>
+            <span className="font-medium text-foreground">Custodial Discipline</span>
             <span>Clarity · Dependability · Care</span>
           </div>
         </div>

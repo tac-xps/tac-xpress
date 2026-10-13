@@ -326,13 +326,13 @@ export function TrackingSection() {
           </SectionEyebrow>
           <h2
             id="tracking-heading"
-            className="text-section bg-gradient-to-br from-foreground via-foreground/90 to-foreground/60 bg-clip-text text-transparent"
+            className="text-section bg-gradient-to-br from-foreground via-foreground/90 to-foreground/60 bg-clip-text text-transparent text-balance"
           >
             A number.{" "}
             <br className="hidden sm:inline" />
             A clearer picture.
           </h2>
-          <p className="text-lead max-w-[52ch]">
+          <p className="text-lead max-w-[52ch] text-pretty">
             Verified milestone telemetry. Query statutory{" "}
             <strong className="font-semibold text-foreground">Air Waybill (AWB)</strong> or surface
             consignment numbers to review gate intake scans, hub cross-dock transfers,
@@ -369,7 +369,7 @@ export function TrackingSection() {
               >
                 <label
                   htmlFor="home-awb"
-                  className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-semibold"
+                  className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium"
                 >
                   AWB / shipment reference
                 </label>
@@ -423,7 +423,7 @@ export function TrackingSection() {
               {/* Active Consignment Meta Details Well */}
               <div className="mt-6 border border-border/80 bg-muted/20 p-4 space-y-3.5">
                 <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
-                  <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                  <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
                     Consignment Reference
                   </span>
                   <span className="font-mono text-sm font-bold tracking-wider text-primary tabular-nums">{activeAwb}</span>
@@ -432,13 +432,13 @@ export function TrackingSection() {
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
                     <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Corridor</span>
-                    <span className="font-sans font-semibold text-foreground text-xs sm:text-sm">
+                    <span className="font-sans font-medium text-foreground text-xs sm:text-sm">
                       {liveData ? `${liveData.origin} → ${liveData.destination}` : "Delhi (DEL) → Imphal (IMF)"}
                     </span>
                   </div>
                   <div>
                     <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Service Mode</span>
-                    <span className="font-sans font-semibold text-info text-xs sm:text-sm">
+                    <span className="font-sans font-medium text-info text-xs sm:text-sm">
                       {liveData ? liveData.service : "Air Express · Priority"}
                     </span>
                   </div>
@@ -574,7 +574,7 @@ export function TrackingSection() {
 
                               <div className="flex-1 pb-1">
                                 <div className="flex flex-wrap items-baseline justify-between gap-2">
-                                  <p className="font-sans text-sm font-semibold text-foreground">
+                                  <p className="font-sans text-sm font-medium text-foreground">
                                     {evt.description || evt.status || "Milestone Scan"}
                                   </p>
                                   {evt.event_time && (
@@ -688,7 +688,7 @@ export function TrackingSection() {
                     : "Consignment record synchronized with central tracking log"}
                 </span>
               </div>
-              <span className="font-sans text-xs uppercase tracking-[0.06em] text-primary font-semibold">
+              <span className="font-sans text-xs uppercase tracking-[0.06em] text-primary font-medium">
                 Optical Gate Audit
               </span>
             </div>

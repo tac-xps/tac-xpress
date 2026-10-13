@@ -126,6 +126,10 @@
   --type-subhead: clamp(1.25rem, 1.4vw, 1.5rem);     /* 20px → 24px: Subheadings, card titles */
   --type-sub: clamp(1.25rem, 1.4vw, 1.5rem);         /* Backwards-compatible alias */
   --type-lead: clamp(1.0625rem, 0.35vw + 1rem, 1.25rem); /* 17px → 20px: Narrative decks / subheads */
+  --text-editorial-display: var(--type-display);
+  --text-editorial-section: var(--type-section);
+  --text-editorial-sub: var(--type-subhead);
+  --text-editorial-lead: var(--type-lead);
 
   /* Legacy (retained for dashboard/app pages) */
   --text-display-xl: clamp(2.5rem, 5vw, 4rem);
@@ -143,7 +147,7 @@
   --radius-none: 0px;
   --radius-control: 0px;
   --radius-overlay: 0px;
-  --radius-full: 0px;
+  --radius-full: 9999px;
   --radius-xs: 0px;
   --radius-sm: 0px;
   --radius-md: 0px;
@@ -201,7 +205,7 @@
 @utility text-subhead {
   font-family: var(--font-sans);
   font-size: var(--type-subhead);
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.25;
   letter-spacing: -0.018em;
   text-wrap: balance;

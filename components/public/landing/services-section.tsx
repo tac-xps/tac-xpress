@@ -145,13 +145,13 @@ export function ServicesSection() {
             <SectionEyebrow className="mb-4">Services &amp; Modalities</SectionEyebrow>
             <h2
               id="services-heading"
-              className="text-section text-foreground"
+              className="text-section text-foreground text-balance"
             >
               Your cargo. The right journey.
             </h2>
           </div>
           <div className="md:col-span-4">
-            <p className="text-lead max-w-[48ch] text-muted-foreground leading-relaxed font-normal">
+            <p className="text-lead max-w-[48ch] text-muted-foreground leading-relaxed font-normal text-pretty">
               Calibrated transit modalities. Select high-priority commercial aviation or cost-optimized arterial linehaul matched to payload dimensions, destination cutoffs, and regulatory requirements.
             </p>
           </div>
@@ -189,7 +189,7 @@ export function ServicesSection() {
 
           {/* Architectural caption bar */}
           <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-sans text-xs tracking-[0.06em] uppercase text-foreground/80">
-            <span className="font-semibold text-foreground">Arterial Linehaul · Commercial Aviation</span>
+            <span className="font-medium text-foreground">Arterial Linehaul · Commercial Aviation</span>
             <span className="hidden sm:inline text-muted-foreground font-medium">Delhi NCR Corridor · Northeast Expressways</span>
           </div>
         </div>
@@ -221,18 +221,18 @@ export function ServicesSection() {
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className={cn("font-mono font-bold text-sm", srv.color)}>{srv.num}</span>
+                    <span className={cn("font-mono font-semibold text-sm", srv.color)}>{srv.num}</span>
                     <span className={cn("border px-2.5 py-0.5 font-sans text-xs uppercase tracking-[0.06em] font-medium", srv.badge)}>
                       {srv.tagline}
                     </span>
                     <Icon className={cn("size-4 text-muted-foreground transition-colors", `group-hover:${srv.color}`)} />
                   </div>
                   <h3
-                    className="mt-4 font-heading text-xl sm:text-2xl font-semibold tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary"
+                    className="mt-4 font-heading text-xl sm:text-2xl font-medium tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary"
                   >
                     {srv.title}
                   </h3>
-                  <p className="mt-2 text-sm sm:text-base font-semibold text-foreground leading-snug">
+                  <p className="mt-2 text-sm sm:text-base font-medium text-foreground leading-snug">
                     {srv.lead}
                   </p>
                   <p className="mt-2 text-body-editorial">
@@ -250,7 +250,7 @@ export function ServicesSection() {
                         <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
                           {spec.label}
                         </span>
-                        <span className="font-sans text-xs sm:text-sm font-semibold text-foreground">
+                        <span className="font-sans text-xs sm:text-sm font-medium text-foreground">
                           {spec.value}
                         </span>
                       </div>
@@ -261,7 +261,7 @@ export function ServicesSection() {
                     <Button
                       asChild
                       variant="link"
-                      className="h-auto p-0 font-sans text-xs font-semibold tracking-[-0.01em] text-primary hover:text-primary/80 group"
+                      className="h-auto p-0 font-sans text-xs font-medium tracking-[-0.01em] text-primary hover:text-primary/80 group"
                     >
                       <Link href={srv.href}>
                         <span>{srv.action}</span>
