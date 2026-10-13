@@ -118,18 +118,17 @@ function Code39BarcodeSvg({
   const totalWidth = currentX + 8
 
   return (
-    <div className={`flex flex-col items-center bg-white p-2 rounded-sm select-none ${className}`}>
+    <div className={`flex flex-col items-center bg-card p-2 rounded-sm select-none border border-border/80 ${className}`}>
       <svg
         viewBox={`0 0 ${totalWidth} ${height}`}
         className="w-full max-w-[260px] h-12"
-        fill="currentColor"
         aria-label={`Barcode for ${value}`}
       >
         {rects.map((r, idx) => (
-          <rect key={idx} x={r.x} y={0} width={r.width} height={height} fill="#000000" />
+          <rect key={idx} x={r.x} y={0} width={r.width} height={height} className="fill-foreground" />
         ))}
       </svg>
-      <span className="font-mono text-[10px] font-bold tracking-widest text-black mt-1 uppercase">
+      <span className="font-mono text-[10px] font-bold tracking-widest text-foreground mt-1 uppercase">
         {value}
       </span>
     </div>
@@ -163,15 +162,13 @@ export function ScannerTest() {
   const [activeTab, setActiveTab] = useState<string>("camera")
   const [scannedAwb, setScannedAwb] = useState<string | null>(null)
   const [copiedText, setCopiedText] = useState<string | null>(null)
-  const [currentOrigin, setCurrentOrigin] = useState<string>("")
+  const currentOrigin = React.useSyncExternalStore(
+    () => () => {},
+    () => (typeof window !== "undefined" ? window.location.origin : ""),
+    () => ""
+  )
   const [isPhotoProcessing, setIsPhotoProcessing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setCurrentOrigin(window.location.origin)
-    }
-  }, [])
 
   // Handle successful scan
   const handleScanSuccess = (decodedText: string) => {
@@ -227,9 +224,9 @@ export function ScannerTest() {
         return (
           <Badge
             variant="outline"
-            className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-xs gap-1.5"
+            className="border-success/30 bg-success/10 text-success font-mono text-xs gap-1.5"
           >
-            <CheckCircle2 className="size-3 text-emerald-500" />
+            <CheckCircle2 className="size-3 text-success" />
             Camera Access Granted
           </Badge>
         )
@@ -237,9 +234,9 @@ export function ScannerTest() {
         return (
           <Badge
             variant="outline"
-            className="border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400 font-mono text-xs gap-1.5"
+            className="border-info/30 bg-info/10 text-info font-mono text-xs gap-1.5"
           >
-            <Radio className="size-3 text-sky-500 animate-pulse" />
+            <Radio className="size-3 text-info animate-pulse" />
             Permission Prompt Ready
           </Badge>
         )
@@ -345,21 +342,21 @@ export function ScannerTest() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Viewfinder Column */}
             <div className="lg:col-span-8 space-y-3">
-              <div className="relative aspect-4/3 w-full max-w-xl mx-auto overflow-hidden rounded-sm border border-border/80 bg-zinc-950 flex flex-col items-center justify-center">
+              <div className="relative aspect-4/3 w-full max-w-xl mx-auto overflow-hidden rounded-sm border border-border/80 bg-muted/80 dark:bg-black/90 flex flex-col items-center justify-center">
                 {/* Hardware Video Stream Mount */}
                 <div id="tac-scanner-viewport" className="w-full h-full overflow-hidden" />
 
                 {/* Idle / Off Placeholder */}
                 {!scanner.isScanning && !scanner.isStarting && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-zinc-950/95 space-y-3">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-background/95 space-y-3">
                     <div className="size-12 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
                       <Scan className="size-6" />
                     </div>
                     <div className="space-y-1">
-                      <p className="font-semibold text-sm text-zinc-100">
+                      <p className="font-semibold text-sm text-foreground">
                         Camera Viewfinder Inactive
                       </p>
-                      <p className="text-xs text-zinc-400 max-w-sm">
+                      <p className="text-xs text-muted-foreground max-w-sm">
                         Activates the rear environment camera on iOS and Android with automatic barcode decoding.
                       </p>
                     </div>
@@ -375,7 +372,7 @@ export function ScannerTest() {
 
                 {/* Starting Spinner */}
                 {scanner.isStarting && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950/90 text-zinc-300 gap-2 font-mono text-xs">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/90 text-muted-foreground gap-2 font-mono text-xs">
                     <RefreshCw className="size-6 animate-spin text-primary" />
                     <span>Initializing camera stream…</span>
                   </div>
@@ -393,7 +390,7 @@ export function ScannerTest() {
 
                       {/* Animated Laser Scanning Line */}
                       <motion.div
-                        className="w-full h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_8px_var(--color-emerald-400)]"
+                        className="w-full h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_8px_var(--color-primary)]"
                         initial={{ y: 0 }}
                         animate={{ y: [0, 220, 0] }}
                         transition={{
@@ -410,8 +407,8 @@ export function ScannerTest() {
                     </div>
 
                     {/* HUD Status Bar */}
-                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs px-2 py-1 rounded-xs font-mono text-[10px] text-zinc-200 border border-white/10 flex items-center gap-1.5">
-                      <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs px-2 py-1 rounded-xs font-mono text-[10px] text-foreground border border-border/40 flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-success animate-pulse" />
                       <span>OPTICAL DECODER ACTIVE · 15 FPS</span>
                     </div>
                   </div>
@@ -504,9 +501,9 @@ export function ScannerTest() {
 
               {/* Scanned Result Card */}
               {scannedAwb && (
-                <div className="rounded-sm border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
+                <div className="rounded-sm border border-success/30 bg-success/5 p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-success font-bold flex items-center gap-1.5">
                       <CheckCircle2 className="size-3.5" /> Scanned Reference
                     </span>
                     <Badge variant="delivered" className="font-mono text-[10px]">
@@ -683,7 +680,7 @@ export function ScannerTest() {
                         className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
                       >
                         {copiedText === "AWB" ? (
-                          <Check className="size-3 text-emerald-500" />
+                          <Check className="size-3 text-success" />
                         ) : (
                           <Copy className="size-3" />
                         )}
@@ -716,11 +713,12 @@ export function ScannerTest() {
                 Scan with your iPhone Camera or Android Lens to open this terminal directly on your mobile device.
               </p>
 
-              <div className="bg-white p-3 rounded-sm shadow-sm">
+              <div className="bg-card p-3 rounded-sm shadow-sm border border-border/80">
                 <QRCodeSVG
                   value={currentOrigin ? `${currentOrigin}/dashboard/integrations` : "https://tac-xpress.com/dashboard/integrations"}
                   size={160}
                   level="M"
+                  className="[&_path]:fill-foreground"
                 />
               </div>
 
@@ -774,7 +772,7 @@ export function ScannerTest() {
                   <li>Open in <strong>Chrome</strong>. Camera prompt will appear automatically.</li>
                   <li>Tap <strong>Allow</strong>. Tac-Xpress selects the high-resolution rear lens.</li>
                   <li>
-                    <strong>Flashlight / Torch:</strong> Click "Flash On" in the live viewfinder for dark warehouse aisles.
+                    <strong>Flashlight / Torch:</strong> Click &quot;Flash On&quot; in the live viewfinder for dark warehouse aisles.
                   </li>
                   <li>
                     <strong>Hardware Vibration:</strong> Android automatically vibrates upon successful barcode registration.

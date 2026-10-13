@@ -742,6 +742,25 @@ export const deadLetterQueue = pgTable(
   ]
 )
 
+export const emailNotifications = pgTable(
+  "email_notifications",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    ticketId: uuid("ticket_id").references(() => tickets.id, { onDelete: "set null" }),
+    recipientEmail: text("recipient_email").notNull(),
+    templateName: text("template_name").notNull(),
+    subject: text("subject").notNull(),
+    bodyHtml: text("body_html"),
+    bodyText: text("body_text"),
+    status: text("status").notNull(),
+    providerMessageId: text("provider_message_id"),
+    sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("email_notifications_ticket_idx").on(table.ticketId, table.sentAt),
+  ]
+)
+
 // WebAuthn / Windows Hello Passkeys
 export const userPasskeys = pgTable(
   "user_passkeys",
@@ -823,5 +842,7 @@ export type UserMfa = typeof userMfa.$inferSelect
 export type NewUserMfa = typeof userMfa.$inferInsert
 export type AuthTokenConsumption = typeof authTokenConsumptions.$inferSelect
 export type NewAuthTokenConsumption = typeof authTokenConsumptions.$inferInsert
+export type EmailNotification = typeof emailNotifications.$inferSelect
+export type NewEmailNotification = typeof emailNotifications.$inferInsert
 
 

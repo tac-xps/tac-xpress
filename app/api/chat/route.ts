@@ -11,6 +11,13 @@ import arcjet, { tokenBucket } from "@arcjet/next"
 import * as Sentry from "@sentry/nextjs"
 import { readBoundedJson } from "@/lib/server/read-json"
 
+function isArcjetMisconfigured(): boolean {
+  return (
+    process.env.NODE_ENV === "production" &&
+    (!process.env.ARCJET_KEY || /placeholder|dummy|example/i.test(process.env.ARCJET_KEY))
+  )
+}
+
 const aj = arcjet({
   key: process.env.ARCJET_KEY || "ajkey_placeholder",
   rules: [
@@ -48,7 +55,18 @@ export async function POST(req: Request) {
   }
 
   // Public endpoint — protected by Arcjet rate limiting.
-  // Fails closed with 503 when rate limiting is unavailable or errors.
+  // Fails closed with 503 when rate limiting is misconfigured in production or errors.
+  if (isArcjetMisconfigured()) {
+    Sentry.captureMessage("Arcjet is misconfigured in production for chat endpoint", {
+      level: "error",
+      tags: { area: "chat_rate_limit" },
+    })
+    return NextResponse.json(
+      { error: "Security perimeter is not configured." },
+      { status: 503 }
+    )
+  }
+
   try {
     const decision = await aj.protect(req, { requested: 1 })
     if (decision.isDenied()) {

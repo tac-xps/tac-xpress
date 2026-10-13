@@ -1,8 +1,14 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { invoices, shipments, users } from "@/lib/db/schema"
 import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm"
+
+export const metadata: Metadata = {
+  title: "Invoices & Billing | TAC-XPRESS",
+  description: "Freight billing, GST tax invoices, payment statuses, and customer ledgers.",
+}
 import { Button } from "@/components/ui/button"
 import { InvoiceDataTable } from "./invoice-data-table"
 import { formatInvoiceCurrency } from "./invoice-types"
@@ -26,22 +32,24 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
   if (!statuses.some(({ value }) => value === query.status)) query.status = "all"
   const pattern = containsPattern(query.q)
   const sortColumns = { id: invoices.id, createdAt: invoices.createdAt, status: invoices.status, amount: invoices.amount }
+  const whereClause = and(
+    query.q
+      ? or(
+          sql`${invoices.id}::text ilike ${pattern}`,
+          inArray(invoices.customerId, db.select({ id: users.id }).from(users).where(ilike(users.name, pattern))),
+          inArray(invoices.shipmentId, db.select({ id: shipments.id }).from(shipments).where(or(ilike(shipments.awbNumber, pattern), ilike(shipments.consignorName, pattern))))
+        )
+      : undefined,
+    query.status === "overdue"
+      ? sql`${invoices.status} = 'unpaid' and ${invoices.dueDate} < now()`
+      : query.status !== "all"
+        ? eq(invoices.status, query.status as "unpaid" | "paid" | "void")
+        : undefined
+  )
+
   const [rows, countResult, [financials]] = await Promise.all([
     db.query.invoices.findMany({
-      where: and(
-        query.q
-          ? or(
-              sql`${invoices.id}::text ilike ${pattern}`,
-              inArray(invoices.customerId, db.select({ id: users.id }).from(users).where(ilike(users.name, pattern))),
-              inArray(invoices.shipmentId, db.select({ id: shipments.id }).from(shipments).where(or(ilike(shipments.awbNumber, pattern), ilike(shipments.consignorName, pattern))))
-            )
-          : undefined,
-        query.status === "overdue"
-          ? sql`${invoices.status} = 'unpaid' and ${invoices.dueDate} < now()`
-          : query.status !== "all"
-            ? eq(invoices.status, query.status as "unpaid" | "paid" | "void")
-            : undefined
-      ),
+      where: whereClause,
       with: { customer: true, shipment: true },
       orderBy: [recordOrder(sortColumns[query.sort as keyof typeof sortColumns], query.order), desc(invoices.id)],
       limit: query.pageSize,
@@ -50,22 +58,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
     db
       .select({ count: sql<number>`count(*)` })
       .from(invoices)
-      .where(
-        and(
-          query.q
-            ? or(
-                sql`${invoices.id}::text ilike ${pattern}`,
-                inArray(invoices.customerId, db.select({ id: users.id }).from(users).where(ilike(users.name, pattern))),
-                inArray(invoices.shipmentId, db.select({ id: shipments.id }).from(shipments).where(or(ilike(shipments.awbNumber, pattern), ilike(shipments.consignorName, pattern))))
-              )
-            : undefined,
-          query.status === "overdue"
-            ? sql`${invoices.status} = 'unpaid' and ${invoices.dueDate} < now()`
-            : query.status !== "all"
-              ? eq(invoices.status, query.status as "unpaid" | "paid" | "void")
-              : undefined
-        )
-      ),
+      .where(whereClause),
     db
       .select({
         outstanding: sql<number>`coalesce(sum(case when ${invoices.status} = 'unpaid' then coalesce(${invoices.balanceDue}, ${invoices.amount}) else 0 end), 0)`,

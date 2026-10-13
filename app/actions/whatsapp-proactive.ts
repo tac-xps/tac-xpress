@@ -46,7 +46,6 @@ export async function notifyShipmentUpdate(
     .single()
 
   if (subscriber?.opted_in !== true) {
-    console.log(`[WhatsApp Proactive] ${phone} is opted out; skipping`)
     return
   }
 

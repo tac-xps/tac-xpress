@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
@@ -9,37 +10,45 @@ import { TableToolbar } from "@/components/operations/table-toolbar"
 import { ExportPage } from "@/components/operations/export-page"
 import { containsPattern, parseRecordQuery, recordOrder, type RecordSearchParams } from "@/lib/table-query"
 
+export const metadata: Metadata = {
+  title: "Customers | TAC-XPRESS",
+  description: "Customer accounts, profiles, ledger history, and contact directory.",
+}
+
 export default async function CustomersPage({ searchParams }: { searchParams: Promise<RecordSearchParams> }) {
   await requireStaffPage()
   const params = await searchParams
   const query = parseRecordQuery(params, ["name", "email", "city", "createdAt"])
   const pattern = containsPattern(query.q)
   const sortColumns = { name: users.name, email: users.email, city: users.city, createdAt: users.createdAt }
-  const rows = await db
-    .select()
-    .from(users)
-    .where(
-      and(
-        eq(users.role, "customer"),
-        isNull(users.deletedAt),
-        query.q ? or(ilike(users.name, pattern), ilike(users.email, pattern), ilike(users.phone, pattern), ilike(users.city, pattern)) : undefined
-      )
-    )
-    .orderBy(recordOrder(sortColumns[query.sort as keyof typeof sortColumns], query.order), desc(users.id))
-    .limit(query.pageSize)
-    .offset((query.page - 1) * query.pageSize)
+  const whereClause = and(
+    eq(users.role, "customer"),
+    isNull(users.deletedAt),
+    query.q
+      ? or(
+          ilike(users.name, pattern),
+          ilike(users.email, pattern),
+          ilike(users.phone, pattern),
+          ilike(users.city, pattern)
+        )
+      : undefined
+  )
 
-  const countResult = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(users)
-    .where(
-      and(
-        eq(users.role, "customer"),
-        isNull(users.deletedAt),
-        query.q ? or(ilike(users.name, pattern), ilike(users.email, pattern), ilike(users.phone, pattern), ilike(users.city, pattern)) : undefined
-      )
-    )
-  const totalCount = Number(countResult[0].count)
+  const [rows, countResult] = await Promise.all([
+    db
+      .select()
+      .from(users)
+      .where(whereClause)
+      .orderBy(recordOrder(sortColumns[query.sort as keyof typeof sortColumns], query.order), desc(users.id))
+      .limit(query.pageSize)
+      .offset((query.page - 1) * query.pageSize),
+    db
+      .select({ count: sql<number>`count(*)` })
+      .from(users)
+      .where(whereClause),
+  ])
+
+  const totalCount = Number(countResult[0]?.count ?? 0)
   const pageCount = Math.ceil(totalCount / query.pageSize)
   const data = rows
 

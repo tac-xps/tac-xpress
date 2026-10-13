@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { requireAdminPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { backgroundJobs, deadLetterQueue } from "@/lib/db/schema"
@@ -6,6 +7,11 @@ import { PageHeader } from "@/components/operations/page-header"
 import { FailedJobsTable } from "./failed-jobs-table"
 import { DlqTable } from "./dlq-table"
 import { parseRecordQuery, type RecordSearchParams } from "@/lib/table-query"
+
+export const metadata: Metadata = {
+  title: "Background Jobs & DLQ | TAC-XPRESS",
+  description: "Asynchronous task queue, retry telemetry, and dead letter queue administration.",
+}
 
 export default async function JobsPage({ searchParams }: { searchParams: Promise<RecordSearchParams> }) {
   await requireAdminPage()

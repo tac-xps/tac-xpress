@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { hubs } from "@/lib/db/schema"
@@ -7,15 +8,16 @@ import { HubsClientTable } from "./hubs-client-table"
 import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
 import {
-  DEFAULT_PAGE_SIZE,
-  parsePage,
-} from "@/components/ui/page-navigation"
-import {
   containsPattern,
   parseRecordQuery,
   recordOrder,
   type RecordSearchParams,
 } from "@/lib/table-query"
+
+export const metadata: Metadata = {
+  title: "Hubs & Facilities | TAC-XPRESS",
+  description: "Logistics hubs, transit centers, facility codes, and service coverage.",
+}
 export default async function HubsPage({
   searchParams,
 }: {
@@ -30,44 +32,35 @@ export default async function HubsPage({
     name: hubs.name,
     location: hubs.location,
   }
-  const rows = await db
-    .select()
-    .from(hubs)
-    .where(
-      and(
-        isNull(hubs.deletedAt),
-        query.q
-          ? or(
-              ilike(hubs.name, pattern),
-              ilike(hubs.location, pattern),
-              ilike(hubs.contact, pattern)
-            )
-          : undefined
-      )
-    )
-    .orderBy(
-      recordOrder(columns[query.sort as keyof typeof columns], query.order),
-      desc(hubs.id)
-    )
-    .limit(query.pageSize)
-    .offset((query.page - 1) * query.pageSize)
+  const whereClause = and(
+    isNull(hubs.deletedAt),
+    query.q
+      ? or(
+          ilike(hubs.name, pattern),
+          ilike(hubs.location, pattern),
+          ilike(hubs.contact, pattern)
+        )
+      : undefined
+  )
 
-  const countResult = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(hubs)
-    .where(
-      and(
-        isNull(hubs.deletedAt),
-        query.q
-          ? or(
-              ilike(hubs.name, pattern),
-              ilike(hubs.location, pattern),
-              ilike(hubs.contact, pattern)
-            )
-          : undefined
+  const [rows, countResult] = await Promise.all([
+    db
+      .select()
+      .from(hubs)
+      .where(whereClause)
+      .orderBy(
+        recordOrder(columns[query.sort as keyof typeof columns], query.order),
+        desc(hubs.id)
       )
-    )
-  const totalCount = Number(countResult[0].count)
+      .limit(query.pageSize)
+      .offset((query.page - 1) * query.pageSize),
+    db
+      .select({ count: sql<number>`count(*)` })
+      .from(hubs)
+      .where(whereClause),
+  ])
+
+  const totalCount = Number(countResult[0]?.count ?? 0)
   const pageCount = Math.ceil(totalCount / query.pageSize)
   return (
     <div className="flex min-w-0 flex-col gap-6">

@@ -1,5 +1,6 @@
 "use client"
 import type { Manifest } from "@/lib/db/schema"
+import { format } from "date-fns"
 import {
   Table,
   TableBody,
@@ -44,7 +45,7 @@ export function DispatchClientTable({
               {run.vehicle?.registrationNumber || "Unassigned"}
             </TableCell>
             <TableCell>
-              {new Date(run.createdAt).toLocaleDateString("en-IN")}
+              {format(new Date(run.createdAt), "dd MMM yyyy")}
             </TableCell>
             <TableCell>
               <Badge variant="outline">

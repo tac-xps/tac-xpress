@@ -34,7 +34,7 @@ export function VehiclesDataTable({
   })
 
   return (
-    <Card className="shadow-none">
+    <Card className="rounded-none border-0 shadow-none">
       <CardHeader>
         <CardTitle>Vehicles</CardTitle>
         <CardDescription>{data.length} records on this page</CardDescription>

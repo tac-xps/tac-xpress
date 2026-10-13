@@ -35,7 +35,7 @@ function AppShellWrapper({
 }) {
   return (
     <>
-      <OnboardingTourProvider isOnboarded={session.user.isOnboarded} />
+      <OnboardingTourProvider isOnboarded={Boolean(session.user.isOnboarded)} />
       <AppShell
         userRole={session.user.role}
         user={{

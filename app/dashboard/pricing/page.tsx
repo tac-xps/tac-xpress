@@ -1,12 +1,18 @@
+import type { Metadata } from "next"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import * as Sentry from "@sentry/nextjs"
 import { Calculator } from "lucide-react"
 import { desc, isNull, sql } from "drizzle-orm"
 
+export const metadata: Metadata = {
+  title: "Pricing Rules & Calculator | TAC-XPRESS",
+  description: "Freight corridor rates, volumetric weight calculation rules, and fuel surcharges.",
+}
+
 import { AddPricingRuleDialog } from "./add-pricing-rule-dialog"
 import { PricingCalculatorClient } from "./pricing-calculator-client"
 import { PricingDataTable } from "./pricing-data-table"
-import { PricingIcon } from "@/components/icons/sidebar-icons"
+import { PageHeader } from "@/components/operations/page-header"
 import { db } from "@/lib/db"
 import { pricingRules } from "@/lib/db/schema"
 import { parseRecordQuery, type RecordSearchParams } from "@/lib/table-query"
@@ -46,23 +52,13 @@ export default async function PricingPage({
   const pageCount = Math.ceil(totalCount / pageSize)
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 duration-500 animate-in fade-in md:gap-8">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-4">
-          <div className="shrink-0 rounded-none bg-primary/10 p-3">
-            <PricingIcon className="size-8 text-primary" />
-          </div>
-          <div className="flex flex-col gap-1">
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-              Pricing & Rates
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Rates shown here are active rules configured in the platform.
-            </p>
-          </div>
-        </div>
+    <div className="flex min-w-0 flex-col gap-6">
+      <PageHeader
+        title="Pricing & Rates"
+        description="Rates shown here are active rules configured in the platform."
+      >
         <AddPricingRuleDialog />
-      </div>
+      </PageHeader>
 
       <PricingCalculatorClient />
 

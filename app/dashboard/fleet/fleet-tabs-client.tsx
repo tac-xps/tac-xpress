@@ -5,6 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Truck, Users } from "lucide-react"
 
 interface FleetTabsClientProps {
+  toolbar?: React.ReactNode
   vehiclesTable: React.ReactNode
   driversTable: React.ReactNode
   vehicleCount: number
@@ -12,6 +13,7 @@ interface FleetTabsClientProps {
 }
 
 export function FleetTabsClient({
+  toolbar,
   vehiclesTable,
   driversTable,
   vehicleCount,
@@ -40,13 +42,15 @@ export function FleetTabsClient({
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="vehicles" className="mt-4 focus-visible:outline-none">
-          {vehiclesTable}
-        </TabsContent>
-
-        <TabsContent value="drivers" className="mt-4 focus-visible:outline-none">
-          {driversTable}
-        </TabsContent>
+        <div className="mt-4 overflow-hidden rounded-none border bg-card">
+          {toolbar}
+          <TabsContent value="vehicles" className="m-0 focus-visible:outline-none">
+            {vehiclesTable}
+          </TabsContent>
+          <TabsContent value="drivers" className="m-0 focus-visible:outline-none">
+            {driversTable}
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   )

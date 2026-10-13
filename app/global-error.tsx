@@ -1,13 +1,15 @@
 "use client"
 
 import * as Sentry from "@sentry/nextjs"
-import NextError from "next/error"
 import { useEffect } from "react"
+import Link from "next/link"
 
 export default function GlobalError({
   error,
+  reset,
 }: {
   error: Error & { digest?: string }
+  reset: () => void
 }) {
   useEffect(() => {
     Sentry.captureException(error)
@@ -15,12 +17,36 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body>
-        {/* `NextError` is the default Next.js error page component. Its type
-        definition requires a `statusCode` prop. However, since the App Router
-        does not expose status codes for errors, we simply pass 0 to render a
-        generic error message. */}
-        <NextError statusCode={0} />
+      <body className="min-h-svh bg-background text-foreground antialiased font-sans">
+        <main className="mx-auto flex min-h-svh max-w-xl flex-col items-start justify-center gap-6 px-6 py-16">
+          <p className="font-mono text-sm text-destructive">500 · Application Error</p>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            Something unexpected occurred.
+          </h1>
+          <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Our engineering team has been notified automatically via Sentry. You can try refreshing the action or return to safety.
+          </p>
+          {error.digest && (
+            <div className="rounded-md border border-border bg-muted/40 px-3 py-2 font-mono text-xs text-muted-foreground">
+              Error Digest: {error.digest}
+            </div>
+          )}
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => reset()}
+              className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+            >
+              Try again
+            </button>
+            <Link
+              href="/"
+              className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-xs hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              Back to home
+            </Link>
+          </div>
+        </main>
       </body>
     </html>
   )

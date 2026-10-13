@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
+import { format } from "date-fns"
 import type { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@/components/ui/data-table/data-table"
 import { DataTableColumnHeader as ColumnHeader } from "@/components/ui/data-table/data-table-column-header"
@@ -77,7 +78,7 @@ export function LedgerDataTable({
     {
       accessorKey: "createdAt",
       header: ({ column }) => <ColumnHeader column={column} title="Date" />,
-      cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
+      cell: ({ row }) => format(new Date(row.original.createdAt), "dd MMM yyyy"),
     },
     {
       accessorKey: "awbNumber",

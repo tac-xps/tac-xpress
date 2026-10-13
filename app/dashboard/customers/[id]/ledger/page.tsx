@@ -1,9 +1,16 @@
+import type { Metadata } from "next"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { invoices, users, shipments } from "@/lib/db/schema"
 import { eq, desc, sql } from "drizzle-orm"
+
+export const metadata: Metadata = {
+  title: "Customer Ledger | TAC-XPRESS",
+  description: "Account billing history, statement of accounts, payments, and invoice breakdown.",
+}
 import { notFound } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { PageHeader } from "@/components/operations/page-header"
 import { LedgerDataTable, type CustomerInvoiceRow } from "./ledger-data-table"
 import { parseRecordQuery, type RecordSearchParams } from "@/lib/table-query"
 
@@ -28,7 +35,7 @@ export default async function CustomerLedgerPage(props: {
     notFound()
   }
 
-  const [customerInvoices, countRes] = await Promise.all([
+  const [customerInvoices, countRes, aggregateSums] = await Promise.all([
     db
       .select({
         id: invoices.id,
@@ -48,50 +55,42 @@ export default async function CustomerLedgerPage(props: {
     db
       .select({ count: sql<number>`count(*)` })
       .from(invoices)
-      .where(eq(invoices.customerId, customerId))
+      .where(eq(invoices.customerId, customerId)),
+    db
+      .select({
+        totalBilled: sql<number>`coalesce(sum(${invoices.amount}), 0)`,
+        totalAdvance: sql<number>`coalesce(sum(${invoices.advancePaid}), 0)`,
+        totalDue: sql<number>`coalesce(sum(${invoices.balanceDue}), 0)`,
+      })
+      .from(invoices)
+      .where(eq(invoices.customerId, customerId)),
   ])
 
-  // These sums should ideally come from an aggregate query across all invoices,
-  // but keeping it simple for the current page slice or aggregate everything.
-  // Actually, to get true totals, we should aggregate everything, not just the page.
-  const aggregateSums = await db
-    .select({
-      totalBilled: sql<number>`sum(${invoices.amount})`,
-      totalAdvance: sql<number>`sum(${invoices.advancePaid})`,
-      totalDue: sql<number>`sum(${invoices.balanceDue})`,
-    })
-    .from(invoices)
-    .where(eq(invoices.customerId, customerId))
-
-  const totalBilled = Number(aggregateSums[0].totalBilled) || 0
-  const totalAdvance = Number(aggregateSums[0].totalAdvance) || 0
-  const totalDue = Number(aggregateSums[0].totalDue) || 0
+  const totalBilled = Number(aggregateSums[0]?.totalBilled) || 0
+  const totalAdvance = Number(aggregateSums[0]?.totalAdvance) || 0
+  const totalDue = Number(aggregateSums[0]?.totalDue) || 0
 
   const pageCount = Math.ceil(Number(countRes[0].count) / pageSize)
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight">
-          Customer Ledger
-        </h1>
-        <p className="text-muted-foreground">
-          Statement of Account for {customer.email}
-        </p>
-      </div>
+    <div className="flex min-w-0 flex-col gap-6">
+      <PageHeader
+        title="Customer Ledger"
+        description={`Statement of account for ${customer.name || customer.email || "customer"}`}
+      />
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card className="shadow-none">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Billed</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ₹{(totalBilled / 100).toLocaleString()}
+              ₹{(totalBilled / 100).toLocaleString("en-IN")}
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="shadow-none">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">
               Total Paid (Advances)

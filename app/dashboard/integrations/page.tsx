@@ -1,8 +1,14 @@
+import type { Metadata } from "next"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { PageHeader } from "@/components/operations/page-header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getWhatsAppConfig } from "@/lib/whatsapp/config"
+
+export const metadata: Metadata = {
+  title: "Integrations & Webhooks | TAC-XPRESS",
+  description: "External messaging relays, WhatsApp Meta API, and inbound webhook endpoints.",
+}
 import { getAppUrl } from "@/lib/config/app-url"
 import { ScannerTest } from "./scanner-test"
 import { WebhookEndpointsCard } from "./webhook-endpoints-card"

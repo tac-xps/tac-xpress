@@ -71,9 +71,6 @@ export async function generateAutoReply(
   const ticketEnabled = ticket?.ai_auto_reply_enabled !== false // defaults to true if null/undefined
 
   if (!globalEnabled || !ticketEnabled) {
-    console.log(
-      `[AI Responder] Skipped: Auto-reply disabled. Global: ${globalEnabled}, Ticket: ${ticketEnabled}`
-    )
     return null
   }
 

@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { vehicles, drivers } from "@/lib/db/schema"
@@ -10,6 +11,11 @@ import { FleetTabsClient } from "./fleet-tabs-client"
 import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
 import { containsPattern, parseRecordQuery, type RecordSearchParams } from "@/lib/table-query"
+
+export const metadata: Metadata = {
+  title: "Fleet & Drivers | TAC-XPRESS",
+  description: "Vehicle registrations, fleet capacity, driver roster, and assignments.",
+}
 
 export default async function FleetPage({ searchParams }: { searchParams: Promise<RecordSearchParams> }) {
   await requireStaffPage()
@@ -41,10 +47,14 @@ export default async function FleetPage({ searchParams }: { searchParams: Promis
         <AddDriverDialog />
         <AddVehicleDialog drivers={driverOptions} />
       </PageHeader>
-      <div className="rounded-none border bg-card">
-        <TableToolbar pathname="/dashboard/fleet" query={q} placeholder="Vehicle registration, driver name, phone or licence" />
-      </div>
       <FleetTabsClient
+        toolbar={
+          <TableToolbar
+            pathname="/dashboard/fleet"
+            query={q}
+            placeholder="Vehicle registration, driver name, phone or licence"
+          />
+        }
         vehicleCount={vehicleTotal}
         driverCount={driverTotal}
         vehiclesTable={<VehiclesDataTable data={vehicleRows} pageCount={vehiclePageCount} drivers={driverOptions} />}

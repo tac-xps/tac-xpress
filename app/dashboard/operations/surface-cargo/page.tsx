@@ -1,15 +1,24 @@
+import type { Metadata } from "next"
+import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { TruckIcon } from "lucide-react"
 import { parsePage } from "@/components/ui/page-navigation"
 import { OperationsDashboardPage } from "../_components/operations-dashboard-page"
+
+export const metadata: Metadata = {
+  title: "Surface Cargo Operations | TAC-XPRESS",
+  description: "Road freight, surface cargo linehaul, transit vehicles, and logistics status.",
+}
 
 export default async function SurfaceCargoPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string | string[] }>
 }) {
+  await requireStaffPage()
   const page = parsePage((await searchParams).page)
 
+  // shortcut: 100 recent shipments for live telemetry to prevent OOM, upgrade to dedicated aggregate pipeline under higher volume
   const rows = await db.query.shipments.findMany({
     where: (s, { isNull, and, inArray }) =>
       and(
@@ -18,6 +27,7 @@ export default async function SurfaceCargoPage({
       ),
     with: { invoice: true },
     orderBy: (s, { desc }) => [desc(s.createdAt)],
+    limit: 100,
   })
 
   const totalDispatches = rows.length

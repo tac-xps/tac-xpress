@@ -1,6 +1,12 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { Suspense } from "react"
+
+export const metadata: Metadata = {
+  title: "Dashboard Overview | TAC-XPRESS",
+  description: "Operations overview, real-time metrics, cargo volume, and hub activity.",
+}
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { shipments, manifests, invoices, tickets } from "@/lib/db/schema"
@@ -20,27 +26,31 @@ import { Skeleton } from "@/components/ui/skeleton"
 // ─── Async RSC sections (each owns its own DB queries) ───────────────────────
 
 async function OverviewSection() {
+  let overview: Awaited<ReturnType<typeof getDashboardOverview>> | null = null
   try {
-    const overview = await getDashboardOverview()
-    return (
-      <>
-        <OverviewMetrics stats={overview.stats} />
-        <div className="grid min-w-0 gap-6 xl:grid-cols-[1.6fr_1fr]">
-          <VolumeChart data={overview.salesData} />
-          <Suspense fallback={<Skeleton className="h-64 rounded-lg" />}>
-            <WorkQueueSection />
-          </Suspense>
-        </div>
-        <ChartBarInteractive data={overview.salesData} />
-        <Suspense fallback={<Skeleton className="h-72 rounded-lg" />}>
-          <HubActivitySection hubsData={overview.hubsData} />
-        </Suspense>
-      </>
-    )
+    overview = await getDashboardOverview()
   } catch (error) {
     console.error("[OverviewSection] Failed to load dashboard metrics:", error)
     return null
   }
+
+  if (!overview) return null
+
+  return (
+    <>
+      <OverviewMetrics stats={overview.stats} />
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[1.6fr_1fr]">
+        <VolumeChart data={overview.salesData} />
+        <Suspense fallback={<Skeleton className="h-64 rounded-lg" />}>
+          <WorkQueueSection />
+        </Suspense>
+      </div>
+      <ChartBarInteractive data={overview.salesData} />
+      <Suspense fallback={<Skeleton className="h-72 rounded-lg" />}>
+        <HubActivitySection hubsData={overview.hubsData} />
+      </Suspense>
+    </>
+  )
 }
 
 async function HubActivitySection({
@@ -52,6 +62,7 @@ async function HubActivitySection({
 }
 
 async function WorkQueueSection() {
+  let counts = { pending: 0, drafts: 0, overdue: 0, support: 0 }
   try {
     const [pending, draftCount, overdue, support] = await Promise.all([
       db
@@ -76,32 +87,35 @@ async function WorkQueueSection() {
         .from(tickets)
         .then((r) => r[0]!.count),
     ])
-    return (
-      <WorkQueue
-        counts={{
-          pending: Number(pending),
-          drafts: Number(draftCount),
-          overdue: Number(overdue),
-          support: Number(support),
-        }}
-      />
-    )
+    counts = {
+      pending: Number(pending),
+      drafts: Number(draftCount),
+      overdue: Number(overdue),
+      support: Number(support),
+    }
   } catch (error) {
     console.error("[WorkQueueSection] Failed to load work queue:", error)
-    return (
-      <WorkQueue
-        counts={{
-          pending: 0,
-          drafts: 0,
-          overdue: 0,
-          support: 0,
-        }}
-      />
-    )
   }
+
+  return <WorkQueue counts={counts} />
 }
 
 async function OpenManifestsSection() {
+  let drafts: Array<{
+    id: string
+    referenceId: string
+    status: "draft" | "finalized"
+    createdAt?: Date
+    driverId?: string | null
+    vehicleId?: string | null
+    originHubId?: string | null
+    destinationHubId?: string | null
+    driver: { id?: string; name: string | null; phone?: string | null } | null
+    vehicle: { registrationNumber: string | null } | null
+    originHub: { name: string } | null
+    destinationHub: { name: string } | null
+    items?: any[]
+  }> = []
   try {
     // Two lean queries instead of one massive lateral join that times out.
     // Query 1: manifests with only the columns the table + dialog header need.
@@ -166,26 +180,30 @@ async function OpenManifestsSection() {
       itemsByManifest.set(item.manifestId, list)
     }
 
-    const drafts = rawManifests.map((m) => ({
+    drafts = rawManifests.map((m) => ({
       ...m,
       items: itemsByManifest.get(m.id) ?? [],
     }))
-
-    return <OpenManifests data={drafts} />
   } catch (error) {
     console.error("[OpenManifestsSection] Failed to load manifests:", error)
-    return <OpenManifests data={[]} />
+    drafts = []
   }
+
+  return <OpenManifests data={drafts} />
 }
 
 async function ControlCenterSection() {
+  let control = null
   try {
-    const control = await getControlCenterSnapshot()
-    return <ControlCenterPanels snapshot={control} />
+    control = await getControlCenterSnapshot()
   } catch (error) {
     console.error("[ControlCenterSection] Failed to load control center snapshot:", error)
     return null
   }
+
+  if (!control) return null
+
+  return <ControlCenterPanels snapshot={control} />
 }
 
 // ─── Skeleton fallbacks ───────────────────────────────────────────────────────

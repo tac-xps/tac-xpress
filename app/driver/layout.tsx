@@ -1,8 +1,5 @@
 import { AppShell } from "@/components/app-shell"
 import { redirect } from "next/navigation"
-import { db } from "@/lib/db"
-import { users } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
 import { requireDashboardSession } from "@/lib/auth/guards"
 import { ScannerProvider } from "@/components/scanner/scanner-provider"
 import { Suspense } from "react"
@@ -27,25 +24,20 @@ function AppShellSkeleton() {
   )
 }
 
-async function DriverShellWrapper({
+function DriverShellWrapper({
   session,
   children,
 }: {
   session: Awaited<ReturnType<typeof requireDashboardSession>>
   children: React.ReactNode
 }) {
-  const user = await db.query.users.findFirst({
-    where: eq(users.id, session.user.id),
-    columns: { name: true, avatarUrl: true },
-  })
-
   return (
     <AppShell
       userRole={session.user.role}
       user={{
         ...session.user,
-        name: user?.name || session.user.name,
-        image: user?.avatarUrl,
+        name: session.user.name,
+        image: session.user.avatarUrl,
       }}
     >
       {children}

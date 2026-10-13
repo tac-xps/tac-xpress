@@ -66,8 +66,8 @@ export function FeedbackMetrics({ metrics }: FeedbackMetricsProps) {
       value: metrics.positive,
       subtext: `${positivePercent}% favorable rating`,
       icon: ThumbsUp,
-      color: "text-emerald-500",
-      activeColor: "border-emerald-500 bg-emerald-500/5 ring-1 ring-emerald-500/20",
+      color: "text-success",
+      activeColor: "border-success bg-success/5 ring-1 ring-success/20",
     },
     {
       id: "negative" as const,
@@ -75,8 +75,8 @@ export function FeedbackMetrics({ metrics }: FeedbackMetricsProps) {
       value: metrics.negative,
       subtext: `${attentionPercent}% operational flags`,
       icon: AlertCircle,
-      color: "text-rose-500",
-      activeColor: "border-rose-500 bg-rose-500/5 ring-1 ring-rose-500/20",
+      color: "text-destructive",
+      activeColor: "border-destructive bg-destructive/5 ring-1 ring-destructive/20",
     },
     {
       id: "general" as const,
@@ -84,8 +84,8 @@ export function FeedbackMetrics({ metrics }: FeedbackMetricsProps) {
       value: metrics.general,
       subtext: "Standard communications",
       icon: Sparkles,
-      color: "text-sky-500",
-      activeColor: "border-sky-500 bg-sky-500/5 ring-1 ring-sky-500/20",
+      color: "text-info",
+      activeColor: "border-info bg-info/5 ring-1 ring-info/20",
     },
   ]
 
@@ -100,7 +100,7 @@ export function FeedbackMetrics({ metrics }: FeedbackMetricsProps) {
           Feedback Signal Telemetry
         </span>
         <span className="flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground/70">
-          <span className="size-1.5 rounded-none bg-emerald-500 animate-pulse" />
+          <span className="size-1.5 rounded-none bg-success animate-pulse" />
           Live Ingestion
         </span>
       </div>

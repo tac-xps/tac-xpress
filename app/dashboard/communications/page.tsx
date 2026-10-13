@@ -1,10 +1,15 @@
+import type { Metadata } from "next"
 import { DeliveryHistory } from "@/components/operations/delivery-history"
 import Link from "next/link"
 import { and, desc, eq, sql } from "drizzle-orm"
 import { requireStaffPage } from "@/lib/auth/page-access"
+
+export const metadata: Metadata = {
+  title: "Communications Hub | TAC-XPRESS",
+  description: "Outbound notifications, delivery history, WhatsApp delivery receipts, and email logs.",
+}
 import { db } from "@/lib/db"
-import { messageOutbound } from "@/lib/db/schema"
-import { queryRows } from "@/lib/jobs/store"
+import { messageOutbound, backgroundJobs, deadLetterQueue, emailNotifications } from "@/lib/db/schema"
 import { PageHeader } from "@/components/operations/page-header"
 import { Button } from "@/components/ui/button"
 import {
@@ -26,7 +31,7 @@ export default async function CommunicationsPage({
   await requireStaffPage()
   const { status } = await searchParams
   const failedOnly = status === "failed"
-  const [messages, jobResult, emailResult, dlqResult] = await Promise.all([
+  const [messages, jobResult, emails, dlqResult] = await Promise.all([
     db
       .select({
         id: messageOutbound.id,
@@ -43,30 +48,36 @@ export default async function CommunicationsPage({
       })
       .from(messageOutbound)
       .where(and(failedOnly ? eq(messageOutbound.status, "failed") : undefined))
-      .orderBy(desc(messageOutbound.createdAt), desc(messageOutbound.id))
+      // shortcut: 50 recent outbound messages for fast staff review, upgrade to paginated query when volume exceeds 500/day
       .limit(50),
-    db.execute(
-      sql`select status, count(*)::int as count from background_jobs group by status`
-    ),
-    db.execute(
-      sql`select id, template_name, status, sent_at from email_notifications order by sent_at desc, id desc limit 10`
-    ),
-    db.execute(
-      sql`select count(*)::int as count from dead_letter_queue`
-    ),
+    db
+      .select({
+        status: backgroundJobs.status,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(backgroundJobs)
+      .groupBy(backgroundJobs.status),
+    db
+      .select({
+        id: emailNotifications.id,
+        template_name: emailNotifications.templateName,
+        status: emailNotifications.status,
+        sent_at: emailNotifications.sentAt,
+      })
+      .from(emailNotifications)
+      .orderBy(desc(emailNotifications.sentAt), desc(emailNotifications.id))
+      .limit(10),
+    db
+      .select({
+        count: sql<number>`count(*)::int`,
+      })
+      .from(deadLetterQueue),
   ])
-  const jobs = queryRows<{ status: string; count: number }>(jobResult)
-  const emails = queryRows<{
-    id: string
-    template_name: string
-    status: string
-    sent_at: string
-  }>(emailResult)
-  const dlqCount = queryRows<{ count: number }>(dlqResult)[0]?.count ?? 0
-  const pending = jobs
+  const dlqCount = dlqResult[0]?.count ?? 0
+  const pending = jobResult
     .filter((job) => job.status === "pending" || job.status === "processing")
     .reduce((sum, job) => sum + job.count, 0)
-  const failed = jobs.find((job) => job.status === "failed")?.count ?? 0
+  const failed = jobResult.find((job) => job.status === "failed")?.count ?? 0
   return (
     <div className="flex min-w-0 flex-col gap-6">
       <PageHeader

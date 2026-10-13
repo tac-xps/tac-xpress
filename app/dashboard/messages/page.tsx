@@ -1,12 +1,17 @@
+import type { Metadata } from "next"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { messageOutbound, tickets as ticketsTable } from "@/lib/db/schema"
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm"
+
+export const metadata: Metadata = {
+  title: "Support Tickets & Messages | TAC-XPRESS",
+  description: "Customer support tickets, WhatsApp logs, AI triage, and live conversations.",
+}
 import { TicketsClient } from "./tickets-client"
 import { OutboundMessageLog } from "./outbound-message-log"
 import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
-import { parsePage, DEFAULT_PAGE_SIZE } from "@/components/ui/page-navigation"
 import { containsPattern, parseRecordQuery, recordOrder, type RecordSearchParams } from "@/lib/table-query"
 import { CreateTicketDialog } from "./create-ticket-dialog"
 const statuses = [
@@ -30,34 +35,34 @@ export default async function MessagesPage({
   if (!statuses.some(({ value }) => value === query.status))
     query.status = "all"
   const pattern = containsPattern(query.q)
+  const ticketWhere = and(
+    query.q
+      ? or(
+          ilike(ticketsTable.subject, pattern),
+          ilike(ticketsTable.customerName, pattern),
+          ilike(ticketsTable.customerEmail, pattern),
+          ilike(ticketsTable.guestEmail, pattern),
+          ilike(ticketsTable.relatedAwb, pattern),
+          ilike(ticketsTable.awbNumber, pattern)
+        )
+      : undefined,
+    query.status !== "all"
+      ? eq(
+          ticketsTable.status,
+          query.status as
+            | "open"
+            | "in_progress"
+            | "resolved"
+            | "awaiting_customer"
+        )
+      : undefined
+  )
+
   const [rows, countResult, outboundMessages] = await Promise.all([
     db
       .select()
       .from(ticketsTable)
-      .where(
-        and(
-          query.q
-            ? or(
-                ilike(ticketsTable.subject, pattern),
-                ilike(ticketsTable.customerName, pattern),
-                ilike(ticketsTable.customerEmail, pattern),
-                ilike(ticketsTable.guestEmail, pattern),
-                ilike(ticketsTable.relatedAwb, pattern),
-                ilike(ticketsTable.awbNumber, pattern)
-              )
-            : undefined,
-          query.status !== "all"
-            ? eq(
-                ticketsTable.status,
-                query.status as
-                  | "open"
-                  | "in_progress"
-                  | "resolved"
-                  | "awaiting_customer"
-              )
-            : undefined
-        )
-      )
+      .where(ticketWhere)
       .orderBy(
         recordOrder(
           query.sort === "customer_name"
@@ -72,30 +77,7 @@ export default async function MessagesPage({
     db
       .select({ count: sql<number>`count(*)` })
       .from(ticketsTable)
-      .where(
-        and(
-          query.q
-            ? or(
-                ilike(ticketsTable.subject, pattern),
-                ilike(ticketsTable.customerName, pattern),
-                ilike(ticketsTable.customerEmail, pattern),
-                ilike(ticketsTable.guestEmail, pattern),
-                ilike(ticketsTable.relatedAwb, pattern),
-                ilike(ticketsTable.awbNumber, pattern)
-              )
-            : undefined,
-          query.status !== "all"
-            ? eq(
-                ticketsTable.status,
-                query.status as
-                  | "open"
-                  | "in_progress"
-                  | "resolved"
-                  | "awaiting_customer"
-              )
-            : undefined
-        )
-      ),
+      .where(ticketWhere),
     db
       .select({
         id: messageOutbound.id,

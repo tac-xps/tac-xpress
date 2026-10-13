@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { format } from "date-fns"
 import { useQueryState, parseAsString, parseAsInteger } from "nuqs"
 import type { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@/components/ui/data-table/data-table"
@@ -120,7 +121,7 @@ export function FeedbackClientTable({
         header: ({ column }) => <ColumnHeader column={column} title="Date" />,
         cell: ({ row }) => (
           <span className="whitespace-nowrap font-mono text-xs text-muted-foreground">
-            {new Date(row.original.createdAt).toLocaleDateString()}
+            {format(new Date(row.original.createdAt), "dd MMM yyyy")}
           </span>
         ),
       },
@@ -199,7 +200,7 @@ export function FeedbackClientTable({
             onClick={() => handleSentimentChange("positive")}
             className="h-7 px-3 text-xs"
           >
-            <ThumbsUp className="mr-1.5 size-3 text-emerald-500" /> Positive
+            <ThumbsUp className="mr-1.5 size-3 text-success" /> Positive
           </Button>
           <Button
             type="button"
@@ -209,7 +210,7 @@ export function FeedbackClientTable({
             onClick={() => handleSentimentChange("negative")}
             className="h-7 px-3 text-xs"
           >
-            <AlertCircle className="mr-1.5 size-3 text-rose-500" /> Needs Attention
+            <AlertCircle className="mr-1.5 size-3 text-destructive" /> Needs Attention
           </Button>
           <Button
             type="button"
@@ -219,7 +220,7 @@ export function FeedbackClientTable({
             onClick={() => handleSentimentChange("general")}
             className="h-7 px-3 text-xs"
           >
-            <Star className="mr-1.5 size-3 text-sky-500" /> General
+            <Star className="mr-1.5 size-3 text-info" /> General
           </Button>
         </div>
 

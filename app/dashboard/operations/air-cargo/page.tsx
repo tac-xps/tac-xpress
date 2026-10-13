@@ -1,20 +1,30 @@
+import type { Metadata } from "next"
+import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { PlaneIcon } from "lucide-react"
 import { parsePage } from "@/components/ui/page-navigation"
 import { OperationsDashboardPage } from "../_components/operations-dashboard-page"
+
+export const metadata: Metadata = {
+  title: "Air Cargo Operations | TAC-XPRESS",
+  description: "Express air cargo linehaul telemetry, flight transit status, and air manifests.",
+}
 
 export default async function AirCargoPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string | string[] }>
 }) {
+  await requireStaffPage()
   const page = parsePage((await searchParams).page)
 
+  // shortcut: 100 recent shipments for live telemetry to prevent OOM, upgrade to dedicated aggregate pipeline under higher volume
   const rows = await db.query.shipments.findMany({
     where: (s, { isNull, and, eq }) =>
       and(isNull(s.deletedAt), eq(s.serviceType, "express_air")),
     with: { invoice: true },
     orderBy: (s, { desc }) => [desc(s.createdAt)],
+    limit: 100,
   })
 
   const totalVolume = rows.length

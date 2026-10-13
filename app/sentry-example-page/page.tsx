@@ -1,6 +1,7 @@
 "use client"
 
 import * as Sentry from "@sentry/nextjs"
+import { notFound } from "next/navigation"
 import { useEffect, useState } from "react"
 import { testSentryServerAction } from "./actions"
 
@@ -12,6 +13,7 @@ class SentryExampleFrontendError extends Error {
 }
 
 export default function Page() {
+  if (process.env.NODE_ENV === "production") notFound()
   const [isConnected, setIsConnected] = useState(true)
 
   useEffect(() => {

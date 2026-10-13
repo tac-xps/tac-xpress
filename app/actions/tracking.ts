@@ -5,7 +5,7 @@ import arcjet, { slidingWindow, request } from "@arcjet/next"
 import { z } from "zod"
 import * as Sentry from "@sentry/nextjs"
 import { capturePostHogEvent } from "@/lib/posthog-server"
-import { isArcjetBypassed } from "@/lib/server/rate-limit"
+import { isArcjetBypassed, isArcjetMisconfigured } from "@/lib/server/rate-limit"
 const aj = arcjet({
   key: process.env.ARCJET_KEY || "ajkey_placeholder",
   rules: [
@@ -29,6 +29,14 @@ export async function trackAwb(formData: FormData) {
     return { error: "Invalid AWB number format" }
   }
   const awb = parsed.data.awb_number
+
+  if (isArcjetMisconfigured()) {
+    Sentry.captureMessage("Arcjet is misconfigured in production for tracking endpoint", {
+      level: "error",
+      tags: { area: "public_tracking_rate_limit" },
+    })
+    return { error: "Tracking is temporarily unavailable. Please try again later." }
+  }
 
   try {
     if (!isArcjetBypassed()) {

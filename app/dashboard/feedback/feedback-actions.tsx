@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { format } from "date-fns"
 import {
   MoreHorizontal,
   Trash,
@@ -115,11 +116,7 @@ export function FeedbackActions({ feedback }: { feedback: FeedbackData }) {
             </div>
             <DialogDescription>
               Received from public feedback channel on{" "}
-              {new Date(feedback.createdAt).toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
+              {format(new Date(feedback.createdAt), "dd MMM yyyy")}
             </DialogDescription>
           </DialogHeader>
 
@@ -155,7 +152,7 @@ export function FeedbackActions({ feedback }: { feedback: FeedbackData }) {
                     className="h-7 px-2 text-xs"
                   >
                     {copied ? (
-                      <Check className="size-3.5 text-emerald-500 mr-1" />
+                      <Check className="size-3.5 text-success mr-1" />
                     ) : (
                       <Copy className="size-3.5 mr-1" />
                     )}

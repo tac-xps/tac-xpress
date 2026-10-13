@@ -36,9 +36,13 @@ export default async function FeedbackPage({
   )
   const pattern = containsPattern(q)
 
-  const rawSentiment = typeof (params as any).sentiment === "string" ? (params as any).sentiment : "all"
-  const sentiment = ["positive", "negative", "general"].includes(rawSentiment)
-    ? rawSentiment
+  const paramRecord = params as Record<string, string | string[] | undefined>
+  const rawParam =
+    (typeof paramRecord.sentiment === "string" ? paramRecord.sentiment : "") ||
+    (typeof paramRecord.status === "string" ? paramRecord.status : "") ||
+    "all"
+  const sentiment = ["positive", "negative", "general"].includes(rawParam)
+    ? rawParam
     : "all"
 
   const negativeSql = sql`(${feedback.message} ~* '\\m(delay[[:alpha:]]*|damage[[:alpha:]]*|broken|lost|late|poor|terrible|worst)\\M')`
@@ -74,7 +78,7 @@ export default async function FeedbackPage({
   const sortColumn = sortColumns[sort as keyof typeof sortColumns] ?? feedback.createdAt
 
   // Fetch paginated feedback records and aggregate telemetry counts in parallel
-  const [feedbackRows, countResult, totalAgg, positiveAgg, negativeAgg] = await Promise.all([
+  const [feedbackRows, countResult, [metricsAgg]] = await Promise.all([
     db.query.feedback.findMany({
       where: whereCondition,
       orderBy: [recordOrder(sortColumn, order)],
@@ -85,20 +89,21 @@ export default async function FeedbackPage({
       .select({ count: sql<number>`count(*)` })
       .from(feedback)
       .where(whereCondition),
-    db.select({ count: sql<number>`count(*)` }).from(feedback),
     db
-      .select({ count: sql<number>`count(*)` })
-      .from(feedback)
-      .where(sql`(${positiveSql} AND NOT (${negativeSql}))`),
-    db.select({ count: sql<number>`count(*)` }).from(feedback).where(negativeSql),
+      .select({
+        total: sql<number>`count(*)`,
+        positive: sql<number>`count(*) filter (where ${positiveSql} and not (${negativeSql}))`,
+        negative: sql<number>`count(*) filter (where ${negativeSql})`,
+      })
+      .from(feedback),
   ])
 
   const totalCount = Number(countResult[0]?.count ?? 0)
   const pageCount = Math.ceil(totalCount / pageSize)
 
-  const totalAll = Number(totalAgg[0]?.count ?? 0)
-  const positiveAll = Number(positiveAgg[0]?.count ?? 0)
-  const negativeAll = Number(negativeAgg[0]?.count ?? 0)
+  const totalAll = Number(metricsAgg?.total ?? 0)
+  const positiveAll = Number(metricsAgg?.positive ?? 0)
+  const negativeAll = Number(metricsAgg?.negative ?? 0)
   const generalAll = Math.max(0, totalAll - positiveAll - negativeAll)
 
   const formattedData = feedbackRows.map((fb) => ({
@@ -153,14 +158,16 @@ export default async function FeedbackPage({
         <TableToolbar
           pathname="/dashboard/feedback"
           query={q}
+          status={sentiment}
+          statuses={[
+            { value: "positive", label: "Positive" },
+            { value: "negative", label: "Needs attention" },
+            { value: "general", label: "General" },
+          ]}
           sort={sort}
           order={order}
           placeholder="Search by name, email, or message..."
-        >
-          {sentiment !== "all" && (
-            <input type="hidden" name="sentiment" value={sentiment} />
-          )}
-        </TableToolbar>
+        />
         <FeedbackClientTable
           data={formattedData}
           pageCount={pageCount}

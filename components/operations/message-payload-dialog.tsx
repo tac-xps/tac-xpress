@@ -97,9 +97,9 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
         return (
           <Badge
             variant="outline"
-            className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-xs gap-1.5"
+            className="border-success/30 bg-success/10 text-success font-mono text-xs gap-1.5"
           >
-            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="size-1.5 rounded-full bg-success animate-pulse" />
             Provider Accepted
           </Badge>
         )
@@ -113,7 +113,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
       case "read":
         return (
           <Badge variant="secondary" className="font-mono text-xs gap-1.5">
-            <CheckCheck className="size-3 text-sky-500" />
+            <CheckCheck className="size-3 text-info" />
             Read
           </Badge>
         )
@@ -188,8 +188,8 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
             >
               {copiedField === "Dispatch ID" ? (
                 <>
-                  <Check className="size-3 text-emerald-500" />
-                  <span className="text-emerald-500">Copied</span>
+                  <Check className="size-3 text-success" />
+                  <span className="text-success">Copied</span>
                 </>
               ) : (
                 <>
@@ -221,7 +221,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
                   title="Copy full phone"
                 >
                   {copiedField === "Phone number" ? (
-                    <Check className="size-3 text-emerald-500" />
+                    <Check className="size-3 text-success" />
                   ) : (
                     <Copy className="size-3" />
                   )}
@@ -301,7 +301,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-emerald-500" />
+                  <span className="size-2 rounded-full bg-success" />
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     WhatsApp Message Preview
                   </span>
@@ -315,7 +315,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
                 >
                   {copiedField === "Message text" ? (
                     <>
-                      <Check className="mr-1 size-3 text-emerald-500" /> Copied
+                      <Check className="mr-1 size-3 text-success" /> Copied
                     </>
                   ) : (
                     <>
@@ -324,7 +324,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
                   )}
                 </Button>
               </div>
-              <div className="rounded-sm border border-emerald-500/25 bg-emerald-500/[0.04] p-4 border-l-4 border-l-emerald-500 shadow-xs">
+              <div className="rounded-sm border border-success/25 bg-success/[0.04] p-4 border-l-4 border-l-success shadow-xs">
                 <div className="font-sans text-xs leading-relaxed text-foreground select-text whitespace-pre-wrap">
                   <RichTextRenderer content={message.body} />
                 </div>
@@ -348,8 +348,8 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
                 >
                   {copiedPayload ? (
                     <>
-                      <Check className="size-3 text-emerald-500" />
-                      <span className="text-emerald-500">Copied</span>
+                      <Check className="size-3 text-success" />
+                      <span className="text-success">Copied</span>
                     </>
                   ) : (
                     <>
@@ -359,8 +359,8 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
                   )}
                 </Button>
               </div>
-              <div className="relative rounded-sm border border-border/60 bg-zinc-950 dark:bg-black/80 overflow-hidden shadow-inner">
-                <pre className="max-h-64 overflow-x-auto p-4 font-mono text-xs text-zinc-100 leading-relaxed scrollbar-thin scrollbar-thumb-zinc-700">
+              <div className="relative rounded-sm border border-border/60 bg-muted/60 dark:bg-black/80 overflow-hidden shadow-inner">
+                <pre className="max-h-64 overflow-x-auto p-4 font-mono text-xs text-foreground leading-relaxed">
                   {payloadString}
                 </pre>
               </div>
