@@ -54,7 +54,11 @@ const TESTIMONIALS = [
 /* ------------------------------------------------------------------ */
 function StarRating({ count }: { count: number }) {
   return (
-    <div className="flex items-center gap-0.5" aria-label={`${count} out of 5 stars`}>
+    <div
+      role="img"
+      aria-label={`${count} out of 5 stars`}
+      className="flex items-center gap-0.5"
+    >
       {Array.from({ length: 5 }, (_, i) => (
         <Star
           key={i}
