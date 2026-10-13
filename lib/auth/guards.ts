@@ -26,13 +26,19 @@ const currentAllowedRole = cache(
     if (!session?.user?.id || !UUID_REGEX.test(session.user.id)) return null
     try {
       const [currentUser] = await db
-        .select({ role: users.role })
+        .select({
+          role: users.role,
+          name: users.name,
+          avatarUrl: users.avatarUrl,
+          isOnboarded: users.isOnboarded,
+        })
         .from(users)
         .where(and(eq(users.id, session.user.id), isNull(users.deletedAt)))
         .limit(1)
+
       return currentUser &&
         allowedRoles.includes(currentUser.role as DashboardRole)
-        ? currentUser.role
+        ? currentUser
         : null
     } catch (error) {
       Sentry.captureException(error, { tags: { area: "authorization" } })
@@ -49,12 +55,23 @@ export const requireDashboardSession = cache(
     throw new Error("Unauthorized")
   }
 
-  const currentRole = await currentAllowedRole(session, allowedRoles)
-  if (!currentRole) {
+  const currentUser = await currentAllowedRole(session, allowedRoles)
+  if (!currentUser) {
     throw new Error("Forbidden")
   }
 
-  return { ...session, user: { ...session.user, role: currentRole } }
+  return {
+    ...session,
+    user: {
+      ...session.user,
+      role: currentUser.role as DashboardRole,
+      ...(currentUser.name ? { name: currentUser.name } : {}),
+      ...(currentUser.avatarUrl ? { avatarUrl: currentUser.avatarUrl } : {}),
+      ...(typeof currentUser.isOnboarded === "boolean"
+        ? { isOnboarded: currentUser.isOnboarded }
+        : {}),
+    },
+  }
 })
 
 export async function requireDashboardAction(
@@ -72,8 +89,8 @@ export async function requireDashboardAction(
     }
   }
 
-  const currentRole = await currentAllowedRole(session, allowedRoles)
-  if (!currentRole) {
+  const currentUser = await currentAllowedRole(session, allowedRoles)
+  if (!currentUser) {
     return {
       ok: false as const,
       response: {
@@ -83,7 +100,21 @@ export async function requireDashboardAction(
     }
   }
 
-  return { ok: true as const, session: { ...session, user: { ...session.user, role: currentRole } } }
+  return {
+    ok: true as const,
+    session: {
+      ...session,
+      user: {
+        ...session.user,
+        role: currentUser.role as DashboardRole,
+        ...(currentUser.name ? { name: currentUser.name } : {}),
+        ...(currentUser.avatarUrl ? { avatarUrl: currentUser.avatarUrl } : {}),
+        ...(typeof currentUser.isOnboarded === "boolean"
+          ? { isOnboarded: currentUser.isOnboarded }
+          : {}),
+      },
+    },
+  }
 }
 
 export async function requireDashboardApi(
@@ -98,15 +129,29 @@ export async function requireDashboardApi(
     }
   }
 
-  const currentRole = await currentAllowedRole(session, allowedRoles)
-  if (!currentRole) {
+  const currentUser = await currentAllowedRole(session, allowedRoles)
+  if (!currentUser) {
     return {
       ok: false as const,
       response: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
     }
   }
 
-  return { ok: true as const, session: { ...session, user: { ...session.user, role: currentRole } } }
+  return {
+    ok: true as const,
+    session: {
+      ...session,
+      user: {
+        ...session.user,
+        role: currentUser.role as DashboardRole,
+        ...(currentUser.name ? { name: currentUser.name } : {}),
+        ...(currentUser.avatarUrl ? { avatarUrl: currentUser.avatarUrl } : {}),
+        ...(typeof currentUser.isOnboarded === "boolean"
+          ? { isOnboarded: currentUser.isOnboarded }
+          : {}),
+      },
+    },
+  }
 }
 
 

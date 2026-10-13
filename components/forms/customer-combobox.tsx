@@ -27,7 +27,8 @@ export function CustomerCombobox({
   const { records, loading, error, setQuery } = useRecordLookup(
     "/api/customers",
     customerSchema,
-    isValidId ? value : undefined
+    isValidId ? value : undefined,
+    !disabled
   )
   return (
     <SearchSelect

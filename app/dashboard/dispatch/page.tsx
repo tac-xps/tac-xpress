@@ -1,7 +1,13 @@
+import type { Metadata } from "next"
+import { format } from "date-fns"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { DispatchClientLayout } from "./dispatch-client-layout"
 import { DEFAULT_PAGE_SIZE, parsePage } from "@/components/ui/page-navigation"
+
+export const metadata: Metadata = {
+  title: "Dispatch & Routing | TAC-XPRESS",
+}
 
 export default async function DispatchPage({
   searchParams,
@@ -69,7 +75,7 @@ export default async function DispatchPage({
       route: `${s.origin} → ${s.destination}`,
       type: s.serviceType === "express_air" ? "Air cargo" : "Surface cargo",
       status: s.status,
-      time: `Booked ${s.bookingDate.toLocaleDateString("en-IN")}`,
+      time: `Booked ${format(new Date(s.bookingDate), "dd MMM yyyy")}`,
       column: columnId,
       name: s.awbNumber,
       isAssigned: s.manifestItems.length > 0,

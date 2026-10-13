@@ -5,7 +5,10 @@ import { supabaseAdmin } from "@/lib/supabase/clients"
 import { sanitizeHtml } from "@/lib/sanitize"
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM_EMAIL = process.env.FROM_EMAIL || "support@tac-xpress.app"
+const FROM_EMAIL =
+  process.env.RESEND_FROM_EMAIL ||
+  process.env.FROM_EMAIL ||
+  "support@tac-xpress.app"
 
 export type NotificationType =
   | "ticket_created"
@@ -181,7 +184,7 @@ export async function sendTicketNotification(payload: EmailPayload) {
         "[Email] RESEND_API_KEY not set — email skipped:",
         payload.type
       )
-      return { skipped: true }
+      return { success: true, skipped: true }
     }
 
     const { to, ticketId, subject, type, body } = payload
@@ -197,7 +200,9 @@ export async function sendTicketNotification(payload: EmailPayload) {
         ...(payload.idempotencyKey ? { "Idempotency-Key": payload.idempotencyKey } : {}),
       },
       body: JSON.stringify({
-        from: `TAC-XPRESS Support <${FROM_EMAIL}>`,
+        from: FROM_EMAIL.includes("<")
+          ? FROM_EMAIL
+          : `TAC-XPRESS Support <${FROM_EMAIL}>`,
         to,
         subject: emailSubject,
         html,

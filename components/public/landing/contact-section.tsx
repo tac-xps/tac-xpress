@@ -44,11 +44,11 @@ export function ContactSection() {
           <SectionEyebrow className="mb-4">Contact · Operations Desk</SectionEyebrow>
           <h2
             id="contact-heading"
-            className="text-section text-foreground"
+            className="text-section text-foreground text-balance"
           >
             A person to help with the next step.
           </h2>
-          <p className="mt-4 text-lead max-w-[50ch] text-muted-foreground leading-relaxed font-normal">
+          <p className="mt-4 text-lead max-w-[50ch] text-muted-foreground leading-relaxed font-normal text-pretty">
             Dedicated logistics desk. Submit corridor parameters, dimensional cargo manifests,
             or dispatch inquiries. Our operations team computes volumetric ratings and responds directly.
           </p>
@@ -75,10 +75,10 @@ export function ContactSection() {
                 <Phone className="size-4 text-primary" strokeWidth={1.75} />
               </span>
               <div className="min-w-0 flex-1">
-                <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-primary">
+                <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-primary">
                   Dispatch Hotline
                 </span>
-                <span className="mt-1 block font-sans text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                <span className="mt-1 block font-sans text-sm font-medium tabular-nums text-foreground group-hover:text-primary transition-colors">
                   +91 98561 73829
                 </span>
               </div>
@@ -103,7 +103,7 @@ export function ContactSection() {
                 </svg>
               </span>
               <div className="min-w-0">
-                <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-info">
+                <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-info">
                   Operating Hours
                 </span>
                 <span className="mt-1 block font-sans text-sm font-medium text-foreground">
@@ -134,7 +134,7 @@ export function ContactSection() {
                 <Mail className="size-4 text-status-delivered" strokeWidth={1.75} />
               </span>
               <div className="min-w-0 flex-1">
-                <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-status-delivered">
+                <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-status-delivered">
                   Electronic Inquiries
                 </span>
                 <span className="mt-1 block font-sans text-sm font-medium text-foreground group-hover:text-status-delivered transition-colors break-all">
@@ -159,7 +159,7 @@ export function ContactSection() {
                 <MapPin className="size-4 text-status-pending" strokeWidth={1.75} />
               </span>
               <div className="min-w-0">
-                <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-status-pending">
+                <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-status-pending">
                   Gateway Stations
                 </span>
                 <span className="mt-1 block font-sans text-xs text-muted-foreground leading-relaxed">

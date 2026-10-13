@@ -48,8 +48,10 @@ export async function processBackgroundJobs(
           type: "ticket_created",
           idempotencyKey: `ticket-created/${job.id}`,
         })
-        if (!result.success)
-          throw new Error("Email provider did not accept the notification.")
+        if (!result.success && !result.skipped)
+          throw new Error(
+            result.error || "Email provider did not accept the notification."
+          )
       } else {
         const { triageTicket } = await import("@/app/actions/ai-triage")
         await triageTicket(

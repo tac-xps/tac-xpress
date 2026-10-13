@@ -29,7 +29,7 @@ export function isArcjetBypassed(): boolean {
   )
 }
 
-function isArcjetMisconfigured(): boolean {
+export function isArcjetMisconfigured(): boolean {
   return (
     process.env.NODE_ENV === "production" &&
     (!process.env.ARCJET_KEY || /placeholder|dummy|example/i.test(process.env.ARCJET_KEY))

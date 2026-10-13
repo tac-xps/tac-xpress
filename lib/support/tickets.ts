@@ -12,6 +12,7 @@ export const LANDING_TICKET_CATEGORIES = [
   "billing",
   "complaint",
   "partnership",
+  "feedback",
 ] as const
 
 export type TriageTicketCategory = (typeof TRIAGE_TICKET_CATEGORIES)[number]
@@ -26,6 +27,7 @@ const landingToTriageCategory: Record<
   billing: "billing",
   complaint: "general",
   partnership: "general",
+  feedback: "general",
 }
 
 export function mapLandingCategoryToTriage(

@@ -1,8 +1,5 @@
 import { AppShell } from "@/components/app-shell"
 import { redirect } from "next/navigation"
-import { db } from "@/lib/db"
-import { users } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
 import { requireDashboardSession } from "@/lib/auth/guards"
 import { NotificationWrapper } from "./notification-wrapper"
 import { ScannerProvider } from "@/components/scanner/scanner-provider"
@@ -29,26 +26,22 @@ function AppShellSkeleton() {
   )
 }
 
-async function AppShellWrapper({
+function AppShellWrapper({
   session,
   children,
 }: {
   session: Awaited<ReturnType<typeof requireDashboardSession>>
   children: React.ReactNode
 }) {
-  const user = await db.query.users.findFirst({
-    where: eq(users.id, session.user.id),
-    columns: { name: true, avatarUrl: true, isOnboarded: true },
-  })
   return (
     <>
-      <OnboardingTourProvider isOnboarded={user?.isOnboarded ?? false} />
+      <OnboardingTourProvider isOnboarded={Boolean(session.user.isOnboarded)} />
       <AppShell
         userRole={session.user.role}
         user={{
           ...session.user,
-          name: user?.name || session.user.name,
-          image: user?.avatarUrl,
+          name: session.user.name,
+          image: session.user.avatarUrl,
         }}
       >
         {children}

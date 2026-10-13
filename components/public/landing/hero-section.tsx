@@ -123,7 +123,7 @@ export function HeroSection() {
                 delay: 0.26,
                 ease: motionEasings.editorial,
               }}
-              className="max-w-[54ch] text-lead text-muted-foreground leading-relaxed font-normal"
+              className="max-w-[54ch] text-lead text-muted-foreground leading-relaxed font-normal text-pretty"
             >
               Scheduled freight linehaul connecting New Delhi and Northeast India. Commercial air belly-hold space and arterial surface transport with statutory Air Waybill compliance, optical gate scan verification, and dedicated dispatch support.
             </motion.p>
@@ -218,10 +218,10 @@ export function HeroSection() {
               </div>
 
               {/* Restrained Architectural Baseline Tag */}
-              <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-mono text-xs tracking-wider uppercase text-foreground/80">
+              <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-sans text-xs tracking-[0.06em] uppercase text-foreground/80">
                 <span className="flex items-center gap-2">
                   <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
-                  <span className="font-semibold text-foreground">DEL ⇄ Northeast Linehaul</span>
+                  <span className="font-medium text-foreground">DEL ⇄ Northeast Linehaul</span>
                 </span>
                 <span className="text-muted-foreground font-medium">Daily Scheduled</span>
               </div>

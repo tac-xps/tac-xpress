@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { getServiceMetrics } from "@/lib/service-metrics"
 import { PageHeader } from "@/components/operations/page-header"
@@ -6,6 +7,11 @@ import { Badge } from "@/components/ui/badge"
 import { SlaComplianceChart } from "@/components/metrics/sla-compliance-chart"
 import { DailyDeliveryStatusChart } from "@/components/metrics/daily-delivery-status-chart"
 import { FlawlessExecutionsChart } from "@/components/metrics/flawless-executions-chart"
+
+export const metadata: Metadata = {
+  title: "Service Metrics & SLA | TAC-XPRESS",
+  description: "SLA compliance, delivery performance charts, resolution times, and operational risk metrics.",
+}
 
 export default async function MetricsPage() {
   await requireStaffPage()

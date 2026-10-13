@@ -71,9 +71,6 @@ export async function generateAutoReply(
   const ticketEnabled = ticket?.ai_auto_reply_enabled !== false // defaults to true if null/undefined
 
   if (!globalEnabled || !ticketEnabled) {
-    console.log(
-      `[AI Responder] Skipped: Auto-reply disabled. Global: ${globalEnabled}, Ticket: ${ticketEnabled}`
-    )
     return null
   }
 
@@ -224,11 +221,11 @@ export async function generateAutoReply(
         type: "ai_replied",
         body: reply,
       })
-      if (!delivery.success) {
+      if (!delivery.success && !delivery.skipped) {
         Sentry.captureMessage("AI reply email delivery was not accepted", {
           level: "error",
           tags: { area: "ai_reply_email" },
-          extra: { ticketId: input.ticketId },
+          extra: { ticketId: input.ticketId, error: delivery.error },
         })
       }
     }

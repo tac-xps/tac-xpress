@@ -1,7 +1,13 @@
+import type { Metadata } from "next"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { shipments, trackingEvents } from "@/lib/db/schema"
 import { eq, desc, and, isNull } from "drizzle-orm"
+
+export const metadata: Metadata = {
+  title: "Shipment Details | TAC-XPRESS",
+  description: "Detailed shipment tracking, linehaul specifications, and cargo status.",
+}
 import { notFound } from "next/navigation"
 import { z } from "zod"
 import { ShipmentTimeline } from "@/components/shipments/realtime-tracker"
@@ -22,6 +28,7 @@ import {
   Building2,
   Calendar,
 } from "lucide-react"
+import { format } from "date-fns"
 
 export default async function ShipmentDetailPage({
   params,
@@ -108,11 +115,7 @@ export default async function ShipmentDetailPage({
         <div className="border-b border-border/80 bg-muted/20 px-5 py-2.5 text-xs text-muted-foreground flex items-center justify-between">
           <span className="flex items-center gap-1.5 font-mono text-[11px]">
             <Calendar className="size-3 text-muted-foreground" />
-            Booked: {new Date(shipment.createdAt).toLocaleDateString("en-IN", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })}
+            Booked: {format(new Date(shipment.createdAt), "dd MMM yyyy")}
           </span>
           <span className="font-mono text-[10px] text-muted-foreground">
             AWB: {shipment.awbNumber}

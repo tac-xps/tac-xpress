@@ -1,6 +1,11 @@
 import type { NextConfig } from "next"
+import { EventEmitter } from "events"
 import { withSentryConfig } from "@sentry/nextjs"
 import withBundleAnalyzer from "@next/bundle-analyzer"
+
+if (EventEmitter.defaultMaxListeners < 50) {
+  EventEmitter.defaultMaxListeners = 50
+}
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,

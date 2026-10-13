@@ -36,6 +36,10 @@ Sentry.init({
     "The destination stream closed early.",
     "AbortError",
     "The user aborted a request",
+    "NotFoundError: Requested device not found",
+    "NotAllowedError: Permission denied",
+    "NotAllowedError: Permission dismissed",
+    "OverconstrainedError",
   ],
 
   beforeSend(event) {

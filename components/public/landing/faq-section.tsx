@@ -83,11 +83,11 @@ export function FAQSection() {
           <SectionEyebrow className="mb-4">Frequent Inquiries</SectionEyebrow>
           <h2
             id="faq-heading"
-            className="text-section text-foreground"
+            className="text-section text-foreground text-balance"
           >
             Questions, answered.
           </h2>
-          <p className="mt-4 text-lead max-w-[55ch] text-muted-foreground leading-relaxed font-normal">
+          <p className="mt-4 text-lead max-w-[55ch] text-muted-foreground leading-relaxed font-normal text-pretty">
             Operational advisory. Clear guidelines on consignment booking procedures, corridor transit timelines, chargeable weight calculations, and statutory documentation rules.
           </p>
         </motion.div>
@@ -118,17 +118,14 @@ export function FAQSection() {
                 <AccordionTrigger
                   className="py-0 text-left hover:no-underline [&>svg]:hidden group"
                 >
-                  <span
-                    style={{ fontSize: "var(--type-sub)" }}
-                    className="pr-6 font-heading font-semibold tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary flex items-baseline"
-                  >
+                  <span className="pr-6 font-heading text-editorial-sub font-medium tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary flex items-baseline text-balance">
                     <span
                       className={
                         idx % 3 === 0
-                          ? "font-mono text-xs font-semibold text-primary mr-3.5 shrink-0"
+                          ? "font-mono tabular-nums text-xs font-semibold text-primary mr-3.5 shrink-0"
                           : idx % 3 === 1
-                          ? "font-mono text-xs font-semibold text-info mr-3.5 shrink-0"
-                          : "font-mono text-xs font-semibold text-status-delivered mr-3.5 shrink-0"
+                          ? "font-mono tabular-nums text-xs font-semibold text-info mr-3.5 shrink-0"
+                          : "font-mono tabular-nums text-xs font-semibold text-status-delivered mr-3.5 shrink-0"
                       }
                     >
                       0{idx + 1}

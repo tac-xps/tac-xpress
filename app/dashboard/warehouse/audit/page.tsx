@@ -1,6 +1,7 @@
 "use client"
 
 import { useScannerContext } from "@/components/scanner/scanner-provider"
+import { PageHeader } from "@/components/operations/page-header"
 import {
   Card,
   CardContent,
@@ -8,24 +9,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { ScanBarcode, ShieldCheck } from "lucide-react"
+import { ScanBarcode } from "lucide-react"
 import { WarehouseAuditTable } from "./warehouse-audit-table"
 
 export default function WarehouseAuditPage() {
   const { lastScannedCode } = useScannerContext()
 
   return (
-    <div className="flex h-full flex-col space-y-6">
-      <div>
-        <h1 className="flex items-center gap-2 text-3xl font-black tracking-tight">
-          <ShieldCheck className="h-8 w-8 text-primary" />
-          Warehouse Audit
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          Continuous scanning mode active. Scan an AWB or QR Code using the
-          Helett HT20 (or any hardware scanner).
-        </p>
-      </div>
+    <div className="flex min-w-0 flex-col gap-6">
+      <PageHeader
+        title="Warehouse Audit"
+        description="Continuous scanning mode active. Scan an AWB or QR Code using any hardware or camera scanner."
+      />
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card className="col-span-1 border-2 border-dashed md:col-span-2 lg:col-span-3 shadow-none">

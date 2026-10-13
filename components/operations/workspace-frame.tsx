@@ -22,12 +22,18 @@ export function WorkspaceFrame({
         className={cn("flex min-h-svh w-full bg-background", className)}
         {...props}
       >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:shadow-lg"
+        >
+          Skip to main content
+        </a>
         <AppSidebar userRole={userRole} />
         <div className="flex min-w-0 flex-1 flex-col transition-colors duration-300">
           {banner}
           {header}
           <main
-            id="tour-main-content"
+            id="main-content"
             tabIndex={-1}
             className="isolate relative min-w-0 flex-1 p-5 sm:p-6 lg:p-8 xl:p-10"
           >

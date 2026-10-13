@@ -108,10 +108,17 @@
   --color-brand-blue: oklch(0.48 0.15 255);
   --color-invoice-navy: oklch(0.20 0.025 255);
 
+  /* Core Brand Colors & Typographic Palette (mapped to semantic tokens) */
+  --color-ink: var(--foreground);
+  --color-body: var(--foreground);
+  --color-body-muted: var(--muted-foreground);
+  --color-canvas: var(--background);
+  --color-line: var(--border);
+
   /* Typography Scale */
-  --font-sans: var(--font-dm-sans), var(--font-geist), var(--font-sans-fallback, ui-sans-serif), system-ui, sans-serif;
-  --font-heading: var(--font-dm-sans), var(--font-manrope), var(--font-heading-fallback, var(--font-geist)), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-ibm-plex-mono), var(--font-geist-mono), ui-monospace, monospace;
+  --font-sans: var(--font-tac-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: var(--font-tac-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-tac-mono, ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   /* Editorial Landing Page Hierarchy (calibrated fluid clamp) */
   --type-display: clamp(3rem, 5.5vw, 5.25rem);       /* 48px → 84px: Hero, Brand Statement */
@@ -119,6 +126,10 @@
   --type-subhead: clamp(1.25rem, 1.4vw, 1.5rem);     /* 20px → 24px: Subheadings, card titles */
   --type-sub: clamp(1.25rem, 1.4vw, 1.5rem);         /* Backwards-compatible alias */
   --type-lead: clamp(1.0625rem, 0.35vw + 1rem, 1.25rem); /* 17px → 20px: Narrative decks / subheads */
+  --text-editorial-display: var(--type-display);
+  --text-editorial-section: var(--type-section);
+  --text-editorial-sub: var(--type-subhead);
+  --text-editorial-lead: var(--type-lead);
 
   /* Legacy (retained for dashboard/app pages) */
   --text-display-xl: clamp(2.5rem, 5vw, 4rem);
@@ -136,7 +147,7 @@
   --radius-none: 0px;
   --radius-control: 0px;
   --radius-overlay: 0px;
-  --radius-full: 0px;
+  --radius-full: 9999px;
   --radius-xs: 0px;
   --radius-sm: 0px;
   --radius-md: 0px;
@@ -194,7 +205,7 @@
 @utility text-subhead {
   font-family: var(--font-sans);
   font-size: var(--type-subhead);
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.25;
   letter-spacing: -0.018em;
   text-wrap: balance;
@@ -212,21 +223,54 @@
 
 @utility text-body-editorial {
   font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.625;
+  letter-spacing: normal;
+  text-wrap: pretty;
+  color: var(--color-body, var(--foreground));
+}
+
+@utility text-body-sub {
+  font-family: var(--font-sans);
   font-size: 0.9375rem;
   font-weight: 400;
-  line-height: 1.62;
-  letter-spacing: -0.01em;
-  text-wrap: pretty;
-  color: color-mix(in oklch, var(--foreground) 92%, transparent);
+  line-height: 1.55;
+  color: var(--color-body-muted, var(--muted-foreground));
 }
 
 @utility text-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.16em;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@utility data-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@utility shipment-reference {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+@utility event-timestamp {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 @utility text-data {
@@ -580,9 +624,6 @@
   html {
     scroll-behavior: smooth;
     font-family: var(--font-sans);
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
@@ -590,7 +631,10 @@
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "kern" 1;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+    font-kerning: normal;
     font-optical-sizing: auto;
 
     @apply bg-background text-foreground;
@@ -740,9 +784,9 @@
 
 /* ═══ Typeset Presets (shadcn/typeset) ═══ */
 .typeset-docs {
-  --typeset-font-body: var(--font-geist);
+  --typeset-font-body: var(--font-sans);
   --typeset-font-heading: var(--font-heading);
-  --typeset-font-mono: var(--font-geist-mono);
+  --typeset-font-mono: var(--font-mono);
   --typeset-size: 15px;
   --typeset-leading: 1.75;
   --typeset-flow: 1.25em;
@@ -802,11 +846,11 @@
 }
 
 @utility font-meetei {
-  font-family: "Noto Sans Meetei Mayek", var(--font-dm-sans), sans-serif;
+  font-family: "Noto Sans Meetei Mayek", var(--font-sans), sans-serif;
 }
 
 @utility font-logo {
-  font-family: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 @utility animate-marquee {

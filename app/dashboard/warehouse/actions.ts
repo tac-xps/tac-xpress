@@ -9,6 +9,7 @@ import { revalidatePath } from "next/cache"
 import { logAuditInTransaction, logAudit } from "@/lib/audit"
 import { requireDashboardSession } from "@/lib/auth/guards"
 import * as Sentry from "@sentry/nextjs"
+import { format } from "date-fns"
 
 export interface DiscrepancyRecord {
   id: string
@@ -150,7 +151,7 @@ export async function getWarehouseAuditDiscrepanciesAction(): Promise<{
         scannedLocation: evt.locationCode || "Floor Scan",
         discrepancyType: isReconciled ? "location_mismatch" : "unmanifested",
         status: isReconciled ? "reconciled" : "pending",
-        timestamp: new Date(evt.createdAt).toLocaleDateString(),
+        timestamp: format(new Date(evt.createdAt), "dd MMM yyyy"),
       })
     }
 
@@ -194,7 +195,7 @@ export async function getWarehouseAuditDiscrepanciesAction(): Promise<{
             (afterData?.scannedLocation as string) || "Scanner Station",
           discrepancyType: "unmanifested",
           status: isReconciled ? "reconciled" : "pending",
-          timestamp: new Date(row.created_at).toLocaleDateString(),
+          timestamp: format(new Date(row.created_at), "dd MMM yyyy"),
         })
       }
     } catch (auditErr) {

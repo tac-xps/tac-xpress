@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
+    console.error("[InvoiceDownload] Failed to generate PDF for id:", id, error)
     capturePublicError(error, { area: "invoice_download" })
     return createPublicErrorResponse("Unable to download invoice", 500)
   }

@@ -3,9 +3,27 @@ export function getAppUrl(
   value = process.env.NEXT_PUBLIC_APP_URL,
   environment = process.env.NODE_ENV
 ) {
-  const raw =
-    value?.trim() ||
-    (environment === "production" ? "" : "http://localhost:3000")
+  let raw = value?.trim()
+
+  // In production (e.g. Vercel deployment), fall back to system host if NEXT_PUBLIC_APP_URL
+  // is missing or improperly set to an external backend URL (Supabase/MCP).
+  const isVercel = Boolean(
+    process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL
+  )
+  if (
+    (!raw || raw.includes(".supabase.co") || raw.includes("mcp.supabase.com")) &&
+    environment === "production" &&
+    isVercel &&
+    value === process.env.NEXT_PUBLIC_APP_URL
+  ) {
+    const host =
+      process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL
+    raw = `https://${host}`
+  }
+
+  if (!raw) {
+    raw = environment === "production" ? "" : "http://localhost:3000"
+  }
   let url: URL
   try {
     url = new URL(raw)

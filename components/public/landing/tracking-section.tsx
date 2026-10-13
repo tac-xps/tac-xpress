@@ -15,7 +15,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
-import { LivingCargoLine } from "./living-cargo-line"
 import { BorderBeam } from "@/components/ui/border-beam"
 import {
   motionDurations,
@@ -62,6 +61,194 @@ const SAMPLE_MILESTONES: SampleMilestone[] = [
     status: "upcoming",
   },
 ]
+
+interface RadarBeaconNodeProps {
+  shouldReduceMotion: boolean
+}
+
+/**
+ * Radar Beacon Node — Dual concentric expanding pulse for the active transit waypoint.
+ * Strictly animated via GPU-composited transform scale and opacity.
+ */
+function RadarBeaconNode({ shouldReduceMotion }: RadarBeaconNodeProps) {
+  if (shouldReduceMotion) {
+    return (
+      <div className="relative flex size-4 items-center justify-center" aria-hidden="true">
+        <span className="size-2 rounded-full bg-status-transit ring-2 ring-status-transit/30" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative flex size-4 items-center justify-center" aria-hidden="true">
+      {/* Outer expanding radar wave ring 1 */}
+      <motion.span
+        className="absolute size-4 rounded-full border border-status-transit/60"
+        initial={{ scale: 0.7, opacity: 0.8 }}
+        animate={{ scale: [0.7, 2.1], opacity: [0.8, 0] }}
+        transition={{
+          duration: 2.2,
+          repeat: Infinity,
+          ease: "easeOut",
+        }}
+      />
+      {/* Outer expanding radar wave ring 2 (phase offset) */}
+      <motion.span
+        className="absolute size-4 rounded-full border border-status-transit/40"
+        initial={{ scale: 0.7, opacity: 0.8 }}
+        animate={{ scale: [0.7, 2.1], opacity: [0.8, 0] }}
+        transition={{
+          duration: 2.2,
+          delay: 1.1,
+          repeat: Infinity,
+          ease: "easeOut",
+        }}
+      />
+      {/* Core beacon dot with subtle breathing luminosity */}
+      <motion.span
+        className="relative size-2 rounded-full bg-status-transit shadow-[0_0_8px_rgba(234,88,12,0.6)]"
+        animate={{ scale: [1, 1.25, 1], opacity: [0.9, 1, 0.9] }}
+        transition={{
+          duration: 1.6,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+    </div>
+  )
+}
+
+interface TravelingConnectorBeamProps {
+  shouldReduceMotion: boolean
+}
+
+/**
+ * Linehaul Photon Transit — Downward continuous particle stream between completed and active waypoints.
+ */
+function TravelingConnectorBeam({ shouldReduceMotion }: TravelingConnectorBeamProps) {
+  if (shouldReduceMotion) {
+    return (
+      <div
+        className="my-1 h-6 w-px bg-gradient-to-b from-status-delivered/60 to-status-transit/60"
+        aria-hidden="true"
+      />
+    )
+  }
+
+  return (
+    <div
+      className="relative my-1 h-6 w-px overflow-visible bg-border/60"
+      aria-hidden="true"
+    >
+      {/* Linehaul static trace rail */}
+      <div className="absolute inset-0 bg-gradient-to-b from-status-delivered/60 to-status-transit/40" />
+
+      {/* Traveling photon packet moving continuously along the corridor line */}
+      <motion.div
+        className="absolute -left-[1px] h-2.5 w-[3px] rounded-full bg-status-transit shadow-[0_0_6px_var(--color-status-transit)]"
+        initial={{ y: -2, opacity: 0 }}
+        animate={{
+          y: [-2, 24],
+          opacity: [0, 1, 1, 0],
+        }}
+        transition={{
+          duration: 1.6,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+    </div>
+  )
+}
+
+interface MilestoneProgressRailProps {
+  completedSteps: number
+  totalSteps: number
+  shouldReduceMotion: boolean
+}
+
+/**
+ * Milestone Progress Rail with Ambient Shimmer highlight.
+ */
+function MilestoneProgressRail({
+  completedSteps,
+  totalSteps,
+  shouldReduceMotion,
+}: MilestoneProgressRailProps) {
+  const percentage = Math.min(100, Math.max(0, Math.round((completedSteps / totalSteps) * 100)))
+
+  return (
+    <div className="mb-6 space-y-2 select-none" aria-hidden="true">
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <span className="flex items-center gap-1.5 font-sans uppercase tracking-[0.06em] font-medium">
+          <span className="size-1.5 rounded-none bg-primary" />
+          Milestone Fulfillment
+        </span>
+        <span className="font-mono font-semibold tabular-nums text-foreground">
+          {percentage}% · Phase {completedSteps} of {totalSteps}
+        </span>
+      </div>
+
+      {/* Rail track */}
+      <div className="relative h-1.5 w-full overflow-hidden bg-muted/80 border border-border/70">
+        {/* Filled bar */}
+        <motion.div
+          className="relative h-full bg-primary"
+          initial={shouldReduceMotion ? { width: `${percentage}%` } : { width: "0%" }}
+          animate={{ width: `${percentage}%` }}
+          transition={{
+            duration: motionDurations.editorial,
+            ease: motionEasings.editorial,
+          }}
+        >
+          {/* Ambient looping shimmer highlight across the filled rail */}
+          {!shouldReduceMotion && (
+            <motion.div
+              className="absolute inset-y-0 w-24 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+              initial={{ x: "-100%" }}
+              animate={{ x: ["-100%", "400%"] }}
+              transition={{
+                duration: 2.4,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            />
+          )}
+        </motion.div>
+      </div>
+    </div>
+  )
+}
+
+interface RadarSyncDotProps {
+  shouldReduceMotion: boolean
+}
+
+/**
+ * Radar Sync Dot — Looping radar ping for optical gate audit trail.
+ */
+function RadarSyncDot({ shouldReduceMotion }: RadarSyncDotProps) {
+  if (shouldReduceMotion) {
+    return <span className="size-2 rounded-none bg-status-delivered" aria-hidden="true" />
+  }
+
+  return (
+    <span className="relative flex size-2 items-center justify-center" aria-hidden="true">
+      {/* Looping pulse ping */}
+      <motion.span
+        className="absolute inset-0 rounded-none bg-status-delivered/40"
+        initial={{ scale: 1, opacity: 0.8 }}
+        animate={{ scale: [1, 2.4], opacity: [0.8, 0] }}
+        transition={{
+          duration: 1.8,
+          repeat: Infinity,
+          ease: "easeOut",
+        }}
+      />
+      <span className="relative size-1.5 rounded-none bg-status-delivered" />
+    </span>
+  )
+}
 
 /**
  * Public shipment tracking console supporting interactive AWB query,
@@ -120,36 +307,46 @@ export function TrackingSection() {
     <EditorialContainer
       id="visibility-chapter"
       aria-labelledby="tracking-heading"
-      className="py-12 sm:py-20 lg:py-24"
+      className="py-16 sm:py-24 lg:py-32 bg-muted/30"
     >
-      <div id="shipment-desk" className="space-y-10 lg:space-y-12">
+      <div id="shipment-desk" className="space-y-12 lg:space-y-16">
         {/* Section Header — S1: whileInView entrance */}
         <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{
             duration: motionDurations.editorial,
             ease: motionEasings.editorial,
           }}
-          className="max-w-2xl"
+          className="max-w-2xl space-y-5"
         >
-          <SectionEyebrow className="mb-4">
+          <SectionEyebrow className="mb-1">
             Consignment Console · Milestone Verification
           </SectionEyebrow>
           <h2
             id="tracking-heading"
-            className="text-section text-foreground"
+            className="text-section bg-gradient-to-br from-foreground via-foreground/90 to-foreground/60 bg-clip-text text-transparent text-balance"
           >
-            A number. A clearer picture.
+            A number.{" "}
+            <br className="hidden sm:inline" />
+            A clearer picture.
           </h2>
-          <p className="mt-4 text-lead max-w-[56ch] text-muted-foreground leading-relaxed font-normal">
-            Verified milestone telemetry. Query statutory Air Waybill (AWB) or surface consignment numbers to review gate intake scans, hub cross-dock transfers, and departure manifests in real time.
+          <p className="text-lead max-w-[52ch] text-pretty">
+            Verified milestone telemetry. Query statutory{" "}
+            <strong className="font-semibold text-foreground">Air Waybill (AWB)</strong> or surface
+            consignment numbers to review gate intake scans, hub cross-dock transfers,
+            and departure manifests <strong className="font-semibold text-foreground">in real time</strong>.
           </p>
+          {/* Decorative rule — visual separator before interactive console */}
+          <div className="flex items-center gap-3 pt-2" aria-hidden="true">
+            <div className="h-px w-12 bg-primary" />
+            <div className="h-px flex-1 max-w-32 bg-border" />
+          </div>
         </motion.div>
 
         {/* S3: Staggered two-column layout entrance */}
-        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-10">
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-12">
           {/* Left Column: Search Form & Consignment Profile (lg:col-span-5) */}
           <motion.div
             initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
@@ -161,7 +358,7 @@ export function TrackingSection() {
             }}
             className="space-y-6 lg:col-span-5"
           >
-            <div className="relative border border-border/80 bg-card p-5 sm:p-7 shadow-xs">
+            <div className="relative border border-border/80 bg-card p-5 sm:p-7 shadow-sm hover:shadow-md transition-shadow duration-300">
               <BorderBeam size={60} duration={8} colorFrom="var(--color-primary)" colorTo="transparent" borderWidth={1} />
               <form
                 action="/track"
@@ -172,7 +369,7 @@ export function TrackingSection() {
               >
                 <label
                   htmlFor="home-awb"
-                  className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-semibold"
+                  className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium"
                 >
                   AWB / shipment reference
                 </label>
@@ -225,23 +422,23 @@ export function TrackingSection() {
 
               {/* Active Consignment Meta Details Well */}
               <div className="mt-6 border border-border/80 bg-muted/20 p-4 space-y-3.5">
-                <div className="flex items-center justify-between border-b border-border/60 pb-2.5 font-mono">
-                  <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+                  <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
                     Consignment Reference
                   </span>
-                  <span className="text-sm font-bold tracking-wider text-primary">{activeAwb}</span>
+                  <span className="font-mono text-sm font-bold tracking-wider text-primary tabular-nums">{activeAwb}</span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 font-mono text-xs">
+                <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">Corridor</span>
-                    <span className="font-bold text-foreground">
+                    <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Corridor</span>
+                    <span className="font-sans font-medium text-foreground text-xs sm:text-sm">
                       {liveData ? `${liveData.origin} → ${liveData.destination}` : "Delhi (DEL) → Imphal (IMF)"}
                     </span>
                   </div>
                   <div>
-                    <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">Service Mode</span>
-                    <span className="font-bold text-info">
+                    <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Service Mode</span>
+                    <span className="font-sans font-medium text-info text-xs sm:text-sm">
                       {liveData ? liveData.service : "Air Express · Priority"}
                     </span>
                   </div>
@@ -249,17 +446,17 @@ export function TrackingSection() {
 
                 <div className="flex items-center justify-between border-t border-border/60 pt-2.5 text-xs">
                   {isSample ? (
-                    <span className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground font-medium">
+                    <span className="inline-flex items-center gap-1.5 font-sans text-xs text-muted-foreground font-medium">
                       <ShieldCheck className="size-4 text-status-delivered" />
                       Sample custody record
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground font-medium">
+                    <span className="inline-flex items-center gap-1.5 font-sans text-xs text-muted-foreground font-medium">
                       <ShieldCheck className="size-4 text-muted-foreground" />
                       Consignment status
                     </span>
                   )}
-                  <span className="inline-flex items-center gap-1.5 border border-status-transit/40 bg-status-transit/10 px-2.5 py-1 font-mono text-xs font-bold text-status-transit">
+                  <span className="inline-flex items-center gap-1.5 border border-status-transit/40 bg-status-transit/10 px-2.5 py-1 font-sans text-xs font-semibold uppercase tracking-wider text-status-transit">
                     <span className="size-1.5 bg-status-transit" />
                     {liveData ? liveData.status.toUpperCase() : "IN TRANSIT"}
                   </span>
@@ -278,7 +475,7 @@ export function TrackingSection() {
               delay: 0.1,
               ease: motionEasings.editorial,
             }}
-            className="relative border border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-xs"
+            className="relative border border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-sm hover:shadow-md transition-shadow duration-300"
           >
             <BorderBeam size={80} duration={10} colorFrom="var(--color-primary)" colorTo="transparent" delay={3} borderWidth={1} />
             <div>
@@ -320,7 +517,7 @@ export function TrackingSection() {
                         <button
                           type="button"
                           onClick={handleResetToSample}
-                          className="mt-3 font-mono text-xs underline underline-offset-4 hover:text-foreground"
+                          className="mt-3 font-sans text-xs font-medium underline underline-offset-4 hover:text-foreground"
                         >
                           Restore sample consignment preview
                         </button>
@@ -337,17 +534,19 @@ export function TrackingSection() {
                     transition={{ duration: motionDurations.control }}
                     className="mt-4"
                   >
-                    {/* Living Cargo Progress Line */}
-                    <div className="mb-6">
-                      <LivingCargoLine variant="rule" />
-                    </div>
+                    {/* Milestone Progress Rail with Ambient Shimmer */}
+                    <MilestoneProgressRail
+                      completedSteps={isSample ? 3 : (liveData?.events?.filter((_, i) => i > 0).length ?? 0)}
+                      totalSteps={isSample ? SAMPLE_MILESTONES.length : (liveData?.events?.length ?? 5)}
+                      shouldReduceMotion={!!shouldReduceMotion}
+                    />
 
                     {/* Progressive Milestone Resolution */}
                     <div className="space-y-4">
                       {isPending ? (
                         <div className="flex items-center gap-2 py-6 text-xs text-muted-foreground">
                           <Loader2 className="size-4 animate-spin" />
-                          <span className="font-mono">Retrieving consignment milestones…</span>
+                          <span className="font-sans">Retrieving consignment milestones…</span>
                         </div>
                       ) : liveData && liveData.events && liveData.events.length > 0 ? (
                         liveData.events.map((evt, index) => {
@@ -362,7 +561,7 @@ export function TrackingSection() {
                             >
                               <div className="mt-0.5 flex flex-col items-center">
                                 {isCurrent ? (
-                                  <Clock className="size-4 text-status-transit" />
+                                  <RadarBeaconNode shouldReduceMotion={!!shouldReduceMotion} />
                                 ) : isCompleted ? (
                                   <CheckCircle2 className="size-4 text-status-delivered" />
                                 ) : (
@@ -375,11 +574,11 @@ export function TrackingSection() {
 
                               <div className="flex-1 pb-1">
                                 <div className="flex flex-wrap items-baseline justify-between gap-2">
-                                  <p className="text-xs font-semibold text-foreground">
+                                  <p className="font-sans text-sm font-medium text-foreground">
                                     {evt.description || evt.status || "Milestone Scan"}
                                   </p>
                                   {evt.event_time && (
-                                    <span className="border border-border/70 bg-muted/60 px-2 py-0.5 font-mono text-xs text-foreground/90 font-medium">
+                                    <span className="border border-border/70 bg-muted/60 px-2 py-0.5 font-mono text-xs text-foreground/90 font-medium tabular-nums">
                                       {new Date(evt.event_time).toLocaleString("en-IN", {
                                         timeZone: "Asia/Kolkata",
                                         month: "short",
@@ -390,7 +589,7 @@ export function TrackingSection() {
                                     </span>
                                   )}
                                 </div>
-                                <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                                <p className="mt-1 font-sans text-xs sm:text-sm text-muted-foreground">
                                   {evt.location || "Gateway Hub"}
                                 </p>
                               </div>
@@ -398,13 +597,15 @@ export function TrackingSection() {
                           )
                         })
                       ) : !isSample ? (
-                        <p className="py-6 font-mono text-xs text-muted-foreground">
+                        <p className="py-6 font-sans text-xs text-muted-foreground">
                           No public tracking events are available yet.
                         </p>
                       ) : (
                         SAMPLE_MILESTONES.map((item, index) => {
                           const isCompleted = item.status === "completed"
                           const isCurrent = item.status === "current"
+                          const isUpcoming = item.status === "upcoming"
+                          const isLastCompleted = isCompleted && index < SAMPLE_MILESTONES.length - 1 && SAMPLE_MILESTONES[index + 1].status === "current"
 
                           return (
                             <motion.div
@@ -416,43 +617,55 @@ export function TrackingSection() {
                                 delay: index * 0.06,
                                 ease: motionEasings.editorial,
                               }}
-                              className="milestone-row flex items-start gap-3.5 text-xs"
+                              className={`milestone-row flex items-start gap-3.5 text-xs ${
+                                isCurrent ? "relative rounded-sm bg-primary/[0.03] -mx-2 px-2 py-1.5" : ""
+                              }`}
                             >
                               <div className="mt-0.5 flex flex-col items-center">
                                 {isCompleted ? (
                                   <CheckCircle2 className="size-4 text-status-delivered" />
                                 ) : isCurrent ? (
-                                  <Clock className="size-4 text-status-transit" />
+                                  <RadarBeaconNode shouldReduceMotion={!!shouldReduceMotion} />
                                 ) : (
                                   <Circle className="size-4 text-border" />
                                 )}
                                 {index < SAMPLE_MILESTONES.length - 1 && (
-                                  <div
-                                    className={`my-1 h-6 w-px ${
-                                      isCompleted ? "bg-status-delivered/50" : "bg-border/60"
-                                    }`}
-                                  />
+                                  isLastCompleted ? (
+                                    <TravelingConnectorBeam shouldReduceMotion={!!shouldReduceMotion} />
+                                  ) : (
+                                    <div
+                                      className={`my-1 h-6 w-px ${
+                                        isCompleted ? "bg-status-delivered/50" : "bg-border/60"
+                                      }`}
+                                    />
+                                  )
                                 )}
                               </div>
 
                               <div className="flex-1 pb-1">
                                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                                   <p
-                                    className={`text-xs ${
+                                    className={`font-sans text-sm ${
                                       isCurrent
                                         ? "text-foreground font-semibold"
                                         : isCompleted
                                         ? "text-foreground font-medium"
-                                        : "text-muted-foreground"
+                                        : "text-muted-foreground font-normal"
                                     }`}
                                   >
                                     {item.title}
                                   </p>
-                                  <span className="border border-border/70 bg-muted/60 px-2 py-0.5 font-mono text-xs text-foreground/90 font-medium">
+                                  <span
+                                    className={`border px-2 py-0.5 font-mono text-xs font-medium tabular-nums ${
+                                      isCurrent
+                                        ? "border-primary/40 bg-primary/[0.06] text-foreground font-semibold"
+                                        : "border-border/70 bg-muted/60 text-foreground/90"
+                                    }`}
+                                  >
                                     {item.timestamp}
                                   </span>
                                 </div>
-                                <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                                <p className="mt-1 font-sans text-xs sm:text-sm text-muted-foreground">
                                   {item.location}
                                 </p>
                               </div>
@@ -466,16 +679,16 @@ export function TrackingSection() {
               </AnimatePresence>
             </div>
 
-            <div className="mt-6 border-t border-border/80 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono text-xs text-muted-foreground">
+            <div className="mt-6 border-t border-border/80 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-sans text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
-                <span className="size-2 rounded-none bg-status-delivered animate-pulse" />
-                <span className="font-medium">
+                <RadarSyncDot shouldReduceMotion={!!shouldReduceMotion} />
+                <span className="font-normal text-muted-foreground">
                   {isSample
                     ? "Verified physical scan trail · Synced within 120s of gate intake"
                     : "Consignment record synchronized with central tracking log"}
                 </span>
               </div>
-              <span className="font-mono text-xs uppercase tracking-wider text-primary font-semibold">
+              <span className="font-sans text-xs uppercase tracking-[0.06em] text-primary font-medium">
                 Optical Gate Audit
               </span>
             </div>

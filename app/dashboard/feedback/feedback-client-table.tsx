@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { format } from "date-fns"
 import { useQueryState, parseAsString, parseAsInteger } from "nuqs"
 import type { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@/components/ui/data-table/data-table"
@@ -9,7 +10,8 @@ import { useDataTable } from "@/hooks/use-data-table"
 import { FeedbackActions, type FeedbackData } from "./feedback-actions"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Star, MessageCircle, AlertCircle, ThumbsUp } from "lucide-react"
+import { Star, MessageCircle, AlertCircle, ThumbsUp, Download } from "lucide-react"
+import { toast } from "sonner"
 
 type SentimentType = "all" | "positive" | "negative" | "general"
 
@@ -119,7 +121,7 @@ export function FeedbackClientTable({
         header: ({ column }) => <ColumnHeader column={column} title="Date" />,
         cell: ({ row }) => (
           <span className="whitespace-nowrap font-mono text-xs text-muted-foreground">
-            {new Date(row.original.createdAt).toLocaleDateString()}
+            {format(new Date(row.original.createdAt), "dd MMM yyyy")}
           </span>
         ),
       },
@@ -138,56 +140,99 @@ export function FeedbackClientTable({
     pageCount,
   })
 
+  const exportToCsv = () => {
+    if (enrichedData.length === 0) {
+      toast.info("No feedback records to export")
+      return
+    }
+    const headers = ["ID", "Name", "Email", "Sentiment", "Message", "Created At"]
+    const rows = enrichedData.map((d) => [
+      d.id,
+      `"${d.name.replace(/"/g, '""')}"`,
+      `"${d.email.replace(/"/g, '""')}"`,
+      d.sentiment,
+      `"${d.message.replace(/"/g, '""')}"`,
+      d.createdAt,
+    ])
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((r) => r.join(","))].join("\n")
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedUri)
+    link.setAttribute(
+      "download",
+      `tac-xpress-feedback-${new Date().toISOString().slice(0, 10)}.csv`
+    )
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    toast.success("Feedback records exported to CSV")
+  }
+
   return (
     <div className="space-y-3">
       {/* Sentiment Filter Toolbar with keyboard accessible buttons and aria-pressed */}
       <div
         role="toolbar"
         aria-label="Filter feedback by customer sentiment"
-        className="flex flex-wrap items-center gap-2 border-b border-border/50 bg-muted/10 px-4 py-2.5"
+        className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 bg-muted/10 px-4 py-2.5"
       >
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mr-1">
-          Filter:
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mr-1">
+            Filter:
+          </span>
+          <Button
+            type="button"
+            size="sm"
+            variant={filterSentiment === "all" ? "default" : "outline"}
+            aria-pressed={filterSentiment === "all"}
+            onClick={() => handleSentimentChange("all")}
+            className="h-7 px-3 text-xs"
+          >
+            <MessageCircle className="mr-1.5 size-3" /> All
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={filterSentiment === "positive" ? "default" : "outline"}
+            aria-pressed={filterSentiment === "positive"}
+            onClick={() => handleSentimentChange("positive")}
+            className="h-7 px-3 text-xs"
+          >
+            <ThumbsUp className="mr-1.5 size-3 text-success" /> Positive
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={filterSentiment === "negative" ? "default" : "outline"}
+            aria-pressed={filterSentiment === "negative"}
+            onClick={() => handleSentimentChange("negative")}
+            className="h-7 px-3 text-xs"
+          >
+            <AlertCircle className="mr-1.5 size-3 text-destructive" /> Needs Attention
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={filterSentiment === "general" ? "default" : "outline"}
+            aria-pressed={filterSentiment === "general"}
+            onClick={() => handleSentimentChange("general")}
+            className="h-7 px-3 text-xs"
+          >
+            <Star className="mr-1.5 size-3 text-info" /> General
+          </Button>
+        </div>
+
         <Button
           type="button"
           size="sm"
-          variant={filterSentiment === "all" ? "default" : "outline"}
-          aria-pressed={filterSentiment === "all"}
-          onClick={() => handleSentimentChange("all")}
-          className="h-7 px-3 text-xs"
+          variant="outline"
+          onClick={exportToCsv}
+          className="h-7 px-2.5 text-xs font-mono ml-auto"
         >
-          <MessageCircle className="mr-1.5 size-3" /> All
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant={filterSentiment === "positive" ? "default" : "outline"}
-          aria-pressed={filterSentiment === "positive"}
-          onClick={() => handleSentimentChange("positive")}
-          className="h-7 px-3 text-xs"
-        >
-          <ThumbsUp className="mr-1.5 size-3" /> Positive
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant={filterSentiment === "negative" ? "default" : "outline"}
-          aria-pressed={filterSentiment === "negative"}
-          onClick={() => handleSentimentChange("negative")}
-          className="h-7 px-3 text-xs"
-        >
-          <AlertCircle className="mr-1.5 size-3" /> Needs Attention
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant={filterSentiment === "general" ? "default" : "outline"}
-          aria-pressed={filterSentiment === "general"}
-          onClick={() => handleSentimentChange("general")}
-          className="h-7 px-3 text-xs"
-        >
-          <Star className="mr-1.5 size-3" /> General
+          <Download className="mr-1.5 size-3 text-muted-foreground" />
+          Export CSV
         </Button>
       </div>
 

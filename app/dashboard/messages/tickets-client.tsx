@@ -28,12 +28,24 @@ export function TicketsClient({
   })
   const ticket = initialTickets.find((item) => item.id === selected) ?? null
   useEffect(() => {
+    let mounted = true
     const refresh = () => {
-      if (!document.hidden) router.refresh()
+      if (!document.hidden && mounted) {
+        startTransition(() => {
+          try {
+            router.refresh()
+          } catch {
+            // Guard against pre-initialization router refresh
+          }
+        })
+      }
     }
     window.addEventListener("focus", refresh)
-    return () => window.removeEventListener("focus", refresh)
-  }, [router])
+    return () => {
+      mounted = false
+      window.removeEventListener("focus", refresh)
+    }
+  }, [router, startTransition])
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4">

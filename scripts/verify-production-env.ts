@@ -7,7 +7,12 @@ for (const name of ["AUTH_SECRET", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPA
   const value = process.env[name]?.trim()
   if (!value || /placeholder|fill-in|dummy|example|ci-only|test-secret/i.test(value)) errors.push(`${name} is missing or contains a placeholder.`)
 }
-if (!process.env.SUPABASE_POOLER_URL && !process.env.DATABASE_URL) errors.push("A production database connection is required.")
+const dbUrl = process.env.SUPABASE_POOLER_URL || process.env.DATABASE_URL
+if (!dbUrl) {
+  errors.push("A production database connection is required.")
+} else if (dbUrl.includes("pooler.supabase.com") && !dbUrl.includes(":6543")) {
+  errors.push("Supabase pooler must use port 6543 (transaction mode) to prevent connection exhaustion.")
+}
 for (const name of ["AUTH_SECRET", "CRON_SECRET", "INVOICE_PDF_SIGNING_SECRET", "MOBILE_API_SECRET"]) {
   if ((process.env[name]?.length ?? 0) < 32) errors.push(`${name} must be at least 32 characters.`)
 }

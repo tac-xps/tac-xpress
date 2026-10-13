@@ -1,9 +1,13 @@
+import type { Metadata } from "next"
 import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
 import { containsPattern, parseRecordQuery, recordOrder, type RecordSearchParams } from "@/lib/table-query"
 import { requireStaffPage } from "@/lib/auth/page-access"
-import React from "react"
 import { db } from "@/lib/db"
+
+export const metadata: Metadata = {
+  title: "Manifests | TAC-XPRESS",
+}
 import {
   drivers,
   hubs,
@@ -13,28 +17,10 @@ import {
   vehicles,
 } from "@/lib/db/schema"
 import { and, eq, isNull, notExists, ilike, or, inArray, desc, sql } from "drizzle-orm"
-import { format } from "date-fns"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { FileText, Search, Download, Filter } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { ManifestActions } from "./manifest-actions"
+import { Card, CardContent } from "@/components/ui/card"
 import { CreateManifestDialog } from "./create-manifest-dialog"
-import { ManifestsIcon } from "@/components/icons/sidebar-icons"
 import { ExportManifestButton } from "./export-button"
 import { ManifestClientTable } from "./manifest-client-table"
-import {
-  DEFAULT_PAGE_SIZE,
-  parsePage,
-} from "@/components/ui/page-navigation"
 
 export default async function ManifestsPage({
   searchParams,
@@ -48,6 +34,25 @@ export default async function ManifestsPage({
   if (!["draft", "finalized"].includes(query.status)) query.status = "all"
   const pattern = containsPattern(query.q)
   const sortColumns = { referenceId: manifests.referenceId, createdAt: manifests.createdAt, status: manifests.status }
+  const manifestWhere = and(
+    query.status !== "all"
+      ? eq(manifests.status, query.status as "draft" | "finalized")
+      : undefined,
+    query.q
+      ? or(
+          ilike(manifests.referenceId, pattern),
+          inArray(
+            manifests.originHubId,
+            db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern))
+          ),
+          inArray(
+            manifests.destinationHubId,
+            db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern))
+          )
+        )
+      : undefined
+  )
+
   const [
     manifestRows,
     countResult,
@@ -57,7 +62,7 @@ export default async function ManifestsPage({
     driverOptions,
   ] = await Promise.all([
     db.query.manifests.findMany({
-      where: and(query.status !== "all" ? eq(manifests.status, query.status as "draft" | "finalized") : undefined, query.q ? or(ilike(manifests.referenceId, pattern), inArray(manifests.originHubId, db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern))), inArray(manifests.destinationHubId, db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern)))) : undefined),
+      where: manifestWhere,
       orderBy: [recordOrder(sortColumns[query.sort as keyof typeof sortColumns], query.order), desc(manifests.id)],
       with: {
         originHub: true,
@@ -73,9 +78,10 @@ export default async function ManifestsPage({
       limit: query.pageSize,
       offset: (query.page - 1) * query.pageSize,
     }),
-    db.select({ count: sql<number>`count(*)` }).from(manifests).where(
-      and(query.status !== "all" ? eq(manifests.status, query.status as "draft" | "finalized") : undefined, query.q ? or(ilike(manifests.referenceId, pattern), inArray(manifests.originHubId, db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern))), inArray(manifests.destinationHubId, db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern)))) : undefined)
-    ),
+    db
+      .select({ count: sql<number>`count(*)` })
+      .from(manifests)
+      .where(manifestWhere),
     db
       .select({
         id: shipments.id,

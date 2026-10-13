@@ -16,8 +16,11 @@ import {
   LANDING_TICKET_CATEGORIES,
   mapLandingCategoryToTriage,
 } from "@/lib/support/tickets"
+import { db } from "@/lib/db"
+import { feedback } from "@/lib/db/schema"
 
 import arcjet, { slidingWindow, request } from "@arcjet/next"
+import { isArcjetBypassed, isArcjetMisconfigured } from "@/lib/server/rate-limit"
 
 const aj = arcjet({
   key: process.env.ARCJET_KEY || "ajkey_placeholder",
@@ -79,24 +82,50 @@ export async function createTicket(formData: FormData) {
   }
 
   // --- Rate limit: email + IP (belt-and-suspenders) ---
-  const decision = await (async () => {
-    try { return await aj.protect(await request()) }
-    catch (error) { Sentry.captureException(error, { tags: { area: "contact_rate_limit" } }); return null }
-  })()
-
-  if (!decision || decision.isDenied() || decision.isErrored()) {
+  if (isArcjetMisconfigured()) {
+    Sentry.captureMessage("Arcjet is misconfigured in production for ticket endpoint", {
+      level: "error",
+      tags: { area: "contact_rate_limit" },
+    })
     return {
-      error: {
-        _form: [
-          "Too many tickets submitted. Please wait 15 minutes or contact us directly at support@tac-xpress.app",
-        ],
-      },
+      error: { _form: ["Service is temporarily unavailable. Please contact us directly at support@tac-xpress.app"] },
+    }
+  }
+
+  if (!isArcjetBypassed()) {
+    const decision = await (async () => {
+      try { return await aj.protect(await request()) }
+      catch (error) { Sentry.captureException(error, { tags: { area: "contact_rate_limit" } }); return null }
+    })()
+
+    if (!decision || decision.isDenied() || decision.isErrored()) {
+      return {
+        error: {
+          _form: [
+            "Too many tickets submitted. Please wait 15 minutes or contact us directly at support@tac-xpress.app",
+          ],
+        },
+      }
     }
   }
 
   let insertedTicket: { id: string }
   try {
     insertedTicket = await saveContactTicket(parsed.data)
+
+    // When inquiry category is feedback, automatically sync to feedback database table
+    if (parsed.data.category === "feedback") {
+      try {
+        await db.insert(feedback).values({
+          name: parsed.data.customer_name,
+          email: parsed.data.customer_email,
+          message: parsed.data.message,
+        })
+        revalidatePath("/dashboard/feedback")
+      } catch (fbError) {
+        console.warn("Failed to persist to feedback table:", fbError)
+      }
+    }
   } catch (error) {
     Sentry.captureException(error, { tags: { area: "create_ticket" } })
     return { error: { _form: ["We could not save your request. Please try again or contact our team directly."] } }

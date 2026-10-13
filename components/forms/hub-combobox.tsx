@@ -19,7 +19,8 @@ export function HubCombobox({
   const { records, loading, error, setQuery } = useRecordLookup(
     "/api/hubs",
     schema,
-    value
+    value,
+    !disabled
   )
   return (
     <SearchSelect

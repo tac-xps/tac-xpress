@@ -21,7 +21,8 @@ export function DriverCombobox({
   const { records, loading, error, setQuery } = useRecordLookup(
     "/api/drivers",
     driverSchema,
-    value
+    value,
+    !disabled
   )
   return (
     <SearchSelect

@@ -66,17 +66,17 @@ export function CareSection() {
           </SectionEyebrow>
           <h2
             id="care-heading"
-            className="text-section text-foreground"
+            className="text-section text-foreground text-balance"
           >
             Care begins with the details.
           </h2>
-          <p className="mt-5 text-lead max-w-[50ch] text-muted-foreground leading-relaxed font-normal">
+          <p className="mt-5 text-lead max-w-[50ch] text-foreground/85 leading-relaxed font-normal text-pretty">
             Strict handling protocols. Standardized corrugated packaging, weatherproof barcode labeling, and multi-checkpoint custodial audits protect consignments across every transfer.
           </p>
 
           <div className="mt-8 flex items-center gap-6 border-t border-border/80 pt-6">
             <div>
-              <div className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+              <div className="font-heading text-lg sm:text-xl font-medium tracking-tight text-foreground">
                 Continuous Linehaul
               </div>
               <p className="mt-1 font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
@@ -85,7 +85,7 @@ export function CareSection() {
             </div>
             <div className="h-8 w-px bg-border/80" />
             <div>
-              <div className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+              <div className="font-heading text-lg sm:text-xl font-medium tracking-tight text-foreground">
                 Digital POD
               </div>
               <p className="mt-1 font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
@@ -94,18 +94,18 @@ export function CareSection() {
             </div>
           </div>
 
-          <div className="mt-6 border border-border/80 bg-card/60 p-4 space-y-2.5 font-mono text-xs shadow-2xs">
+          <div className="mt-6 border border-border/80 bg-card/60 p-4 space-y-2.5 text-xs shadow-2xs">
             <div className="flex items-center justify-between border-b border-border/60 pb-2">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Linehaul SLA</span>
-              <span className="font-semibold text-primary">100% Optical Gate Screening</span>
+              <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Linehaul SLA</span>
+              <span className="font-sans text-xs sm:text-sm font-medium text-primary">100% Optical Gate Screening</span>
             </div>
             <div className="flex items-center justify-between border-b border-border/60 pb-2">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Signature Capture</span>
-              <span className="font-semibold text-info">&lt;120s Real-time POD Sync</span>
+              <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Signature Capture</span>
+              <span className="font-sans text-xs sm:text-sm font-medium text-info">&lt;120s Real-time POD Sync</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Custodial Protocol</span>
-              <span className="font-semibold text-status-delivered">Sealed Container Fleet</span>
+              <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Custodial Protocol</span>
+              <span className="font-sans text-xs sm:text-sm font-medium text-status-delivered">Sealed Container Fleet</span>
             </div>
           </div>
         </motion.div>
@@ -139,12 +139,13 @@ export function CareSection() {
                     <span className={`font-mono text-xs font-semibold ${stageColor}`}>
                       {std.stage}
                     </span>
-                    <h3 className="font-heading text-lg font-semibold tracking-[-0.015em] text-foreground">
+                    <h3 className="font-heading text-lg font-medium tracking-[-0.015em] text-foreground">
                       {std.label}
                     </h3>
                   </div>
-                  <p className="max-w-md text-body-editorial text-muted-foreground leading-relaxed font-normal">
-                    {std.lead} {std.detail}
+                  <p className="max-w-md text-body-editorial">
+                    <span className="font-medium text-foreground mr-1.5">{std.lead}</span>
+                    {std.detail}
                   </p>
                 </div>
               </motion.div>

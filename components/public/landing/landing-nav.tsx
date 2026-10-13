@@ -30,6 +30,7 @@ const NAV_LINKS = [
   { href: "#journey-chapter", label: "Process" },
   { href: "#network", label: "Network" },
   { href: "#delivery-chapter", label: "Care" },
+  { href: "#feedback", label: "Feedback" },
   { href: "#faq", label: "FAQ" },
   { href: "#contact", label: "Contact" },
 ]
@@ -135,7 +136,7 @@ export function LandingNav() {
           >
             <Logo className="h-7 w-auto" />
           </Link>
-          <span className="hidden font-mono text-xs uppercase tracking-wider text-muted-foreground lg:inline-block border-l border-border/80 pl-4 py-0.5">
+          <span className="hidden font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium lg:inline-block border-l border-border/80 pl-4 py-0.5">
             Cargo &amp; Freight Desk
           </span>
         </div>
@@ -225,7 +226,7 @@ export function LandingNav() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] border-l border-border bg-background p-6">
               <SheetHeader className="p-0 mb-4">
-                <SheetTitle className="text-left font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                <SheetTitle className="text-left font-sans text-xs uppercase tracking-[0.06em] font-semibold text-muted-foreground">
                   Navigation
                 </SheetTitle>
               </SheetHeader>
@@ -267,7 +268,7 @@ export function LandingNav() {
                   >
                     <Button
                       asChild
-                      className="w-full rounded-none bg-primary font-mono text-xs font-semibold uppercase tracking-wider text-primary-foreground"
+                      className="w-full rounded-none bg-primary font-sans text-xs font-semibold uppercase tracking-wider text-primary-foreground"
                     >
                       <Link href="#contact" onClick={() => setMobileMenuOpen(false)}>
                         Book a Shipment

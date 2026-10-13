@@ -23,4 +23,19 @@ describe("trusted application URL", () => {
   ])("rejects unsafe production origin %s", (url) =>
     expect(() => getAppUrl(url, "production")).toThrow()
   )
+
+  it("falls back to Vercel production hostname when NEXT_PUBLIC_APP_URL is unset", () => {
+    const originalEnv = process.env.NEXT_PUBLIC_APP_URL
+    const originalVercel = process.env.VERCEL_PROJECT_PRODUCTION_URL
+    try {
+      delete process.env.NEXT_PUBLIC_APP_URL
+      process.env.VERCEL_PROJECT_PRODUCTION_URL = "tac-xpress-five.vercel.app"
+      expect(getAppUrl(undefined, "production")).toBe(
+        "https://tac-xpress-five.vercel.app"
+      )
+    } finally {
+      process.env.NEXT_PUBLIC_APP_URL = originalEnv
+      process.env.VERCEL_PROJECT_PRODUCTION_URL = originalVercel
+    }
+  })
 })

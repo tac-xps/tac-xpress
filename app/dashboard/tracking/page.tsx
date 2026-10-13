@@ -1,6 +1,12 @@
+import type { Metadata } from "next"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { ScannerStation } from "@/components/operations/scanner-station"
 import { firstParam } from "@/lib/table-query"
+
+export const metadata: Metadata = {
+  title: "Tracking & Scanner Station | TAC-XPRESS",
+  description: "Live barcode and AWB scanning station, shipment verification, and status updates.",
+}
 export default async function TrackingPage({
   searchParams,
 }: {

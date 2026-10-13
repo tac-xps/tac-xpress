@@ -45,6 +45,10 @@ const FORBIDDEN_PATTERNS: { name: string; regex: RegExp }[] = [
     name: "Arbitrary hex color utility",
     regex: /\b(bg|text|border|ring|fill|stroke)-\[#(?:[0-9a-fA-F]{3,8})\]/g,
   },
+  {
+    name: "Arbitrary font-family utility (use font-sans or font-mono)",
+    regex: /\bfont-\[(?!var\(--)[^\]]+\]/g,
+  },
 ]
 
 interface Violation {
