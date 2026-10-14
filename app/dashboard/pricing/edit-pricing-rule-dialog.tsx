@@ -80,8 +80,8 @@ export function EditPricingRuleDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[90vw] max-w-4xl overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-h-[90vh] w-[90vw] sm:max-w-2xl lg:max-w-3xl overflow-y-auto">
+        <DialogHeader className="pr-14">
           <DialogTitle>Edit Pricing Rule</DialogTitle>
           <DialogDescription>
             Update base price and price per kg for this route.

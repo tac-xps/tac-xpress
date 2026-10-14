@@ -246,8 +246,8 @@ export function DlqTable({
         open={selectedPayload !== null}
         onOpenChange={(open) => !open && setSelectedPayload(null)}
       >
-        <DialogContent className="max-w-xl">
-          <DialogHeader>
+        <DialogContent className="w-[90vw] sm:max-w-2xl lg:max-w-3xl max-h-[90vh] flex flex-col p-6">
+          <DialogHeader className="pr-14">
             <DialogTitle>Dead Letter Payload</DialogTitle>
             <DialogDescription>
               Inspection of the serialized event data that encountered unrecoverable errors.

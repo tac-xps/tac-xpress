@@ -29,8 +29,8 @@ export function EditDriverDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-h-[90vh] w-[90vw] max-w-4xl overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-h-[90vh] w-[90vw] sm:max-w-2xl overflow-y-auto">
+        <DialogHeader className="pr-14">
           <DialogTitle>Edit Driver</DialogTitle>
           <DialogDescription>
             Update the driver&apos;s details below.

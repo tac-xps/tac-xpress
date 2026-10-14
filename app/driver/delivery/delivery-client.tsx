@@ -711,8 +711,8 @@ export function DeliveryClient({
 
       {/* ── Quick Scan Modal ── */}
       <Dialog open={isScanOpen} onOpenChange={setIsScanOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader className="pr-14">
             <DialogTitle className="flex items-center gap-2">
               <Barcode className="size-5 text-primary" />
               <span>Scan or Enter AWB</span>
