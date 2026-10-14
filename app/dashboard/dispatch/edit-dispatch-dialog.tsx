@@ -74,9 +74,9 @@ export function EditDispatchDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[90vw] max-w-4xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] w-[90vw] sm:max-w-2xl lg:max-w-3xl overflow-y-auto">
         <form onSubmit={handleSubmit}>
-          <DialogHeader>
+          <DialogHeader className="pr-14">
             <DialogTitle>Edit Dispatch Run</DialogTitle>
             <DialogDescription>
               Update driver and vehicle assignments for {dispatchRun.referenceId}.

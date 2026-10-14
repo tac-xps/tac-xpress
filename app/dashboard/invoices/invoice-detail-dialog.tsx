@@ -152,7 +152,7 @@ export function InvoiceDetailDialog({ invoice }: InvoiceDetailDialogProps) {
           Open
         </Button>
       </DialogTrigger>
-      <DialogContent className="h-svh max-h-svh w-full max-w-5xl overflow-hidden p-0">
+      <DialogContent className="h-svh max-h-svh w-full sm:max-w-5xl lg:max-w-6xl overflow-hidden p-0">
         <div className="grid h-full bg-background lg:grid-cols-3">
           <aside className="flex min-h-0 flex-col border-b border-border bg-card lg:border-r lg:border-b-0">
             <DialogHeader className="border-b border-border p-6 text-left">

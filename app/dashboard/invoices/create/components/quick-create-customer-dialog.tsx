@@ -132,8 +132,8 @@ export function QuickCreateCustomerDialog({
         if (!open) onClose()
       }}
     >
-      <DialogContent className="max-w-md rounded-none border border-border/85 bg-popover p-6 shadow-xl">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-lg rounded-none border border-border/85 bg-popover p-6 shadow-xl">
+        <DialogHeader className="pr-14">
           <DialogTitle className="text-lg font-bold text-foreground">
             Quick Add {role === "consignor" ? "Consignor" : "Consignee"}
           </DialogTitle>
