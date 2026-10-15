@@ -59,7 +59,7 @@ export default async function TrackingPage({
         </form>
         {response?.error && (
           <Alert variant="destructive">
-            <AlertTitle>We couldn't retrieve this shipment</AlertTitle>
+            <AlertTitle>We could not retrieve this shipment</AlertTitle>
             <AlertDescription>
               {response.error} Check the number on your receipt or{" "}
               <Link href="/#support" className="underline">

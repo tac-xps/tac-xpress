@@ -31,7 +31,6 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Underline } from "@tiptap/extension-underline"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -264,7 +263,6 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
             },
           },
         }),
-        Underline,
         Placeholder.configure({
           placeholder,
         }),
