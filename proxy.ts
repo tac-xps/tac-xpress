@@ -23,10 +23,10 @@ type AuthenticatedRequest = NextRequest & {
   auth: Session | null
 }
 
-// 2500ms timeout prevents false deadline_exceeded errors from regional/edge network variance
+// 1000ms timeout prevents edge requests from stalling when remote security service has high network latency
 const arcjetClient =
   typeof createRemoteClient === "function"
-    ? createRemoteClient({ timeout: 2500 })
+    ? createRemoteClient({ timeout: 1000 })
     : undefined
 
 export const aj = arcjet({
