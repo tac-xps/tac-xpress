@@ -44,6 +44,8 @@ Sentry.init({
     "NotAllowedError: Permission denied",
     "NotAllowedError: Permission dismissed",
     "OverconstrainedError",
+    "network error",
+    /network error/i,
   ],
 
   beforeSend(event) {

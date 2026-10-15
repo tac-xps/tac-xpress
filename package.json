@@ -22,7 +22,7 @@
     "stylelint:fix": "stylelint \"**/*.css\" --fix",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "next typegen && tsc --noEmit",
-    "test:unit": "vitest run",
+    "test:unit": "cross-env NODE_OPTIONS=--max-old-space-size=4096 vitest run",
     "test:e2e": "playwright test",
     "test:a11y": "playwright test tests/accessibility.spec.ts",
     "verify": "pnpm typecheck && pnpm lint && pnpm stylelint && pnpm audit:tokens && pnpm test:unit && pnpm build",

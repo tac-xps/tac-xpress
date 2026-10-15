@@ -119,7 +119,7 @@ export function LandingFooter() {
 
         {/* Copyright and Metadata */}
         <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-border/80 pt-8 sm:flex-row sm:items-center font-sans text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} TAC-XPRESS LOGISTICS LLP. All rights reserved.</p>
+          <p suppressHydrationWarning>© {new Date().getFullYear()} TAC-XPRESS LOGISTICS LLP. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-4">
             <span>GST Registered</span>
             <span>·</span>
