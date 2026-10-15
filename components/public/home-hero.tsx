@@ -2,8 +2,16 @@
 
 import React from "react"
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { ShieldCheck, Plane, Truck } from "lucide-react"
-import { HeroLottieTruck } from "./hero-lottie-truck"
+
+const HeroLottieTruck = dynamic(
+  () => import("./hero-lottie-truck").then((mod) => mod.HeroLottieTruck),
+  {
+    ssr: false,
+    loading: () => <div className="w-full aspect-[4/3] bg-muted/20 animate-pulse" />,
+  }
+)
 import { TrackDialogForm } from "./track-dialog-form"
 import { motion, useReducedMotion } from "motion/react"
 

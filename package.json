@@ -16,6 +16,7 @@
     "dev:webpack": "next dev --webpack",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",
     "build:safe": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",
+    "analyze": "cross-env ANALYZE=true next build",
     "start": "next start",
     "lint": "eslint",
     "stylelint": "stylelint \"**/*.css\"",

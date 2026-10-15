@@ -1,8 +1,21 @@
 "use client"
 import * as React from "react"
+import dynamic from "next/dynamic"
 import { useLiveFleet } from "./use-live-fleet"
-import { LiveDispatchMap } from "./live-dispatch-map"
 import { LiveFleetSidebar } from "./live-fleet-sidebar"
+import { Skeleton } from "@/components/ui/skeleton"
+
+const LiveDispatchMap = dynamic(
+  () => import("./live-dispatch-map").then((mod) => mod.LiveDispatchMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full w-full items-center justify-center border border-border bg-card p-4">
+        <Skeleton className="h-full w-full" />
+      </div>
+    ),
+  }
+)
 
 export function LiveDispatchContainer() {
   const { vehicles, connectionStatus } = useLiveFleet()

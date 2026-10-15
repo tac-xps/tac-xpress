@@ -3,8 +3,16 @@
 // Adapted from @tailark-oss/veil-content-1.
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
-import { WarehouseLottieDelivery } from "./warehouse-lottie-delivery"
+
+const WarehouseLottieDelivery = dynamic(
+  () => import("./warehouse-lottie-delivery").then((mod) => mod.WarehouseLottieDelivery),
+  {
+    ssr: false,
+    loading: () => <div className="w-full aspect-[4/3] bg-muted/20 animate-pulse" />,
+  }
+)
 import { MagneticButton } from "./magnetic-button"
 import { motion, useReducedMotion } from "motion/react"
 import { AnimatedCounter } from "@/components/ui/animated-counter"
