@@ -23,6 +23,8 @@ import {
   tactileInteraction,
 } from "@/lib/motion/motion.theme"
 import { cn } from "@/lib/utils"
+import { IconTile } from "@/components/reui/icon-tile"
+import { Badge } from "@/components/reui/badge"
 
 const MotionImage = motion.create(Image)
 
@@ -213,22 +215,23 @@ export function ServicesSection() {
                   delay: idx * 0.08,
                   ease: motionEasings.editorial,
                 }}
-                whileHover={shouldReduceMotion ? undefined : { y: -2 }}
                 className={cn(
-                  "group flex flex-col justify-between p-6 sm:p-7 lg:p-8 bg-card/60 hover:bg-card border-t-2 border-t-transparent",
+                  "group flex flex-col justify-between p-6 sm:p-7 lg:p-8 bg-card/60 hover:bg-card border-t-2 border-t-transparent transition-colors duration-200",
                   srv.accentBorder
                 )}
               >
                 <div>
                   <div className="flex items-center justify-between">
                     <span className={cn("font-mono font-semibold text-sm", srv.color)}>{srv.num}</span>
-                    <span className={cn("border px-2.5 py-0.5 font-sans text-xs uppercase tracking-[0.06em] font-medium", srv.badge)}>
+                    <Badge variant="outline">
                       {srv.tagline}
-                    </span>
-                    <Icon className={cn("size-4 text-muted-foreground transition-colors", `group-hover:${srv.color}`)} />
+                    </Badge>
+                    <IconTile variant="frame" className="size-8">
+                      <Icon className={cn("size-4 text-muted-foreground transition-colors", `group-hover:${srv.color}`)} />
+                    </IconTile>
                   </div>
                   <h3
-                    className="mt-4 font-heading text-xl sm:text-2xl font-medium tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary"
+                    className="mt-4 font-heading text-subhead font-medium tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary"
                   >
                     {srv.title}
                   </h3>

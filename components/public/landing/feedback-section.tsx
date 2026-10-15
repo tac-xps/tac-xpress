@@ -17,6 +17,7 @@ import {
   motionEasings,
 } from "@/lib/motion/motion.theme"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/reui/badge"
 import Link from "next/link"
 
 /* ------------------------------------------------------------------ */
@@ -96,7 +97,7 @@ function TestimonialCard({
         delay: index * 0.08,
         ease: motionEasings.editorial,
       }}
-      className="group relative flex flex-col justify-between border border-border/80 bg-card p-6 transition-all hover:border-primary/40 hover:bg-muted/20"
+      className="group relative flex flex-col justify-between border border-border/80 bg-card p-6 transition-colors duration-200 hover:border-primary/40 hover:bg-muted/20"
     >
       <div>
         <div className="flex items-center justify-between pb-3 border-b border-border/40">
@@ -105,9 +106,9 @@ function TestimonialCard({
             strokeWidth={1.5}
             aria-hidden="true"
           />
-          <span className="font-mono text-xs font-medium uppercase tracking-[0.06em] text-primary bg-primary/10 px-2 py-0.5">
+          <Badge variant="primary-light">
             {testimonial.corridor}
-          </span>
+          </Badge>
         </div>
 
         <p className="mt-4 text-sm leading-relaxed text-muted-foreground font-sans">

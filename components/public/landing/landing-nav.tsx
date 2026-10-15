@@ -22,7 +22,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
-import { motionSprings, tactileInteraction } from "@/lib/motion/motion.theme"
+import { motionSprings } from "@/lib/motion/motion.theme"
 
 const NAV_LINKS = [
   { href: "#services", label: "Services" },
@@ -184,33 +184,29 @@ export function LandingNav() {
         <div className="flex items-center gap-3">
           <ThemeSwitcher />
 
-          <motion.div {...tactileInteraction}>
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="hidden font-sans text-xs font-medium text-foreground/80 hover:text-foreground sm:inline-flex"
-            >
-              <Link href="#visibility-chapter">
-                <Search className="mr-1.5 size-3.5" />
-                Track
-              </Link>
-            </Button>
-          </motion.div>
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="hidden font-sans text-xs font-medium text-foreground/80 hover:text-foreground sm:inline-flex"
+          >
+            <Link href="#visibility-chapter">
+              <Search className="mr-1.5 size-3.5" />
+              Track
+            </Link>
+          </Button>
 
           <div className="hidden sm:inline-block">
-            <motion.div {...tactileInteraction}>
-              <Button
-                asChild
-                size="sm"
-                className="rounded-none bg-primary px-4 font-sans text-xs font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              >
-                <Link href="#contact">
-                  Book Cargo
-                  <ArrowUpRight className="ml-1.5 size-3.5" />
-                </Link>
-              </Button>
-            </motion.div>
+            <Button
+              asChild
+              size="sm"
+              className="rounded-none bg-primary px-4 font-sans text-xs font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              <Link href="#contact">
+                Book Cargo
+                <ArrowUpRight className="ml-1.5 size-3.5" />
+              </Link>
+            </Button>
           </div>
 
           {/* Mobile Sheet Menu with N3: Staggered link entrance */}
@@ -289,7 +285,7 @@ export function LandingNav() {
           scaleX: smoothProgress,
           transformOrigin: "left",
         }}
-        className="absolute inset-x-0 bottom-0 h-px bg-primary will-change-transform"
+        className="absolute inset-x-0 bottom-0 h-px bg-primary"
       />
     </motion.header>
   )

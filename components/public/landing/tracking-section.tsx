@@ -14,6 +14,16 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/reui/badge"
+import {
+  Stepper,
+  StepperItem,
+  StepperIndicator,
+  StepperSeparator,
+  StepperTitle,
+  StepperDescription,
+  StepperNav,
+} from "@/components/reui/stepper"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { BorderBeam } from "@/components/ui/border-beam"
 import {
@@ -326,7 +336,7 @@ export function TrackingSection() {
           </SectionEyebrow>
           <h2
             id="tracking-heading"
-            className="text-section bg-gradient-to-br from-foreground via-foreground/90 to-foreground/60 bg-clip-text text-transparent text-balance"
+            className="text-section text-foreground tracking-tight text-balance font-bold"
           >
             A number.{" "}
             <br className="hidden sm:inline" />
@@ -358,7 +368,7 @@ export function TrackingSection() {
             }}
             className="space-y-6 lg:col-span-5"
           >
-            <div className="relative border border-border/80 bg-card p-5 sm:p-7 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div className="relative border border-border/80 bg-card p-5 sm:p-7 shadow-sm hover:shadow-md transition-colors duration-200">
               <BorderBeam size={60} duration={8} colorFrom="var(--color-primary)" colorTo="transparent" borderWidth={1} />
               <form
                 action="/track"
@@ -393,22 +403,20 @@ export function TrackingSection() {
                 </div>
 
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-                  <motion.div {...tactileInteraction}>
-                    <Button
-                      type="submit"
-                      disabled={isPending}
-                      className="rounded-none bg-primary px-6 font-sans text-xs font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90"
-                    >
-                      {isPending ? (
-                        <>
-                          <Loader2 className="mr-1.5 size-3.5 animate-spin" />
-                          Verifying…
-                        </>
-                      ) : (
-                        "Track shipment"
-                      )}
-                    </Button>
-                  </motion.div>
+                  <Button
+                    type="submit"
+                    disabled={isPending}
+                    className="bg-primary px-6 font-sans text-xs font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90"
+                  >
+                    {isPending ? (
+                      <>
+                        <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+                        Verifying…
+                      </>
+                    ) : (
+                      "Track shipment"
+                    )}
+                  </Button>
 
                   <button
                     type="button"
@@ -446,20 +454,19 @@ export function TrackingSection() {
 
                 <div className="flex items-center justify-between border-t border-border/60 pt-2.5 text-xs">
                   {isSample ? (
-                    <span className="inline-flex items-center gap-1.5 font-sans text-xs text-muted-foreground font-medium">
-                      <ShieldCheck className="size-4 text-status-delivered" />
+                    <Badge variant="outline" className="gap-1.5 font-normal">
+                      <ShieldCheck className="size-3.5 text-status-delivered" />
                       Sample custody record
-                    </span>
+                    </Badge>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 font-sans text-xs text-muted-foreground font-medium">
-                      <ShieldCheck className="size-4 text-muted-foreground" />
+                    <Badge variant="outline" className="gap-1.5 font-normal">
+                      <ShieldCheck className="size-3.5 text-muted-foreground" />
                       Consignment status
-                    </span>
+                    </Badge>
                   )}
-                  <span className="inline-flex items-center gap-1.5 border border-status-transit/40 bg-status-transit/10 px-2.5 py-1 font-sans text-xs font-semibold uppercase tracking-wider text-status-transit">
-                    <span className="size-1.5 bg-status-transit" />
-                    {liveData ? liveData.status.toUpperCase() : "IN TRANSIT"}
-                  </span>
+                  <Badge variant="warning-light" className="font-mono uppercase tracking-wider">
+                    {liveData ? liveData.status : "IN TRANSIT"}
+                  </Badge>
                 </div>
               </div>
             </div>
@@ -475,7 +482,7 @@ export function TrackingSection() {
               delay: 0.1,
               ease: motionEasings.editorial,
             }}
-            className="relative border border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-sm hover:shadow-md transition-shadow duration-300"
+            className="relative border border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-sm transition-colors duration-200 hover:border-primary/40"
           >
             <BorderBeam size={80} duration={10} colorFrom="var(--color-primary)" colorTo="transparent" delay={3} borderWidth={1} />
             <div>

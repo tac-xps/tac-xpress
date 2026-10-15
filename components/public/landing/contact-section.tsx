@@ -62,13 +62,12 @@ export function ContactSection() {
               initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-20px" }}
-              whileHover={shouldReduceMotion ? undefined : { y: -1 }}
               transition={{
                 duration: motionDurations.reveal,
                 delay: 0.04,
                 ease: motionEasings.editorial,
               }}
-              className="group relative flex items-start gap-3.5 bg-card p-5 transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="group relative flex items-start gap-3.5 bg-card p-5 transition-colors duration-200 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               aria-label="Call dispatch hotline +91 98561 73829"
             >
               <span aria-hidden="true" className="mt-0.5 flex size-9 shrink-0 items-center justify-center bg-primary/10">
@@ -121,13 +120,12 @@ export function ContactSection() {
               initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-20px" }}
-              whileHover={shouldReduceMotion ? undefined : { y: -1 }}
               transition={{
                 duration: motionDurations.reveal,
                 delay: 0.12,
                 ease: motionEasings.editorial,
               }}
-              className="group relative flex items-start gap-3.5 bg-card p-5 transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="group relative flex items-start gap-3.5 bg-card p-5 transition-colors duration-200 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               aria-label="Email cargo@tac-xpress.com"
             >
               <span aria-hidden="true" className="mt-0.5 flex size-9 shrink-0 items-center justify-center bg-status-delivered/10">

@@ -165,7 +165,7 @@ export function NetworkSection() {
                   ease: [0.16, 1, 0.3, 1],
                 }}
                 className={cn(
-                  "group flex flex-col justify-between p-5 sm:p-7 lg:p-8 border-t-2 border-t-transparent transition-all duration-200 hover:bg-muted/30",
+                  "group flex flex-col justify-between p-5 sm:p-7 lg:p-8 border-t-2 border-t-transparent transition-colors duration-200 hover:bg-muted/30",
                   item.hoverBorder
                 )}
               >
@@ -177,7 +177,7 @@ export function NetworkSection() {
                       {item.tag}
                     </span>
                   </div>
-                  <h3 className="mt-3 font-heading text-editorial-sub font-medium tracking-[-0.015em] text-foreground text-balance">
+                  <h3 className="mt-3 font-heading text-subhead font-medium tracking-[-0.015em] text-foreground text-balance">
                     {item.title}
                   </h3>
                   <p className="mt-1 font-sans text-xs font-medium text-muted-foreground">

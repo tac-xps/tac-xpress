@@ -70,7 +70,7 @@ export function CareSection() {
           >
             Care begins with the details.
           </h2>
-          <p className="mt-5 text-lead max-w-[50ch] text-foreground/85 leading-relaxed font-normal text-pretty">
+          <p className="mt-5 text-lead max-w-[50ch] text-muted-foreground leading-relaxed font-normal text-pretty">
             Strict handling protocols. Standardized corrugated packaging, weatherproof barcode labeling, and multi-checkpoint custodial audits protect consignments across every transfer.
           </p>
 

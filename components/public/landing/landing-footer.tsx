@@ -67,18 +67,16 @@ export function LandingFooter() {
               Move cargo. With clarity.
             </p>
           </div>
-          <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
-            <Button
-              asChild
-              size="lg"
-              className="w-fit rounded-none bg-primary px-6 font-sans text-sm font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90"
-            >
-              <Link href="#contact">
-                Start a shipment inquiry
-                <ArrowUpRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </motion.div>
+          <Button
+            asChild
+            size="lg"
+            className="w-fit font-semibold tracking-tight text-primary-foreground hover:bg-primary/90"
+          >
+            <Link href="#contact">
+              Start a shipment inquiry
+              <ArrowUpRight className="ml-2 size-4" />
+            </Link>
+          </Button>
         </div>
 
         {/* Footer Navigation Columns */}
