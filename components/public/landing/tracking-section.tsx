@@ -72,6 +72,9 @@ const SAMPLE_MILESTONES: SampleMilestone[] = [
   },
 ]
 
+/** 1-based step index of the current active milestone in sample data */
+const SAMPLE_ACTIVE_STEP = SAMPLE_MILESTONES.findIndex((m) => m.status === "current") + 1
+
 interface RadarBeaconNodeProps {
   shouldReduceMotion: boolean
 }
@@ -257,6 +260,189 @@ function RadarSyncDot({ shouldReduceMotion }: RadarSyncDotProps) {
       />
       <span className="relative size-1.5 rounded-none bg-status-delivered" />
     </span>
+  )
+}
+
+/* ─── Sample Milestone Stepper (ReUI) ───────────────────────────── */
+
+interface SampleMilestoneStepperProps {
+  shouldReduceMotion: boolean
+}
+
+/**
+ * Renders the sample milestone data using ReUI Stepper primitives
+ * in vertical orientation. Display-only — no interactive step navigation.
+ */
+function SampleMilestoneStepper({ shouldReduceMotion }: SampleMilestoneStepperProps) {
+  return (
+    <Stepper
+      value={SAMPLE_ACTIVE_STEP}
+      orientation="vertical"
+      indicators={{
+        completed: <CheckCircle2 className="size-4 text-status-delivered" />,
+        active: <RadarBeaconNode shouldReduceMotion={!!shouldReduceMotion} />,
+        inactive: <Circle className="size-4 text-border" />,
+      }}
+    >
+      <StepperNav className="gap-0">
+        {SAMPLE_MILESTONES.map((item, index) => {
+          const stepNumber = index + 1
+          const isCurrent = item.status === "current"
+          const isCompleted = item.status === "completed"
+          const isLastCompleted =
+            isCompleted &&
+            index < SAMPLE_MILESTONES.length - 1 &&
+            SAMPLE_MILESTONES[index + 1].status === "current"
+
+          return (
+            <StepperItem
+              key={item.title}
+              step={stepNumber}
+              completed={isCompleted}
+              className={`!flex-row !items-start gap-3.5 !justify-start ${
+                isCurrent ? "relative rounded-sm bg-primary/[0.03] -mx-2 px-2 py-1.5" : ""
+              }`}
+            >
+              {/* Indicator column: icon + connector */}
+              <div className="mt-0.5 flex flex-col items-center shrink-0">
+                <StepperIndicator
+                  className="!size-auto !bg-transparent !text-inherit !rounded-none !border-0 !overflow-visible"
+                />
+                {index < SAMPLE_MILESTONES.length - 1 && (
+                  isLastCompleted ? (
+                    <TravelingConnectorBeam shouldReduceMotion={!!shouldReduceMotion} />
+                  ) : (
+                    <StepperSeparator
+                      className={`!m-0 my-1 !h-6 !w-px !flex-none ${
+                        isCompleted ? "!bg-status-delivered/50" : "!bg-border/60"
+                      }`}
+                    />
+                  )
+                )}
+              </div>
+
+              {/* Content column: title + timestamp + location */}
+              <div className="flex-1 pb-1 min-w-0">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <StepperTitle
+                    className={`!text-sm ${
+                      isCurrent
+                        ? "text-foreground !font-semibold"
+                        : isCompleted
+                          ? "text-foreground !font-medium"
+                          : "text-muted-foreground !font-normal"
+                    }`}
+                  >
+                    {item.title}
+                  </StepperTitle>
+                  <span
+                    className={`border px-2 py-0.5 font-mono text-xs font-medium tabular-nums ${
+                      isCurrent
+                        ? "border-primary/40 bg-primary/[0.06] text-foreground font-semibold"
+                        : "border-border/70 bg-muted/60 text-foreground/90"
+                    }`}
+                  >
+                    {item.timestamp}
+                  </span>
+                </div>
+                <StepperDescription className="mt-1 !text-xs sm:!text-sm">
+                  {item.location}
+                </StepperDescription>
+              </div>
+            </StepperItem>
+          )
+        })}
+      </StepperNav>
+    </Stepper>
+  )
+}
+
+/* ─── Live Data Milestone Stepper (ReUI) ────────────────────────── */
+
+interface LiveMilestoneStepperProps {
+  events: Array<{
+    id?: string
+    status?: string
+    location?: string
+    description?: string
+    event_time?: string
+  }>
+  overallStatus: string
+  shouldReduceMotion: boolean
+}
+
+/**
+ * Renders live API milestone data using ReUI Stepper primitives.
+ */
+function LiveMilestoneStepper({ events, overallStatus, shouldReduceMotion }: LiveMilestoneStepperProps) {
+  const isDelivered = overallStatus === "delivered"
+  // Active step: first event (most recent) unless delivered, then all completed
+  const activeStep = isDelivered ? events.length + 1 : 1
+
+  return (
+    <Stepper
+      value={activeStep}
+      orientation="vertical"
+      indicators={{
+        completed: <CheckCircle2 className="size-4 text-status-delivered" />,
+        active: <RadarBeaconNode shouldReduceMotion={!!shouldReduceMotion} />,
+        inactive: <Circle className="size-4 text-border" />,
+      }}
+    >
+      <StepperNav className="gap-0">
+        {events.map((evt, index) => {
+          const stepNumber = index + 1
+          const isCompleted = isDelivered || index > 0
+          const isCurrent = !isDelivered && index === 0
+
+          return (
+            <div
+              key={evt.id || index}
+              className="milestone-row flex items-start gap-3.5 text-xs"
+            >
+              <StepperItem
+                step={stepNumber}
+                completed={isCompleted}
+                className="!flex-row !items-start gap-3.5 !justify-start"
+              >
+                {/* Indicator column */}
+                <div className="mt-0.5 flex flex-col items-center shrink-0">
+                  <StepperIndicator
+                    className="!size-auto !bg-transparent !text-inherit !rounded-none !border-0 !overflow-visible"
+                  />
+                  {index < events.length - 1 && (
+                    <StepperSeparator className="!m-0 my-1 !h-6 !w-px !flex-none !bg-border/60" />
+                  )}
+                </div>
+
+                {/* Content column */}
+                <div className="flex-1 pb-1 min-w-0">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <StepperTitle className="!text-sm !font-medium text-foreground">
+                      {evt.description || evt.status || "Milestone Scan"}
+                    </StepperTitle>
+                    {evt.event_time && (
+                      <span className="border border-border/70 bg-muted/60 px-2 py-0.5 font-mono text-xs text-foreground/90 font-medium tabular-nums">
+                        {new Date(evt.event_time).toLocaleString("en-IN", {
+                          timeZone: "Asia/Kolkata",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    )}
+                  </div>
+                  <StepperDescription className="mt-1 !text-xs sm:!text-sm">
+                    {evt.location || "Gateway Hub"}
+                  </StepperDescription>
+                </div>
+              </StepperItem>
+            </div>
+          )
+        })}
+      </StepperNav>
+    </Stepper>
   )
 }
 
@@ -548,7 +734,7 @@ export function TrackingSection() {
                       shouldReduceMotion={!!shouldReduceMotion}
                     />
 
-                    {/* Progressive Milestone Resolution */}
+                    {/* Progressive Milestone Resolution via ReUI Stepper */}
                     <div className="space-y-4">
                       {isPending ? (
                         <div className="flex items-center gap-2 py-6 text-xs text-muted-foreground">
@@ -556,129 +742,19 @@ export function TrackingSection() {
                           <span className="font-sans">Retrieving consignment milestones…</span>
                         </div>
                       ) : liveData && liveData.events && liveData.events.length > 0 ? (
-                        liveData.events.map((evt, index) => {
-                          const isDelivered = liveData.status === "delivered"
-                          const isCompleted = isDelivered || index > 0
-                          const isCurrent = !isDelivered && index === 0
-
-                          return (
-                            <div
-                              key={evt.id || index}
-                              className="milestone-row flex items-start gap-3.5 text-xs"
-                            >
-                              <div className="mt-0.5 flex flex-col items-center">
-                                {isCurrent ? (
-                                  <RadarBeaconNode shouldReduceMotion={!!shouldReduceMotion} />
-                                ) : isCompleted ? (
-                                  <CheckCircle2 className="size-4 text-status-delivered" />
-                                ) : (
-                                  <Circle className="size-4 text-border" />
-                                )}
-                                {index < liveData.events.length - 1 && (
-                                  <div className="my-1 h-6 w-px bg-border/60" />
-                                )}
-                              </div>
-
-                              <div className="flex-1 pb-1">
-                                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                                  <p className="font-sans text-sm font-medium text-foreground">
-                                    {evt.description || evt.status || "Milestone Scan"}
-                                  </p>
-                                  {evt.event_time && (
-                                    <span className="border border-border/70 bg-muted/60 px-2 py-0.5 font-mono text-xs text-foreground/90 font-medium tabular-nums">
-                                      {new Date(evt.event_time).toLocaleString("en-IN", {
-                                        timeZone: "Asia/Kolkata",
-                                        month: "short",
-                                        day: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="mt-1 font-sans text-xs sm:text-sm text-muted-foreground">
-                                  {evt.location || "Gateway Hub"}
-                                </p>
-                              </div>
-                            </div>
-                          )
-                        })
+                        <LiveMilestoneStepper
+                          events={liveData.events}
+                          overallStatus={liveData.status}
+                          shouldReduceMotion={!!shouldReduceMotion}
+                        />
                       ) : !isSample ? (
                         <p className="py-6 font-sans text-xs text-muted-foreground">
                           No public tracking events are available yet.
                         </p>
                       ) : (
-                        SAMPLE_MILESTONES.map((item, index) => {
-                          const isCompleted = item.status === "completed"
-                          const isCurrent = item.status === "current"
-                          const isUpcoming = item.status === "upcoming"
-                          const isLastCompleted = isCompleted && index < SAMPLE_MILESTONES.length - 1 && SAMPLE_MILESTONES[index + 1].status === "current"
-
-                          return (
-                            <motion.div
-                              key={item.title}
-                              initial={shouldReduceMotion ? false : { x: -6 }}
-                              animate={{ x: 0 }}
-                              transition={{
-                                duration: motionDurations.fast,
-                                delay: index * 0.06,
-                                ease: motionEasings.editorial,
-                              }}
-                              className={`milestone-row flex items-start gap-3.5 text-xs ${
-                                isCurrent ? "relative rounded-sm bg-primary/[0.03] -mx-2 px-2 py-1.5" : ""
-                              }`}
-                            >
-                              <div className="mt-0.5 flex flex-col items-center">
-                                {isCompleted ? (
-                                  <CheckCircle2 className="size-4 text-status-delivered" />
-                                ) : isCurrent ? (
-                                  <RadarBeaconNode shouldReduceMotion={!!shouldReduceMotion} />
-                                ) : (
-                                  <Circle className="size-4 text-border" />
-                                )}
-                                {index < SAMPLE_MILESTONES.length - 1 && (
-                                  isLastCompleted ? (
-                                    <TravelingConnectorBeam shouldReduceMotion={!!shouldReduceMotion} />
-                                  ) : (
-                                    <div
-                                      className={`my-1 h-6 w-px ${
-                                        isCompleted ? "bg-status-delivered/50" : "bg-border/60"
-                                      }`}
-                                    />
-                                  )
-                                )}
-                              </div>
-
-                              <div className="flex-1 pb-1">
-                                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                                  <p
-                                    className={`font-sans text-sm ${
-                                      isCurrent
-                                        ? "text-foreground font-semibold"
-                                        : isCompleted
-                                        ? "text-foreground font-medium"
-                                        : "text-muted-foreground font-normal"
-                                    }`}
-                                  >
-                                    {item.title}
-                                  </p>
-                                  <span
-                                    className={`border px-2 py-0.5 font-mono text-xs font-medium tabular-nums ${
-                                      isCurrent
-                                        ? "border-primary/40 bg-primary/[0.06] text-foreground font-semibold"
-                                        : "border-border/70 bg-muted/60 text-foreground/90"
-                                    }`}
-                                  >
-                                    {item.timestamp}
-                                  </span>
-                                </div>
-                                <p className="mt-1 font-sans text-xs sm:text-sm text-muted-foreground">
-                                  {item.location}
-                                </p>
-                              </div>
-                            </motion.div>
-                          )
-                        })
+                        <SampleMilestoneStepper
+                          shouldReduceMotion={!!shouldReduceMotion}
+                        />
                       )}
                     </div>
                   </motion.div>
