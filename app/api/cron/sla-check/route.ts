@@ -15,7 +15,9 @@ export async function GET(request: Request) {
 
   const now = new Date().toISOString()
   const opsNotificationEmail =
-    process.env.OPS_NOTIFICATION_EMAIL?.trim() || null
+    process.env.OPS_NOTIFICATION_EMAIL?.trim() ||
+    process.env.ADMIN_EMAIL?.trim() ||
+    "operations@tac-xpress.app"
   // Idempotency window: skip tickets processed within the last 5 minutes
   const idempotencyWindow = new Date(Date.now() - 5 * 60 * 1000).toISOString()
   let processed = 0
