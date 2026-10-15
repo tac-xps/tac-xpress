@@ -29,8 +29,9 @@ Sentry.init({
     const errorType = event.exception?.values?.[0]?.type ?? "";
     const errorValue = event.exception?.values?.[0]?.value ?? "";
 
-    // Filter out client-side disconnects during SSR streaming
+    // Filter out client-side disconnects and transient HTTP/2 GOAWAY closures
     if (
+      errorValue.includes("received GOAWAY without any open streams") ||
       errorValue.includes("The destination stream closed early") ||
       errorValue.includes("ECONNRESET")
     ) {

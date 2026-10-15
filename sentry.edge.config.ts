@@ -25,4 +25,16 @@ Sentry.init({
     "NEXT_NOT_FOUND",
     "received GOAWAY without any open streams",
   ],
+
+  beforeSend(event) {
+    const errorValue = event.exception?.values?.[0]?.value ?? "";
+    if (
+      errorValue.includes("received GOAWAY without any open streams") ||
+      errorValue.includes("The destination stream closed early") ||
+      errorValue.includes("ECONNRESET")
+    ) {
+      return null;
+    }
+    return event;
+  },
 });

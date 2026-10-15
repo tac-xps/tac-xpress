@@ -29,16 +29,32 @@ export async function processBackgroundJobs(
       const ticket = await db.query.tickets.findFirst({
         where: eq(tickets.id, job.payload.ticketId),
       })
-      if (!ticket) throw new Error("Ticket no longer exists.")
+      if (!ticket) {
+        await finishJob(job, false, "Ticket no longer exists.", true)
+        processed++
+        continue
+      }
       if (job.kind === "support_email") {
         // Resend retains idempotency keys for 24h. Do not auto-resend an uncertain old attempt.
         if (
           job.attempts > 1 &&
           Date.now() - new Date(job.created_at).getTime() > 23 * 60 * 60 * 1000
-        )
-          throw new Error(
+        ) {
+          const message =
             "Delivery needs manual review; provider idempotency window expired."
-          )
+          Sentry.captureMessage(message, {
+            level: "warning",
+            tags: { area: "background_job", kind: job.kind },
+            extra: {
+              jobId: job.id,
+              attempts: job.attempts,
+              createdAt: job.created_at,
+            },
+          })
+          await finishJob(job, false, message, true)
+          processed++
+          continue
+        }
         const { sendTicketNotification } =
           await import("@/app/actions/email-notifications")
         const result = await sendTicketNotification({

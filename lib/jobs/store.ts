@@ -47,9 +47,10 @@ export async function claimJob(ticketId?: string) {
 export async function finishJob(
   job: BackgroundJob,
   success: boolean,
-  error?: string
+  error?: string,
+  permanent = false
 ) {
-  await db.execute(sql`update background_jobs set status = ${success ? "completed" : job.attempts >= 5 ? "failed" : "pending"},
+  await db.execute(sql`update background_jobs set status = ${success ? "completed" : permanent || job.attempts >= 5 ? "failed" : "pending"},
     completed_at = ${success ? new Date().toISOString() : null}::timestamptz, locked_until = null, lease_token = null,
     last_error = ${error?.slice(0, 500) ?? null}, available_at = now() + (${Math.min(60 * 2 ** job.attempts, 3600)} * interval '1 second')
     where id = ${job.id}::uuid and lease_token = ${job.lease_token}::uuid`)
