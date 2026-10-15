@@ -38,52 +38,62 @@ function getPurifyInstance(): ReturnType<typeof DOMPurify> | null {
   return purifyInstance
 }
 
+const ALLOWED_TAGS_SET = new Set([
+  "b", "i", "em", "strong", "u", "s", "a", "p", "br", "ul", "ol", "li",
+  "h2", "h3", "h4", "blockquote", "code", "pre", "table", "thead", "tbody",
+  "tr", "th", "td", "hr", "span",
+])
+
+const ALLOWED_ATTR_LIST = [
+  "href", "target", "rel", "class", "data-type", "checked", "disabled",
+]
+
+/**
+ * Strips all HTML tags except the allow-listed set. Used as a resilient
+ * fallback when DOMPurify cannot initialise (e.g. Vercel serverless cold
+ * start where jsdom is unavailable).
+ */
+function regexSanitizeFallback(dirty: string): string {
+  // Remove script/style/iframe blocks entirely (content included)
+  let safe = dirty.replace(/<(script|style|iframe)\b[^>]*>[\s\S]*?<\/\1>/gi, "")
+
+  // Strip event-handler attributes (onclick, onerror, etc.)
+  safe = safe.replace(/\s+on\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]*)/gi, "")
+
+  // Remove tags not in the allow-list
+  safe = safe.replace(/<\/?([a-z][a-z0-9]*)\b[^>]*\/?>/gi, (match, tag: string) => {
+    return ALLOWED_TAGS_SET.has(tag.toLowerCase()) ? match : ""
+  })
+
+  // Strip any remaining attributes except those in the allow-list
+  safe = safe.replace(/<([a-z][a-z0-9]*)\s+([^>]*)>/gi, (_match, tag: string, attrs: string) => {
+    const cleanAttrs = (attrs as string)
+      .match(/[a-z][\w-]*(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*))?/gi)
+      ?.filter((attr) => {
+        const name = attr.split(/[=\s]/)[0].toLowerCase()
+        return ALLOWED_ATTR_LIST.includes(name)
+      })
+      .join(" ") || ""
+    return cleanAttrs ? `<${tag} ${cleanAttrs}>` : `<${tag}>`
+  })
+
+  return safe
+}
+
 export function sanitizeHtml(dirty: string): string {
   if (!dirty) return ""
 
   const instance = getPurifyInstance()
+
+  // Graceful fallback: regex-based sanitisation when DOMPurify is unavailable
+  // (e.g. Vercel serverless where jsdom cannot load). Fixes Sentry #1T.
   if (!instance) {
-    throw new Error("HTML sanitizer unavailable")
+    return regexSanitizeFallback(dirty)
   }
 
   return instance.sanitize(dirty, {
-    ALLOWED_TAGS: [
-      "b",
-      "i",
-      "em",
-      "strong",
-      "u",
-      "s",
-      "a",
-      "p",
-      "br",
-      "ul",
-      "ol",
-      "li",
-      "h2",
-      "h3",
-      "h4",
-      "blockquote",
-      "code",
-      "pre",
-      "table",
-      "thead",
-      "tbody",
-      "tr",
-      "th",
-      "td",
-      "hr",
-      "span",
-    ],
-    ALLOWED_ATTR: [
-      "href",
-      "target",
-      "rel",
-      "class",
-      "data-type",
-      "checked",
-      "disabled",
-    ],
+    ALLOWED_TAGS: [...ALLOWED_TAGS_SET],
+    ALLOWED_ATTR: ALLOWED_ATTR_LIST,
     FORBID_TAGS: ["style", "script", "iframe"],
   })
 }
