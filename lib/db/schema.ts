@@ -198,6 +198,7 @@ export const shipments = pgTable(
     index("shipments_status_booking_date_idx").on(table.status, table.bookingDate),
     index("shipments_created_at_idx").on(table.createdAt),
     check("shipments_weight_kg_positive", sql`${table.weightKg} > 0`),
+    check("shipments_pieces_positive", sql`${table.pieces} >= 1`),
   ]
 )
 
@@ -322,6 +323,7 @@ export const invoices = pgTable(
     index("invoices_customer_id_idx").on(table.customerId),
     index("invoices_status_idx").on(table.status),
     index("invoices_created_at_idx").on(table.createdAt),
+    check("invoices_amount_nonnegative", sql`${table.amount} >= 0`),
   ]
 )
 
