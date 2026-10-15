@@ -76,7 +76,7 @@ export function CareSection() {
 
           <div className="mt-8 flex items-center gap-6 border-t border-border/80 pt-6">
             <div>
-              <div className="font-heading text-lg sm:text-xl font-medium tracking-tight text-foreground">
+              <div className="font-heading text-subhead font-medium tracking-tight text-foreground">
                 Continuous Linehaul
               </div>
               <p className="mt-1 font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
@@ -85,7 +85,7 @@ export function CareSection() {
             </div>
             <div className="h-8 w-px bg-border/80" />
             <div>
-              <div className="font-heading text-lg sm:text-xl font-medium tracking-tight text-foreground">
+              <div className="font-heading text-subhead font-medium tracking-tight text-foreground">
                 Digital POD
               </div>
               <p className="mt-1 font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
@@ -139,7 +139,7 @@ export function CareSection() {
                     <span className={`font-mono text-xs font-semibold ${stageColor}`}>
                       {std.stage}
                     </span>
-                    <h3 className="font-heading text-lg font-medium tracking-[-0.015em] text-foreground">
+                    <h3 className="font-heading text-subhead font-medium tracking-[-0.015em] text-foreground">
                       {std.label}
                     </h3>
                   </div>

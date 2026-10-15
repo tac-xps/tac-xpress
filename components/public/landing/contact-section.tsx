@@ -2,7 +2,8 @@
 
 import React from "react"
 import { motion, useReducedMotion } from "motion/react"
-import { Phone, Mail, MapPin } from "lucide-react"
+import { Phone, Mail, MapPin, Clock } from "lucide-react"
+import { IconTile } from "@/components/reui/icon-tile"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { TicketForm } from "@/components/public/ticket-form"
 import { BorderBeam } from "@/components/ui/border-beam"
@@ -70,9 +71,9 @@ export function ContactSection() {
               className="group relative flex items-start gap-3.5 bg-card p-5 transition-colors duration-200 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               aria-label="Call dispatch hotline +91 98561 73829"
             >
-              <span aria-hidden="true" className="mt-0.5 flex size-9 shrink-0 items-center justify-center bg-primary/10">
-                <Phone className="size-4 text-primary" strokeWidth={1.75} />
-              </span>
+              <IconTile variant="soft" size="sm" className="mt-0.5 text-primary" aria-hidden="true">
+                <Phone strokeWidth={1.75} />
+              </IconTile>
               <div className="min-w-0 flex-1">
                 <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-primary">
                   Dispatch Hotline
@@ -95,12 +96,9 @@ export function ContactSection() {
               }}
               className="flex items-start gap-3.5 bg-card p-5"
             >
-              <span aria-hidden="true" className="mt-0.5 flex size-9 shrink-0 items-center justify-center bg-info/10">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="text-info" aria-hidden="true">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-              </span>
+              <IconTile variant="soft" size="sm" className="mt-0.5 text-info" aria-hidden="true">
+                <Clock strokeWidth={1.75} />
+              </IconTile>
               <div className="min-w-0">
                 <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-info">
                   Operating Hours
@@ -128,9 +126,9 @@ export function ContactSection() {
               className="group relative flex items-start gap-3.5 bg-card p-5 transition-colors duration-200 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               aria-label="Email cargo@tac-xpress.com"
             >
-              <span aria-hidden="true" className="mt-0.5 flex size-9 shrink-0 items-center justify-center bg-status-delivered/10">
-                <Mail className="size-4 text-status-delivered" strokeWidth={1.75} />
-              </span>
+              <IconTile variant="soft" size="sm" className="mt-0.5 text-status-delivered" aria-hidden="true">
+                <Mail strokeWidth={1.75} />
+              </IconTile>
               <div className="min-w-0 flex-1">
                 <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-status-delivered">
                   Electronic Inquiries
@@ -153,9 +151,9 @@ export function ContactSection() {
               }}
               className="flex items-start gap-3.5 bg-card p-5"
             >
-              <span aria-hidden="true" className="mt-0.5 flex size-9 shrink-0 items-center justify-center bg-status-pending/10">
-                <MapPin className="size-4 text-status-pending" strokeWidth={1.75} />
-              </span>
+              <IconTile variant="soft" size="sm" className="mt-0.5 text-status-pending" aria-hidden="true">
+                <MapPin strokeWidth={1.75} />
+              </IconTile>
               <div className="min-w-0">
                 <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-status-pending">
                   Gateway Stations
