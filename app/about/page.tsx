@@ -78,7 +78,7 @@ export default function AboutPage() {
               return (
                 <div
                   key={std.step}
-                  className="p-5 sm:p-7 border-t-2 border-t-transparent hover:border-t-primary/70 hover:bg-muted/30 transition-all duration-200"
+                  className="p-5 sm:p-7 border-t-2 border-t-transparent hover:border-t-primary/70 hover:bg-muted/30 transition-colors duration-200"
                 >
                   <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-primary">
                     <span className="flex items-center gap-2">
