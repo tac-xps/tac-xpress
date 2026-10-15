@@ -23,100 +23,48 @@ import { getControlCenterSnapshot } from "@/lib/control-center"
 import { ControlCenterActions, ControlCenterPanels } from "@/components/operations/control-center"
 import { Skeleton } from "@/components/ui/skeleton"
 
-// ─── Async RSC sections (each owns its own DB queries) ───────────────────────
+import { unstable_cache } from "next/cache"
 
-async function OverviewSection() {
-  let overview: Awaited<ReturnType<typeof getDashboardOverview>> | null = null
-  try {
-    overview = await getDashboardOverview()
-  } catch (error) {
-    console.error("[OverviewSection] Failed to load dashboard metrics:", error)
-    return null
-  }
+// ─── Cached query fetchers (30s revalidation, instant subsequent loads) ───────
 
-  if (!overview) return null
-
-  return (
-    <>
-      <OverviewMetrics stats={overview.stats} />
-      <div className="grid min-w-0 gap-6 xl:grid-cols-[1.6fr_1fr]">
-        <VolumeChart data={overview.salesData} />
-        <Suspense fallback={<Skeleton className="h-64 rounded-lg" />}>
-          <WorkQueueSection />
-        </Suspense>
-      </div>
-      <ChartBarInteractive data={overview.salesData} />
-      <Suspense fallback={<Skeleton className="h-72 rounded-lg" />}>
-        <HubActivitySection hubsData={overview.hubsData} />
-      </Suspense>
-    </>
-  )
-}
-
-async function HubActivitySection({
-  hubsData,
-}: {
-  hubsData: Awaited<ReturnType<typeof getDashboardOverview>>["hubsData"]
-}) {
-  return <HubActivity hubs={hubsData} />
-}
-
-async function WorkQueueSection() {
-  let counts = { pending: 0, drafts: 0, overdue: 0, support: 0 }
-  try {
+const getWorkQueueCounts = unstable_cache(
+  async () => {
     const [pending, draftCount, overdue, support] = await Promise.all([
       db
         .select({ count: sql<number>`count(*) filter (where ${shipments.status} = 'pending')` })
         .from(shipments)
         .where(isNull(shipments.deletedAt))
-        .then((r) => r[0]!.count),
+        .then((r) => r[0]?.count ?? 0),
       db
         .select({ count: sql<number>`count(*) filter (where ${manifests.status} = 'draft')` })
         .from(manifests)
-        .then((r) => r[0]!.count),
+        .then((r) => r[0]?.count ?? 0),
       db
         .select({
           count: sql<number>`count(*) filter (where ${invoices.status} = 'unpaid' and ${invoices.dueDate} < now())`,
         })
         .from(invoices)
-        .then((r) => r[0]!.count),
+        .then((r) => r[0]?.count ?? 0),
       db
         .select({
           count: sql<number>`count(*) filter (where ${tickets.status} in ('open', 'in_progress'))`,
         })
         .from(tickets)
-        .then((r) => r[0]!.count),
+        .then((r) => r[0]?.count ?? 0),
     ])
-    counts = {
+    return {
       pending: Number(pending),
       drafts: Number(draftCount),
       overdue: Number(overdue),
       support: Number(support),
     }
-  } catch (error) {
-    console.error("[WorkQueueSection] Failed to load work queue:", error)
-  }
+  },
+  ["dashboard-work-queue-counts"],
+  { revalidate: 30, tags: ["dashboard-metrics", "work-queue"] }
+)
 
-  return <WorkQueue counts={counts} />
-}
-
-async function OpenManifestsSection() {
-  let drafts: Array<{
-    id: string
-    referenceId: string
-    status: "draft" | "finalized"
-    createdAt?: Date
-    driverId?: string | null
-    vehicleId?: string | null
-    originHubId?: string | null
-    destinationHubId?: string | null
-    driver: { id?: string; name: string | null; phone?: string | null } | null
-    vehicle: { registrationNumber: string | null } | null
-    originHub: { name: string } | null
-    destinationHub: { name: string } | null
-    items?: any[]
-  }> = []
-  try {
+const getOpenDraftManifests = unstable_cache(
+  async () => {
     // Two lean queries instead of one massive lateral join that times out.
     // Query 1: manifests with only the columns the table + dialog header need.
     const rawManifests = await db.query.manifests.findMany({
@@ -180,10 +128,84 @@ async function OpenManifestsSection() {
       itemsByManifest.set(item.manifestId, list)
     }
 
-    drafts = rawManifests.map((m) => ({
+    return rawManifests.map((m) => ({
       ...m,
       items: itemsByManifest.get(m.id) ?? [],
     }))
+  },
+  ["dashboard-open-draft-manifests"],
+  { revalidate: 30, tags: ["dashboard-metrics", "manifests-drafts"] }
+)
+
+// ─── Async RSC sections (each streams independently) ──────────────────────────
+
+async function OverviewSection({
+  workQueueSlot,
+}: {
+  workQueueSlot: React.ReactNode
+}) {
+  let overview: Awaited<ReturnType<typeof getDashboardOverview>> | null = null
+  try {
+    overview = await getDashboardOverview()
+  } catch (error) {
+    console.error("[OverviewSection] Failed to load dashboard metrics:", error)
+    return null
+  }
+
+  if (!overview) return null
+
+  return (
+    <>
+      <OverviewMetrics stats={overview.stats} />
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[1.6fr_1fr]">
+        <VolumeChart data={overview.salesData} />
+        {workQueueSlot}
+      </div>
+      <ChartBarInteractive data={overview.salesData} />
+      <Suspense fallback={<Skeleton className="h-72 rounded-lg" />}>
+        <HubActivitySection hubsData={overview.hubsData} />
+      </Suspense>
+    </>
+  )
+}
+
+async function HubActivitySection({
+  hubsData,
+}: {
+  hubsData: Awaited<ReturnType<typeof getDashboardOverview>>["hubsData"]
+}) {
+  return <HubActivity hubs={hubsData} />
+}
+
+async function WorkQueueSection() {
+  let counts = { pending: 0, drafts: 0, overdue: 0, support: 0 }
+  try {
+    counts = await getWorkQueueCounts()
+  } catch (error) {
+    console.error("[WorkQueueSection] Failed to load work queue:", error)
+  }
+
+  return <WorkQueue counts={counts} />
+}
+
+async function OpenManifestsSection() {
+  let drafts: Array<{
+    id: string
+    referenceId: string
+    status: "draft" | "finalized"
+    createdAt?: Date
+    driverId?: string | null
+    vehicleId?: string | null
+    originHubId?: string | null
+    destinationHubId?: string | null
+    driver: { id?: string; name: string | null; phone?: string | null } | null
+    vehicle: { registrationNumber: string | null } | null
+    originHub: { name: string } | null
+    destinationHub: { name: string } | null
+    items?: any[]
+  }> = []
+  try {
+    drafts = await getOpenDraftManifests()
   } catch (error) {
     console.error("[OpenManifestsSection] Failed to load manifests:", error)
     drafts = []
@@ -276,7 +298,13 @@ export default async function DashboardPage() {
 
       {/* ── Overview metrics + volume chart + work queue (cached 30s) ── */}
       <Suspense fallback={<OverviewSkeleton />}>
-        <OverviewSection />
+        <OverviewSection
+          workQueueSlot={
+            <Suspense fallback={<Skeleton className="h-64 rounded-lg" />}>
+              <WorkQueueSection />
+            </Suspense>
+          }
+        />
       </Suspense>
 
       {/* ── Control center (LEFT JOIN optimised, streams independently) ── */}

@@ -35,12 +35,11 @@ const isLocalhost =
 type DbInstance = PostgresJsDatabase<typeof schema>
 
 declare global {
-  // eslint-disable-next-line no-var
   var _postgresClient: postgres.Sql | undefined
 }
 
-// Serverless runtimes (Vercel, AWS Lambda) create independent instances.
-// Restrict connections per lambda instance to 1 to prevent exceeding pool_size limits.
+// Serverless runtimes (Vercel, AWS Lambda) connect via Supabase PgBouncer (transaction mode, port 6543).
+// Allow up to 6 concurrent sockets per lambda instance so Promise.all can execute in parallel.
 const isServerless = Boolean(
   process.env.VERCEL ||
     process.env.AWS_LAMBDA_FUNCTION_NAME ||
@@ -77,7 +76,7 @@ function createDb(): DbInstance {
     postgres(resolvedConnectionString, {
       prepare: false,
       ssl: isLocalhost ? false : "require",
-      max: isServerless ? 1 : 10,
+      max: isServerless ? 6 : 10,
       // Bound every wait so a stalled database can never hang a request forever.
       // Without these, a connect or query that never returns leaves server
       // components awaiting indefinitely and the page never finishes rendering.
