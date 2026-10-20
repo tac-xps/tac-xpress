@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { getInvoiceDetails } from "../actions"
 import { useSendInvoiceWhatsApp } from "../use-send-invoice-whatsapp"
+import { captureWizardError } from "./capture-wizard-error"
 
 export function useInvoiceSuccessDialog({
   shipmentId,
@@ -31,8 +32,12 @@ export function useInvoiceSuccessDialog({
     if (!open) return
     let current = true
     getInvoiceDetails({ shipmentId }).then(res => {
+      if (!res?.data) {
+        captureWizardError("invoice_details", res?.serverError || "no invoice returned", { shipment_id: shipmentId })
+      }
       if (current) setResult({ id: shipmentId, value: res?.data ?? null })
-    }).catch(() => {
+    }).catch((err) => {
+      captureWizardError("invoice_details", err, { shipment_id: shipmentId })
       if (current) { setResult({ id: shipmentId, value: null }); toast.error("Invoice details could not be loaded.") }
     })
     return () => { current = false }
