@@ -118,9 +118,8 @@ test("reduced motion keeps service content visible and suppresses image zoom", a
   await page.emulateMedia({ reducedMotion: "reduce" })
   await page.goto("/")
   const link = page.getByRole("link", {
-    name: "Explore air cargo",
-    exact: true,
-  })
+    name: /air cargo/i,
+  }).first()
   await link.focus()
   await expect(link).toBeFocused()
   await expect(

@@ -279,6 +279,7 @@ export const getShipmentDetailsAction = authActionClient
             orderBy: (events, { desc }) => [desc(events.createdAt)],
           },
           manifestItems: {
+            where: (items, { eq }) => eq(items.isActive, true),
             with: {
               manifest: true,
             },

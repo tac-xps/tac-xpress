@@ -86,10 +86,10 @@ export function LivingCargoLine({
           {/* Active Quiet Indigo Progress Track */}
           <motion.div
             style={{
-              scaleX: shouldReduceMotion ? 1 : smoothProgress,
+              scaleX: smoothProgress,
               transformOrigin: "left",
             }}
-            className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-primary transition-opacity"
+            className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-primary transition-opacity motion-reduce:transform-none"
           />
 
           {/* Progress Waypoint Steps */}
@@ -157,10 +157,10 @@ export function LivingCargoLine({
     >
       <motion.div
         style={{
-          scaleX: shouldReduceMotion ? 1 : smoothProgress,
+          scaleX: smoothProgress,
           transformOrigin: "left",
         }}
-        className="h-full w-full bg-primary"
+        className="h-full w-full bg-primary motion-reduce:transform-none"
       />
     </div>
   )

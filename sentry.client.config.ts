@@ -9,7 +9,7 @@ const enableReplay = process.env.NEXT_PUBLIC_SENTRY_REPLAY_ENABLED === "true"
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
-  // Tracing: sample 20% in production, disabled in dev unless SENTRY_DEV_ENABLE is set
+  // Tracing: sample 20% in production, disabled in dev unless NEXT_PUBLIC_SENTRY_DEV_ENABLE is set
   tracesSampleRate:
     process.env.NODE_ENV === "production"
       ? 0.2

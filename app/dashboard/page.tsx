@@ -102,7 +102,8 @@ const getOpenDraftManifests = unstable_cache(
     const rawItems =
       manifestIds.length > 0
         ? await db.query.manifestItems.findMany({
-            where: (table, { inArray }) => inArray(table.manifestId, manifestIds),
+            where: (table, { and, inArray, eq }) =>
+              and(inArray(table.manifestId, manifestIds), eq(table.isActive, true)),
             columns: { id: true, manifestId: true },
             with: {
               shipment: {

@@ -236,6 +236,7 @@ export async function verifyAwbForAuditAction(awbNumber: string): Promise<{
       where: and(isNull(shipments.deletedAt), eq(shipments.awbNumber, trimmed)),
       with: {
         manifestItems: {
+          where: (items, { eq }) => eq(items.isActive, true),
           with: {
             manifest: {
               with: {

@@ -15,22 +15,6 @@ type AuthenticatedRequest = NextRequest & {
   auth: Session | null
 }
 
-const mockDecision = {
-  id: "arcjet-dev-bypass",
-  isDenied: () => false,
-  isErrored: () => false,
-  isAllowed: () => true,
-  reason: {
-    isRateLimit: () => false,
-    message: "",
-  },
-  results: [],
-}
-
-export const aj = {
-  protect: async () => mockDecision,
-}
-
 let cachedLimiters: { aj: any; actionLimiter: any } | null = null
 
 async function getProtectionLimiters() {

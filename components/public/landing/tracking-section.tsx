@@ -207,26 +207,25 @@ function MilestoneProgressRail({
         {/* Filled bar */}
         <motion.div
           className="relative h-full bg-primary"
-          initial={shouldReduceMotion ? { width: `${percentage}%` } : { width: "0%" }}
+          initial={false}
           animate={{ width: `${percentage}%` }}
+          style={{ width: `${percentage}%` }}
           transition={{
             duration: motionDurations.editorial,
             ease: motionEasings.editorial,
           }}
         >
           {/* Ambient looping shimmer highlight across the filled rail */}
-          {!shouldReduceMotion && (
-            <motion.div
-              className="absolute inset-y-0 w-24 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-              initial={{ x: "-100%" }}
-              animate={{ x: ["-100%", "400%"] }}
-              transition={{
-                duration: 2.4,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-            />
-          )}
+          <motion.div
+            className="absolute inset-y-0 w-24 bg-gradient-to-r from-transparent via-white/40 to-transparent motion-reduce:hidden"
+            initial={{ x: "-100%" }}
+            animate={{ x: ["-100%", "400%"] }}
+            transition={{
+              duration: 2.4,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
         </motion.div>
       </div>
     </div>

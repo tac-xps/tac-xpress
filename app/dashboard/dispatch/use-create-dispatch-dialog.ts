@@ -9,7 +9,12 @@ import {
   type CreateDispatchRunValues,
 } from "./validations"
 
-export function useCreateDispatchDialog() {
+export interface UseCreateDispatchDialogOptions {
+  defaultRunType?: "pickup" | "delivery"
+  initialShipmentIds?: string[]
+}
+
+export function useCreateDispatchDialog(options?: UseCreateDispatchDialogOptions) {
   const [open, setOpen] = useState(false)
 
   const form = useForm<CreateDispatchRunValues>({
@@ -17,8 +22,8 @@ export function useCreateDispatchDialog() {
     defaultValues: {
       driverId: "",
       vehicleId: "",
-      runType: "pickup",
-      shipmentIds: [],
+      runType: options?.defaultRunType ?? "pickup",
+      shipmentIds: options?.initialShipmentIds ?? [],
     },
   })
 

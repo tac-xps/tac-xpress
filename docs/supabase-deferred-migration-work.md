@@ -5,12 +5,12 @@ This file tracks local readiness. No hosted Supabase operation was performed. Us
 ## Current status
 
 - Local schema and cargo actions now model pickup, line-haul, and delivery receipts.
-- The migration draft is [manifest-handoff-migration.sql](supabase-drafts/manifest-handoff-migration.sql). It is outside `supabase/migrations/` and must not be applied until preflight succeeds.
+- The deployable migration is committed at `supabase/migrations/20261022000000_manifest_leg_handoffs.sql` and `drizzle/0005_manifest_leg_handoffs.sql`.
 - Hosted schema, RLS, advisor results, and migration ledger remain unverified. Earlier Supabase CLI inspection failed because this checkout is not linked. The configured project's connected account was not available through the Supabase tools.
 - Two local files share migration prefix `0018`: `0018_whatsapp_ticket_contracts.sql` and `0018_secure_public_tracking.sql`. The read-only audit script reports this conflict. Do not rename either file until the hosted ledger is inspected.
-- The Drizzle journal lists `0000` through `0002`, while `drizzle/0003` and `drizzle/0004` SQL files are present without journal entries. Supabase and Drizzle ownership is unresolved.
+- The Drizzle journal now tracks entries `0000` through `0005` in `drizzle/meta/_journal.json`.
 - The historical cargo `shipment_legs` scaffold is not used by the new handoff workflow. Do not infer completion from its status or from free-text tracking notes.
-- Historical repeated manifest assignments can block the draft's partial unique index. The migration raises an exception instead of choosing an active row.
+- Historical repeated manifest assignments can block the migration's partial unique index. The migration raises an exception instead of choosing an active row.
 
 ## Prepared local checks
 

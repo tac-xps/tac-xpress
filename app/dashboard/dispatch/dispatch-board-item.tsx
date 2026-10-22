@@ -54,15 +54,36 @@ export function DispatchBoardItem({
             </p>
           ) : (
             <CreateDispatchDialog
+              defaultRunType="pickup"
+              buttonLabel="Create Pickup Run"
+              buttonSize="sm"
               pendingShipments={pendingShipments.filter(
                 (shipment) => shipment.awbNumber === item.id
               )}
-              deliveryShipments={deliveryShipments.filter(
-                (shipment) => shipment.awbNumber === item.id
-              )}
+              deliveryShipments={[]}
             />
           )}
         </div>
+      )}
+
+      {item.column === "in_transit" && (
+        (() => {
+          const matchingDelivery = deliveryShipments.filter(
+            (shipment) => shipment.awbNumber === item.id
+          )
+          if (matchingDelivery.length === 0) return null
+          return (
+            <div className="mt-4 border-t pt-3">
+              <CreateDispatchDialog
+                defaultRunType="delivery"
+                buttonLabel="Create Delivery Run"
+                buttonSize="sm"
+                pendingShipments={[]}
+                deliveryShipments={matchingDelivery}
+              />
+            </div>
+          )
+        })()
       )}
 
       {detailOpen && (
