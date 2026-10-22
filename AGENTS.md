@@ -8,50 +8,62 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# Tac-Xpress Agent IDE Rules
+# Tac-Xpress Agent Operating Standard
 
-This file provides the core guidelines and context for AI agents working in this repository. 
+This document defines operational rules, commands, and non-standard repository constraints for coding agents.
 
-## 1. Core Stack
-- **Framework:** Next.js (App Router, Server Components default)
-- **Language:** TypeScript (strict mode)
-- **Styling:** Tailwind CSS v4, Shadcn UI
-- **Database:** Supabase & Drizzle ORM
-- **Error Tracking:** Sentry SDK
+## 1. Setup and Build Commands
+- Install dependencies: `pnpm install`
+- Start development server: `pnpm dev`
+- Run typecheck: `pnpm typecheck`
+- Run linter: `pnpm lint`
+- Run CSS stylelint: `pnpm stylelint`
+- Run design token audit: `pnpm audit:tokens`
+- Run production build: `pnpm build`
 
-## 2. Next.js App Router Conventions
-- Prefer React Server Components (RSC) by default.
-- Only add `"use client"` at the top of a file when hooks (`useState`, `useEffect`) or browser APIs are strictly required.
-- Do NOT use `pages/` directory routing; stick to `app/`.
-- Do NOT use `middleware.ts`. Next.js 16 requires the `proxy.ts` file convention. All edge interception logic must go in `proxy.ts` exporting a `proxy` function.
+## 2. Testing Commands
+- Run full unit test suite: `pnpm test:unit`
+- Run single test file: `pnpm vitest run <file-path>`
+- Run single test by name: `pnpm vitest run -t "<test-name>"`
+- Run E2E test suite: `pnpm test:e2e`
 
-## 3. UI and Component Guidelines
-- We use **Shadcn UI**. Do not build complex primitive components from scratch if a Shadcn component exists. Use `npx shadcn@latest add [component]` or the agent shadcn skills.
-- The sidebar layout should always be sticky and full viewport height (`sticky top-0 h-svh`).
-- Tailwind CSS v4 is used. Reference `.agents/skills/tailwind-4-docs` for breaking changes and new variants.
+## 3. Definition of Done
+A task is complete only when all criteria pass:
+1. `pnpm typecheck` passes with zero errors.
+2. `pnpm test:unit` passes with all tests green.
+3. `pnpm lint` and `pnpm stylelint` report zero errors.
+4. `pnpm audit:tokens` reports zero design token drift.
+5. `pnpm build` compiles all static and dynamic routes.
+6. The Delivery Gate PASS/FAIL report is completed.
 
-## 4. Workflows & State
-- **Sentry Integration:** All critical errors must be caught and logged via Sentry. Sentry source maps are handled by the Next.js Webpack plugin natively. 
-- Always ensure `.env.local` variables are present before initiating background test processes.
+## 4. Boundaries (Always Do / Never Do)
+### Never Do
+- Never use `npm` or `yarn`. Use `pnpm` exclusively.
+- Never create `middleware.ts`. Next.js 16 requires edge logic in `proxy.ts`.
+- Never use the `pages/` directory. Use App Router `app/` exclusively.
+- Never write em dashes in UI text, placeholders, or error messages.
+- Never run destructive database commands (`db:push`, `db:reset`, raw SQL) on remote databases.
+- Never commit agent skill files (`.agents/`, `antislop.md`, `*.skill`).
 
-## 5. Development Workflow (For Agents)
-- Check `.agents/skills` for existing capabilities (e.g., Sentry setup, Gstack QA) before writing generic bash scripts.
-- Use `pnpm` exclusively. Avoid `npm` or `yarn`.
-- When doing major restructuring, always generate an `implementation_plan.md` artifact and request user approval before deleting source files.
+### Always Do
+- Prefer React Server Components by default. Add `"use client"` only when hooks or browser APIs are needed.
+- Use Shadcn UI primitives from `components/ui` or ReUI components from `components/reui`.
+- Ensure sidebar layout remains sticky with `sticky top-0 h-svh`.
+- Adhere to pure freight STEM functions in `lib/stem/` for dimensional weight, fuel surcharges, and GST calculations.
+- Follow ASD-STE100 guidelines: maximum 20 words per procedural instruction. Use active voice and imperative mood.
+- Catch critical operational errors with Sentry SDK.
 
-## 6. Architecture & Subsystems
-- **System Map:** See `docs/ARCHITECTURE.md` for a comprehensive breakdown of the WhatsApp Meta API integration, Supabase Auth (Magic Links), Resend Email notification pipeline, and the AI Triage + Auto-Responder engines. Always read this file before modifying support, routing, or messaging logic.
+## 5. PR and Commit Conventions
+- Header format: `<type>(<scope>): <subject>` (maximum 50 characters, lowercase, no ending period).
+- Types: `feat`, `fix`, `perf`, `refactor`, `docs`, `style`, `test`, `chore`.
+- Approved scopes: `invoices`, `tracking`, `labels`, `pricing`, `dispatch`, `auth`, `jev`, `db`, `ui`.
+- Commit body: bullet points with maximum 20 words per sentence explaining cause and effect.
 
-## 7. Global Frontend Architecture Rules
-- **Senior Frontend Architecture:** Senior frontend architecture standards MUST be treated as an ALWAYS-ON core protocol for any frontend, UI, or planning tasks.
-- Always apply the "Purpose, Performance, Polish" filters, strict component/hook decomposition rules, and dual-mode execution (STANDARD vs ULTRATHINK).
-- Never ignore these strict constraints during execution or planning phases.
+## 6. Escalation Protocol
+- When blocked by missing environment variables, verify `.env.local` against `.env.example`.
+- When database migrations conflict, inspect the hosted migration ledger before renaming migration files.
+- When architecture is ambiguous, consult `docs/ARCHITECTURE.md` before modifying service routing or queue logic.
 
-## 8. Technical Communication & Precision (ASD-STE100 & STEM Rigor)
-- **ASD-STE100 Protocol:** The ASD-STE100 standard is an ALWAYS-ON core standard for all planning artifacts, implementation plans, code review summaries, commit messages, and PR descriptions.
-- Keep procedural instructions to a maximum of 20 words per sentence. Use imperative mood and active voice.
-- Eliminate all conversational fluff, pleasantries, apologies, and AI meta-commentary.
-- **Logistics STEM Rigor:** All calculations involving cargo dimensional weight, origin-destination corridor pricing, fuel surcharges, 18% GST tax computation, and SLA transit metrics MUST adhere to the logistics STEM engine specifications and pure functions in `lib/stem/` and `lib/documents/invoice/engine/`.
 
 
 <!-- BEGIN:reui-agent-rules -->
