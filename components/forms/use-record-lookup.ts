@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react"
+import * as Sentry from "@sentry/nextjs"
+import posthog from "posthog-js"
 import type { ZodType } from "zod"
+class RecordLookupError extends Error {
+  name = "RecordLookupError"
+  constructor(endpoint: string, readonly status: number) {
+    super(`Record lookup ${endpoint} returned ${status}`)
+  }
+}
 export function useRecordLookup<T>(
   endpoint: string,
   schema: ZodType<T>,
@@ -23,11 +31,20 @@ export function useRecordLookup<T>(
           signal: controller.signal,
           cache: "no-store",
         })
-        if (!response.ok) throw new Error()
+        if (!response.ok) throw new RecordLookupError(endpoint, response.status)
         const parsed = schema.array().parse(await response.json())
         if (!controller.signal.aborted) setRecords(parsed)
-      } catch {
+      } catch (err) {
         if (!controller.signal.aborted) {
+          const status =
+            err instanceof RecordLookupError ? err.status : undefined
+          if (status !== 401 && status !== 403) {
+            Sentry.captureException(err, { tags: { record_lookup: endpoint } })
+            posthog.captureException(err, {
+              record_lookup_endpoint: endpoint,
+              record_lookup_status: status,
+            })
+          }
           setRecords([])
           setError(
             "Unable to load records. Check your connection or sign in again."

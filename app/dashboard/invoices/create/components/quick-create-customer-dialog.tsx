@@ -16,6 +16,8 @@ import {
 import { toast } from "sonner"
 import { createCustomerAction } from "@/app/dashboard/customers/actions"
 import { lookupPincodeAction } from "../../actions"
+import { firstValidationMessage } from "../../send-invoice-result"
+import { captureWizardError } from "../capture-wizard-error"
 import type { UseFormReturn } from "react-hook-form"
 
 interface QuickCreateCustomerDialogProps {
@@ -50,8 +52,8 @@ export function QuickCreateCustomerDialog({
             setNewState(res.data.state || "")
             toast.success(`Resolved: ${res.data.city}, ${res.data.state}`)
           }
-        } catch {
-          // ignore
+        } catch (err) {
+          captureWizardError("pincode_lookup", err)
         }
       }
     }
@@ -115,10 +117,13 @@ export function QuickCreateCustomerDialog({
       } else {
         const msg =
           (res?.data?.error ?? res?.serverError) ||
+          firstValidationMessage(res?.validationErrors) ||
           "Failed to create customer."
+        captureWizardError("customer_create", msg, { customer_role: role })
         setError(typeof msg === "string" ? msg : "Failed to create customer.")
       }
     } catch (err: any) {
+      captureWizardError("customer_create", err, { customer_role: role })
       setError(err.message || "An unexpected error occurred.")
     } finally {
       setIsCreating(false)

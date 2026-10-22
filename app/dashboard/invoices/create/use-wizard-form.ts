@@ -5,9 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import * as Sentry from "@sentry/nextjs"
 import { useAction } from "next-safe-action/hooks"
-import { usePostHog } from "posthog-js/react"
 import { chargedWeight } from "@/lib/shipment-weight"
 
 import {
@@ -16,6 +14,7 @@ import {
 } from "@/lib/schemas/invoice-wizard"
 import { createWizardInvoiceAction, lookupPincodeAction } from "../actions"
 import { resolveWizardSubmitError } from "./wizard-submit-error"
+import { captureWizardError } from "./capture-wizard-error"
 
 export const STEPS = [
   { id: 1, name: "Basics", description: "Consignment route" },
@@ -31,7 +30,6 @@ export function useWizardForm() {
   const [direction, setDirection] = useState(1)
   const [canSubmit, setCanSubmit] = useState(false)
   const router = useRouter()
-  const posthog = usePostHog()
   const [createdResult, setCreatedResult] = useState<{
     invoiceId: string
     shipmentId: string
@@ -47,18 +45,14 @@ export function useWizardForm() {
         })
       } else {
         const actionError = data && "error" in data ? data.error : undefined
+        captureWizardError("submit_rejected", actionError)
         toast.error(actionError || "Failed to create invoice")
       }
     },
     onError: ({ error }) => {
       const { cause, message, invalidFields } = resolveWizardSubmitError(error)
       if (cause !== "auth") {
-        const exception =
-          error.thrownError ?? new Error(`Invoice wizard submit failed: ${cause}`)
-        Sentry.captureException(exception, {
-          tags: { invoice_submit_error: cause },
-        })
-        posthog?.captureException(exception, {
+        captureWizardError("submit", error.thrownError ?? cause, {
           invoice_submit_error_cause: cause,
           invoice_submit_invalid_fields: invalidFields,
         })
@@ -165,10 +159,13 @@ export function useWizardForm() {
         form.setValue("consignorPinCode", originPinQuery)
         toast.success(`Resolved Origin: ${res.data.city}, ${res.data.state}`)
       } else {
+        if (res?.serverError) {
+          captureWizardError("pincode_lookup", res.serverError)
+        }
         toast.error(res?.data?.error || "Pincode details not found")
       }
     } catch (err) {
-      Sentry.captureException(err)
+      captureWizardError("pincode_lookup", err)
       toast.error("Failed to lookup pincode")
     } finally {
       setIsOriginPinLoading(false)
@@ -188,10 +185,13 @@ export function useWizardForm() {
           `Resolved Destination: ${res.data.city}, ${res.data.state}`
         )
       } else {
+        if (res?.serverError) {
+          captureWizardError("pincode_lookup", res.serverError)
+        }
         toast.error(res?.data?.error || "Pincode details not found")
       }
     } catch (err) {
-      Sentry.captureException(err)
+      captureWizardError("pincode_lookup", err)
       toast.error("Failed to lookup pincode")
     } finally {
       setIsDestinationPinLoading(false)
