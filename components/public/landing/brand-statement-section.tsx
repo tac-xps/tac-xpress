@@ -75,7 +75,7 @@ export function BrandStatementSection() {
             <LivingCargoLine progress={lineProgress} variant="rule" />
           </div>
 
-          {/* Editorial Headline — unclipped typography with reliable reveal */}
+          {/* Editorial Headline: unclipped typography with reliable reveal */}
           <h2
             id="brand-statement-heading"
             className="text-display text-foreground text-center"
@@ -122,7 +122,7 @@ export function BrandStatementSection() {
           </motion.p>
         </div>
 
-        {/* Brand Pillar Marquee — scrolling operational values */}
+        {/* Brand Pillar Marquee: scrolling operational values */}
         <div className="w-full max-w-full overflow-hidden mt-9 mb-3 border-y border-border/80 bg-background/50" aria-hidden="true">
           <Marquee
             pauseOnHover

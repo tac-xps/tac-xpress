@@ -26,7 +26,7 @@ import { motion, useReducedMotion } from "motion/react"
  * - Zero decorative noise, zero HUD clutter, full dark/light mode fidelity.
  */
 
-// Confident arrival easing — fast in, decelerate to rest
+// Confident arrival easing: fast in, decelerate to rest
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const
 
 // Shared motion variants for hero entrance sequence

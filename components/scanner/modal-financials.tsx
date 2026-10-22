@@ -100,7 +100,7 @@ export function ModalFinancials({ shipmentId, invoice }: ModalFinancialsProps) {
                 Balance Due
               </span>
               <p className="font-mono text-lg font-bold truncate">
-                {balanceDue != null ? formatCurrency(balanceDue) : "—"}
+                {balanceDue != null ? formatCurrency(balanceDue) : "-"}
               </p>
             </div>
           </div>

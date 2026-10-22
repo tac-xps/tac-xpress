@@ -67,7 +67,7 @@ const STEPS = [
 ]
 
 /**
- * Process section — The signature motion centerpiece of TAC-XPRESS.
+ * Process section: The signature motion centerpiece of TAC-XPRESS.
  * Showcases the 4-stage freight journey driven by the Living Cargo Line
  * with calibrated desktop scroll progression and compact mobile flow.
  */

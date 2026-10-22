@@ -34,7 +34,7 @@ const SERVICES = [
     num: "01",
     title: "Air cargo",
     href: "/services/air-cargo",
-    action: "Explore air cargo",
+    action: "View air cargo specifications",
     tagline: "24–48h Gateway Linehaul",
     lead: "Scheduled air freight. Reliable connections.",
     color: "text-primary",
@@ -53,7 +53,7 @@ const SERVICES = [
     num: "02",
     title: "Surface cargo",
     href: "/services/surface-cargo",
-    action: "Explore surface cargo",
+    action: "View surface cargo specifications",
     tagline: "National Arterial Expressways",
     lead: "Dedicated corridors for heavy freight.",
     color: "text-info",
@@ -132,7 +132,7 @@ export function ServicesSection() {
       className="py-12 sm:py-20 lg:py-24 bg-muted/15"
     >
       <div className="flex flex-col space-y-10 lg:space-y-14">
-        {/* Section Header — S1: whileInView entrance */}
+        {/* Section Header: S1 entrance */}
         <motion.div
           initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}

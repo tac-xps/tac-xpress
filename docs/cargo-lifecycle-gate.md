@@ -1,17 +1,9 @@
-# Cargo leg completion gate
+# Cargo leg lifecycle
 
-The current database represents a manifest or dispatch run with only `draft` and `finalized` status. Finalization records departure. It does not establish arrival, pickup handover, leg completion, or the release of a shipment for another load. A shipment's `in-transit` or `delivered` status and free-text tracking notes are not reliable evidence that a particular manifest leg has ended.
+Local code now models pickup, line-haul, and delivery assignments. Departure changes pending cargo to in-transit. A recorded receipt releases one AWB assignment. Only a delivery receipt changes the shipment to delivered.
 
-Until an explicit leg lifecycle is implemented, allocation deliberately accepts only non-deleted, pending shipments without any manifest-item assignment. Allocators lock shipment rows before inspecting assignments; draft-load removal releases its assignments by cascade. Finalized movement remains immutable. Pickup-run completion cannot mark cargo delivered. Staff can record shipment tracking events, but those events do not release load assignments.
+`manifest_items.is_active` keeps assignment history while allowing one active load per shipment. `manifest_item_handoffs` stores receipts and exceptions with actor, location, timestamp, and idempotency key. An exception keeps the assignment active. Receipt, assignment release, shipment status, tracking, and audit writes share one transaction.
 
-Consequently, one AWB cannot currently progress through pickup, line-haul and delivery loads. This is an open launch gate for multi-leg cargo operations, not a completed workflow.
+The migration remains a draft. The repository's Supabase history has duplicate `0018` prefixes, and the linked project migration ledger could not be inspected. The draft migration aborts if historical assignments conflict. Do not move it into `supabase/migrations/` or apply it until the migration ledger and active assignment report are reconciled. See [deferred Supabase migration work](supabase-deferred-migration-work.md), the [migration draft](supabase-drafts/manifest-handoff-migration.sql), and the [preflight checklist](supabase-drafts/shipment-leg-migration-checklist.md).
 
-The required migration and implementation must:
-
-- Represent the leg kind explicitly and add an authenticated completion/handover record with time, actor, receiving location or party, and manifest identity. Distinguish departure from completion; preserve existing finalized records as uncompleted until actual handover is recorded.
-- Preserve historical `manifest_items`, whose uniqueness is currently only `(manifest_id, shipment_id)`. Add an explicit active-assignment representation with database uniqueness on the shipment, or an equivalent database-enforced constraint, so one shipment cannot occupy two open legs.
-- Complete a pickup or line-haul leg and release its active assignments in one transaction, retaining shipment `in-transit` status. Permit subsequent eligible in-transit legs only after that recorded handover. Only a delivery outcome may mark a shipment delivered.
-- Acquire consistent manifest/shipment locks for allocation, departure, handover, cancellation and removal. Insert the audit record in the same transaction as every transition.
-- Verify concurrent allocation and handover, partial delivery and exceptions, cancellation/reassignment, and recovery after failed audit or transition writes before enabling multi-leg selectors.
-
-No hosted migration or schema change was performed for this gate. Local transaction tests verify atomic operational auditing, protected removal, and chargeable-weight updates; they do not prove a hosted schema baseline or multi-session lock behavior.
+The flow tracks handoffs per AWB. It does not split pieces within one AWB. Legacy in-transit shipments without a recorded receipt remain unavailable for another leg until staff reconciles their history. Hosted schema state and concurrent multi-session behavior remain unverified.

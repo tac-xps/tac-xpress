@@ -1,5 +1,5 @@
 /**
- * Jev client — TypeSafe System One model singleton.
+ * Jev client: TypeSafe System One model singleton.
  *
  * `jevClient` is `null` when `TYPESAFE_API_KEY` is not set. All callers must
  * check `isJevEnabled` (or null-guard `jevClient`) before using it.

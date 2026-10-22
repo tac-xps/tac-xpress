@@ -104,7 +104,7 @@ export function DeliveryHistory({
                         View invoice
                       </Link>
                     ) : (
-                      "—"
+                      "-"
                     )}
                   </TableCell>
                   <TableCell className="text-right">

@@ -1,7 +1,27 @@
 import arcjet, { createRemoteClient, slidingWindow } from "@arcjet/next"
 import * as Sentry from "@sentry/nextjs"
 
+const mockDecision = {
+  id: "arcjet-dev-bypass",
+  isDenied: () => false,
+  isErrored: () => false,
+  isAllowed: () => true,
+  reason: {
+    isRateLimit: () => false,
+    message: "",
+  },
+  results: [],
+}
+
+const mockLimiter = {
+  protect: async () => mockDecision,
+}
+
 function createLimiter(max: number, interval: `${number}m` | `${number}h` | `${number}s` = "1m") {
+  if (process.env.NODE_ENV === "development" && process.env.ARCJET_DEV_ENABLE !== "true") {
+    return mockLimiter as unknown as ReturnType<typeof arcjet>
+  }
+
   return arcjet({
     key: process.env.ARCJET_KEY || "ajkey_placeholder",
     client:
@@ -12,14 +32,18 @@ function createLimiter(max: number, interval: `${number}m` | `${number}h` | `${n
   })
 }
 
-// Public invoice PDF — Chromium render, keep strict (20/m per IP)
+// Public invoice PDF: Chromium render, keep strict (20/m per IP)
 export const invoicePdfLimiter = createLimiter(20, "1m")
-// Fleet telemetry POST — per-device updates
+// Fleet telemetry POST: per-device updates
 export const fleetTelemetryLimiter = createLimiter(60, "1m")
-// WhatsApp / Carrier webhooks — HMAC verified but still rate limited (sized for provider bursts)
+// WhatsApp / Carrier webhooks: HMAC verified but still rate limited (sized for provider bursts)
 export const webhookLimiter = createLimiter(600, "1m")
 
 export function isArcjetBypassed(): boolean {
+  if (process.env.NODE_ENV === "development" && process.env.ARCJET_DEV_ENABLE !== "true") {
+    return true
+  }
+
   return (
     (process.env.NODE_ENV === "development" ||
       process.env.NODE_ENV === "test" ||

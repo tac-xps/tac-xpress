@@ -46,12 +46,21 @@ export function DispatchActions({
   )
 
   const handleDelete = async () => {
-    const result = await executeDelete({ id: dispatchRun.id }); if (!result?.data?.success) throw new Error("Unable to remove dispatch")
+    const result = await executeDelete({ id: dispatchRun.id })
+    if (!result?.data?.success) throw new Error("Unable to remove dispatch")
   }
+
+  if (dispatchRun.status !== "draft") return null
 
   return (
     <>
-<ConfirmRemoval open={deleteOpen} onOpenChange={setDeleteOpen} title="Remove this draft run?" description="Only draft runs can be removed. Finalized movement is preserved." onConfirm={handleDelete} />
+      <ConfirmRemoval
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Remove this draft run?"
+        description="Only draft runs can be removed. Finalized movement is preserved."
+        onConfirm={handleDelete}
+      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="size-8">
@@ -83,4 +92,3 @@ export function DispatchActions({
     </>
   )
 }
-

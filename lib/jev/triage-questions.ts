@@ -1,5 +1,5 @@
 /**
- * Triage questions for Jev — the single source of truth for all TypeSafe
+ * Triage questions for Jev: the single source of truth for all TypeSafe
  * question definitions and confidence thresholds used in the support pipeline.
  *
  * Design principle: keep every question narrow and factual so Jev can evaluate
@@ -36,9 +36,9 @@ export const CATEGORY_QUESTION = choice(
 export const URGENCY_SCORE = score(
   "How urgent is this support request?",
   [
-    "Routine — no time pressure or deadline mentioned",
-    "Elevated — customer mentions a deadline, frustration, or impact to business",
-    "Critical — SLA breach, safety risk, dangerous goods, or explicit escalation demand",
+    "Routine: no time pressure or deadline mentioned",
+    "Elevated: customer mentions a deadline, frustration, or impact to business",
+    "Critical: SLA breach, safety risk, dangerous goods, or explicit escalation demand",
   ]
 )
 

@@ -164,7 +164,7 @@ export async function ShipmentRegister({
       </PageHeader>
       <section
         aria-label="Shipment records"
-        className="min-w-0 overflow-hidden rounded-none border bg-card"
+        className="min-w-0 overflow-hidden rounded-lg border bg-card"
       >
         <TableToolbar
           pathname={pathname}

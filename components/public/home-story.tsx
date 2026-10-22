@@ -40,7 +40,7 @@ export function HomeStory({
       />
 
       <div className="cargo-container cargo-section grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-        {/* Left — visual */}
+        {/* Left: visual */}
         <motion.div
           className="cargo-story-frame relative overflow-hidden"
           initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, scale: 0.98 }}
@@ -59,7 +59,7 @@ export function HomeStory({
           </p>
         </motion.div>
 
-        {/* Right — copy */}
+        {/* Right: copy */}
         <motion.div
           initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 16 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -67,7 +67,7 @@ export function HomeStory({
           transition={{ duration: shouldReduceMotion ? 0 : 0.55, delay: shouldReduceMotion ? 0 : 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col"
         >
-          {/* Eyebrow — primary accent with left rule */}
+          {/* Eyebrow: primary accent with left rule */}
           <div className="mb-6 flex items-center gap-3">
             <div
               className="h-4 w-[3px] shrink-0 bg-primary"
@@ -80,7 +80,7 @@ export function HomeStory({
             </p>
           </div>
 
-          {/* Heading — two-tone color */}
+          {/* Heading: two-tone color */}
           <h2
             id="about-title"
             className="text-section"
@@ -92,7 +92,7 @@ export function HomeStory({
             </span>
           </h2>
 
-          {/* Body copy — slightly better contrast */}
+          {/* Body copy: verified contrast */}
           <p className="text-lead mt-7">
             A shop waiting for stock. A family sending a little piece of home.
             Every consignment connects people as well as places.

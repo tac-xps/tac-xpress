@@ -39,7 +39,7 @@ export function CreateShipmentForm({ onSuccess }: { onSuccess?: () => void }) {
             className="h-1.5"
           />
         </div>
-        {/* Scrollable step content — safe on 1366×768 viewports */}
+        {/* Scrollable step content: safe on 1366×768 viewports */}
         <div className="min-h-0 flex-1 overflow-y-auto">
           <fieldset disabled={isExecuting} className="min-w-0">
             <legend className="sr-only">{STEPS[currentStep - 1].title}</legend>

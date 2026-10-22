@@ -322,7 +322,7 @@ export function WizardForm() {
                         className="text-sm font-bold text-foreground"
                         title={form.watch("origin") || "Select Origin"}
                       >
-                        {form.watch("origin") || "—"}
+                        {form.watch("origin") || "-"}
                       </span>
                     </div>
                     <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -336,7 +336,7 @@ export function WizardForm() {
                           form.watch("destination") || "Select Destination"
                         }
                       >
-                        {form.watch("destination") || "—"}
+                        {form.watch("destination") || "-"}
                       </span>
                     </div>
                   </div>

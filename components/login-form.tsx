@@ -199,7 +199,7 @@ export function LoginForm({
               />
 
               {error && (
-                <p role="alert" className="rounded-none border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+                <p role="alert" className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
                   {error}
                 </p>
               )}

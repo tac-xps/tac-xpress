@@ -330,7 +330,7 @@ async function fetchAnalyticsOverview(period: AnalyticsPeriod = "30d"): Promise<
 
   // Convert all dates to ISO strings for Drizzle sql`` interpolation.
   // Drizzle's sql tag serializes Date objects via .toString() which produces
-  // "Thu Sep 03 2026 00:00:00 GMT+0530 ..." — a format Postgres cannot parse.
+  // "Thu Sep 03 2026 00:00:00 GMT+0530 ...", a format Postgres cannot parse.
   // Using .toISOString() produces "2026-09-03T00:00:00.000Z" which Postgres
   // correctly casts to timestamp.
   const currentWindowStartIso = windowStart?.toISOString() ?? null

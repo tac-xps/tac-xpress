@@ -13,7 +13,10 @@ const cards = [
     title: service.name,
     description: service.description,
     href: `/services/${service.slug}`,
-    action: `Explore ${service.name.toLowerCase()}`,
+    action:
+      service.slug === "air-cargo"
+        ? "View air cargo schedule"
+        : "View surface cargo network",
     asset: (service.slug === "air-cargo" ? "air" : "surface") as CargoAsset,
   })),
   {

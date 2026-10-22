@@ -94,6 +94,10 @@ skills/
 skills-lock.json
 agents.lock
 .agents/.gitignore
+antislop.md
+antislop/
+*.skill
+*.skills
 
 # ==============================================================================
 # Temporary Scratch Files, Ad-Hoc Scripts & Reports

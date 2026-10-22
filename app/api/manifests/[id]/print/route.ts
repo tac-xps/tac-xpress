@@ -104,7 +104,7 @@ export async function GET(
     </div>
     <div class="meta-item">
       <label>Driver Phone</label>
-      <span>${escapeHtml((manifest as any).driver?.phone ?? "—")}</span>
+      <span>${escapeHtml((manifest as any).driver?.phone ?? "-")}</span>
     </div>
     <div class="meta-item">
       <label>Vehicle</label>
@@ -133,11 +133,11 @@ export async function GET(
           (item: any, idx: number) => `
       <tr>
         <td>${idx + 1}</td>
-        <td class="awb">${escapeHtml(item.shipment?.awbNumber ?? "—")}</td>
-        <td>${escapeHtml(item.shipment?.consigneeName ?? "—")}</td>
-        <td class="route">${item.shipment ? `${escapeHtml(item.shipment.origin)} → ${escapeHtml(item.shipment.destination)}` : "—"}</td>
-        <td class="weight">${item.shipment?.weightKg != null ? item.shipment.weightKg.toFixed(1) : "—"}</td>
-        <td><span class="status-pill ${escapeHtml(item.shipment?.status ?? "")}">${escapeHtml(item.shipment?.status?.replace("_", " ") ?? "—")}</span></td>
+        <td class="awb">${escapeHtml(item.shipment?.awbNumber ?? "-")}</td>
+        <td>${escapeHtml(item.shipment?.consigneeName ?? "-")}</td>
+        <td class="route">${item.shipment ? `${escapeHtml(item.shipment.origin)} → ${escapeHtml(item.shipment.destination)}` : "-"}</td>
+        <td class="weight">${item.shipment?.weightKg != null ? item.shipment.weightKg.toFixed(1) : "-"}</td>
+        <td><span class="status-pill ${escapeHtml(item.shipment?.status ?? "")}">${escapeHtml(item.shipment?.status?.replace("_", " ") ?? "-")}</span></td>
       </tr>
       `
         )
@@ -168,7 +168,7 @@ export async function GET(
   </div>
 
   <div class="footer">
-    <span>TAC Xpress — Dispatch Manifest System</span>
+    <span>TAC-XPRESS | Dispatch Manifest System</span>
     <span>Ref: ${escapeHtml(manifest.referenceId)} | Generated: ${format(new Date(), "dd/MM/yyyy HH:mm")}</span>
   </div>
 

@@ -2,11 +2,11 @@ import React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * TAC-XPRESS Logo — Nordic Lagom edition
+ * TAC-XPRESS Logo: Nordic Lagom edition
  *
  * Design rationale:
  * - A single, flat geometric mark: two forward-slanting lines converging
- *   to a central vertical stroke — evoking a flight path / vector arrow
+ *   to a central vertical stroke, evoking a flight path / vector arrow
  *   without any decoration, glow, or gradient.
  * - Monochrome: uses currentColor so it inherits the surface's foreground,
  *   ensuring legibility on both white and dark backgrounds with zero custom
@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
  *   "XPRESS" in regular weight with wider tracking signals speed without
  *   shouting. The two-weight split is a Nordic Lagom typographic idiom.
  * - The word mark uses a 1px vertical separator between mark and text for
- *   calm structure — no box, no badge, no gradient badge.
+ *   calm structure: no box, no badge, no gradient badge.
  */
 
 export const LogoMark = ({
@@ -71,13 +71,13 @@ export const Logo = ({
   >
     <LogoMark className="h-full w-auto" />
 
-    {/* 1 px vertical rule — structural separator, Nordic Lagom detail */}
+    {/* 1 px vertical rule: structural separator, Nordic Lagom detail */}
     <span
       aria-hidden="true"
       className="block h-4 w-px shrink-0 bg-border"
     />
 
-    {/* Word mark — two-weight typographic pair */}
+    {/* Word mark: two-weight typographic pair */}
     <span className="flex items-baseline gap-[3px] font-heading leading-none tracking-tight">
       <span className="text-[0.85em] font-bold uppercase text-foreground">
         TAC

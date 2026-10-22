@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button"
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -118,7 +119,9 @@ export function LandingNav() {
         y: hidden && !mobileMenuOpen ? "-100%" : "0%",
       }}
       transition={motionSprings.springEditorial}
-      onFocusCapture={() => { if (hidden) setHidden(false) }}
+      onFocusCapture={() => {
+        if (hidden) setHidden(false)
+      }}
       className={cn(
         "sticky top-0 z-50 w-full transition-colors duration-300",
         scrolled
@@ -132,11 +135,11 @@ export function LandingNav() {
           <Link
             href="/"
             aria-label="TAC-XPRESS home"
-            className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="flex items-center gap-2 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
           >
             <Logo className="h-7 w-auto" />
           </Link>
-          <span className="hidden font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium lg:inline-block border-l border-border/80 pl-4 py-0.5">
+          <span className="hidden border-l border-border/80 py-0.5 pl-4 font-sans text-xs font-medium tracking-[0.06em] text-muted-foreground uppercase lg:inline-block">
             Cargo &amp; Freight Desk
           </span>
         </div>
@@ -153,7 +156,7 @@ export function LandingNav() {
               href={link.href}
               onMouseEnter={() => setHoveredLink(link.href)}
               className={cn(
-                "relative px-3 py-1.5 font-sans text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+                "relative px-3 py-1.5 font-sans text-sm font-medium transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none",
                 activeSection === link.href
                   ? "text-foreground"
                   : "text-foreground/75 hover:text-foreground"
@@ -200,7 +203,7 @@ export function LandingNav() {
             <Button
               asChild
               size="sm"
-              className="rounded-none bg-primary px-4 font-sans text-xs font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="rounded-none bg-primary px-4 font-sans text-xs font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
             >
               <Link href="#contact">
                 Book Cargo
@@ -214,17 +217,23 @@ export function LandingNav() {
             <SheetTrigger asChild>
               <button
                 type="button"
-                className="flex size-9 items-center justify-center border border-border bg-card text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring lg:hidden"
+                className="flex size-9 items-center justify-center border border-border bg-card text-foreground transition-colors hover:bg-accent focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none lg:hidden"
                 aria-label="Open navigation"
               >
                 <Menu className="size-4" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] border-l border-border bg-background p-6">
-              <SheetHeader className="p-0 mb-4">
-                <SheetTitle className="text-left font-sans text-xs uppercase tracking-[0.06em] font-semibold text-muted-foreground">
+            <SheetContent
+              side="right"
+              className="w-[300px] border-l border-border bg-background p-6"
+            >
+              <SheetHeader className="mb-4 p-0">
+                <SheetTitle className="text-left font-sans text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase">
                   Navigation
                 </SheetTitle>
+                <SheetDescription className="sr-only">
+                  Navigate to the main sections of the TAC-XPRESS website.
+                </SheetDescription>
               </SheetHeader>
               <div className="flex flex-col space-y-4">
                 {NAV_LINKS.map((link, idx) => (
@@ -234,7 +243,7 @@ export function LandingNav() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{
                       duration: 0.3,
-                      delay: idx * 0.06,
+                      delay: Math.min(idx, 5) * 0.05,
                       ease: [0.16, 1, 0.3, 1],
                     }}
                   >
@@ -258,15 +267,18 @@ export function LandingNav() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{
                       duration: 0.3,
-                      delay: NAV_LINKS.length * 0.06,
+                      delay: Math.min(NAV_LINKS.length, 5) * 0.05,
                       ease: [0.16, 1, 0.3, 1],
                     }}
                   >
                     <Button
                       asChild
-                      className="w-full rounded-none bg-primary font-sans text-xs font-semibold uppercase tracking-wider text-primary-foreground"
+                      className="w-full rounded-none bg-primary font-sans text-xs font-semibold tracking-wider text-primary-foreground uppercase"
                     >
-                      <Link href="#contact" onClick={() => setMobileMenuOpen(false)}>
+                      <Link
+                        href="#contact"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
                         Book a Shipment
                         <ArrowUpRight className="ml-2 size-4" />
                       </Link>
@@ -279,7 +291,7 @@ export function LandingNav() {
         </div>
       </div>
 
-      {/* N1: Scroll Progress Indicator — 1px primary bar at header bottom */}
+      {/* N1: Scroll Progress Indicator: 1px primary bar at header bottom */}
       <motion.div
         style={{
           scaleX: smoothProgress,

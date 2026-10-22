@@ -34,6 +34,7 @@ export interface QueueItem {
 }
 export function DispatchClientLayout({
   pendingShipments,
+  deliveryShipments,
   queueItems,
   dispatchRuns,
   page,
@@ -41,6 +42,7 @@ export function DispatchClientLayout({
   view,
 }: {
   pendingShipments: Shipment[]
+  deliveryShipments: Shipment[]
   queueItems: QueueItem[]
   dispatchRuns: Manifest[]
   page: number
@@ -73,7 +75,10 @@ export function DispatchClientLayout({
         title="Dispatch"
         description="Plan pickup and delivery runs, assign the load and follow recorded progress."
       >
-        <CreateDispatchDialog pendingShipments={pendingShipments} />
+        <CreateDispatchDialog
+          pendingShipments={pendingShipments}
+          deliveryShipments={deliveryShipments}
+        />
       </PageHeader>
       <Tabs defaultValue={view}>
         <TabsList>
@@ -116,6 +121,7 @@ export function DispatchClientLayout({
                         key={item.id}
                         item={item}
                         pendingShipments={pendingShipments}
+                        deliveryShipments={deliveryShipments}
                       />
                     ))}
                   {!items.some((item) => item.column === column.id) && (

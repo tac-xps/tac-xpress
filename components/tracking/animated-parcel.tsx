@@ -135,7 +135,7 @@ export function AnimatedParcel({
             transition={{ delay: 0.45, duration: 0.5 }}
           />
 
-          {/* Outer isometric cube path — sharp angular edges, zero curves */}
+          {/* Outer isometric cube path: sharp angular edges, zero curves */}
           <motion.path
             d="M12 22L21 16.86V7.14L12 2L3 7.14V16.86Z"
             initial={shouldReduceMotion ? { pathLength: 1 } : { pathLength: 0 }}
@@ -169,7 +169,7 @@ export function AnimatedParcel({
             transition={{ duration: 0.5, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
           />
 
-          {/* Tape Glint Particle traveling across the sealed seam — square marker */}
+          {/* Tape Glint Particle traveling across the sealed seam: square marker */}
           {!shouldReduceMotion && (
             <motion.rect
               width={1.6}

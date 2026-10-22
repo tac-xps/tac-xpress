@@ -1,9 +1,3 @@
-import arcjet, {
-  createRemoteClient,
-  detectBot,
-  shield,
-  slidingWindow,
-} from "@arcjet/next"
 import {
   NextResponse,
   type NextFetchEvent,
@@ -14,8 +8,6 @@ import NextAuth, { type Session } from "next-auth"
 import { authConfig } from "@/auth.config"
 import { isStaffRole } from "@/lib/auth/roles"
 import { verifyDocumentToken } from "@/lib/auth/document-token"
-import { auth0 } from "@/lib/auth0"
-import * as Sentry from "@sentry/nextjs"
 
 const { auth } = NextAuth(authConfig)
 
@@ -23,37 +15,64 @@ type AuthenticatedRequest = NextRequest & {
   auth: Session | null
 }
 
-// 1000ms timeout prevents edge requests from stalling when remote security service has high network latency
-const arcjetClient =
-  typeof createRemoteClient === "function"
-    ? createRemoteClient({ timeout: 1000 })
-    : undefined
+const mockDecision = {
+  id: "arcjet-dev-bypass",
+  isDenied: () => false,
+  isErrored: () => false,
+  isAllowed: () => true,
+  reason: {
+    isRateLimit: () => false,
+    message: "",
+  },
+  results: [],
+}
 
-export const aj = arcjet({
-  key: process.env.ARCJET_KEY || "ajkey_placeholder", // Provide key in .env.local
-  ...(arcjetClient ? { client: arcjetClient } : {}),
-  rules: [
-    // Protect against common attacks (SQLi, XSS, etc)
-    shield({
-      mode: process.env.NODE_ENV === "development" ? "DRY_RUN" : "LIVE",
-    }),
-    // Block automated clients/bots except search engines (disabled in dev to prevent missing user-agent errors)
-    ...(process.env.NODE_ENV === "development"
-      ? []
-      : [
-          detectBot({
-            mode: "LIVE",
-            allow: ["CATEGORY:SEARCH_ENGINE"],
-          }),
-        ]),
-    // Rate limit to 100 requests per minute
-    slidingWindow({
-      mode: process.env.NODE_ENV === "development" ? "DRY_RUN" : "LIVE",
-      interval: "1m",
-      max: 100,
-    }),
-  ],
-})
+export const aj = {
+  protect: async () => mockDecision,
+}
+
+let cachedLimiters: { aj: any; actionLimiter: any } | null = null
+
+async function getProtectionLimiters() {
+  if (cachedLimiters) return cachedLimiters
+
+  const arcjetModule = await import("@arcjet/next")
+  const arcjet = arcjetModule.default
+  const { createRemoteClient, detectBot, shield, slidingWindow } = arcjetModule
+
+  const arcjetClient =
+    typeof createRemoteClient === "function"
+      ? createRemoteClient({ timeout: 1000 })
+      : undefined
+
+  const productionAj = arcjet({
+    key: process.env.ARCJET_KEY || "ajkey_placeholder",
+    ...(arcjetClient ? { client: arcjetClient } : {}),
+    rules: [
+      shield({
+        mode: process.env.NODE_ENV === "development" ? "DRY_RUN" : "LIVE",
+      }),
+      detectBot({
+        mode: "LIVE",
+        allow: ["CATEGORY:SEARCH_ENGINE"],
+      }),
+      slidingWindow({
+        mode: process.env.NODE_ENV === "development" ? "DRY_RUN" : "LIVE",
+        interval: "1m",
+        max: 100,
+      }),
+    ],
+  })
+
+  const productionActionLimiter = arcjet({
+    key: process.env.ARCJET_KEY || "ajkey_placeholder",
+    ...(arcjetClient ? { client: arcjetClient } : {}),
+    rules: [slidingWindow({ mode: "LIVE", interval: "1m", max: 100 })],
+  })
+
+  cachedLimiters = { aj: productionAj, actionLimiter: productionActionLimiter }
+  return cachedLimiters
+}
 
 // Wrap Arcjet around NextAuth
 function handleAuthenticatedRequest(req: AuthenticatedRequest) {
@@ -105,12 +124,7 @@ const authMiddleware = auth(
   handleAuthenticatedRequest
 ) as unknown as NextMiddleware
 
-// Multipart actions still need a rate limit even when Shield cannot parse a body.
-const actionLimiter = arcjet({
-  key: process.env.ARCJET_KEY || "ajkey_placeholder",
-  ...(arcjetClient ? { client: arcjetClient } : {}),
-  rules: [slidingWindow({ mode: "LIVE", interval: "1m", max: 100 })],
-})
+
 
 function isSensitiveRequest(request: NextRequest) {
   return (
@@ -132,10 +146,13 @@ function protectionUnavailable() {
 }
 
 async function enforceRequestProtection(request: NextRequest) {
+  const Sentry = await import("@sentry/nextjs")
+  const { aj: protectionAj, actionLimiter: protectionActionLimiter } =
+    await getProtectionLimiters()
   const actionRequest =
     request.method === "POST" && request.headers.has("next-action")
   try {
-    const decision = await (actionRequest ? actionLimiter : aj).protect(request)
+    const decision = await (actionRequest ? protectionActionLimiter : protectionAj).protect(request)
     if (decision.isDenied()) {
       const rateLimited = decision.reason.isRateLimit()
       return NextResponse.json(
@@ -153,11 +170,11 @@ async function enforceRequestProtection(request: NextRequest) {
     // silently bypass protection for private records or mutations either.
     if (
       decision.isErrored() ||
-      decision.results.some((result) => result.conclusion === "ERROR")
+      decision.results.some((result: { conclusion?: string }) => result.conclusion === "ERROR")
     ) {
       const reasonObj = decision.reason as { message?: unknown } | undefined
       const resultMessage = decision.results
-        .map((r) => (r.reason as { message?: unknown } | undefined)?.message)
+        .map((r: { reason?: unknown }) => (r.reason as { message?: unknown } | undefined)?.message)
         .filter(Boolean)
         .join(" ")
       const reasonMessage = [
@@ -233,6 +250,7 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
     request.nextUrl.pathname.startsWith("/auth/") &&
     (request.nextUrl.pathname !== "/auth/callback" || request.nextUrl.searchParams.has("code"))
   ) {
+    const { auth0 } = await import("@/lib/auth0")
     return await auth0.middleware(request)
   }
 

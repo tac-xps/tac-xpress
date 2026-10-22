@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ExternalLink, Sparkles } from "lucide-react"
+import { ExternalLink, LayoutTemplate } from "lucide-react"
 import {
   containsPattern,
   parseRecordQuery,
@@ -138,7 +138,7 @@ export default async function FeedbackPage({
           className="h-8 gap-1.5 text-xs font-mono"
         >
           <Link href="/#feedback" target="_blank" rel="noopener noreferrer">
-            <Sparkles className="size-3.5 text-primary" />
+            <LayoutTemplate className="size-3.5 text-primary" />
             Landing Section
           </Link>
         </Button>
@@ -154,7 +154,7 @@ export default async function FeedbackPage({
         }}
       />
       
-      <div className="rounded-none border bg-card">
+      <div className="rounded-lg border bg-card overflow-hidden">
         <TableToolbar
           pathname="/dashboard/feedback"
           query={q}

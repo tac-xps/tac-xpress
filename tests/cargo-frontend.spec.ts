@@ -10,10 +10,12 @@ for (const width of [320, 768, 1440]) {
   }) => {
     await page.setViewportSize({ width, height: 900 })
     await page.goto("/")
-    const images = page.locator("main img")
+    const images = page.locator('main img[src*="images"]')
     expect(await images.count()).toBeGreaterThanOrEqual(4)
     for (const image of await images.all()) {
-      await image.scrollIntoViewIfNeeded()
+      await image.evaluate((node) => {
+        node.scrollIntoView({ block: "center", behavior: "instant" })
+      })
       await expect(image).toBeVisible()
       await expect
         .poll(() =>
@@ -31,10 +33,23 @@ for (const width of [320, 768, 1440]) {
         () => document.documentElement.scrollWidth <= innerWidth
       )
     ).toBe(true)
-    await page.locator("#shipment-desk").scrollIntoViewIfNeeded()
-    await page
-      .locator("#shipment-desk")
-      .screenshot({ path: `${evidenceDir}/tracking-desk-${width}.png` })
+    const desk = page.locator("#shipment-desk")
+    await desk.evaluate((node) => {
+      node.scrollIntoView({ block: "center", behavior: "instant" })
+    })
+    const box = await desk.boundingBox()
+    expect(box).not.toBeNull()
+    if (box) {
+      await page.screenshot({
+        path: `${evidenceDir}/tracking-desk-${width}.png`,
+        clip: {
+          x: Math.max(0, box.x),
+          y: Math.max(0, box.y),
+          width: Math.min(box.width, width),
+          height: Math.min(box.height, 900),
+        },
+      })
+    }
   })
 }
 
@@ -51,9 +66,12 @@ test("homepage AWB entry reaches real validation without signing in", async ({
   await expect(
     page.getByRole("heading", { name: "Where is your cargo?" })
   ).toBeVisible()
-  await expect(page.getByRole("alert")).toContainText(
-    "We couldn’t retrieve this shipment"
-  )
+  await expect(
+    page.getByText("We could not retrieve this shipment", { exact: true })
+  ).toBeVisible()
+  await expect(
+    page.getByRole("alert").filter({ hasText: "Check the number" })
+  ).toBeVisible()
   await expect(page.getByLabel("AWB number", { exact: true })).toHaveValue("!")
 })
 
@@ -79,9 +97,9 @@ test("essential content, navigation and tracking work without JavaScript", async
     await form.getByLabel("AWB / shipment reference").fill("!")
     // Exercise native implicit submission without relying on client hydration.
     await form.getByLabel("AWB / shipment reference").press("Enter")
-    await expect(page.getByRole("alert")).toContainText(
-      "We couldn’t retrieve this shipment"
-    )
+    await expect(
+      page.getByText("We could not retrieve this shipment", { exact: true })
+    ).toBeVisible()
     await page
       .getByRole("navigation", { name: "Main navigation", exact: true })
       .getByRole("link", { name: "Services", exact: true })

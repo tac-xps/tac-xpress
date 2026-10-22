@@ -261,32 +261,32 @@ export function TicketForm({
         </div>
       )}
 
-      {/* Mode Selector Tabs — Combines Contact & Feedback into 1 seamless interface */}
+      {/* Mode Selector Tabs: Contact & Feedback */}
       <div className="mb-4 grid grid-cols-2 gap-1 border border-border/80 bg-muted/40 p-1">
         <button
           type="button"
           onClick={() => handleModeChange("contact")}
           className={cn(
-            "flex items-center justify-center gap-1.5 py-1.5 text-xs font-mono transition-all",
+            "flex min-h-[44px] items-center justify-center gap-1.5 py-2 text-xs font-mono transition-colors",
             mode === "contact"
               ? "bg-card text-foreground shadow-xs font-semibold"
               : "text-muted-foreground hover:text-foreground font-medium"
           )}
         >
-          <Send className="size-3" />
+          <Send className="size-3.5" />
           <span>Cargo & Inquiry</span>
         </button>
         <button
           type="button"
           onClick={() => handleModeChange("feedback")}
           className={cn(
-            "flex items-center justify-center gap-1.5 py-1.5 text-xs font-mono transition-all",
+            "flex min-h-[44px] items-center justify-center gap-1.5 py-2 text-xs font-mono transition-colors",
             mode === "feedback"
               ? "bg-card text-foreground shadow-xs font-semibold"
               : "text-muted-foreground hover:text-foreground font-medium"
           )}
         >
-          <Sparkles className="size-3 text-primary" />
+          <MessageSquareHeart className="size-3.5 text-primary" />
           <span>Share Feedback</span>
         </button>
       </div>

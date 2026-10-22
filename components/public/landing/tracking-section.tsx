@@ -53,7 +53,7 @@ const SAMPLE_MILESTONES: SampleMilestone[] = [
     status: "completed",
   },
   {
-    title: "Manifest Departure — Linehaul Flight 6E-2419",
+    title: "Manifest Departure: Linehaul Flight 6E-2419",
     location: "Departed DEL Runway 28",
     timestamp: "Oct 08, 14:15 IST",
     status: "current",
@@ -80,7 +80,7 @@ interface RadarBeaconNodeProps {
 }
 
 /**
- * Radar Beacon Node — Dual concentric expanding pulse for the active transit waypoint.
+ * Radar Beacon Node: Dual concentric expanding pulse for the active transit waypoint.
  * Strictly animated via GPU-composited transform scale and opacity.
  */
 function RadarBeaconNode({ shouldReduceMotion }: RadarBeaconNodeProps) {
@@ -136,7 +136,7 @@ interface TravelingConnectorBeamProps {
 }
 
 /**
- * Linehaul Photon Transit — Downward continuous particle stream between completed and active waypoints.
+ * Linehaul Photon Transit: Downward continuous particle stream between completed and active waypoints.
  */
 function TravelingConnectorBeam({ shouldReduceMotion }: TravelingConnectorBeamProps) {
   if (shouldReduceMotion) {
@@ -238,7 +238,7 @@ interface RadarSyncDotProps {
 }
 
 /**
- * Radar Sync Dot — Looping radar ping for optical gate audit trail.
+ * Radar Sync Dot: Looping radar ping for optical gate audit trail.
  */
 function RadarSyncDot({ shouldReduceMotion }: RadarSyncDotProps) {
   if (shouldReduceMotion) {
@@ -271,7 +271,7 @@ interface SampleMilestoneStepperProps {
 
 /**
  * Renders the sample milestone data using ReUI Stepper primitives
- * in vertical orientation. Display-only — no interactive step navigation.
+ * in vertical orientation. Display-only (no interactive step navigation).
  */
 function SampleMilestoneStepper({ shouldReduceMotion }: SampleMilestoneStepperProps) {
   return (
@@ -506,7 +506,7 @@ export function TrackingSection() {
       className="py-16 sm:py-24 lg:py-32 bg-muted/30"
     >
       <div id="shipment-desk" className="space-y-12 lg:space-y-16">
-        {/* Section Header — S1: whileInView entrance */}
+        {/* Section Header: S1 entrance */}
         <motion.div
           initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -534,7 +534,7 @@ export function TrackingSection() {
             consignment numbers to review gate intake scans, hub cross-dock transfers,
             and departure manifests <strong className="font-semibold text-foreground">in real time</strong>.
           </p>
-          {/* Decorative rule — visual separator before interactive console */}
+          {/* Decorative rule: visual separator before interactive console */}
           <div className="flex items-center gap-3 pt-2" aria-hidden="true">
             <div className="h-px w-12 bg-primary" />
             <div className="h-px flex-1 max-w-32 bg-border" />

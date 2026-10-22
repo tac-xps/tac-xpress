@@ -25,8 +25,10 @@ export type ShipmentMin = {
 
 export function CreateDispatchDialog({
   pendingShipments,
+  deliveryShipments,
 }: {
   pendingShipments: ShipmentMin[]
+  deliveryShipments: ShipmentMin[]
 }) {
   const { open, setOpen, form, isExecuting, onSubmit } =
     useCreateDispatchDialog()
@@ -47,6 +49,7 @@ export function CreateDispatchDialog({
           onSubmit={onSubmit}
           isExecuting={isExecuting}
           pendingShipments={pendingShipments}
+          deliveryShipments={deliveryShipments}
         />
       </DialogContent>
     </Dialog>

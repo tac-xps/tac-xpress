@@ -1,7 +1,7 @@
 // Classifies the result of the `sendInvoiceViaWhatsApp` action into a single
 // error message, or `null` when the send truly succeeded. A missing `data`, a
 // `validationErrors` payload, a `fetchError`, or an empty result all count as
-// failures — only `data.success === true` is treated as a real success.
+// failures: only `data.success === true` is treated as a real success.
 
 export type SendInvoiceActionResult =
   | {

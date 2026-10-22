@@ -86,7 +86,7 @@ export function HeroSection() {
             id="hero-heading"
             className="text-hero-display text-foreground"
           >
-            <span className="sr-only">Move cargo. With clarity. — </span>
+            <span className="sr-only">Move cargo. With clarity. </span>
             <span className="block overflow-hidden py-0.5">
               <motion.span
                 className="block lg:whitespace-nowrap"

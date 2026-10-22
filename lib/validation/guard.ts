@@ -32,7 +32,7 @@ export function safeParse<T>(schema: z.ZodType<T>, data: unknown): T {
     // Re-throw a human-readable error for UI display
     const firstIssue = result.error.issues[0]
     const message = firstIssue
-      ? `${firstIssue.path.join(".")} — ${firstIssue.message}`
+      ? `${firstIssue.path.join(".")}: ${firstIssue.message}`
       : "Validation failed"
 
     throw new Error(message)

@@ -8,7 +8,11 @@ import { DataTableColumnHeader as ColumnHeader } from "@/components/ui/data-tabl
 import { useDataTable } from "@/hooks/use-data-table"
 import { Badge } from "@/components/ui/badge"
 import { ManifestActions } from "./manifest-actions"
-import { ManifestDetailDialog, type ManifestDetail } from "./manifest-detail-dialog"
+import {
+  ManifestDetailDialog,
+  type ManifestDetail,
+} from "./manifest-detail-dialog"
+import { RunControls } from "@/app/dashboard/dispatch/run-controls"
 
 type ManifestRow = ManifestDetail & {
   originHub?: { name: string } | null
@@ -22,7 +26,7 @@ function ManifestIdCell({ manifest }: { manifest: ManifestRow }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="font-mono text-xs font-medium text-foreground underline-offset-4 hover:underline hover:text-primary transition-colors cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="cursor-pointer text-left font-mono text-xs font-medium text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
         aria-label={`View manifest ${manifest.referenceId}`}
       >
         {manifest.referenceId}
@@ -86,7 +90,14 @@ const columns: ColumnDef<ManifestRow>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => <ManifestActions manifest={row.original} />,
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        {row.original.legType === "line_haul" && (
+          <RunControls run={row.original} />
+        )}
+        <ManifestActions manifest={row.original} />
+      </div>
+    ),
   },
 ]
 

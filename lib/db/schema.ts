@@ -41,6 +41,15 @@ export const manifestStatusEnum = pgEnum("manifest_status", [
   "draft",
   "finalized",
 ])
+export const manifestLegTypeEnum = pgEnum("manifest_leg_type", [
+  "pickup",
+  "line_haul",
+  "delivery",
+])
+export const manifestHandoffOutcomeEnum = pgEnum("manifest_handoff_outcome", [
+  "received",
+  "exception",
+])
 export const serviceTypeEnum = pgEnum("service_type", [
   "express_air",
   "standard_ocean",
@@ -195,7 +204,10 @@ export const shipments = pgTable(
     index("shipments_customer_id_idx").on(table.customerId),
     index("shipments_status_idx").on(table.status),
     index("shipments_booking_date_idx").on(table.bookingDate),
-    index("shipments_status_booking_date_idx").on(table.status, table.bookingDate),
+    index("shipments_status_booking_date_idx").on(
+      table.status,
+      table.bookingDate
+    ),
     index("shipments_created_at_idx").on(table.createdAt),
     check("shipments_weight_kg_positive", sql`${table.weightKg} > 0`),
     check("shipments_pieces_positive", sql`${table.pieces} >= 1`),
@@ -359,7 +371,6 @@ export const drivers = pgTable("drivers", {
   deletedAt: timestamp("deleted_at"),
 })
 
-
 export const manifests = pgTable(
   "manifests",
   {
@@ -381,6 +392,7 @@ export const manifests = pgTable(
       onDelete: "set null",
     }),
     status: manifestStatusEnum("status").notNull().default("draft"),
+    legType: manifestLegTypeEnum("leg_type").notNull().default("line_haul"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -556,6 +568,7 @@ export const manifestItems = pgTable(
         onDelete: "cascade",
       })
       .notNull(),
+    isActive: boolean("is_active").notNull().default(true),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [
@@ -564,6 +577,41 @@ export const manifestItems = pgTable(
     uniqueIndex("manifest_items_manifest_shipment_unique").on(
       table.manifestId,
       table.shipmentId
+    ),
+    uniqueIndex("manifest_items_one_active_shipment_unique")
+      .on(table.shipmentId)
+      .where(sql`${table.isActive}`),
+  ]
+)
+
+export const manifestItemHandoffs = pgTable(
+  "manifest_item_handoffs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    manifestItemId: uuid("manifest_item_id")
+      .references(() => manifestItems.id, { onDelete: "restrict" })
+      .notNull(),
+    outcome: manifestHandoffOutcomeEnum("outcome").notNull(),
+    location: text("location").notNull(),
+    receivingParty: text("receiving_party"),
+    receivedBy: uuid("received_by")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    eventKey: text("event_key").notNull().unique(),
+    notes: text("notes"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("manifest_item_handoffs_item_created_idx").on(
+      table.manifestItemId,
+      table.createdAt
+    ),
+    uniqueIndex("manifest_item_handoffs_one_received_unique")
+      .on(table.manifestItemId)
+      .where(sql`${table.outcome} = 'received'`),
+    check(
+      "manifest_item_handoffs_receiver_required",
+      sql`${table.outcome} = 'exception' or (${table.receivingParty} is not null and length(trim(${table.receivingParty})) > 0)`
     ),
   ]
 )
@@ -668,16 +716,34 @@ export const trackingEventsRelations = relations(trackingEvents, ({ one }) => ({
   }),
 }))
 
-export const manifestItemsRelations = relations(manifestItems, ({ one }) => ({
-  manifest: one(manifests, {
-    fields: [manifestItems.manifestId],
-    references: [manifests.id],
-  }),
-  shipment: one(shipments, {
-    fields: [manifestItems.shipmentId],
-    references: [shipments.id],
-  }),
-}))
+export const manifestItemsRelations = relations(
+  manifestItems,
+  ({ one, many }) => ({
+    manifest: one(manifests, {
+      fields: [manifestItems.manifestId],
+      references: [manifests.id],
+    }),
+    shipment: one(shipments, {
+      fields: [manifestItems.shipmentId],
+      references: [shipments.id],
+    }),
+    handoffs: many(manifestItemHandoffs),
+  })
+)
+
+export const manifestItemHandoffsRelations = relations(
+  manifestItemHandoffs,
+  ({ one }) => ({
+    manifestItem: one(manifestItems, {
+      fields: [manifestItemHandoffs.manifestItemId],
+      references: [manifestItems.id],
+    }),
+    receivedBy: one(users, {
+      fields: [manifestItemHandoffs.receivedBy],
+      references: [users.id],
+    }),
+  })
+)
 
 export const shipmentLegsRelations = relations(shipmentLegs, ({ one }) => ({
   shipment: one(shipments, {
@@ -706,7 +772,6 @@ export const shipmentLegsRelations = relations(shipmentLegs, ({ one }) => ({
   }),
 }))
 
-
 export const backgroundJobs = pgTable(
   "background_jobs",
   {
@@ -716,16 +781,26 @@ export const backgroundJobs = pgTable(
     payload: jsonb("payload").notNull(),
     status: text("status").notNull().default("pending"),
     attempts: integer("attempts").notNull().default(0),
-    availableAt: timestamp("available_at", { withTimezone: true }).notNull().defaultNow(),
+    availableAt: timestamp("available_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
     lockedUntil: timestamp("locked_until", { withTimezone: true }),
     leaseToken: uuid("lease_token"),
     lastError: text("last_error"),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
     completedAt: timestamp("completed_at", { withTimezone: true }),
   },
   (table) => [
-    unique("background_jobs_kind_dedupe_key_unique").on(table.kind, table.dedupeKey),
-    index("background_jobs_status_available_at_idx").on(table.status, table.availableAt),
+    unique("background_jobs_kind_dedupe_key_unique").on(
+      table.kind,
+      table.dedupeKey
+    ),
+    index("background_jobs_status_available_at_idx").on(
+      table.status,
+      table.availableAt
+    ),
   ]
 )
 
@@ -737,18 +812,20 @@ export const deadLetterQueue = pgTable(
     payload: jsonb("payload"),
     error: text("error"),
     retryCount: integer("retry_count").notNull().default(0),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
-  (table) => [
-    index("dead_letter_queue_created_at_idx").on(table.createdAt),
-  ]
+  (table) => [index("dead_letter_queue_created_at_idx").on(table.createdAt)]
 )
 
 export const emailNotifications = pgTable(
   "email_notifications",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    ticketId: uuid("ticket_id").references(() => tickets.id, { onDelete: "set null" }),
+    ticketId: uuid("ticket_id").references(() => tickets.id, {
+      onDelete: "set null",
+    }),
     recipientEmail: text("recipient_email").notNull(),
     templateName: text("template_name").notNull(),
     subject: text("subject").notNull(),
@@ -832,6 +909,7 @@ export type Invoice = typeof invoices.$inferSelect
 export type Vehicle = typeof vehicles.$inferSelect
 export type Driver = typeof drivers.$inferSelect
 export type Manifest = typeof manifests.$inferSelect
+export type ManifestItemHandoff = typeof manifestItemHandoffs.$inferSelect
 export type Ticket = typeof tickets.$inferSelect
 export type TicketReply = typeof ticketReplies.$inferSelect
 export type BackgroundJob = typeof backgroundJobs.$inferSelect
@@ -846,5 +924,3 @@ export type AuthTokenConsumption = typeof authTokenConsumptions.$inferSelect
 export type NewAuthTokenConsumption = typeof authTokenConsumptions.$inferInsert
 export type EmailNotification = typeof emailNotifications.$inferSelect
 export type NewEmailNotification = typeof emailNotifications.$inferInsert
-
-

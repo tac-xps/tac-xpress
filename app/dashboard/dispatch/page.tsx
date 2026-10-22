@@ -19,15 +19,17 @@ export default async function DispatchPage({
   const params = await searchParams
   const page = parsePage(params.page)
   const dispatchRows = await db.query.manifests.findMany({
-    where: (manifests, { or, ilike }) =>
-      or(
-        ilike(manifests.referenceId, "PU-%"),
-        ilike(manifests.referenceId, "DL-%")
-      ),
+    where: (manifests, { inArray }) =>
+      inArray(manifests.legType, ["pickup", "delivery"]),
     with: {
       driver: true,
       vehicle: true,
-      items: { with: { shipment: { columns: { status: true } } } },
+      items: {
+        with: {
+          shipment: { columns: { status: true, awbNumber: true } },
+          handoffs: true,
+        },
+      },
     },
     orderBy: (manifests, { desc }) => [desc(manifests.createdAt)],
     limit: DEFAULT_PAGE_SIZE + 1,
@@ -40,7 +42,7 @@ export default async function DispatchPage({
     where: (shipments, { and, ne, isNull }) =>
       and(ne(shipments.status, "delivered"), isNull(shipments.deletedAt)),
     with: {
-      manifestItems: true,
+      manifestItems: { with: { handoffs: true } },
       legs: true,
     },
     orderBy: (table, { desc }) => [desc(table.createdAt), desc(table.id)],
@@ -48,14 +50,29 @@ export default async function DispatchPage({
   })
 
   const unassignedPendingShipments = activeShipments.filter(
-    (s) => s.status === "pending" && s.manifestItems.length === 0
+    (s) =>
+      s.status === "pending" &&
+      !s.manifestItems.some((item) => item.isActive) &&
+      !s.manifestItems.some((item) =>
+        item.handoffs.some((handoff) => handoff.outcome === "received")
+      )
+  )
+  const readyForDeliveryShipments = activeShipments.filter(
+    (s) =>
+      s.status === "in-transit" &&
+      !s.manifestItems.some((item) => item.isActive) &&
+      s.manifestItems.some((item) =>
+        item.handoffs.some((handoff) => handoff.outcome === "received")
+      )
   )
 
   const queueItems = activeShipments.map((s) => {
     let columnId: string = s.status
     if (s.status === "in-transit") columnId = "in_transit"
 
-    const sortedLegs = s.legs ? [...s.legs].sort((a, b) => a.legNumber - b.legNumber) : []
+    const sortedLegs = s.legs
+      ? [...s.legs].sort((a, b) => a.legNumber - b.legNumber)
+      : []
     const activeLeg =
       sortedLegs.find((l) => l.status === "in_transit") ??
       sortedLegs.find((l) => l.status === "pending")
@@ -78,7 +95,7 @@ export default async function DispatchPage({
       time: `Booked ${format(new Date(s.bookingDate), "dd MMM yyyy")}`,
       column: columnId,
       name: s.awbNumber,
-      isAssigned: s.manifestItems.length > 0,
+      isAssigned: s.manifestItems.some((item) => item.isActive),
       legInfo,
     }
   })
@@ -87,6 +104,7 @@ export default async function DispatchPage({
     <>
       <DispatchClientLayout
         pendingShipments={unassignedPendingShipments}
+        deliveryShipments={readyForDeliveryShipments}
         queueItems={queueItems}
         dispatchRuns={dbDispatchRuns}
         page={page}

@@ -1,21 +1,31 @@
-import * as Sentry from "@sentry/nextjs"
 import { EventEmitter } from "events"
 
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
-    await import("./sentry.server.config")
-
     // The default EventEmitter max listeners is 10. A single slow HTTP
-    // response (Sentry transaction, NextAuth JWT, abort signal, etc.)
-    // can accumulate >10 `close` listeners before the request resolves,
-    // triggering a spurious MaxListenersExceededWarning. 25 covers the
-    // worst-case burst while still surfacing genuine leaks at higher counts.
+    // response can accumulate listeners before resolving.
     EventEmitter.defaultMaxListeners = 50
   }
 
-  if (process.env.NEXT_RUNTIME === "edge") {
-    await import("./sentry.edge.config")
+  // Avoid bundling and running Sentry auto-instrumentation in dev unless opted in
+  if (process.env.NODE_ENV === "production" || process.env.SENTRY_DEV_ENABLE === "true") {
+    if (process.env.NEXT_RUNTIME === "nodejs") {
+      await import("./sentry.server.config")
+    }
+
+    if (process.env.NEXT_RUNTIME === "edge") {
+      await import("./sentry.edge.config")
+    }
   }
 }
 
-export const onRequestError = Sentry.captureRequestError
+export const onRequestError = async (
+  err: unknown,
+  request: unknown,
+  context: unknown
+) => {
+  if (process.env.NODE_ENV === "production" || process.env.SENTRY_DEV_ENABLE === "true") {
+    const { captureRequestError } = await import("@sentry/nextjs")
+    return captureRequestError(err as any, request as any, context as any)
+  }
+}

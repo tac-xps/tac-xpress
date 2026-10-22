@@ -6,6 +6,7 @@ import {
   hubs,
   manifests,
   manifestItems,
+  manifestItemHandoffs,
   shipments,
   trackingEvents,
   vehicles,
@@ -16,6 +17,7 @@ import * as Sentry from "@sentry/nextjs"
 import { authActionClient } from "@/lib/safe-action"
 import {
   createManifestSchema,
+  recordManifestHandoffSchema,
   scanShipmentSchema,
   updateManifestSchema,
   deleteManifestSchema,
@@ -23,6 +25,7 @@ import {
 import { and, desc, eq, inArray, isNull, like, sql } from "drizzle-orm"
 import { logAuditInTransaction } from "@/lib/audit"
 import { messageDriverAction } from "@/app/dashboard/dispatch/whatsapp-actions"
+import { canAllocateShipmentToLeg } from "@/lib/shipments/manifest-leg-rules"
 
 export const createManifestAction = authActionClient
   .schema(createManifestSchema)
@@ -72,12 +75,12 @@ export const createManifestAction = authActionClient
         }
 
         const eligibleShipments = await tx
-          .select({ id: shipments.id })
+          .select({ id: shipments.id, status: shipments.status })
           .from(shipments)
           .where(
             and(
               inArray(shipments.id, shipmentIds),
-              eq(shipments.status, "pending"),
+              inArray(shipments.status, ["pending", "in-transit"]),
               isNull(shipments.deletedAt)
             )
           )
@@ -85,17 +88,54 @@ export const createManifestAction = authActionClient
           .for("update")
 
         if (eligibleShipments.length !== shipmentIds.length) {
-          throw new Error("One or more shipments are no longer pending")
+          throw new Error("One or more shipments are no longer available")
         }
 
         const existingAssignments = await tx
           .select({ shipmentId: manifestItems.shipmentId })
           .from(manifestItems)
-          .where(inArray(manifestItems.shipmentId, shipmentIds))
+          .where(
+            and(
+              inArray(manifestItems.shipmentId, shipmentIds),
+              eq(manifestItems.isActive, true)
+            )
+          )
           .limit(1)
 
         if (existingAssignments.length > 0) {
-          throw new Error("One or more shipments are already manifested")
+          throw new Error("One or more shipments already have an active load")
+        }
+
+        const receivedRows = await tx
+          .select({ shipmentId: manifestItems.shipmentId })
+          .from(manifestItemHandoffs)
+          .innerJoin(
+            manifestItems,
+            eq(manifestItemHandoffs.manifestItemId, manifestItems.id)
+          )
+          .where(
+            and(
+              inArray(manifestItems.shipmentId, shipmentIds),
+              eq(manifestItemHandoffs.outcome, "received")
+            )
+          )
+        const receivedShipmentIds = new Set(
+          receivedRows.map((row) => row.shipmentId)
+        )
+        if (
+          eligibleShipments.some(
+            (shipment) =>
+              !canAllocateShipmentToLeg({
+                legType: "line_haul",
+                status: shipment.status,
+                hasPriorReceipt: receivedShipmentIds.has(shipment.id),
+                hasActiveAssignment: false,
+              })
+          )
+        ) {
+          throw new Error(
+            "In-transit cargo needs a recorded handover before entering another load"
+          )
         }
 
         const datePart = new Date()
@@ -131,6 +171,7 @@ export const createManifestAction = authActionClient
             vehicleId,
             driverId,
             status: "draft",
+            legType: "line_haul",
           })
           .returning({ id: manifests.id })
 
@@ -161,8 +202,14 @@ export const createManifestAction = authActionClient
 
         if (assignedDriver?.phone) {
           try {
-            const sendPromise = messageDriverAction(createdManifest.id, driverId)
-            const timeoutPromise = new Promise<{ success: boolean; error?: string }>((_, reject) =>
+            const sendPromise = messageDriverAction(
+              createdManifest.id,
+              driverId
+            )
+            const timeoutPromise = new Promise<{
+              success: boolean
+              error?: string
+            }>((_, reject) =>
               setTimeout(() => reject(new Error("Relay timeout")), 3000)
             )
             const sendResult = await Promise.race([sendPromise, timeoutPromise])
@@ -204,7 +251,11 @@ export const scanShipmentAction = authActionClient
           .from(manifests)
           .where(eq(manifests.id, manifestId))
           .for("update")
-        if (!manifest || manifest.status !== "draft")
+        if (
+          !manifest ||
+          manifest.status !== "draft" ||
+          manifest.legType !== "line_haul"
+        )
           throw new Error("Only a draft manifest can accept shipments")
         const [record] = await tx
           .select()
@@ -213,13 +264,41 @@ export const scanShipmentAction = authActionClient
             and(eq(shipments.awbNumber, awbNumber), isNull(shipments.deletedAt))
           )
           .for("update")
-        if (!record || record.status !== "pending")
-          throw new Error("Select a pending shipment")
+        if (!record || !["pending", "in-transit"].includes(record.status))
+          throw new Error("Select an eligible shipment")
         const existing = await tx.query.manifestItems.findFirst({
-          where: eq(manifestItems.shipmentId, record.id),
+          where: and(
+            eq(manifestItems.shipmentId, record.id),
+            eq(manifestItems.isActive, true)
+          ),
         })
-        if (existing)
-          throw new Error("Shipment is already assigned to a manifest")
+        if (existing) throw new Error("Shipment already has an active load")
+        const [receipt] = await tx
+          .select({ id: manifestItemHandoffs.id })
+          .from(manifestItemHandoffs)
+          .innerJoin(
+            manifestItems,
+            eq(manifestItemHandoffs.manifestItemId, manifestItems.id)
+          )
+          .where(
+            and(
+              eq(manifestItems.shipmentId, record.id),
+              eq(manifestItemHandoffs.outcome, "received")
+            )
+          )
+          .limit(1)
+        if (
+          !canAllocateShipmentToLeg({
+            legType: manifest.legType,
+            status: record.status,
+            hasPriorReceipt: Boolean(receipt),
+            hasActiveAssignment: false,
+          })
+        ) {
+          throw new Error(
+            "In-transit cargo needs a recorded handover before entering another load"
+          )
+        }
         const [{ total }] = await tx
           .select({ total: sql<number>`count(*)::integer` })
           .from(manifestItems)
@@ -228,7 +307,7 @@ export const scanShipmentAction = authActionClient
           throw new Error("A manifest can contain up to 500 shipments")
         await tx
           .insert(manifestItems)
-          .values({ manifestId, shipmentId: record.id })
+          .values({ manifestId, shipmentId: record.id, isActive: true })
         await logAuditInTransaction(tx, {
           userId: ctx.session.user.id,
           userEmail: ctx.session.user.email || "unknown",
@@ -274,6 +353,11 @@ export const updateManifestAction = authActionClient
           throw new Error("Manifest references cannot be changed")
         if (current.status === "finalized") {
           throw new Error("A finalized manifest cannot be changed")
+        }
+        if (current.legType !== "line_haul") {
+          throw new Error(
+            "Use the dispatch workflow for pickup and delivery legs"
+          )
         }
         const assignments = { ...current, ...updateData }
         const [origin, destination, vehicle, driver] = await Promise.all([
@@ -328,11 +412,12 @@ export const updateManifestAction = authActionClient
           ) {
             throw new Error("Complete all assignments before finalizing")
           }
-          if (current.items.length === 0) {
+          const activeItems = current.items.filter((item) => item.isActive)
+          if (activeItems.length === 0) {
             throw new Error("A manifest must contain at least one shipment")
           }
 
-          const shipmentIds = current.items.map((item) => item.shipmentId)
+          const shipmentIds = activeItems.map((item) => item.shipmentId)
           const lockedShipments = await tx
             .select({
               id: shipments.id,
@@ -345,17 +430,52 @@ export const updateManifestAction = authActionClient
             .for("update")
           if (
             lockedShipments.length !== shipmentIds.length ||
-            lockedShipments.some(
-              (item) => item.status !== "pending" || item.deletedAt
-            )
+            lockedShipments.some((item) => item.deletedAt)
           ) {
-            throw new Error("All manifest shipments must be pending")
+            throw new Error("All manifest shipments must be available")
           }
 
-          await tx
-            .update(shipments)
-            .set({ status: "in-transit" })
-            .where(inArray(shipments.id, shipmentIds))
+          const receivedRows = await tx
+            .select({ shipmentId: manifestItems.shipmentId })
+            .from(manifestItemHandoffs)
+            .innerJoin(
+              manifestItems,
+              eq(manifestItemHandoffs.manifestItemId, manifestItems.id)
+            )
+            .where(
+              and(
+                inArray(manifestItems.shipmentId, shipmentIds),
+                eq(manifestItemHandoffs.outcome, "received")
+              )
+            )
+          const receivedShipmentIds = new Set(
+            receivedRows.map((row) => row.shipmentId)
+          )
+          if (
+            lockedShipments.some(
+              (shipment) =>
+                !canAllocateShipmentToLeg({
+                  legType: "line_haul",
+                  status: shipment.status,
+                  hasPriorReceipt: receivedShipmentIds.has(shipment.id),
+                  hasActiveAssignment: false,
+                })
+            )
+          ) {
+            throw new Error(
+              "In-transit cargo needs a recorded prior handover before departure"
+            )
+          }
+
+          const pendingIds = lockedShipments
+            .filter((shipment) => shipment.status === "pending")
+            .map((shipment) => shipment.id)
+          if (pendingIds.length > 0) {
+            await tx
+              .update(shipments)
+              .set({ status: "in-transit" })
+              .where(inArray(shipments.id, pendingIds))
+          }
           await tx.insert(trackingEvents).values(
             shipmentIds.map((shipmentId) => ({
               shipmentId,
@@ -393,6 +513,172 @@ export const updateManifestAction = authActionClient
         success: false,
         error:
           error instanceof Error ? error.message : "Failed to update manifest",
+      }
+    }
+  })
+
+export const recordManifestItemHandoffAction = authActionClient
+  .schema(recordManifestHandoffSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    try {
+      const result = await db.transaction(async (tx) => {
+        const [manifest] = await tx
+          .select()
+          .from(manifests)
+          .where(eq(manifests.id, parsedInput.manifestId))
+          .for("update")
+        if (!manifest || manifest.status !== "finalized") {
+          throw new Error("Only a started load can record a handover")
+        }
+
+        const [item] = await tx
+          .select()
+          .from(manifestItems)
+          .where(
+            and(
+              eq(manifestItems.id, parsedInput.manifestItemId),
+              eq(manifestItems.manifestId, manifest.id)
+            )
+          )
+          .for("update")
+        if (!item) throw new Error("Shipment is not part of this load")
+
+        const [shipment] = await tx
+          .select()
+          .from(shipments)
+          .where(eq(shipments.id, item.shipmentId))
+          .for("update")
+        if (!shipment || shipment.deletedAt) {
+          throw new Error("Shipment is not available")
+        }
+
+        const [sameEvent] = await tx
+          .select()
+          .from(manifestItemHandoffs)
+          .where(eq(manifestItemHandoffs.eventKey, parsedInput.eventKey))
+          .limit(1)
+        if (sameEvent) {
+          if (
+            sameEvent.manifestItemId === item.id &&
+            sameEvent.outcome === parsedInput.outcome
+          ) {
+            return { success: true, duplicate: true }
+          }
+          throw new Error("This handover request key was already used")
+        }
+
+        if (parsedInput.outcome === "received") {
+          const [existingReceipt] = await tx
+            .select({ id: manifestItemHandoffs.id })
+            .from(manifestItemHandoffs)
+            .where(
+              and(
+                eq(manifestItemHandoffs.manifestItemId, item.id),
+                eq(manifestItemHandoffs.outcome, "received")
+              )
+            )
+            .limit(1)
+          if (existingReceipt) {
+            return { success: true, alreadyReceived: true }
+          }
+          if (!item.isActive || shipment.status !== "in-transit") {
+            throw new Error("Only active in-transit cargo can be received")
+          }
+        } else if (!item.isActive || shipment.status !== "in-transit") {
+          throw new Error(
+            "Only active in-transit cargo can record an exception"
+          )
+        }
+
+        const [handoff] = await tx
+          .insert(manifestItemHandoffs)
+          .values({
+            manifestItemId: item.id,
+            outcome: parsedInput.outcome,
+            location: parsedInput.location,
+            receivingParty: parsedInput.receivingParty || null,
+            receivedBy: ctx.session.user.id,
+            eventKey: parsedInput.eventKey,
+            notes: parsedInput.notes || null,
+          })
+          .returning()
+
+        let delivered = false
+        if (parsedInput.outcome === "received") {
+          const [released] = await tx
+            .update(manifestItems)
+            .set({ isActive: false })
+            .where(
+              and(
+                eq(manifestItems.id, item.id),
+                eq(manifestItems.isActive, true)
+              )
+            )
+            .returning({ id: manifestItems.id })
+          if (!released) throw new Error("Shipment assignment already changed")
+
+          delivered = manifest.legType === "delivery"
+          if (delivered) {
+            await tx
+              .update(shipments)
+              .set({ status: "delivered", updatedAt: new Date() })
+              .where(eq(shipments.id, shipment.id))
+          }
+        }
+
+        await tx.insert(trackingEvents).values({
+          shipmentId: shipment.id,
+          status: delivered ? "delivered" : "in-transit",
+          location: parsedInput.location,
+          description:
+            parsedInput.outcome === "exception"
+              ? `An operational exception was recorded for ${manifest.referenceId}.`
+              : delivered
+                ? `Delivery was received for ${manifest.referenceId}.`
+                : `Cargo handover was received for ${manifest.referenceId}.`,
+          loggedBy: ctx.session.user.id,
+          isPublic: parsedInput.outcome === "received",
+          notes: parsedInput.notes || null,
+        })
+
+        await logAuditInTransaction(tx, {
+          userId: ctx.session.user.id,
+          userEmail: ctx.session.user.email || "unknown",
+          action:
+            parsedInput.outcome === "received"
+              ? "manifest_item_received"
+              : "manifest_item_exception",
+          entity: "manifest_item_handoffs",
+          entityId: handoff.id,
+          before: {
+            shipmentStatus: shipment.status,
+            assignmentActive: item.isActive,
+          },
+          after: {
+            outcome: handoff.outcome,
+            location: handoff.location,
+            receivingParty: handoff.receivingParty,
+            shipmentStatus: delivered ? "delivered" : shipment.status,
+            assignmentActive: parsedInput.outcome !== "received",
+          },
+        })
+
+        return { success: true, delivered }
+      })
+
+      revalidatePath("/dashboard/dispatch")
+      revalidatePath("/dashboard/manifests")
+      revalidatePath("/dashboard/shipments")
+      revalidatePath("/dashboard/tracking")
+      return { ...result, error: undefined }
+    } catch (error) {
+      Sentry.captureException(error)
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to record shipment handover",
       }
     }
   })

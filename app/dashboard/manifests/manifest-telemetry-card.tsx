@@ -129,7 +129,7 @@ export function ManifestTelemetryCard({
               Payload Limit
             </span>
             <p className="font-mono text-sm sm:text-base font-bold text-foreground">
-              {isVehicleSelected ? vehicleCapacityKg : "—"}{" "}
+              {isVehicleSelected ? vehicleCapacityKg : "-"}{" "}
               <span className="text-[10px] font-normal text-muted-foreground">KG</span>
             </p>
           </div>

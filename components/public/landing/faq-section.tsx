@@ -92,7 +92,7 @@ export function FAQSection() {
           </p>
         </motion.div>
 
-        {/* Shadcn Accordion — Radix primitive with motion entrance */}
+        {/* Shadcn Accordion: Radix primitive with motion entrance */}
         <Accordion
           type="single"
           collapsible

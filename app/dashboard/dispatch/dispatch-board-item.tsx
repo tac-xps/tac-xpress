@@ -10,9 +10,11 @@ import type { QueueItem } from "./dispatch-client-layout"
 export function DispatchBoardItem({
   item,
   pendingShipments,
+  deliveryShipments,
 }: {
   item: QueueItem
   pendingShipments: Shipment[]
+  deliveryShipments: Shipment[]
 }) {
   const [detailOpen, setDetailOpen] = useState(false)
 
@@ -22,7 +24,7 @@ export function DispatchBoardItem({
         <button
           type="button"
           onClick={() => setDetailOpen(true)}
-          className="font-mono text-xs font-semibold text-primary underline-offset-4 hover:underline cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="cursor-pointer text-left font-mono text-xs font-semibold text-primary underline-offset-4 hover:underline focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
           aria-label={`View details for ${item.id}`}
         >
           {item.id}
@@ -31,11 +33,16 @@ export function DispatchBoardItem({
       </div>
       <p className="mt-3 text-sm font-medium">{item.route}</p>
       {item.legInfo && (
-        <div className="mt-2 flex items-center gap-1.5 text-xs text-primary font-medium">
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary font-mono">
+        <div className="mt-2 flex items-center gap-1.5 text-xs font-medium text-primary">
+          <Badge
+            variant="outline"
+            className="h-4 border-primary/30 px-1.5 py-0 font-mono text-[10px] text-primary"
+          >
             Leg {item.legInfo.legNumber}/{item.legInfo.totalLegs}
           </Badge>
-          <span className="truncate text-muted-foreground">{item.legInfo.currentRoute}</span>
+          <span className="truncate text-muted-foreground">
+            {item.legInfo.currentRoute}
+          </span>
         </div>
       )}
       <p className="mt-2 text-xs text-muted-foreground">{item.time}</p>
@@ -48,6 +55,9 @@ export function DispatchBoardItem({
           ) : (
             <CreateDispatchDialog
               pendingShipments={pendingShipments.filter(
+                (shipment) => shipment.awbNumber === item.id
+              )}
+              deliveryShipments={deliveryShipments.filter(
                 (shipment) => shipment.awbNumber === item.id
               )}
             />

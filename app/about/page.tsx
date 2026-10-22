@@ -31,7 +31,7 @@ const OPERATING_STANDARDS = [
     title: "Help with practical freight details.",
     icon: ShieldCheck,
     lead: "Packaging and compliance verification.",
-    body: "Declare specialized handling, fragile contents, and statutory documentation like GST E-Way bills beforehand to ensure seamless terminal induction.",
+    body: "Declare specialized handling, fragile contents, and statutory documentation like GST E-Way bills beforehand to ensure rapid and compliant terminal induction.",
   },
 ]
 
@@ -44,7 +44,7 @@ export default function AboutPage() {
         title="For the people on both ends of a shipment."
         description="Goods carry a purpose: stock for a business, supplies for a team, something needed at home. We approach cargo with that responsibility in mind."
       />
-      <HomeStory ctaHref="/services" ctaText="Explore transit routes" />
+      <HomeStory ctaHref="/services" ctaText="Inspect transit routes" />
       <section className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-8 md:grid-cols-12 md:gap-14 lg:py-24">
         <div className="md:col-span-5 flex flex-col justify-between">
           <div>

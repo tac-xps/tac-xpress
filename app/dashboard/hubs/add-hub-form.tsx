@@ -43,7 +43,7 @@ export function AddHubForm({ form, onSubmit, isSubmitting }: AddHubFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {/* Northeast India quick-preset chips */}
         <div className="grid gap-1.5">
-          <p className="text-xs font-medium text-muted-foreground">Quick presets — Northeast India</p>
+          <p className="text-xs font-medium text-muted-foreground">Quick presets: Northeast India</p>
           <div className="flex flex-wrap gap-1.5">
             {NE_HUB_PRESETS.map((preset) => (
               <button

@@ -14,7 +14,7 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** Default — no step activated yet (above fold) */
+/** Default: no step activated yet (above fold) */
 export const Default: Story = {}
 
 export const Mobile: Story = {

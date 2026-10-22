@@ -5,12 +5,9 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { AuthProvider } from "@/providers/auth-provider"
-import { auth } from "@/auth"
 import { QueryProvider } from "@/providers/query-provider"
 import { PostHogProvider } from "@/providers/posthog-provider"
 import { Toaster } from "sonner"
-import * as Sentry from "@sentry/nextjs"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 const tacSans = IBM_Plex_Sans({
@@ -34,20 +31,11 @@ export const metadata: Metadata = {
     "Air and surface cargo between Northeast India and New Delhi. Explore services, prepare your shipment and track with your AWB.",
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await auth()
-
-  if (session?.user) {
-    Sentry.setUser({
-      id: session.user.id,
-      email: session.user.email ?? undefined,
-    })
-  }
-
   return (
     <html
       lang="en"
@@ -60,14 +48,12 @@ export default async function RootLayout({
       >
         <PostHogProvider>
           <QueryProvider>
-            <AuthProvider session={session}>
-              <ThemeProvider>
-                <NuqsAdapter>
-                  <TooltipProvider>{children}</TooltipProvider>
-                </NuqsAdapter>
-                <Toaster position="top-right" richColors />
-              </ThemeProvider>
-            </AuthProvider>
+            <ThemeProvider>
+              <NuqsAdapter>
+                <TooltipProvider>{children}</TooltipProvider>
+              </NuqsAdapter>
+              <Toaster position="top-right" richColors />
+            </ThemeProvider>
           </QueryProvider>
         </PostHogProvider>
       </body>

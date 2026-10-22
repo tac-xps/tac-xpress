@@ -89,9 +89,19 @@ export function ManifestShipmentSelector({
     }
 
     return result
-  }, [shipments, searchQuery, corridorOnly, selectedDestinationHub, destHubLocation, destHubName])
+  }, [
+    shipments,
+    searchQuery,
+    corridorOnly,
+    selectedDestinationHub,
+    destHubLocation,
+    destHubName,
+  ])
 
-  const totalPages = Math.max(1, Math.ceil(filteredShipments.length / itemsPerPage))
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredShipments.length / itemsPerPage)
+  )
 
   // Auto-reset page when destination hub or corridor filter changes
   useEffect(() => {
@@ -149,10 +159,10 @@ export function ManifestShipmentSelector({
   }
 
   return (
-    <Card className="flex h-full min-h-0 flex-col border-border bg-card shadow-xs rounded-none">
-      <CardContent className="flex h-full min-h-0 flex-col p-4 sm:p-5 space-y-3.5">
+    <Card className="flex h-full min-h-0 flex-col rounded-none border-border bg-card shadow-xs">
+      <CardContent className="flex h-full min-h-0 flex-col space-y-3.5 p-4 sm:p-5">
         {/* Header & Bulk Actions Toolbar */}
-        <div className="flex items-center justify-between border-b border-border/60 pb-3 shrink-0">
+        <div className="flex shrink-0 items-center justify-between border-b border-border/60 pb-3">
           <div className="space-y-0.5">
             <h3 className="text-xs font-bold tracking-widest text-foreground uppercase">
               Shipment Selection
@@ -167,16 +177,16 @@ export function ManifestShipmentSelector({
               variant="outline"
               size="sm"
               onClick={toggleSelectAllFiltered}
-              className="rounded-none text-xs h-7 px-2.5 font-medium"
+              className="h-7 rounded-none px-2.5 text-xs font-medium"
             >
               {areAllFilteredSelected ? (
                 <>
-                  <CheckSquare className="size-3.5 mr-1 text-primary" />
+                  <CheckSquare className="mr-1 size-3.5 text-primary" />
                   Deselect All
                 </>
               ) : (
                 <>
-                  <Square className="size-3.5 mr-1 text-muted-foreground" />
+                  <Square className="mr-1 size-3.5 text-muted-foreground" />
                   Select All ({filteredShipments.length})
                 </>
               )}
@@ -191,8 +201,8 @@ export function ManifestShipmentSelector({
         </div>
 
         {/* Search, Scan, and Corridor Filter Controls */}
-        <div className="space-y-2 shrink-0">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div className="shrink-0 space-y-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <div className="relative">
               <ScanBarcode className="absolute top-2.5 left-2.5 size-4 text-primary" />
               <Input
@@ -219,8 +229,8 @@ export function ManifestShipmentSelector({
 
           {/* Corridor Quick Filter Button */}
           {selectedDestinationHub && (
-            <div className="flex items-center justify-between text-xs bg-muted/30 p-2 border border-border/60">
-              <span className="font-mono text-[10px] text-muted-foreground uppercase flex items-center gap-1">
+            <div className="flex items-center justify-between border border-border/60 bg-muted/30 p-2 text-xs">
+              <span className="flex items-center gap-1 font-mono text-[10px] text-muted-foreground uppercase">
                 <Filter className="size-3 text-primary" /> Corridor Filter:
               </span>
               <Button
@@ -231,7 +241,7 @@ export function ManifestShipmentSelector({
                   setCorridorOnly(!corridorOnly)
                   setCurrentPage(1)
                 }}
-                className="rounded-none text-[11px] h-6 px-2.5 font-medium"
+                className="h-6 rounded-none px-2.5 text-[11px] font-medium"
               >
                 {corridorOnly
                   ? `Showing Corridor Only (${filteredShipments.length})`
@@ -242,13 +252,13 @@ export function ManifestShipmentSelector({
         </div>
 
         {/* Scrollable Shipment List View */}
-        <div className="flex-1 min-h-0 flex flex-col justify-between">
-          <div className="space-y-2 overflow-y-auto min-h-[320px] max-h-[460px] lg:max-h-[500px] pr-1 pb-2">
+        <div className="flex min-h-0 flex-1 flex-col justify-between">
+          <div className="max-h-[460px] min-h-[320px] space-y-2 overflow-y-auto pr-1 pb-2 lg:max-h-[500px]">
             {paginatedShipments.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-8 border border-dashed border-border text-center space-y-1">
+              <div className="flex flex-col items-center justify-center space-y-1 border border-dashed border-border p-8 text-center">
                 <Package className="size-8 text-muted-foreground opacity-40" />
                 <p className="text-xs font-semibold text-foreground">
-                  No matching pending shipments
+                  No matching eligible shipments
                 </p>
                 <p className="text-[11px] text-muted-foreground">
                   {searchQuery || corridorOnly
@@ -282,17 +292,17 @@ export function ManifestShipmentSelector({
                         toggleShipment(shipment.id)
                       }
                     }}
-                    className={`group flex items-center justify-between p-2.5 border rounded-none cursor-pointer transition-colors select-none outline-none focus-visible:ring-1 focus-visible:ring-primary ${
+                    className={`group flex cursor-pointer items-center justify-between rounded-none border p-2.5 transition-colors outline-none select-none focus-visible:ring-1 focus-visible:ring-primary ${
                       isChecked
                         ? "border-primary bg-primary/5"
                         : "border-border bg-background hover:bg-muted/40"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex min-w-0 items-center gap-2.5">
                       <div
-                        className={`size-4 shrink-0 border flex items-center justify-center transition-colors pointer-events-none ${
+                        className={`pointer-events-none flex size-4 shrink-0 items-center justify-center border transition-colors ${
                           isChecked
-                            ? "bg-primary border-primary text-primary-foreground"
+                            ? "border-primary bg-primary text-primary-foreground"
                             : "border-input bg-background group-hover:border-primary/50"
                         }`}
                         aria-hidden="true"
@@ -300,18 +310,18 @@ export function ManifestShipmentSelector({
                         {isChecked && <Check className="size-3 stroke-[3]" />}
                       </div>
 
-                      <div className="space-y-0.5 min-w-0">
-                        <div className="flex items-center gap-1.5 flex-wrap">
+                      <div className="min-w-0 space-y-0.5">
+                        <div className="flex flex-wrap items-center gap-1.5">
                           <span className="font-mono text-xs font-bold text-foreground">
                             {shipment.awbNumber}
                           </span>
                           {shipment.serviceType && (
-                            <span className="font-mono text-[9px] uppercase px-1 py-0.2 bg-muted text-muted-foreground border border-border">
+                            <span className="py-0.2 border border-border bg-muted px-1 font-mono text-[9px] text-muted-foreground uppercase">
                               {shipment.serviceType.replace(/_/g, " ")}
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
+                        <div className="flex items-center gap-2 font-mono text-[10px] text-muted-foreground">
                           <span className="flex items-center gap-0.5">
                             <Scale className="size-2.5 text-primary" />
                             {shipment.weightKg || 0} kg
@@ -329,19 +339,19 @@ export function ManifestShipmentSelector({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0 text-right">
+                    <div className="flex shrink-0 items-center gap-2 text-right">
                       {!matchesCorridor && (
                         <span
-                          className="inline-flex items-center gap-1 border border-status-pending/40 bg-status-pending-wash text-status-pending rounded-none text-[9px] uppercase font-mono px-1.5 py-0.5 font-medium"
+                          className="inline-flex items-center gap-1 rounded-none border border-status-pending/40 bg-status-pending-wash px-1.5 py-0.5 font-mono text-[9px] font-medium text-status-pending uppercase"
                           title="Cargo destination differs from selected destination hub"
                         >
-                          <AlertTriangle className="size-2.5 text-status-pending shrink-0" />
+                          <AlertTriangle className="size-2.5 shrink-0 text-status-pending" />
                           Deviation
                         </span>
                       )}
                       <Badge
                         variant={isChecked ? "default" : "outline"}
-                        className="rounded-none text-[10px] uppercase font-mono tracking-wider font-semibold"
+                        className="rounded-none font-mono text-[10px] font-semibold tracking-wider uppercase"
                       >
                         {shipment.destination}
                       </Badge>
@@ -359,20 +369,21 @@ export function ManifestShipmentSelector({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="rounded-none h-7 px-2.5 text-xs font-medium"
+                className="h-7 rounded-none px-2.5 text-xs font-medium"
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
               >
                 Previous
               </Button>
               <span className="font-mono text-[11px] text-muted-foreground">
-                Page {currentPage} of {totalPages} ({filteredShipments.length} total)
+                Page {currentPage} of {totalPages} ({filteredShipments.length}{" "}
+                total)
               </span>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="rounded-none h-7 px-2.5 text-xs font-medium"
+                className="h-7 rounded-none px-2.5 text-xs font-medium"
                 onClick={() =>
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }

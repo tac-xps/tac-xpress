@@ -1,6 +1,5 @@
 import type { NextConfig } from "next"
 import { EventEmitter } from "events"
-import { withSentryConfig } from "@sentry/nextjs"
 import withBundleAnalyzer from "@next/bundle-analyzer"
 
 if (EventEmitter.defaultMaxListeners < 50) {
@@ -55,11 +54,22 @@ const nextConfig: NextConfig = {
       "lucide-react",
       "recharts",
       "motion",
+      "motion/react",
       "date-fns",
       "@tiptap/core",
       "@tiptap/react",
       "@tiptap/starter-kit",
       "maplibre-gl",
+      "@radix-ui/react-tooltip",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-popover",
+      "@radix-ui/react-select",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-scroll-area",
+      "@radix-ui/react-avatar",
+      "@radix-ui/react-checkbox",
+      "@radix-ui/react-separator",
     ],
   },
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
@@ -169,10 +179,14 @@ const analyzer = withBundleAnalyzer({
 
 const finalConfig = analyzer(nextConfig)
 
-// Wrap config with bundle analyzer, then Sentry when auth token is configured
-export default process.env.NODE_ENV === "development" || !process.env.SENTRY_AUTH_TOKEN
-  ? finalConfig
-  : withSentryConfig(finalConfig, {
+export default async function config() {
+  const shouldEnableSentry =
+    process.env.NODE_ENV !== "development" &&
+    Boolean(process.env.SENTRY_AUTH_TOKEN)
+
+  if (shouldEnableSentry) {
+    const { withSentryConfig } = await import("@sentry/nextjs")
+    return withSentryConfig(finalConfig, {
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,
       silent: !process.env.CI,
@@ -189,3 +203,7 @@ export default process.env.NODE_ENV === "development" || !process.env.SENTRY_AUT
         },
       },
     })
+  }
+
+  return finalConfig
+}

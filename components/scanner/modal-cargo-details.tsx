@@ -84,7 +84,7 @@ export function ModalCargoDetails({ shipment }: ModalCargoDetailsProps) {
               <Layers className="size-3 text-primary" /> Pieces
             </span>
             <p className="font-mono text-lg font-bold text-foreground">
-              {pieces != null ? pieces : "—"}
+              {pieces != null ? pieces : "-"}
             </p>
           </div>
           <div className="border border-border/80 bg-muted/20 p-2.5 space-y-1">
@@ -97,7 +97,7 @@ export function ModalCargoDetails({ shipment }: ModalCargoDetailsProps) {
                   {actualWeight} <span className="text-xs font-normal text-muted-foreground">KG</span>
                 </>
               ) : (
-                "—"
+                "-"
               )}
             </p>
           </div>
@@ -111,7 +111,7 @@ export function ModalCargoDetails({ shipment }: ModalCargoDetailsProps) {
                   {chargedWeight} <span className="text-xs font-normal text-muted-foreground">KG</span>
                 </>
               ) : (
-                "—"
+                "-"
               )}
             </p>
           </div>
@@ -125,7 +125,7 @@ export function ModalCargoDetails({ shipment }: ModalCargoDetailsProps) {
                   {dimL} × {dimW} × {dimH} <span className="text-[10px] font-normal text-muted-foreground">cm</span>
                 </>
               ) : (
-                "—"
+                "-"
               )}
             </p>
           </div>

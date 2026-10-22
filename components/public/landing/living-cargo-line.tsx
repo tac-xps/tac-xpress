@@ -35,7 +35,7 @@ interface LivingCargoLineProps {
 }
 
 /**
- * Living Cargo Line — The Signature Motion System of TAC-XPRESS
+ * Living Cargo Line: The Signature Motion System of TAC-XPRESS
  *
  * Visual States:
  * - Idle: Thin 1px Stone rule

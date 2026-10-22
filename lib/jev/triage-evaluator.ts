@@ -6,7 +6,7 @@
  *
  * When enabled, sends all five questions in one API call (Speculative Fan-Out),
  * applies Confidence-Gated Routing for human escalation, and derives priority
- * via Composite Scoring — all in plain TypeScript code.
+ * via Composite Scoring: all in plain TypeScript code.
  *
  * See lib/jev/triage-questions.ts for question definitions and thresholds.
  */
@@ -29,9 +29,9 @@ import {
 export interface JevTriageResult {
   category: TriageCategory
   priority: TriagePriority
-  /** Raw Jev confidence on category classification (0–1). */
+  /** Raw Jev confidence on category classification (0 to 1). */
   confidence: number
-  /** True when Jev's confidence is below threshold — flag for human review. */
+  /** True when Jev confidence is below threshold: flag for human review. */
   needsHumanReview: boolean
   /** Structured signals extracted for audit and dashboards. */
   signals: {

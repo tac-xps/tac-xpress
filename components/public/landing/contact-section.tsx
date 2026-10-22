@@ -57,7 +57,7 @@ export function ContactSection() {
           {/* Contact Directory: 2x2 icon-card grid with staggered entrance (M3) */}
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-px border border-border/80 bg-border/30">
 
-            {/* Card 1 — Dispatch Hotline */}
+            {/* Card 1: Dispatch Hotline */}
             <motion.a
               href="tel:+919856173829"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
@@ -84,7 +84,7 @@ export function ContactSection() {
               </div>
             </motion.a>
 
-            {/* Card 2 — Operating Hours */}
+            {/* Card 2: Operating Hours */}
             <motion.div
               initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -112,7 +112,7 @@ export function ContactSection() {
               </div>
             </motion.div>
 
-            {/* Card 3 — Electronic Inquiries */}
+            {/* Card 3: Electronic Inquiries */}
             <motion.a
               href="mailto:cargo@tac-xpress.com"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
@@ -139,7 +139,7 @@ export function ContactSection() {
               </div>
             </motion.a>
 
-            {/* Card 4 — Gateway Stations */}
+            {/* Card 4: Gateway Stations */}
             <motion.div
               initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}

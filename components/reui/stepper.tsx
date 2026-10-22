@@ -172,8 +172,6 @@ function Stepper({
   return (
     <StepperContext.Provider value={contextValue}>
       <div
-        role="tablist"
-        aria-orientation={orientation}
         data-slot="stepper"
         className={cn("w-full", className)}
         data-orientation={orientation}
@@ -185,7 +183,7 @@ function Stepper({
   )
 }
 
-interface StepperItemProps extends React.HTMLAttributes<HTMLDivElement> {
+interface StepperItemProps extends React.HTMLAttributes<HTMLLIElement> {
   step: number
   completed?: boolean
   disabled?: boolean
@@ -216,7 +214,7 @@ function StepperItem({
     <StepItemContext.Provider
       value={{ step, state, isDisabled: disabled, isLoading }}
     >
-      <div
+      <li
         data-slot="stepper-item"
         className={cn(
           "group/step flex items-center justify-center not-last:flex-1 group-data-[orientation=horizontal]/stepper-nav:flex-row group-data-[orientation=vertical]/stepper-nav:flex-col",
@@ -227,7 +225,7 @@ function StepperItem({
         {...props}
       >
         {children}
-      </div>
+      </li>
     </StepItemContext.Provider>
   )
 }
@@ -257,9 +255,6 @@ function StepperTrigger({
   } = stepperCtx
   const { step, isDisabled } = useStepItem()
   const isSelected = activeStep === step
-  const id = `stepper-tab-${step}`
-  const panelId = `stepper-panel-${step}`
-
   // Register this trigger for keyboard navigation
   const btnRef = useRef<HTMLButtonElement>(null)
   useEffect(() => {
@@ -269,7 +264,9 @@ function StepperTrigger({
   }, [registerTrigger])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    const myIdx = triggerNodes.findIndex((n: HTMLButtonElement) => n === btnRef.current)
+    const myIdx = triggerNodes.findIndex(
+      (n: HTMLButtonElement) => n === btnRef.current
+    )
     switch (e.key) {
       case "ArrowRight":
       case "ArrowDown":
@@ -298,22 +295,19 @@ function StepperTrigger({
   }
 
   // `asChild` composes onto the consumer's element via Slot, so the trigger
-  // keeps its ref, tab semantics, and keyboard handlers either way.
+  // keeps its ref, focus management, and keyboard handlers either way.
   const Comp = asChild ? Slot.Root : "button"
 
   return (
     <Comp
       ref={btnRef}
-      role="tab"
-      id={id}
-      aria-selected={isSelected}
-      aria-controls={panelId}
+      aria-current={isSelected ? "step" : undefined}
       tabIndex={typeof tabIndex === "number" ? tabIndex : isSelected ? 0 : -1}
       data-slot="stepper-trigger"
       data-state={state}
       data-loading={isLoading}
       className={cn(
-        "focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center outline-none focus-visible:z-10 focus-visible:ring-3 disabled:pointer-events-none disabled:opacity-60",
+        "inline-flex cursor-pointer items-center outline-none focus-visible:z-10 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-60",
         "gap-2.5 rounded-full",
         className
       )}
@@ -339,7 +333,7 @@ function StepperIndicator({
       data-slot="stepper-indicator"
       data-state={state}
       className={cn(
-        "border-background bg-accent text-accent-foreground data-[state=completed]:bg-primary data-[state=completed]:text-primary-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground relative flex size-6 shrink-0 items-center justify-center overflow-hidden",
+        "relative flex size-6 shrink-0 items-center justify-center overflow-hidden border-background bg-accent text-accent-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=completed]:bg-primary data-[state=completed]:text-primary-foreground",
         "rounded-full text-xs",
         className
       )}
@@ -368,7 +362,7 @@ function StepperSeparator({ className }: React.ComponentProps<"div">) {
       data-slot="stepper-separator"
       data-state={state}
       className={cn(
-        "bg-muted rounded-sm m-0.5 group-data-[orientation=horizontal]/stepper-nav:h-0.5 group-data-[orientation=horizontal]/stepper-nav:flex-1 group-data-[orientation=vertical]/stepper-nav:h-12 group-data-[orientation=vertical]/stepper-nav:w-0.5",
+        "m-0.5 rounded-sm bg-muted group-data-[orientation=horizontal]/stepper-nav:h-0.5 group-data-[orientation=horizontal]/stepper-nav:flex-1 group-data-[orientation=vertical]/stepper-nav:h-12 group-data-[orientation=vertical]/stepper-nav:w-0.5",
         className
       )}
     />
@@ -399,28 +393,33 @@ function StepperDescription({
     <div
       data-slot="stepper-description"
       data-state={state}
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn("text-sm text-muted-foreground", className)}
     >
       {children}
     </div>
   )
 }
 
-function StepperNav({ children, className }: React.ComponentProps<"nav">) {
+function StepperNav({
+  children,
+  className,
+  ...props
+}: React.ComponentProps<"ol">) {
   const { activeStep, orientation } = useStepper()
 
   return (
-    <nav
+    <ol
       data-slot="stepper-nav"
       data-state={activeStep}
       data-orientation={orientation}
       className={cn(
-        "group/stepper-nav inline-flex data-[orientation=horizontal]:w-full data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col",
+        "group/stepper-nav m-0 inline-flex list-none p-0 data-[orientation=horizontal]:w-full data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col",
         className
       )}
+      {...props}
     >
       {children}
-    </nav>
+    </ol>
   )
 }
 

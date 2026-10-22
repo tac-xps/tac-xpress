@@ -1,7 +1,12 @@
 import type { Metadata } from "next"
 import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
-import { containsPattern, parseRecordQuery, recordOrder, type RecordSearchParams } from "@/lib/table-query"
+import {
+  containsPattern,
+  parseRecordQuery,
+  recordOrder,
+  type RecordSearchParams,
+} from "@/lib/table-query"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 
@@ -12,11 +17,23 @@ import {
   drivers,
   hubs,
   manifestItems,
+  manifestItemHandoffs,
   manifests,
   shipments,
   vehicles,
 } from "@/lib/db/schema"
-import { and, eq, isNull, notExists, ilike, or, inArray, desc, sql } from "drizzle-orm"
+import {
+  and,
+  eq,
+  isNull,
+  notExists,
+  exists,
+  ilike,
+  or,
+  inArray,
+  desc,
+  sql,
+} from "drizzle-orm"
 import { Card, CardContent } from "@/components/ui/card"
 import { CreateManifestDialog } from "./create-manifest-dialog"
 import { ExportManifestButton } from "./export-button"
@@ -33,7 +50,11 @@ export default async function ManifestsPage({
   const query = parseRecordQuery(params, ["referenceId", "createdAt", "status"])
   if (!["draft", "finalized"].includes(query.status)) query.status = "all"
   const pattern = containsPattern(query.q)
-  const sortColumns = { referenceId: manifests.referenceId, createdAt: manifests.createdAt, status: manifests.status }
+  const sortColumns = {
+    referenceId: manifests.referenceId,
+    createdAt: manifests.createdAt,
+    status: manifests.status,
+  }
   const manifestWhere = and(
     query.status !== "all"
       ? eq(manifests.status, query.status as "draft" | "finalized")
@@ -43,11 +64,17 @@ export default async function ManifestsPage({
           ilike(manifests.referenceId, pattern),
           inArray(
             manifests.originHubId,
-            db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern))
+            db
+              .select({ id: hubs.id })
+              .from(hubs)
+              .where(ilike(hubs.name, pattern))
           ),
           inArray(
             manifests.destinationHubId,
-            db.select({ id: hubs.id }).from(hubs).where(ilike(hubs.name, pattern))
+            db
+              .select({ id: hubs.id })
+              .from(hubs)
+              .where(ilike(hubs.name, pattern))
           )
         )
       : undefined
@@ -63,7 +90,13 @@ export default async function ManifestsPage({
   ] = await Promise.all([
     db.query.manifests.findMany({
       where: manifestWhere,
-      orderBy: [recordOrder(sortColumns[query.sort as keyof typeof sortColumns], query.order), desc(manifests.id)],
+      orderBy: [
+        recordOrder(
+          sortColumns[query.sort as keyof typeof sortColumns],
+          query.order
+        ),
+        desc(manifests.id),
+      ],
       with: {
         originHub: true,
         destinationHub: true,
@@ -72,6 +105,7 @@ export default async function ManifestsPage({
         items: {
           with: {
             shipment: true,
+            handoffs: true,
           },
         },
       },
@@ -96,13 +130,55 @@ export default async function ManifestsPage({
       .from(shipments)
       .where(
         and(
-          eq(shipments.status, "pending"),
           isNull(shipments.deletedAt),
           notExists(
             db
               .select({ id: manifestItems.id })
               .from(manifestItems)
-              .where(eq(manifestItems.shipmentId, shipments.id))
+              .where(
+                and(
+                  eq(manifestItems.shipmentId, shipments.id),
+                  eq(manifestItems.isActive, true)
+                )
+              )
+          ),
+          or(
+            and(
+              eq(shipments.status, "pending"),
+              notExists(
+                db
+                  .select({ id: manifestItemHandoffs.id })
+                  .from(manifestItemHandoffs)
+                  .innerJoin(
+                    manifestItems,
+                    eq(manifestItemHandoffs.manifestItemId, manifestItems.id)
+                  )
+                  .where(
+                    and(
+                      eq(manifestItems.shipmentId, shipments.id),
+                      eq(manifestItemHandoffs.outcome, "received")
+                    )
+                  )
+              )
+            ),
+            and(
+              eq(shipments.status, "in-transit"),
+              exists(
+                db
+                  .select({ id: manifestItemHandoffs.id })
+                  .from(manifestItemHandoffs)
+                  .innerJoin(
+                    manifestItems,
+                    eq(manifestItemHandoffs.manifestItemId, manifestItems.id)
+                  )
+                  .where(
+                    and(
+                      eq(manifestItems.shipmentId, shipments.id),
+                      eq(manifestItemHandoffs.outcome, "received")
+                    )
+                  )
+              )
+            )
           )
         )
       )
@@ -129,16 +205,38 @@ export default async function ManifestsPage({
       })
       .from(drivers)
       .where(and(eq(drivers.status, "active"), isNull(drivers.deletedAt))),
-    ])
+  ])
   const totalCount = Number(countResult[0].count)
   const pageCount = Math.ceil(totalCount / query.pageSize)
   const allManifests = manifestRows
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 md:gap-8">
-      <PageHeader title="Manifests" description="Plan hub-to-hub loads, confirm assignments and finalize departure records."><ExportManifestButton /><CreateManifestDialog shipments={pendingShipments} hubs={hubOptions} vehicles={vehicleOptions} drivers={driverOptions} /></PageHeader>
+      <PageHeader
+        title="Manifests"
+        description="Plan hub-to-hub loads, confirm assignments and finalize departure records."
+      >
+        <ExportManifestButton />
+        <CreateManifestDialog
+          shipments={pendingShipments}
+          hubs={hubOptions}
+          vehicles={vehicleOptions}
+          drivers={driverOptions}
+        />
+      </PageHeader>
       <Card className="relative overflow-hidden delay-0">
-<TableToolbar pathname="/dashboard/manifests" query={query.q} status={query.status} sort={query.sort} order={query.order} statuses={[{ value: "draft", label: "Draft" }, { value: "finalized", label: "Finalized" }]} placeholder="Manifest reference or hub name" />
+        <TableToolbar
+          pathname="/dashboard/manifests"
+          query={query.q}
+          status={query.status}
+          sort={query.sort}
+          order={query.order}
+          statuses={[
+            { value: "draft", label: "Draft" },
+            { value: "finalized", label: "Finalized" },
+          ]}
+          placeholder="Manifest reference or hub name"
+        />
         <CardContent className="p-0">
           <ManifestClientTable manifests={allManifests} pageCount={pageCount} />
         </CardContent>
@@ -146,4 +244,3 @@ export default async function ManifestsPage({
     </div>
   )
 }
-

@@ -227,7 +227,7 @@ export function CustomerLedgerDialog({
                           <TableCell className="text-xs whitespace-nowrap">
                             {inv.createdAt
                               ? format(new Date(inv.createdAt), "dd MMM yyyy")
-                              : "—"}
+                              : "-"}
                           </TableCell>
                           <TableCell className="text-xs">
                             {inv.awbNumber ? (

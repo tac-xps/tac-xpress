@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import {
   manifests,
   manifestItems,
+  manifestItemHandoffs,
   shipments,
   trackingEvents,
   drivers,
@@ -16,6 +17,7 @@ import { authActionClient } from "@/lib/safe-action"
 import { logAuditInTransaction } from "@/lib/audit"
 import { and, eq, inArray, isNull } from "drizzle-orm"
 import { capturePostHogEvent } from "@/lib/posthog-server"
+import { canAllocateShipmentToLeg } from "@/lib/shipments/manifest-leg-rules"
 
 import {
   createDispatchRunSchema,
@@ -44,7 +46,7 @@ export const startDispatchRunAction = authActionClient
           with: { items: { with: { shipment: true } }, originHub: true },
         })
         if (!manifest) throw new Error("Dispatch run not found")
-        if (!/^(PU|DL)-/.test(manifest.referenceId))
+        if (!["pickup", "delivery"].includes(manifest.legType))
           throw new Error("Use the manifest workflow for line-haul loads")
         if (manifest.status !== "draft")
           throw new Error("Dispatch run already started")
@@ -80,19 +82,55 @@ export const startDispatchRunAction = authActionClient
           .for("update")
         if (
           locked.length !== shipmentIds.length ||
-          locked.some(
-            (shipment) => shipment.deletedAt || shipment.status !== "pending"
-          )
+          locked.some((shipment) => shipment.deletedAt) ||
+          manifest.items.some((item) => !item.isActive)
         )
-          throw new Error("All run shipments must be available and pending")
+          throw new Error(
+            "All run shipments must still have active assignments"
+          )
+
+        const receivedRows = await tx
+          .select({ shipmentId: manifestItems.shipmentId })
+          .from(manifestItemHandoffs)
+          .innerJoin(
+            manifestItems,
+            eq(manifestItemHandoffs.manifestItemId, manifestItems.id)
+          )
+          .where(
+            and(
+              inArray(manifestItems.shipmentId, shipmentIds),
+              eq(manifestItemHandoffs.outcome, "received")
+            )
+          )
+        const receivedShipmentIds = new Set(
+          receivedRows.map((row) => row.shipmentId)
+        )
+        if (
+          locked.some(
+            (shipment) =>
+              !canAllocateShipmentToLeg({
+                legType: manifest.legType,
+                status: shipment.status,
+                hasPriorReceipt: receivedShipmentIds.has(shipment.id),
+                hasActiveAssignment: false,
+              })
+          )
+        ) {
+          throw new Error("Shipments do not meet this leg's departure rules")
+        }
         await tx
           .update(manifests)
           .set({ status: "finalized" })
           .where(eq(manifests.id, parsedInput.id))
-        await tx
-          .update(shipments)
-          .set({ status: "in-transit" })
-          .where(inArray(shipments.id, shipmentIds))
+        const pendingIds = locked
+          .filter((shipment) => shipment.status === "pending")
+          .map((shipment) => shipment.id)
+        if (pendingIds.length > 0) {
+          await tx
+            .update(shipments)
+            .set({ status: "in-transit" })
+            .where(inArray(shipments.id, pendingIds))
+        }
         await tx.insert(trackingEvents).values(
           shipmentIds.map((shipmentId) => ({
             shipmentId,
@@ -135,90 +173,6 @@ export const startDispatchRunAction = authActionClient
 // Keeps manifest as finalized
 // Transitions all linked shipments: in-transit → delivered
 
-const completeDispatchRunSchema = z.object({ id: z.string().uuid() })
-
-export const completeDispatchRunAction = authActionClient
-  .schema(completeDispatchRunSchema)
-  .action(async ({ parsedInput, ctx }) => {
-    try {
-      await db.transaction(async (tx) => {
-        await tx
-          .select({ id: manifests.id })
-          .from(manifests)
-          .where(eq(manifests.id, parsedInput.id))
-          .for("update")
-        const manifest = await tx.query.manifests.findFirst({
-          where: eq(manifests.id, parsedInput.id),
-          with: { items: { with: { shipment: true } }, destinationHub: true },
-        })
-        if (!manifest) throw new Error("Dispatch run not found")
-        if (!manifest.referenceId.startsWith("DL-"))
-          throw new Error(
-            "Only delivery runs can mark shipments delivered; record pickup or hub handover on each shipment"
-          )
-        if (manifest.status !== "finalized") {
-          throw new Error("Start the dispatch run before completing it")
-        }
-        if (
-          manifest.items.some((item) => item.shipment?.status !== "in-transit")
-        ) {
-          throw new Error("All dispatch shipments must be in transit")
-        }
-
-        const ids = manifest.items.map((item) => item.shipmentId)
-        if (ids.length === 0) throw new Error("Dispatch run is empty")
-        const locked = await tx
-          .select()
-          .from(shipments)
-          .where(inArray(shipments.id, ids))
-          .orderBy(shipments.id)
-          .for("update")
-        if (
-          locked.length !== ids.length ||
-          locked.some(
-            (shipment) => shipment.deletedAt || shipment.status !== "in-transit"
-          )
-        )
-          throw new Error("All run shipments must still be in transit")
-        await tx
-          .update(shipments)
-          .set({ status: "delivered" })
-          .where(inArray(shipments.id, ids))
-        await tx.insert(trackingEvents).values(
-          ids.map((shipmentId) => ({
-            shipmentId,
-            status: "delivered" as const,
-            location: manifest.destinationHub?.name || "Dispatch destination",
-            description: `Dispatch run ${manifest.referenceId} completed.`,
-            loggedBy: ctx.session.user.id,
-            isPublic: true,
-          }))
-        )
-        await logAuditInTransaction(tx, {
-          userId: ctx.session.user.id,
-          userEmail: ctx.session.user.email || "unknown",
-          action: "complete",
-          entity: "dispatch_runs",
-          entityId: parsedInput.id,
-          after: { deliveredShipmentIds: ids },
-        })
-
-        await capturePostHogEvent("dispatch_run_completed", ctx.session.user.id, {
-          manifest_id: parsedInput.id,
-          reference_id: manifest.referenceId,
-          shipment_count: ids.length,
-        })
-      })
-
-      revalidatePath("/dashboard/dispatch")
-      revalidatePath("/dashboard/shipments")
-      return { success: true, error: undefined }
-    } catch (error) {
-      Sentry.captureException(error)
-      return { success: false, error: "Failed to complete dispatch run" }
-    }
-  })
-
 export const createDispatchRunAction = authActionClient
   .schema(createDispatchRunSchema)
   .action(async ({ parsedInput: data, ctx }) => {
@@ -259,16 +213,52 @@ export const createDispatchRunAction = authActionClient
           .for("update")
         if (
           eligible.length !== shipmentIds.length ||
-          eligible.some(
-            (shipment) => shipment.deletedAt || shipment.status !== "pending"
-          )
-        )
-          throw new Error("Select available pending shipments")
+          eligible.some((shipment) => shipment.deletedAt)
+        ) {
+          throw new Error("Select available shipments")
+        }
         const assigned = await tx.query.manifestItems.findFirst({
-          where: inArray(manifestItems.shipmentId, shipmentIds),
+          where: and(
+            inArray(manifestItems.shipmentId, shipmentIds),
+            eq(manifestItems.isActive, true)
+          ),
         })
         if (assigned)
-          throw new Error("A selected shipment already belongs to a load")
+          throw new Error("A selected shipment already has an active load")
+        const receivedRows = await tx
+          .select({ shipmentId: manifestItems.shipmentId })
+          .from(manifestItemHandoffs)
+          .innerJoin(
+            manifestItems,
+            eq(manifestItemHandoffs.manifestItemId, manifestItems.id)
+          )
+          .where(
+            and(
+              inArray(manifestItems.shipmentId, shipmentIds),
+              eq(manifestItemHandoffs.outcome, "received")
+            )
+          )
+        const receivedShipmentIds = new Set(
+          receivedRows.map((row) => row.shipmentId)
+        )
+        const legType = runType === "pickup" ? "pickup" : "delivery"
+        if (
+          eligible.some(
+            (shipment) =>
+              !canAllocateShipmentToLeg({
+                legType,
+                status: shipment.status,
+                hasPriorReceipt: receivedShipmentIds.has(shipment.id),
+                hasActiveAssignment: false,
+              })
+          )
+        ) {
+          throw new Error(
+            runType === "pickup"
+              ? "Pickup runs require new pending shipments"
+              : "Delivery runs require in-transit shipments with a recorded prior handover"
+          )
+        }
         // 1. Create Manifest (used as Dispatch Run)
         const [newManifest] = await tx
           .insert(manifests)
@@ -278,6 +268,7 @@ export const createDispatchRunAction = authActionClient
             driverId,
             vehicleId,
             status: "draft",
+            legType,
           })
           .returning({ id: manifests.id })
 
@@ -287,7 +278,9 @@ export const createDispatchRunAction = authActionClient
           shipmentId,
         }))
 
-        await tx.insert(manifestItems).values(itemsToInsert)
+        await tx
+          .insert(manifestItems)
+          .values(itemsToInsert.map((item) => ({ ...item, isActive: true })))
         await logAuditInTransaction(tx, {
           userId: session.user.id,
           userEmail: session.user.email || "unknown",
@@ -323,7 +316,7 @@ export const updateDispatchRunAction = authActionClient
           .where(eq(manifests.id, id))
           .for("update")
         if (!before) throw new Error("Dispatch run not found")
-        if (!/^(PU|DL)-/.test(before.referenceId))
+        if (!["pickup", "delivery"].includes(before.legType))
           throw new Error("Use the manifest workflow for this load")
         if (before.status === "finalized") {
           throw new Error("A started dispatch run cannot be edited")
@@ -392,7 +385,7 @@ export const deleteDispatchRunAction = authActionClient
           .where(eq(manifests.id, parsedInput.id))
           .for("update")
         if (!before) throw new Error("Dispatch run not found")
-        if (!/^(PU|DL)-/.test(before.referenceId))
+        if (!["pickup", "delivery"].includes(before.legType))
           throw new Error("Use the manifest workflow for this load")
         if (before.status === "finalized") {
           throw new Error("A started dispatch run cannot be deleted")

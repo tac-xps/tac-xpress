@@ -14,10 +14,10 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** Default — top of page, transparent nav */
+/** Default: top of page, transparent nav */
 export const Default: Story = {}
 
-/** Mobile — narrow viewport to show hamburger trigger */
+/** Mobile: narrow viewport to show hamburger trigger */
 export const Mobile: Story = {
   parameters: {
     viewport: { defaultViewport: "mobile" },

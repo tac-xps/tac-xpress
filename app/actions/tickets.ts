@@ -22,17 +22,32 @@ import { feedback } from "@/lib/db/schema"
 import arcjet, { slidingWindow, request } from "@arcjet/next"
 import { isArcjetBypassed, isArcjetMisconfigured } from "@/lib/server/rate-limit"
 
-const aj = arcjet({
-  key: process.env.ARCJET_KEY || "ajkey_placeholder",
-  rules: [
-    // Limit to 3 requests per 15 minutes by IP
-    slidingWindow({
-      mode: process.env.NODE_ENV === "development" ? "DRY_RUN" : "LIVE",
-      interval: "15m",
-      max: 3,
-    }),
-  ],
-})
+const isDevBypass =
+  process.env.NODE_ENV === "development" &&
+  process.env.ARCJET_DEV_ENABLE !== "true"
+
+const aj = isDevBypass
+  ? {
+      protect: async () => ({
+        id: "dev-bypass",
+        isDenied: () => false,
+        isErrored: () => false,
+        isAllowed: () => true,
+        reason: { isRateLimit: () => false, message: "" },
+        results: [],
+      }),
+    }
+  : arcjet({
+      key: process.env.ARCJET_KEY || "ajkey_placeholder",
+      rules: [
+        // Limit to 3 requests per 15 minutes by IP
+        slidingWindow({
+          mode: process.env.NODE_ENV === "development" ? "DRY_RUN" : "LIVE",
+          interval: "15m",
+          max: 3,
+        }),
+      ],
+    })
 
 import { getVisibleText } from "@/lib/sanitize"
 
@@ -59,10 +74,10 @@ const createTicketSchema = z.object({
 })
 
 export async function createTicket(formData: FormData) {
-  // --- Honeypot check: bots fill hidden fields, humans don't ---
+  // Honeypot check: bots fill hidden fields, humans do not
   const honeypot = formData.get("website") as string | null
   if (honeypot && honeypot.length > 0) {
-    // Silently pretend success — don't tell the bot it failed
+    // Return success to avoid alerting automated bots
     return { success: true }
   }
 

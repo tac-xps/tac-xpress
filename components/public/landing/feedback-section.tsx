@@ -20,16 +20,14 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/reui/badge"
 import Link from "next/link"
 
-/* ------------------------------------------------------------------ */
-/*  Verified Testimonials — Social Proof & Corridor Performance       */
-/* ------------------------------------------------------------------ */
+// Verified corridor performance feedback
 const TESTIMONIALS = [
   {
     name: "Rajesh K.",
     role: "Operations Manager, LogiPrime",
     corridor: "DEL → IMF Corridor",
     message:
-      "TAC-XPRESS cut our Delhi–Imphal transit time by 40%. The real-time tracking is a game-changer for our perishable goods corridor.",
+      "TAC-XPRESS lowered our Delhi-Imphal transit time to 36 hours. Milestone tracking provides reliable custody status for our perishable consignments.",
     stars: 5,
   },
   {
@@ -50,9 +48,7 @@ const TESTIMONIALS = [
   },
 ] as const
 
-/* ------------------------------------------------------------------ */
-/*  Star Rating Component                                              */
-/* ------------------------------------------------------------------ */
+// Star rating indicator
 function StarRating({ count }: { count: number }) {
   return (
     <div
@@ -75,9 +71,7 @@ function StarRating({ count }: { count: number }) {
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Testimonial Card                                                   */
-/* ------------------------------------------------------------------ */
+// Testimonial card
 function TestimonialCard({
   testimonial,
   index,
@@ -97,7 +91,7 @@ function TestimonialCard({
         delay: index * 0.08,
         ease: motionEasings.editorial,
       }}
-      className="group relative flex flex-col justify-between border border-border/80 bg-card p-6 transition-colors duration-200 hover:border-primary/40 hover:bg-muted/20"
+      className="group relative flex flex-col justify-between rounded-lg border border-border/80 bg-card p-6 transition-colors duration-200 hover:border-primary/40 hover:bg-muted/20"
     >
       <div>
         <div className="flex items-center justify-between pb-3 border-b border-border/40">
@@ -131,9 +125,7 @@ function TestimonialCard({
   )
 }
 
-/* ================================================================== */
-/*  FeedbackSection — Editorial Social Proof & Quality Telemetry       */
-/* ================================================================== */
+// FeedbackSection: Customer proof and quality telemetry
 
 /**
  * Customer feedback and trust section for the master landing page.

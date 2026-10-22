@@ -50,7 +50,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       loading = true
       try {
         const res = await fetch("/api/workspace-activity", {
-          // Bypass browser cache — we rely on our own 30s JS throttle instead
+          // Bypass browser cache: relies on 30s JS throttle instead
           cache: "no-store",
         })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)

@@ -257,7 +257,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
                   <ExternalLink className="size-2.5 opacity-70 shrink-0" />
                 </Link>
               ) : (
-                <span className="font-mono text-muted-foreground text-xs">—</span>
+                <span className="font-mono text-muted-foreground text-xs">-</span>
               )}
             </div>
 
