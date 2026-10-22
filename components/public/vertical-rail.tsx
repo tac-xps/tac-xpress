@@ -5,12 +5,7 @@ import { cn } from "@/lib/utils"
 import { motion, useReducedMotion } from "motion/react"
 import { Check } from "lucide-react"
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   VerticalRail — track line (2px, border blend)
-───────────────────────────────────────────────────────────────────────────── */
-/* ─────────────────────────────────────────────────────────────────────────────
-   VerticalRail — track line (2px, border blend) with animated active beam
-───────────────────────────────────────────────────────────────────────────── */
+// VerticalRail: track line (2px, border blend) with animated active beam
 export function VerticalRail({
   children,
   className,
@@ -123,7 +118,7 @@ export function VerticalRailStep({
           />
         )}
 
-        {/* Pulsing ring — only on currently active step */}
+        {/* Pulsing ring: active step indicator */}
         {isActive && !shouldReduceMotion && (
           <motion.span
             className="absolute inset-0 rounded-none border-2 border-primary pointer-events-none"

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/tooltip"
 
 /**
- * BackToTop — Floating scroll-to-top trigger.
+ * BackToTop: Floating scroll-to-top trigger.
  *
  * Appears when the user scrolls 400px down the page.
  * Aligned vertically directly above the Support Assistant FAB.

@@ -84,13 +84,12 @@ export function HeroSection() {
           {/* Headline (fluid display with unclipped typography reveal) */}
           <h1
             id="hero-heading"
-            style={{ fontSize: "clamp(2.5rem, 3.8vw + 0.25rem, 4.25rem)" }}
-            className="font-heading font-bold tracking-[-0.035em] text-foreground leading-[1.08] text-balance"
+            className="text-hero-display text-foreground"
           >
-            <span className="sr-only">Move cargo. With clarity. — </span>
+            <span className="sr-only">Move cargo. With clarity. </span>
             <span className="block overflow-hidden py-0.5">
               <motion.span
-                className="block font-heading font-bold text-foreground lg:whitespace-nowrap"
+                className="block lg:whitespace-nowrap"
                 custom={0}
                 initial={shouldReduceMotion ? false : "hidden"}
                 animate="visible"
@@ -101,7 +100,7 @@ export function HeroSection() {
             </span>
             <span className="block overflow-hidden py-0.5">
               <motion.span
-                className="block font-heading font-bold bg-gradient-to-r from-primary via-primary/90 to-info bg-clip-text text-transparent"
+                className="block"
                 custom={1}
                 initial={shouldReduceMotion ? false : "hidden"}
                 animate="visible"
@@ -129,7 +128,7 @@ export function HeroSection() {
             </motion.p>
           </div>
 
-          {/* Actions with Tactile Micro-Springs */}
+          {/* Actions Row */}
           <motion.div
             initial={shouldReduceMotion ? false : { y: 12 }}
             animate={{ y: 0 }}
@@ -140,32 +139,28 @@ export function HeroSection() {
             }}
             className="mt-8 sm:mt-10 flex flex-wrap items-center gap-3 sm:gap-4"
           >
-            <motion.div {...tactileInteraction}>
-              <Button
-                asChild
-                size="lg"
-                className="group rounded-none bg-primary px-6 sm:px-7 font-sans text-sm font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              >
-                <Link href="#contact">
-                  Book a shipment
-                  <ArrowUpRight className="ml-2 size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
-              </Button>
-            </motion.div>
+            <Button
+              asChild
+              size="lg"
+              className="group font-medium tracking-tight text-primary-foreground hover:bg-primary/90"
+            >
+              <Link href="#contact">
+                Book a shipment
+                <ArrowUpRight className="ml-2 size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+            </Button>
 
-            <motion.div {...tactileInteraction}>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="rounded-none border-border bg-card px-6 sm:px-7 font-sans text-sm font-medium tracking-[-0.01em] text-foreground hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              >
-                <Link href="#visibility-chapter">
-                  <Search className="mr-2 size-3.5" />
-                  Track cargo
-                </Link>
-              </Button>
-            </motion.div>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="font-medium tracking-tight hover:bg-accent"
+            >
+              <Link href="#visibility-chapter">
+                <Search className="mr-2 size-3.5" />
+                Track cargo
+              </Link>
+            </Button>
           </motion.div>
         </motion.div>
 
@@ -204,7 +199,7 @@ export function HeroSection() {
                       ? undefined
                       : { scale: imageScale, y: imageY }
                   }
-                  className="relative h-full w-full will-change-transform transform-gpu"
+                  className="relative h-full w-full transform-gpu"
                 >
                   <Image
                     src="/images/logistics/hero.webp"

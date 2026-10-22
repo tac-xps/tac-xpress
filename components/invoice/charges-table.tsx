@@ -91,7 +91,7 @@ export function ChargesTable({ doc }: ChargesTableProps) {
               <td className="py-0.5 px-2 text-right font-bold text-[#191716]">
                 {formatMoney(financials.taxableAmount)}
               </td>
-              <td className="py-0.5 px-2 text-center text-neutral-400">—</td>
+              <td className="py-0.5 px-2 text-center text-neutral-400">-</td>
               {isInterstate ? (
                 <td className="py-0.5 px-2 text-right font-bold text-neutral-700">
                   {formatMoney(taxDecision.igst)}

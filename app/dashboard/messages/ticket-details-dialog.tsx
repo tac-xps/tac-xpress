@@ -10,7 +10,16 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import dynamic from "next/dynamic"
+import { Skeleton } from "@/components/ui/skeleton"
+
+const RichTextEditor = dynamic(
+  () => import("@/components/ui/rich-text-editor").then((mod) => mod.RichTextEditor),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[140px] w-full border border-input" />,
+  }
+)
 import { RichTextRenderer } from "@/components/ui/rich-text-renderer"
 import {
   updateTicketStatus,

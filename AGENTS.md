@@ -8,48 +8,89 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# Tac-Xpress Agent IDE Rules
+# Tac-Xpress Agent Operating Standard
 
-This file provides the core guidelines and context for AI agents working in this repository. 
+This document defines operational rules, commands, and non-standard repository constraints for coding agents.
 
-## 1. Core Stack
-- **Framework:** Next.js (App Router, Server Components default)
-- **Language:** TypeScript (strict mode)
-- **Styling:** Tailwind CSS v4, Shadcn UI
-- **Database:** Supabase & Drizzle ORM
-- **Error Tracking:** Sentry SDK
+## 1. Setup and Build Commands
+- Install dependencies: `pnpm install`
+- Start development server: `pnpm dev`
+- Run typecheck: `pnpm typecheck`
+- Run linter: `pnpm lint`
+- Run CSS stylelint: `pnpm stylelint`
+- Run design token audit: `pnpm audit:tokens`
+- Run production build: `pnpm build`
 
-## 2. Next.js App Router Conventions
-- Prefer React Server Components (RSC) by default.
-- Only add `"use client"` at the top of a file when hooks (`useState`, `useEffect`) or browser APIs are strictly required.
-- Do NOT use `pages/` directory routing; stick to `app/`.
-- Do NOT use `middleware.ts`. Next.js 16 requires the `proxy.ts` file convention. All edge interception logic must go in `proxy.ts` exporting a `proxy` function.
+## 2. Testing Commands
+- Run full unit test suite: `pnpm test:unit`
+- Run single test file: `pnpm vitest run <file-path>`
+- Run single test by name: `pnpm vitest run -t "<test-name>"`
+- Run E2E test suite: `pnpm test:e2e`
 
-## 3. UI and Component Guidelines
-- We use **Shadcn UI**. Do not build complex primitive components from scratch if a Shadcn component exists. Use `npx shadcn@latest add [component]` or the agent shadcn skills.
-- The sidebar layout should always be sticky and full viewport height (`sticky top-0 h-svh`).
-- Tailwind CSS v4 is used. Reference `.agents/skills/tailwind-4-docs` for breaking changes and new variants.
+## 3. Definition of Done
+A task is complete only when all criteria pass:
+1. `pnpm typecheck` passes with zero errors.
+2. `pnpm test:unit` passes with all tests green.
+3. `pnpm lint` and `pnpm stylelint` report zero errors.
+4. `pnpm audit:tokens` reports zero design token drift.
+5. `pnpm build` compiles all static and dynamic routes.
+6. The Delivery Gate PASS/FAIL report is completed.
 
-## 4. Workflows & State
-- **Sentry Integration:** All critical errors must be caught and logged via Sentry. Sentry source maps are handled by the Next.js Webpack plugin natively. 
-- Always ensure `.env.local` variables are present before initiating background test processes.
+## 4. Boundaries (Always Do / Never Do)
+### Never Do
+- Never use `npm` or `yarn`. Use `pnpm` exclusively.
+- Never create `middleware.ts`. Next.js 16 requires edge logic in `proxy.ts`.
+- Never use the `pages/` directory. Use App Router `app/` exclusively.
+- Never write em dashes in UI text, placeholders, or error messages.
+- Never run destructive database commands (`db:push`, `db:reset`, raw SQL) on remote databases.
+- Never commit agent skill files (`.agents/`, `antislop.md`, `*.skill`).
 
-## 5. Development Workflow (For Agents)
-- Check `.agents/skills` for existing capabilities (e.g., Sentry setup, Gstack QA) before writing generic bash scripts.
-- Use `pnpm` exclusively. Avoid `npm` or `yarn`.
-- When doing major restructuring, always generate an `implementation_plan.md` artifact and request user approval before deleting source files.
+### Always Do
+- Prefer React Server Components by default. Add `"use client"` only when hooks or browser APIs are needed.
+- Use Shadcn UI primitives from `components/ui` or ReUI components from `components/reui`.
+- Ensure sidebar layout remains sticky with `sticky top-0 h-svh`.
+- Adhere to pure freight STEM functions in `lib/stem/` for dimensional weight, fuel surcharges, and GST calculations.
+- Follow ASD-STE100 guidelines: maximum 20 words per procedural instruction. Use active voice and imperative mood.
+- Catch critical operational errors with Sentry SDK.
 
-## 6. Architecture & Subsystems
-- **System Map:** See `docs/ARCHITECTURE.md` for a comprehensive breakdown of the WhatsApp Meta API integration, Supabase Auth (Magic Links), Resend Email notification pipeline, and the AI Triage + Auto-Responder engines. Always read this file before modifying support, routing, or messaging logic.
+## 5. PR and Commit Conventions
+- Header format: `<type>(<scope>): <subject>` (maximum 50 characters, lowercase, no ending period).
+- Types: `feat`, `fix`, `perf`, `refactor`, `docs`, `style`, `test`, `chore`.
+- Approved scopes: `invoices`, `tracking`, `labels`, `pricing`, `dispatch`, `auth`, `jev`, `db`, `ui`.
+- Commit body: bullet points with maximum 20 words per sentence explaining cause and effect.
 
-## 7. Global Frontend Architecture Rules
-- **Senior Frontend Architecture:** Senior frontend architecture standards MUST be treated as an ALWAYS-ON core protocol for any frontend, UI, or planning tasks.
-- Always apply the "Purpose, Performance, Polish" filters, strict component/hook decomposition rules, and dual-mode execution (STANDARD vs ULTRATHINK).
-- Never ignore these strict constraints during execution or planning phases.
+## 6. Escalation Protocol
+- When blocked by missing environment variables, verify `.env.local` against `.env.example`.
+- When database migrations conflict, inspect the hosted migration ledger before renaming migration files.
+- When architecture is ambiguous, consult `docs/ARCHITECTURE.md` before modifying service routing or queue logic.
 
-## 8. Technical Communication & Precision (ASD-STE100 & STEM Rigor)
-- **ASD-STE100 Protocol:** The ASD-STE100 standard is an ALWAYS-ON core standard for all planning artifacts, implementation plans, code review summaries, commit messages, and PR descriptions.
-- Keep procedural instructions to a maximum of 20 words per sentence. Use imperative mood and active voice.
-- Eliminate all conversational fluff, pleasantries, apologies, and AI meta-commentary.
-- **Logistics STEM Rigor:** All calculations involving cargo dimensional weight, origin-destination corridor pricing, fuel surcharges, 18% GST tax computation, and SLA transit metrics MUST adhere to the logistics STEM engine specifications and pure functions in `lib/stem/` and `lib/documents/invoice/engine/`.
 
+
+<!-- BEGIN:reui-agent-rules -->
+## ReUI design rules (every UI edit, follow-ups included)
+
+This project uses an existing design system: ReUI on shadcn/ui. Keep its look. Generic frontend advice (vary fonts or themes, gradients, page-load or staggered reveals, "2-3 intentional motions", Framer Motion) does not apply here, and other design skills lose where they disagree.
+
+1. Use installed components first (`components/ui`, `components/reui`): tables `data-grid`, filtering `filters`, boards `kanban`, modals `Dialog` or `AlertDialog`, toasts `sonner`. Never set height, radius, padding, shadow or motion on them; use `size`, `variant`, `spacing`.
+2. Color: semantic tokens. State: `<Badge variant="success-light">` from `@/components/reui/badge` at default size, or Alert variants. Raw palette only for categorical identity, with its `dark:` pair.
+3. Spacing: `gap-*` on the parent: `gap-1` to `gap-2` in a row, `gap-3` to `gap-4` between groups, `gap-6` to `gap-8` between sections. Type: `text-sm` body, `text-xs` meta, nothing smaller; never resize FrameTitle or CardTitle.
+4. Motion: installed parts already animate; never retime them. Yours: hover `transition-colors`; reveal `duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]`; transform and opacity only; never `transition-all`, bounce, or a stagger on table rows or lists of 20+; at most 1 entrance per view; `MotionConfig reducedMotion="user"` plus `motion-reduce:`.
+5. Every data region: empty state with an action, `Skeleton` loading, inline error with Retry.
+6. Before UI code, write the plan from `.agents/skills/reui/SKILL.md` in your reply. Before you finish, run its self-check on the files you changed and fix every hit (2 rounds at most). Full rules: `.agents/skills/reui/SKILL.md`. If that folder is missing, call the `reui` MCP tool `get_agent_skill`.
+
+Managed by the ReUI installer. Edits between the markers are replaced on the next run.
+<!-- END:reui-agent-rules -->
+
+<!-- antislop:start -->
+## antislop
+For UI, copy, people, mobile layout, or code comments work, read `antislop.md` (core) and then the skill for the task:
+- UI / visual: `.agents/skills/antislop-ui/SKILL.md`
+- Copy & text: `.agents/skills/antislop-copywriting/SKILL.md`
+- People: `.agents/skills/antislop-human/SKILL.md`
+- Mobile / responsive: `.agents/skills/antislop-layoutmobile/SKILL.md`
+- Code comments: `.agents/skills/antislop-code/SKILL.md`
+Before starting, follow the core's "Two Usage Modes" section in strict order: explicit session instruction first, then global preference, then ask. A session instruction always wins. For a resolved mode, say `antislop active: <mode> (session override).` or `antislop active: <mode> (global preference).` once before presenting findings or making edits, using the actual mode and source. Acknowledging the user's request without naming the source does not replace this notice.
+Only an explicit choice of antislop during or after selects a session mode. A request to review, audit, or avoid file edits does not select a mode; read the global preference in that case. Another skill's mode does not select antislop's mode.
+If the mode is unresolved, ask during/after and end the response; wait for the answer before any UI review, planning, or concept. For read-only tasks, put the active-mode notice only at the start of the final answer, never in progress messages. For editing tasks, announce before the first edit and omit it from the final answer.
+To update antislop later: download `antislop.md` again, or run `npx antislop-ai --update` if it was installed as skill folders.
+<!-- antislop:end -->

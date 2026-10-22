@@ -1,5 +1,5 @@
 /**
- * lib/jev — TypeSafe Jev integration for Tac-Xpress.
+ * lib/jev: TypeSafe Jev integration for Tac-Xpress.
  *
  * Public surface for importing Jev utilities in server code:
  *

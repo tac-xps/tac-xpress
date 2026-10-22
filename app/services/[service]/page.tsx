@@ -55,7 +55,7 @@ export default async function ServicePage({ params }: Props) {
             ].map(([label, text, lead]) => (
               <div
                 key={label}
-                className="border-t-2 border-t-transparent hover:border-t-primary/70 border-x border-b border-border/80 bg-background/50 p-5 sm:p-6 transition-all duration-200"
+                className="border-t-2 border-t-transparent hover:border-t-primary/70 border-x border-b border-border/80 bg-background/50 p-5 sm:p-6 transition-colors duration-200"
               >
                 <dt className="text-subhead flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary">
                   <span className="size-1.5 rounded-none bg-primary" aria-hidden="true" />

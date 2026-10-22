@@ -66,7 +66,7 @@ export function ConsignmentManifest({ doc, visibleLimit }: ConsignmentManifestPr
                     {item.quantity} {item.unit}
                   </td>
                   <td className="py-1 px-2 text-right font-mono text-neutral-700">
-                    {item.weightKg ? `${item.weightKg.toFixed(1)} kg` : "—"}
+                    {item.weightKg ? `${item.weightKg.toFixed(1)} kg` : "-"}
                   </td>
                   <td className="py-1 px-2 text-right font-mono text-neutral-700">
                     {item.dimensions

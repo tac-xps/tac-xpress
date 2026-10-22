@@ -1,7 +1,7 @@
 "use client"
 
 // Client Component wrapper so that `ssr: false` dynamic import is legal.
-// Server Component layouts cannot use dynamic() with ssr:false directly —
+// Server Component layouts cannot use dynamic() with ssr:false directly,
 // moving it here resolves the Next.js 16 Turbopack constraint.
 import dynamic from "next/dynamic"
 

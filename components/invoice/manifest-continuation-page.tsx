@@ -134,7 +134,7 @@ export function ManifestContinuationPage({
                       {item.unit}
                     </td>
                     <td className="py-1 px-2 text-right font-mono text-neutral-800">
-                      {item.weightKg ? item.weightKg.toFixed(2) : "—"}
+                      {item.weightKg ? item.weightKg.toFixed(2) : "-"}
                     </td>
                     <td className="py-1 px-2 text-right font-mono text-neutral-700">
                       {item.dimensions

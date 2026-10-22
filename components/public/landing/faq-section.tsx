@@ -92,7 +92,7 @@ export function FAQSection() {
           </p>
         </motion.div>
 
-        {/* Shadcn Accordion — Radix primitive with motion entrance */}
+        {/* Shadcn Accordion: Radix primitive with motion entrance */}
         <Accordion
           type="single"
           collapsible
@@ -118,7 +118,7 @@ export function FAQSection() {
                 <AccordionTrigger
                   className="py-0 text-left hover:no-underline [&>svg]:hidden group"
                 >
-                  <span className="pr-6 font-heading text-editorial-sub font-medium tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary flex items-baseline text-balance">
+                  <span className="pr-6 font-heading text-subhead font-medium tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary flex items-baseline text-balance">
                     <span
                       className={
                         idx % 3 === 0
@@ -132,7 +132,7 @@ export function FAQSection() {
                     </span>
                     <span>{faq.q}</span>
                   </span>
-                  <span className="mt-1 flex size-6 shrink-0 items-center justify-center border border-border bg-card text-muted-foreground transition-all group-hover:border-primary group-hover:text-primary group-data-[state=open]:rotate-45">
+                  <span className="mt-1 flex size-6 shrink-0 items-center justify-center border border-border bg-card text-muted-foreground transition-[color,transform] duration-200 group-hover:border-primary group-hover:text-primary group-data-[state=open]:rotate-45">
                     <Plus className="size-3.5" />
                   </span>
                 </AccordionTrigger>

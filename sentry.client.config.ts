@@ -9,8 +9,13 @@ const enableReplay = process.env.NEXT_PUBLIC_SENTRY_REPLAY_ENABLED === "true"
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
-  // Tracing
-  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.2 : 1.0,
+  // Tracing: sample 20% in production, disabled in dev unless NEXT_PUBLIC_SENTRY_DEV_ENABLE is set
+  tracesSampleRate:
+    process.env.NODE_ENV === "production"
+      ? 0.2
+      : process.env.NEXT_PUBLIC_SENTRY_DEV_ENABLE === "true"
+        ? 1.0
+        : 0,
   tracePropagationTargets: ["localhost", /^\//],
   integrations: [
     Sentry.browserTracingIntegration(),
@@ -44,6 +49,8 @@ Sentry.init({
     "NotAllowedError: Permission denied",
     "NotAllowedError: Permission dismissed",
     "OverconstrainedError",
+    "network error",
+    /network error/i,
   ],
 
   beforeSend(event) {

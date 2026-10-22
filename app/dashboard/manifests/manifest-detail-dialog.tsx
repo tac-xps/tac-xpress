@@ -32,6 +32,8 @@ import { ShipmentDetailDialog } from "@/app/dashboard/shipments/shipment-detail-
 
 export type ManifestItem = {
   id: string
+  isActive: boolean
+  handoffs?: { outcome: string }[]
   shipment: {
     id: string
     awbNumber: string
@@ -47,6 +49,7 @@ export type ManifestDetail = {
   id: string
   referenceId: string
   status: "draft" | "finalized"
+  legType: "pickup" | "line_haul" | "delivery"
   createdAt: Date
   originHubId?: string | null
   destinationHubId?: string | null
@@ -214,10 +217,10 @@ export function ManifestDetailDialog({
                       <TableCell className="text-xs font-mono">
                         {item.shipment
                           ? `${item.shipment.origin} → ${item.shipment.destination}`
-                          : "—"}
+                          : "-"}
                       </TableCell>
                       <TableCell className="text-xs font-mono">
-                        {item.shipment?.weightKg ?? "—"} kg
+                        {item.shipment?.weightKg ?? "-"} kg
                       </TableCell>
                       <TableCell className="text-xs">
                         {item.shipment && (

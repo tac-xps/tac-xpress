@@ -22,6 +22,27 @@
       "when": 1780686639276,
       "tag": "0002_event_sourced_tracking",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1780687000000,
+      "tag": "0003_shipment_status_summary_view",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1780688000000,
+      "tag": "0004_add_missing_constraints",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1780689000000,
+      "tag": "0005_manifest_leg_handoffs",
+      "breakpoints": true
     }
   ]
 }

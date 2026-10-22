@@ -50,6 +50,8 @@ function AppShellWrapper({
   )
 }
 
+import { AuthProvider } from "@/providers/auth-provider"
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -60,12 +62,14 @@ export default async function DashboardLayout({
   )
 
   return (
-    <NotificationWrapper>
-      <ScannerProvider>
-        <Suspense fallback={<AppShellSkeleton />}>
-          <AppShellWrapper session={session}>{children}</AppShellWrapper>
-        </Suspense>
-      </ScannerProvider>
-    </NotificationWrapper>
+    <AuthProvider session={session as any}>
+      <NotificationWrapper>
+        <ScannerProvider>
+          <Suspense fallback={<AppShellSkeleton />}>
+            <AppShellWrapper session={session}>{children}</AppShellWrapper>
+          </Suspense>
+        </ScannerProvider>
+      </NotificationWrapper>
+    </AuthProvider>
   )
 }

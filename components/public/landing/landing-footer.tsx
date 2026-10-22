@@ -67,18 +67,16 @@ export function LandingFooter() {
               Move cargo. With clarity.
             </p>
           </div>
-          <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
-            <Button
-              asChild
-              size="lg"
-              className="w-fit rounded-none bg-primary px-6 font-sans text-sm font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90"
-            >
-              <Link href="#contact">
-                Start a shipment inquiry
-                <ArrowUpRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </motion.div>
+          <Button
+            asChild
+            size="lg"
+            className="w-fit font-semibold tracking-tight text-primary-foreground hover:bg-primary/90"
+          >
+            <Link href="#contact">
+              Start a shipment inquiry
+              <ArrowUpRight className="ml-2 size-4" />
+            </Link>
+          </Button>
         </div>
 
         {/* Footer Navigation Columns */}
@@ -121,7 +119,7 @@ export function LandingFooter() {
 
         {/* Copyright and Metadata */}
         <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-border/80 pt-8 sm:flex-row sm:items-center font-sans text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} TAC-XPRESS LOGISTICS LLP. All rights reserved.</p>
+          <p suppressHydrationWarning>© {new Date().getFullYear()} TAC-XPRESS LOGISTICS LLP. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-4">
             <span>GST Registered</span>
             <span>·</span>

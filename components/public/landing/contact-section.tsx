@@ -2,7 +2,8 @@
 
 import React from "react"
 import { motion, useReducedMotion } from "motion/react"
-import { Phone, Mail, MapPin } from "lucide-react"
+import { Phone, Mail, MapPin, Clock } from "lucide-react"
+import { IconTile } from "@/components/reui/icon-tile"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { TicketForm } from "@/components/public/ticket-form"
 import { BorderBeam } from "@/components/ui/border-beam"
@@ -56,24 +57,23 @@ export function ContactSection() {
           {/* Contact Directory: 2x2 icon-card grid with staggered entrance (M3) */}
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-px border border-border/80 bg-border/30">
 
-            {/* Card 1 — Dispatch Hotline */}
+            {/* Card 1: Dispatch Hotline */}
             <motion.a
               href="tel:+919856173829"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-20px" }}
-              whileHover={shouldReduceMotion ? undefined : { y: -1 }}
               transition={{
                 duration: motionDurations.reveal,
                 delay: 0.04,
                 ease: motionEasings.editorial,
               }}
-              className="group relative flex items-start gap-3.5 bg-card p-5 transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="group relative flex items-start gap-3.5 bg-card p-5 transition-colors duration-200 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               aria-label="Call dispatch hotline +91 98561 73829"
             >
-              <span aria-hidden="true" className="mt-0.5 flex size-9 shrink-0 items-center justify-center bg-primary/10">
-                <Phone className="size-4 text-primary" strokeWidth={1.75} />
-              </span>
+              <IconTile variant="soft" size="sm" className="mt-0.5 text-primary" aria-hidden="true">
+                <Phone strokeWidth={1.75} />
+              </IconTile>
               <div className="min-w-0 flex-1">
                 <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-primary">
                   Dispatch Hotline
@@ -84,7 +84,7 @@ export function ContactSection() {
               </div>
             </motion.a>
 
-            {/* Card 2 — Operating Hours */}
+            {/* Card 2: Operating Hours */}
             <motion.div
               initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -96,12 +96,9 @@ export function ContactSection() {
               }}
               className="flex items-start gap-3.5 bg-card p-5"
             >
-              <span aria-hidden="true" className="mt-0.5 flex size-9 shrink-0 items-center justify-center bg-info/10">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="text-info" aria-hidden="true">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-              </span>
+              <IconTile variant="soft" size="sm" className="mt-0.5 text-info" aria-hidden="true">
+                <Clock strokeWidth={1.75} />
+              </IconTile>
               <div className="min-w-0">
                 <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-info">
                   Operating Hours
@@ -115,24 +112,23 @@ export function ContactSection() {
               </div>
             </motion.div>
 
-            {/* Card 3 — Electronic Inquiries */}
+            {/* Card 3: Electronic Inquiries */}
             <motion.a
               href="mailto:cargo@tac-xpress.com"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-20px" }}
-              whileHover={shouldReduceMotion ? undefined : { y: -1 }}
               transition={{
                 duration: motionDurations.reveal,
                 delay: 0.12,
                 ease: motionEasings.editorial,
               }}
-              className="group relative flex items-start gap-3.5 bg-card p-5 transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="group relative flex items-start gap-3.5 bg-card p-5 transition-colors duration-200 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               aria-label="Email cargo@tac-xpress.com"
             >
-              <span aria-hidden="true" className="mt-0.5 flex size-9 shrink-0 items-center justify-center bg-status-delivered/10">
-                <Mail className="size-4 text-status-delivered" strokeWidth={1.75} />
-              </span>
+              <IconTile variant="soft" size="sm" className="mt-0.5 text-status-delivered" aria-hidden="true">
+                <Mail strokeWidth={1.75} />
+              </IconTile>
               <div className="min-w-0 flex-1">
                 <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-status-delivered">
                   Electronic Inquiries
@@ -143,7 +139,7 @@ export function ContactSection() {
               </div>
             </motion.a>
 
-            {/* Card 4 — Gateway Stations */}
+            {/* Card 4: Gateway Stations */}
             <motion.div
               initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -155,9 +151,9 @@ export function ContactSection() {
               }}
               className="flex items-start gap-3.5 bg-card p-5"
             >
-              <span aria-hidden="true" className="mt-0.5 flex size-9 shrink-0 items-center justify-center bg-status-pending/10">
-                <MapPin className="size-4 text-status-pending" strokeWidth={1.75} />
-              </span>
+              <IconTile variant="soft" size="sm" className="mt-0.5 text-status-pending" aria-hidden="true">
+                <MapPin strokeWidth={1.75} />
+              </IconTile>
               <div className="min-w-0">
                 <span className="block font-sans text-xs uppercase tracking-[0.06em] font-semibold text-status-pending">
                   Gateway Stations

@@ -67,7 +67,7 @@ const STEPS = [
 ]
 
 /**
- * Process section — The signature motion centerpiece of TAC-XPRESS.
+ * Process section: The signature motion centerpiece of TAC-XPRESS.
  * Showcases the 4-stage freight journey driven by the Living Cargo Line
  * with calibrated desktop scroll progression and compact mobile flow.
  */
@@ -221,7 +221,7 @@ export function ProcessSection() {
                       {/* Step Title */}
                       <h3
                         className={cn(
-                          "mt-4 font-heading text-editorial-sub font-medium tracking-[-0.015em] transition-colors text-balance",
+                          "mt-4 font-heading text-subhead font-medium tracking-[-0.015em] transition-colors text-balance",
                           isActive ? step.color : "text-foreground"
                         )}
                       >

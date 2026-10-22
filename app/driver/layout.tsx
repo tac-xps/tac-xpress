@@ -45,6 +45,8 @@ function DriverShellWrapper({
   )
 }
 
+import { AuthProvider } from "@/providers/auth-provider"
+
 export default async function DriverLayout({
   children,
 }: {
@@ -53,10 +55,12 @@ export default async function DriverLayout({
   const session = await requireDashboardSession().catch(() => redirect("/signin"))
 
   return (
-    <ScannerProvider>
-      <Suspense fallback={<AppShellSkeleton />}>
-        <DriverShellWrapper session={session}>{children}</DriverShellWrapper>
-      </Suspense>
-    </ScannerProvider>
+    <AuthProvider session={session as any}>
+      <ScannerProvider>
+        <Suspense fallback={<AppShellSkeleton />}>
+          <DriverShellWrapper session={session}>{children}</DriverShellWrapper>
+        </Suspense>
+      </ScannerProvider>
+    </AuthProvider>
   )
 }

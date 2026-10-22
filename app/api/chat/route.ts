@@ -18,17 +18,32 @@ function isArcjetMisconfigured(): boolean {
   )
 }
 
-const aj = arcjet({
-  key: process.env.ARCJET_KEY || "ajkey_placeholder",
-  rules: [
-    tokenBucket({
-      mode: process.env.NODE_ENV === "development" ? "DRY_RUN" : "LIVE",
-      refillRate: 10,
-      interval: "1m",
-      capacity: 10,
-    }),
-  ],
-})
+const isDevBypass =
+  process.env.NODE_ENV === "development" &&
+  process.env.ARCJET_DEV_ENABLE !== "true"
+
+const aj = isDevBypass
+  ? {
+      protect: async () => ({
+        id: "dev-bypass",
+        isDenied: () => false,
+        isErrored: () => false,
+        isAllowed: () => true,
+        reason: { isRateLimit: () => false, message: "" },
+        results: [],
+      }),
+    }
+  : arcjet({
+      key: process.env.ARCJET_KEY || "ajkey_placeholder",
+      rules: [
+        tokenBucket({
+          mode: process.env.NODE_ENV === "development" ? "DRY_RUN" : "LIVE",
+          refillRate: 10,
+          interval: "1m",
+          capacity: 10,
+        }),
+      ],
+    })
 
 const openrouter = createOpenAI({
   baseURL: "https://openrouter.ai/api/v1",
@@ -54,7 +69,7 @@ export async function POST(req: Request) {
     )
   }
 
-  // Public endpoint — protected by Arcjet rate limiting.
+  // Public endpoint: protected by Arcjet rate limiting.
   // Fails closed with 503 when rate limiting is misconfigured in production or errors.
   if (isArcjetMisconfigured()) {
     Sentry.captureMessage("Arcjet is misconfigured in production for chat endpoint", {

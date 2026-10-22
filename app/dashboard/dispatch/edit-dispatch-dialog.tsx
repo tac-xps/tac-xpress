@@ -13,13 +13,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { updateDispatchRunAction } from "./actions"
 import { DriverCombobox } from "@/components/forms/driver-combobox"
 import { VehicleCombobox } from "@/components/forms/vehicle-combobox"
@@ -30,7 +23,6 @@ interface EditDispatchDialogProps {
     referenceId: string
     driverId?: string | null
     vehicleId?: string | null
-    status: "draft" | "finalized"
   }
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -43,10 +35,6 @@ export function EditDispatchDialog({
 }: EditDispatchDialogProps) {
   const [driverId, setDriverId] = useState(dispatchRun.driverId || "")
   const [vehicleId, setVehicleId] = useState(dispatchRun.vehicleId || "")
-  const [status, setStatus] = useState<"draft" | "finalized">(
-    dispatchRun.status
-  )
-
   const { executeAsync, isExecuting } = useAction(updateDispatchRunAction, {
     onSuccess: ({ data }) => {
       if (data?.success) {
@@ -74,12 +62,13 @@ export function EditDispatchDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[90vw] sm:max-w-2xl lg:max-w-3xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] w-[90vw] overflow-y-auto sm:max-w-2xl lg:max-w-3xl">
         <form onSubmit={handleSubmit}>
           <DialogHeader className="pr-14">
             <DialogTitle>Edit Dispatch Run</DialogTitle>
             <DialogDescription>
-              Update driver and vehicle assignments for {dispatchRun.referenceId}.
+              Update driver and vehicle assignments for{" "}
+              {dispatchRun.referenceId}.
             </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-1 gap-4 py-4 md:grid-cols-2">
@@ -96,23 +85,6 @@ export function EditDispatchDialog({
                 value={vehicleId}
                 onSelect={(id) => setVehicleId(id)}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value="draft" disabled
-                onValueChange={(value: "draft" | "finalized") =>
-                  setStatus(value)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  
-                </SelectContent>
-              </Select>
             </div>
           </div>
           <DialogFooter>
@@ -133,4 +105,3 @@ export function EditDispatchDialog({
     </Dialog>
   )
 }
-

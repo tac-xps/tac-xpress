@@ -90,7 +90,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
     {
       label: "Overdue invoices",
       value: overdueCount.toLocaleString("en-IN"),
-      description: overdueCount > 0 ? "Action required — past due date" : "All accounts within terms",
+      description: overdueCount > 0 ? "Action required: past due date" : "All accounts within terms",
       icon: AlertCircle,
       highlight: overdueCount > 0,
     },
@@ -122,7 +122,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
 
       <section
         aria-label="Financial summary"
-        className="overflow-hidden rounded-none border border-border/80 bg-card shadow-xs transition-shadow duration-200 hover:shadow-sm"
+        className="overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs transition-shadow duration-200 hover:shadow-sm"
       >
         <div className="flex items-center justify-between border-b border-border/80 bg-muted/30 px-5 py-2.5 text-xs text-muted-foreground">
           <span>Financial summary · aggregate invoice balances</span>
@@ -161,7 +161,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
         </dl>
       </section>
 
-      <section aria-label="Invoice records" className="min-w-0 overflow-hidden rounded-none border bg-card">
+      <section aria-label="Invoice records" className="min-w-0 overflow-hidden rounded-lg border bg-card">
         <TableToolbar
           pathname="/dashboard/invoices"
           query={query.q}

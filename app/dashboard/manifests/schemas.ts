@@ -7,8 +7,12 @@ export const createManifestSchema = z.object({
   driverId: z.string().uuid("Select a driver"),
   shipmentIds: z
     .array(z.string().uuid())
-    .min(1, "Select at least one shipment").max(500, "A manifest can contain up to 500 shipments")
-    .refine((ids) => new Set(ids).size === ids.length, "Select each shipment only once"),
+    .min(1, "Select at least one shipment")
+    .max(500, "A manifest can contain up to 500 shipments")
+    .refine(
+      (ids) => new Set(ids).size === ids.length,
+      "Select each shipment only once"
+    ),
   sendWhatsAppNotification: z.boolean().default(true).optional(),
 })
 
@@ -17,11 +21,33 @@ export const scanShipmentSchema = z.object({
   awbNumber: z.string().trim().min(1).max(64),
 })
 
+export const recordManifestHandoffSchema = z
+  .object({
+    manifestId: z.string().uuid(),
+    manifestItemId: z.string().uuid(),
+    outcome: z.enum(["received", "exception"]),
+    location: z.string().trim().min(1).max(160),
+    receivingParty: z.string().trim().max(160).optional(),
+    notes: z.string().trim().max(1000).optional(),
+    eventKey: z.string().uuid(),
+  })
+  .superRefine((input, context) => {
+    if (input.outcome === "received" && !input.receivingParty) {
+      context.addIssue({
+        code: "custom",
+        path: ["receivingParty"],
+        message: "Enter the name of the person or team receiving the cargo.",
+      })
+    }
+  })
+
 export const updateManifestSchema = z.object({
   id: z.string().uuid(),
   referenceId: z
     .string()
-    .min(3, "Reference ID must be at least 3 characters").max(64).regex(/^[A-Za-z0-9-]+$/, "Use letters, numbers and hyphens")
+    .min(3, "Reference ID must be at least 3 characters")
+    .max(64)
+    .regex(/^[A-Za-z0-9-]+$/, "Use letters, numbers and hyphens")
     .optional(),
   originHubId: z.string().uuid().nullable().optional(),
   destinationHubId: z.string().uuid().nullable().optional(),

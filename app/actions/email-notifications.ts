@@ -108,7 +108,7 @@ function buildEmailContent(
           <hr style="border:none;border-top:1px solid #f3f4f6;margin:24px 0;" />
           <p style="color:#9ca3af;font-size:11px;margin:0;">
             If you have questions, reply to this email or visit <a href="${contactUrl}" style="color:#6366f1;">our contact page</a>.<br />
-            This is an automated message from TAC-XPRESS — ${supportEmail}
+            This is an automated message from TAC-XPRESS (${supportEmail})
           </p>
         </td></tr>
       </table>
@@ -174,14 +174,12 @@ function buildEmailContent(
 
 import * as Sentry from "@sentry/nextjs"
 
-// ---------------------------------------------------------------------------
-// Main function — sends via Resend and logs to email_notifications table
-// ---------------------------------------------------------------------------
+// Main function: sends via Resend and logs to email_notifications table
 export async function sendTicketNotification(payload: EmailPayload) {
   try {
     if (!RESEND_API_KEY) {
       console.warn(
-        "[Email] RESEND_API_KEY not set — email skipped:",
+        "[Email] RESEND_API_KEY not set: email skipped",
         payload.type
       )
       return { success: true, skipped: true }

@@ -18,7 +18,7 @@ const CHAPTERS: Chapter[] = [
 ]
 
 /**
- * TAC Journey Rail — Restrained 4-Stage Editorial Rail
+ * TAC Journey Rail: Restrained 4-Stage Editorial Rail
  * Provides a continuous vertical guideline with quiet active-state markers.
  * Desktop only (hidden on viewports below xl).
  */

@@ -15,7 +15,12 @@ import { RunControls } from "./run-controls"
 export type DispatchRunRecord = Manifest & {
   driver?: { name: string } | null
   vehicle?: { registrationNumber: string } | null
-  items?: { shipment: { status: string } | null }[]
+  items?: {
+    id: string
+    isActive: boolean
+    handoffs: { outcome: string }[]
+    shipment: { status: string; awbNumber: string } | null
+  }[]
 }
 export function DispatchClientTable({
   dispatchRuns,

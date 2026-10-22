@@ -162,7 +162,7 @@ export function ChartBarInteractive({ data }: ChartBarInteractiveProps = {}) {
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-0!">
           <CardTitle>Shipment volume trend</CardTitle>
           <CardDescription>
-            Air cargo vs surface cargo — last 3 months
+            Air cargo vs surface cargo (last 3 months)
           </CardDescription>
         </div>
         <div className="flex">

@@ -83,7 +83,7 @@ async function checkMfaLockout(userId: string): Promise<{ locked: boolean; remai
       remainingSeconds: Math.ceil((lockedTime - now) / 1000),
     }
   }
-  // Lockout expired — clear stale attempts so user is not re-locked after
+  // Lockout expired: clear stale attempts so user is not re-locked after
   // a single failure (R-04).
   await clearMfaAttempts(userId)
   return { locked: false }

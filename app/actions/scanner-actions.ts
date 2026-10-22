@@ -33,6 +33,7 @@ export async function getScannedShipmentDetails(code: string) {
           orderBy: (events, { desc }) => [desc(events.createdAt)],
         },
         manifestItems: {
+          where: (items, { eq }) => eq(items.isActive, true),
           with: {
             manifest: {
               with: {

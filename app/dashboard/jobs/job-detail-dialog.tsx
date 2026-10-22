@@ -92,7 +92,7 @@ export function JobDetailDialog({
             <div>
               <span className="text-muted-foreground block">Dedupe Key</span>
               <span className="font-mono text-foreground mt-0.5 block truncate" title={job.dedupeKey ?? ""}>
-                {job.dedupeKey || "—"}
+                {job.dedupeKey || "-"}
               </span>
             </div>
           </div>

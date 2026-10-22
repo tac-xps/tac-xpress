@@ -130,13 +130,13 @@ async function triageWithOpenAI(input: {
 /**
  * Triage a support ticket using the best available AI provider:
  *
- *  1. **Jev** (TypeSafe System One) — used when TYPESAFE_API_KEY is set.
+ *  1. **Jev** (TypeSafe System One): used when TYPESAFE_API_KEY is set.
  *     Returns typed Category/Priority/Urgency/Frustration signals in one call.
  *
- *  2. **OpenAI via OpenRouter** — used when TYPESAFE_API_KEY is absent.
+ *  2. **OpenAI via OpenRouter**: used when TYPESAFE_API_KEY is absent.
  *     Restores the original prompt-and-parse approach as a full-quality fallback.
  *
- *  3. **Hard fallback** — if both providers fail, marks the ticket for human
+ *  3. **Hard fallback**: if both providers fail, marks the ticket for human
  *     review so it is never silently lost.
  */
 export async function triageTicket(
@@ -190,11 +190,11 @@ export async function triageTicket(
         tags: { area: "ai_triage", provider: "jev" },
         extra: { ticketId: input.ticketId },
       })
-      // Falls through to hard fallback — OpenAI is not attempted as a second
-      // chance here; Jev being available but erroring is a different problem.
+      // Falls through to hard fallback: OpenAI is not attempted as a second
+      // chance here; Jev being available but erroring is a separate issue.
     }
   } else {
-    // ── Path 2: OpenAI via OpenRouter ─────────────────────────────────────────
+    // Path 2: OpenAI via OpenRouter
     try {
       const openaiResult = await withRetry(
         () =>

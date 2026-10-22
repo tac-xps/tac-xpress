@@ -255,7 +255,7 @@ interface TheCargoLineProps {
 }
 
 /**
- * The Cargo Line — TAC-XPRESS Signature Interaction & Structural Primitive
+ * The Cargo Line: TAC-XPRESS Signature Interaction & Structural Primitive
  * A 1px geometric rule in Quiet Indigo representing movement.
  */
 export function TheCargoLine({ className, variant = "hero" }: TheCargoLineProps) {
@@ -309,13 +309,13 @@ export const CORRIDOR_MARQUEE_ITEMS = [
 ]
 
 /**
- * ProofStats — Immediate trust reinforcement metrics.
+ * ProofStats: Immediate trust reinforcement metrics.
  * 4-column balanced operational capability grid docked cleanly to section baselines.
  */
 export function ProofStats({ className }: { className?: string } = {}) {
   return (
     <div className={cn("w-full border-t border-border/80 bg-card/60 backdrop-blur-xs", className)}>
-      {/* Capability Row — Aligned with 1360px container */}
+      {/* Capability Row: Aligned with 1360px container */}
       <div className="mx-auto grid w-full max-w-[1360px] grid-cols-2 divide-y divide-border/80 px-4 sm:px-6 lg:px-12 md:grid-cols-4 md:divide-x md:divide-y-0">
         {PROOF_CLAIMS.map((claim) => (
           <motion.div
@@ -338,7 +338,7 @@ export function ProofStats({ className }: { className?: string } = {}) {
 }
 
 /**
- * CorridorMarquee — Continuous living linehaul route ticker ribbon.
+ * CorridorMarquee: Continuous living linehaul route ticker ribbon.
  * Dedicated full-width chapter transition conduit with gradient edge fades.
  */
 export function CorridorMarquee({ className }: { className?: string } = {}) {
@@ -356,7 +356,7 @@ export function CorridorMarquee({ className }: { className?: string } = {}) {
         <ul>
           {CORRIDOR_MARQUEE_ITEMS.map((item, idx) => (
             <li key={`${item.corridor}-${idx}`}>
-              {item.corridor} — {item.tag}
+              {item.corridor} · {item.tag}
             </li>
           ))}
         </ul>

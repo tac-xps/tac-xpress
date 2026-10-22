@@ -19,7 +19,16 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import dynamic from "next/dynamic"
+import { Skeleton } from "@/components/ui/skeleton"
+
+const RichTextEditor = dynamic(
+  () => import("@/components/ui/rich-text-editor").then((mod) => mod.RichTextEditor),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[140px] w-full border border-input" />,
+  }
+)
 import {
   Select,
   SelectContent,

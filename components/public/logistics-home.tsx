@@ -17,7 +17,7 @@ import { SupportChat } from "./support-chat"
 import { BackToTop } from "./landing/back-to-top"
 
 /**
- * TAC Express — Master Landing Page (Motion System 2.0: Living Logistics)
+ * TAC Express: Master Landing Page (Motion System 2.0: Living Logistics)
  *
  * Implements "Quiet Infrastructure" with clear editorial hierarchy:
  * Cargo, Visibility, Journey, Delivery, FAQ, and Operations Desk.

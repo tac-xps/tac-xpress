@@ -102,7 +102,8 @@ const getOpenDraftManifests = unstable_cache(
     const rawItems =
       manifestIds.length > 0
         ? await db.query.manifestItems.findMany({
-            where: (table, { inArray }) => inArray(table.manifestId, manifestIds),
+            where: (table, { and, inArray, eq }) =>
+              and(inArray(table.manifestId, manifestIds), eq(table.isActive, true)),
             columns: { id: true, manifestId: true },
             with: {
               shipment: {
@@ -264,7 +265,7 @@ function ManifestsSkeleton() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function DashboardPage() {
-  // Auth guard — runs a single query against the session; page shell renders immediately after.
+  // Auth guard: verifies staff session before rendering page shell
   await requireStaffPage()
 
   return (
@@ -281,8 +282,8 @@ export default async function DashboardPage() {
         </Button>
       </PageHeader>
 
-      {/* ── Banner — static image, renders instantly ── */}
-      <div className="w-full overflow-hidden rounded-none border border-border/80 shadow-xs aspect-[4/1] max-h-56">
+      {/* Operations banner */}
+      <div className="w-full overflow-hidden rounded-lg border border-border/80 shadow-xs aspect-[4/1] max-h-56">
         <Image
           src="/images/dashboard/banner_dashboard.png"
           alt="TAC-XPRESS operations dashboard banner"
@@ -293,10 +294,10 @@ export default async function DashboardPage() {
         />
       </div>
 
-      {/* Quick actions — no DB, renders instantly */}
+      {/* Quick actions bar */}
       <ControlCenterActions />
 
-      {/* ── Overview metrics + volume chart + work queue (cached 30s) ── */}
+      {/* Overview metrics, volume chart, and work queue */}
       <Suspense fallback={<OverviewSkeleton />}>
         <OverviewSection
           workQueueSlot={
@@ -307,12 +308,12 @@ export default async function DashboardPage() {
         />
       </Suspense>
 
-      {/* ── Control center (LEFT JOIN optimised, streams independently) ── */}
+      {/* Control center stream */}
       <Suspense fallback={<ControlCenterSkeleton />}>
         <ControlCenterSection />
       </Suspense>
 
-      {/* ── Open manifests (heavy relation join, streams independently) ── */}
+      {/* Open manifests stream */}
       <Suspense fallback={<ManifestsSkeleton />}>
         <OpenManifestsSection />
       </Suspense>

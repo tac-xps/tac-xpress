@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Loader2 } from "lucide-react"
-import type { UseFormReturn } from "react-hook-form"
+import { useWatch, type UseFormReturn } from "react-hook-form"
 import { DialogFooter } from "@/components/ui/dialog"
 
 import { useScannerContext } from "@/components/scanner/scanner-provider"
@@ -41,6 +41,7 @@ interface CreateDispatchFormProps {
   onSubmit: (values: any) => void
   isExecuting: boolean
   pendingShipments: ShipmentMin[]
+  deliveryShipments: ShipmentMin[]
 }
 
 export function CreateDispatchForm({
@@ -48,12 +49,16 @@ export function CreateDispatchForm({
   onSubmit,
   isExecuting,
   pendingShipments,
+  deliveryShipments,
 }: CreateDispatchFormProps) {
   const { setOverrideHandler } = useScannerContext()
+  const runType = useWatch({ control: form.control, name: "runType" })
+  const availableShipments =
+    runType === "delivery" ? deliveryShipments : pendingShipments
 
   const processScannedAwb = useCallback(
     async (targetAwb: string) => {
-      const shipment = pendingShipments.find(
+      const shipment = availableShipments.find(
         (s) => s.awbNumber.toUpperCase() === targetAwb.toUpperCase()
       )
 
@@ -70,11 +75,11 @@ export function CreateDispatchForm({
           return false
         }
       } else {
-        toast.error(`Pending shipment not found for AWB: ${targetAwb}`)
+        toast.error(`No eligible shipment found for AWB: ${targetAwb}`)
         return false
       }
     },
-    [pendingShipments, form]
+    [availableShipments, form]
   )
 
   useEffect(() => {
@@ -93,7 +98,10 @@ export function CreateDispatchForm({
               <FormItem>
                 <FormLabel>Run Type</FormLabel>
                 <Select
-                  onValueChange={field.onChange}
+                  onValueChange={(value) => {
+                    field.onChange(value)
+                    form.setValue("shipmentIds", [], { shouldValidate: true })
+                  }}
                   defaultValue={field.value}
                 >
                   <FormControl>
@@ -151,12 +159,14 @@ export function CreateDispatchForm({
               <div className="mb-4">
                 <FormLabel className="text-base">Select Shipments</FormLabel>
               </div>
-              {pendingShipments.length === 0 ? (
+              {availableShipments.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No pending shipments available.
+                  {runType === "delivery"
+                    ? "No shipments with a recorded prior handover are ready for delivery."
+                    : "No new pending shipments are available for pickup."}
                 </p>
               ) : (
-                pendingShipments.map((shipment) => (
+                availableShipments.map((shipment) => (
                   <FormField
                     key={shipment.id}
                     control={form.control}
@@ -204,8 +214,12 @@ export function CreateDispatchForm({
           )}
         />
 
-        <div className="m-0 rounded-none border-t border-border pt-4 flex flex-row items-center justify-end gap-2 shrink-0">
-          <Button type="submit" disabled={isExecuting} className="rounded-none font-semibold">
+        <div className="m-0 flex shrink-0 flex-row items-center justify-end gap-2 rounded-none border-t border-border pt-4">
+          <Button
+            type="submit"
+            disabled={isExecuting}
+            className="rounded-none font-semibold"
+          >
             {isExecuting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Assign Run Sheet
           </Button>

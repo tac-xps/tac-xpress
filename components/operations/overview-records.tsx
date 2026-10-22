@@ -21,7 +21,11 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { HubVolumePoint } from "@/lib/dashboard-metrics"
-import { ManifestDetailDialog, type ManifestDetail, type ManifestItem } from "@/app/dashboard/manifests/manifest-detail-dialog"
+import {
+  ManifestDetailDialog,
+  type ManifestDetail,
+  type ManifestItem,
+} from "@/app/dashboard/manifests/manifest-detail-dialog"
 
 export type OpenManifest = {
   id: string
@@ -45,12 +49,15 @@ function OpenManifestCell({ item }: { item: OpenManifest }) {
     id: item.id,
     referenceId: item.referenceId,
     status: item.status,
+    legType: "line_haul",
     createdAt: item.createdAt || new Date(),
     driverId: item.driverId ?? item.driver?.id ?? null,
     vehicleId: item.vehicleId ?? null,
     originHubId: item.originHubId ?? null,
     destinationHubId: item.destinationHubId ?? null,
-    driver: item.driver ? { name: item.driver.name, phone: item.driver.phone ?? null } : null,
+    driver: item.driver
+      ? { name: item.driver.name, phone: item.driver.phone ?? null }
+      : null,
     vehicle: item.vehicle,
     originHub: item.originHub,
     destinationHub: item.destinationHub,
@@ -62,7 +69,7 @@ function OpenManifestCell({ item }: { item: OpenManifest }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="font-mono text-xs font-semibold text-primary underline-offset-4 hover:underline cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="cursor-pointer text-left font-mono text-xs font-semibold text-primary underline-offset-4 hover:underline focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
         aria-label={`View manifest ${item.referenceId}`}
       >
         {item.referenceId}
@@ -80,7 +87,7 @@ function OpenManifestCell({ item }: { item: OpenManifest }) {
 
 export function OpenManifests({ data }: { data: OpenManifest[] }) {
   return (
-    <Card className="border border-border/80 shadow-xs overflow-hidden">
+    <Card className="overflow-hidden border border-border/80 shadow-xs">
       <CardHeader className="border-b border-border/80 bg-muted/20 px-6 py-4">
         <div>
           <CardTitle>Draft manifests</CardTitle>
@@ -120,7 +127,7 @@ export function OpenManifests({ data }: { data: OpenManifest[] }) {
                   <span className="block font-medium">
                     {item.driver?.name ?? "Driver not assigned"}
                   </span>
-                  <span className="text-xs text-muted-foreground font-mono">
+                  <span className="font-mono text-xs text-muted-foreground">
                     {item.vehicle?.registrationNumber ?? "Vehicle not assigned"}
                   </span>
                 </TableCell>
@@ -149,7 +156,7 @@ export function OpenManifests({ data }: { data: OpenManifest[] }) {
 
 export function HubActivity({ hubs }: { hubs: HubVolumePoint[] }) {
   return (
-    <Card className="border border-border/80 shadow-xs overflow-hidden">
+    <Card className="overflow-hidden border border-border/80 shadow-xs">
       <CardHeader className="border-b border-border/80 bg-muted/20 px-6 py-4">
         <div>
           <CardTitle>Hub throughput</CardTitle>

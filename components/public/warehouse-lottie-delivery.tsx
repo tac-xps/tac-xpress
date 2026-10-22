@@ -17,7 +17,7 @@ interface WarehouseLottieDeliveryProps {
  * - Dynamic import of lottie-web for clean client-side SVG rendering.
  * - WCAG 2.1 compliance (respects prefers-reduced-motion, accessible ARIA label).
  * - Full memory leak prevention (animation instance destroyed on unmount).
- * - Soft Nordic Fjord container framing and seamless SSR placeholder.
+ * - Soft Nordic Fjord container framing and reliable SSR placeholder.
  */
 export function WarehouseLottieDelivery({ className }: WarehouseLottieDeliveryProps) {
   const containerRef = useRef<HTMLDivElement>(null)

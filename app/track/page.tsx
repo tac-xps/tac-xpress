@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { trackAwb } from "@/app/actions/tracking"
-import { SiteNavigation } from "@/components/public/site-navigation"
-import { SiteFooter } from "@/components/public/site-footer"
+import { PublicPage } from "@/components/public/public-page"
+import { PageIntro } from "@/components/public/page-intro"
 import { TrackingDetails } from "@/components/tracking/tracking-details"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -9,7 +9,11 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Search, PackageSearch } from "lucide-react"
 
-export const metadata = { title: "Track your shipment | TAC-XPRESS" }
+export const metadata = {
+  title: "Track your shipment | TAC-XPRESS",
+  description:
+    "Enter your AWB number to see real-time shipment milestones and delivery status.",
+}
 interface TrackingPageProps {
   searchParams: Promise<{ awb?: string | string[] }>
 }
@@ -23,20 +27,13 @@ export default async function TrackingPage({
   form.set("awb_number", awb)
   const response = awb ? await trackAwb(form) : null
   return (
-    <div className="cargo-public flex min-h-svh flex-col bg-background text-foreground">
-      <SiteNavigation />
-      <main
-        id="main-content"
-        className="mx-auto w-full max-w-3xl flex-1 px-4 py-12 sm:px-8 sm:py-16"
-      >
-        <div className="mb-8 flex flex-col gap-4">
-          <p className="text-eyebrow text-primary">From here to there</p>
-          <h1 className="text-section">Where is your cargo?</h1>
-          <p className="text-body-editorial">
-            Use the AWB number on your receipt to see your latest recorded
-            shipment updates.
-          </p>
-        </div>
+    <PublicPage>
+      <PageIntro
+        eyebrow="Track a shipment"
+        title="Where is your cargo?"
+        description="Use the AWB number on your receipt to see your latest recorded shipment updates."
+      />
+      <section className="cargo-container pb-16 lg:pb-24">
         <form
           action="/track"
           method="get"
@@ -62,7 +59,7 @@ export default async function TrackingPage({
         </form>
         {response?.error && (
           <Alert variant="destructive">
-            <AlertTitle>We couldn’t retrieve this shipment</AlertTitle>
+            <AlertTitle>We could not retrieve this shipment</AlertTitle>
             <AlertDescription>
               {response.error} Check the number on your receipt or{" "}
               <Link href="/#support" className="underline">
@@ -91,8 +88,7 @@ export default async function TrackingPage({
             </Button>
           </div>
         )}
-      </main>
-      <SiteFooter />
-    </div>
+      </section>
+    </PublicPage>
   )
 }

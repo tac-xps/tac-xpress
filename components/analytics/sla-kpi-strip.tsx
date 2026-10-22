@@ -64,7 +64,7 @@ function KpiCard({
                 suffix={suffix}
               />
             ) : (
-              displayOverride || "—"
+              displayOverride || "-"
             )}
           </p>
           {trend !== undefined && trend !== null ? (

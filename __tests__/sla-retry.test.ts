@@ -97,4 +97,80 @@ describe("SLA retries", () => {
     )
     expect(mocks.audit).not.toHaveBeenCalled()
   })
+
+  it("sanitizes special characters in category to prevent PostgREST filter injection", async () => {
+    const policyQuery = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      or: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      maybeSingle: vi.fn().mockResolvedValue({
+        data: {
+          id: "policy",
+          category: "tracking",
+          first_response_minutes: 30,
+          resolution_minutes: 120,
+        },
+        error: null,
+      }),
+    }
+    mocks.from.mockImplementation((table: string) =>
+      table === "sla_policies"
+        ? policyQuery
+        : {
+            update: vi.fn(() => ({
+              eq: vi.fn().mockResolvedValue({ error: null }),
+            })),
+            select: () => ({
+              eq: () => ({
+                single: async () => ({
+                  data: { created_at: "2026-09-07T10:00:00Z" },
+                  error: null,
+                }),
+              }),
+            }),
+          }
+    )
+    await applySLA("ticket", "high", "tracking,priority.eq.critical")
+    expect(policyQuery.or).toHaveBeenCalledWith("category.eq.trackingpriorityeqcritical,category.is.null")
+  })
+
+  it("handles undefined category by querying category.is.null without undefined literal", async () => {
+    const policyQuery = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      or: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      maybeSingle: vi.fn().mockResolvedValue({
+        data: {
+          id: "policy",
+          category: null,
+          first_response_minutes: 60,
+          resolution_minutes: 240,
+        },
+        error: null,
+      }),
+    }
+    mocks.from.mockImplementation((table: string) =>
+      table === "sla_policies"
+        ? policyQuery
+        : {
+            update: vi.fn(() => ({
+              eq: vi.fn().mockResolvedValue({ error: null }),
+            })),
+            select: () => ({
+              eq: () => ({
+                single: async () => ({
+                  data: { created_at: "2026-09-07T10:00:00Z" },
+                  error: null,
+                }),
+              }),
+            }),
+          }
+    )
+    await applySLA("ticket", "medium")
+    expect(policyQuery.or).toHaveBeenCalledWith("category.is.null")
+  })
 })

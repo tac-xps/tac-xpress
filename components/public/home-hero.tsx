@@ -2,8 +2,16 @@
 
 import React from "react"
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { ShieldCheck, Plane, Truck } from "lucide-react"
-import { HeroLottieTruck } from "./hero-lottie-truck"
+
+const HeroLottieTruck = dynamic(
+  () => import("./hero-lottie-truck").then((mod) => mod.HeroLottieTruck),
+  {
+    ssr: false,
+    loading: () => <div className="w-full aspect-[4/3] bg-muted/20 animate-pulse" />,
+  }
+)
 import { TrackDialogForm } from "./track-dialog-form"
 import { motion, useReducedMotion } from "motion/react"
 
@@ -18,7 +26,7 @@ import { motion, useReducedMotion } from "motion/react"
  * - Zero decorative noise, zero HUD clutter, full dark/light mode fidelity.
  */
 
-// Confident arrival easing — fast in, decelerate to rest
+// Confident arrival easing: fast in, decelerate to rest
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const
 
 // Shared motion variants for hero entrance sequence

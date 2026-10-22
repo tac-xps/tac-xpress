@@ -6,16 +6,31 @@ import { z } from "zod"
 import * as Sentry from "@sentry/nextjs"
 import { capturePostHogEvent } from "@/lib/posthog-server"
 import { isArcjetBypassed, isArcjetMisconfigured } from "@/lib/server/rate-limit"
-const aj = arcjet({
-  key: process.env.ARCJET_KEY || "ajkey_placeholder",
-  rules: [
-    slidingWindow({
-      mode: process.env.NODE_ENV === "development" ? "DRY_RUN" : "LIVE",
-      interval: "1m",
-      max: 20,
-    }),
-  ],
-})
+const isDevBypass =
+  process.env.NODE_ENV === "development" &&
+  process.env.ARCJET_DEV_ENABLE !== "true"
+
+const aj = isDevBypass
+  ? {
+      protect: async () => ({
+        id: "dev-bypass",
+        isDenied: () => false,
+        isErrored: () => false,
+        isAllowed: () => true,
+        reason: { isRateLimit: () => false, message: "" },
+        results: [],
+      }),
+    }
+  : arcjet({
+      key: process.env.ARCJET_KEY || "ajkey_placeholder",
+      rules: [
+        slidingWindow({
+          mode: process.env.NODE_ENV === "development" ? "DRY_RUN" : "LIVE",
+          interval: "1m",
+          max: 20,
+        }),
+      ],
+    })
 
 const trackAwbSchema = z.object({
   awb_number: z.string().trim().toUpperCase().regex(/^[A-Z0-9-]{5,40}$/, "Invalid AWB number"),

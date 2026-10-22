@@ -9,13 +9,21 @@ export async function applySLA(
   category?: string,
   urgencyScore?: number
 ) {
+  // Sanitize category parameter to valid identifier characters to prevent PostgREST query injection
+  const cleanCategory = typeof category === "string" ? category.trim() : ""
+  const safeCategory = cleanCategory.replace(/[^a-zA-Z0-9_-]/g, "")
+
   // Find matching policy (exact category match first, then priority-only fallback)
   const { data: policy, error: policyError } = await supabaseAdmin
     .from("sla_policies")
     .select("*")
     .eq("priority", priority)
     .eq("is_active", true)
-    .or(`category.eq.${category},category.is.null`)
+    .or(
+      safeCategory
+        ? `category.eq.${safeCategory},category.is.null`
+        : "category.is.null"
+    )
     .order("category", { ascending: false, nullsFirst: false })
     .limit(1)
     .maybeSingle()

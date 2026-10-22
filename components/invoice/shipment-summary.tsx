@@ -48,7 +48,7 @@ export function ShipmentSummary({ doc }: ShipmentSummaryProps) {
           VOLUMETRIC WEIGHT
         </span>
         <span className="font-mono text-[11px] font-bold text-neutral-700 mt-0.5">
-          {metrics.volumetricWeightKg > 0 ? `${metrics.volumetricWeightKg.toFixed(2)} kg` : "—"}
+          {metrics.volumetricWeightKg > 0 ? `${metrics.volumetricWeightKg.toFixed(2)} kg` : "-"}
         </span>
       </div>
 
