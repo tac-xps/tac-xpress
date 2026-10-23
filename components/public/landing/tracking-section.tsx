@@ -26,11 +26,25 @@ import {
 } from "@/components/reui/stepper"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { BorderBeam } from "@/components/ui/border-beam"
+import BoardingPass, {
+  type Flight,
+  type BoardingPassLabels,
+  type FlightStatus,
+} from "@/components/kokonutui/boarding-pass"
+import { cn } from "@/lib/utils"
 import {
   motionDurations,
   motionEasings,
   tactileInteraction,
 } from "@/lib/motion/motion.theme"
+
+const CARGO_LABELS: BoardingPassLabels = {
+  field1: "Gate",
+  field2: "Loading",
+  field3: "Payload",
+  field4: "Bay",
+  footerLabel: "Consignee / Destination Hub",
+}
 
 interface SampleMilestone {
   title: string
@@ -87,7 +101,7 @@ function RadarBeaconNode({ shouldReduceMotion }: RadarBeaconNodeProps) {
   if (shouldReduceMotion) {
     return (
       <div className="relative flex size-4 items-center justify-center" aria-hidden="true">
-        <span className="size-2 rounded-full bg-status-transit ring-2 ring-status-transit/30" />
+        <span className="size-2 rounded-none bg-status-transit ring-2 ring-status-transit/30" />
       </div>
     )
   }
@@ -96,7 +110,7 @@ function RadarBeaconNode({ shouldReduceMotion }: RadarBeaconNodeProps) {
     <div className="relative flex size-4 items-center justify-center" aria-hidden="true">
       {/* Outer expanding radar wave ring 1 */}
       <motion.span
-        className="absolute size-4 rounded-full border border-status-transit/60"
+        className="absolute size-4 rounded-none border border-status-transit/60"
         initial={{ scale: 0.7, opacity: 0.8 }}
         animate={{ scale: [0.7, 2.1], opacity: [0.8, 0] }}
         transition={{
@@ -107,7 +121,7 @@ function RadarBeaconNode({ shouldReduceMotion }: RadarBeaconNodeProps) {
       />
       {/* Outer expanding radar wave ring 2 (phase offset) */}
       <motion.span
-        className="absolute size-4 rounded-full border border-status-transit/40"
+        className="absolute size-4 rounded-none border border-status-transit/40"
         initial={{ scale: 0.7, opacity: 0.8 }}
         animate={{ scale: [0.7, 2.1], opacity: [0.8, 0] }}
         transition={{
@@ -119,7 +133,7 @@ function RadarBeaconNode({ shouldReduceMotion }: RadarBeaconNodeProps) {
       />
       {/* Core beacon dot with subtle breathing luminosity */}
       <motion.span
-        className="relative size-2 rounded-full bg-status-transit shadow-[0_0_8px_rgba(234,88,12,0.6)]"
+        className="relative size-2 rounded-none bg-status-transit shadow-[0_0_8px_rgba(234,88,12,0.6)]"
         animate={{ scale: [1, 1.25, 1], opacity: [0.9, 1, 0.9] }}
         transition={{
           duration: 1.6,
@@ -158,7 +172,7 @@ function TravelingConnectorBeam({ shouldReduceMotion }: TravelingConnectorBeamPr
 
       {/* Traveling photon packet moving continuously along the corridor line */}
       <motion.div
-        className="absolute -left-[1px] h-2.5 w-[3px] rounded-full bg-status-transit shadow-[0_0_6px_var(--color-status-transit)]"
+        className="absolute -left-[1px] h-2.5 w-[3px] rounded-none bg-status-transit shadow-[0_0_6px_var(--color-status-transit)]"
         initial={{ y: -2, opacity: 0 }}
         animate={{
           y: [-2, 24],
@@ -299,7 +313,7 @@ function SampleMilestoneStepper({ shouldReduceMotion }: SampleMilestoneStepperPr
               step={stepNumber}
               completed={isCompleted}
               className={`!flex-row !items-start gap-3.5 !justify-start ${
-                isCurrent ? "relative rounded-sm bg-primary/[0.03] -mx-2 px-2 py-1.5" : ""
+                isCurrent ? "relative rounded-none bg-primary/[0.03] -mx-2 px-2 py-1.5" : ""
               }`}
             >
               {/* Indicator column: icon + connector */}
@@ -470,6 +484,36 @@ export function TrackingSection() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const shouldReduceMotion = useReducedMotion()
+  const [trackingView, setTrackingView] = useState<"awb" | "milestones">("awb")
+
+  const currentFlight: Flight = {
+    airline: "TAC Express Air Cargo",
+    number: activeAwb,
+    from: {
+      code: liveData?.origin ? liveData.origin.slice(0, 3).toUpperCase() : "DEL",
+      city: liveData?.origin ? `${liveData.origin} Cargo Terminal` : "Delhi Cargo Terminal 3",
+      time: "06:15",
+    },
+    to: {
+      code: liveData?.destination ? liveData.destination.slice(0, 3).toUpperCase() : "IMF",
+      city: liveData?.destination ? `${liveData.destination} Air Cargo` : "Imphal Tulihal Air Cargo",
+      time: "09:30",
+    },
+    date: isSample ? "Daily Linehaul" : "Scheduled Flight",
+    gate: "BAY 14",
+    boards: "05:40",
+    seat: isSample ? "740 KG" : "Statutory Manifest",
+    group: "AIR-01",
+    passenger: isSample ? "Imphal Distribution Hub" : "Consignee Cargo Station",
+    status: (liveData?.status?.toLowerCase().includes("deliver")
+      ? "delivered"
+      : liveData?.status?.toLowerCase().includes("transit")
+      ? "in-transit"
+      : "on-time") as FlightStatus,
+    note: isSample
+      ? "Commercial belly-hold space secured · BCAS scan cleared"
+      : `Consignment ${activeAwb} verified in transit`,
+  }
 
   const handleTrackSubmit = (e: React.FormEvent) => {
     const trimmed = awbInput.trim().toUpperCase()
@@ -516,27 +560,39 @@ export function TrackingSection() {
           }}
           className="max-w-2xl space-y-5"
         >
-          <SectionEyebrow className="mb-1">
+          <SectionEyebrow className="mb-2">
             Consignment Console · Milestone Verification
           </SectionEyebrow>
           <h2
             id="tracking-heading"
-            className="text-section text-foreground tracking-tight text-balance font-bold"
+            className="text-section text-foreground tracking-tight text-balance"
           >
-            A number.{" "}
-            <br className="hidden sm:inline" />
-            A clearer picture.
+            <span className="block font-medium text-foreground/80">A single reference.</span>
+            <span className="block font-bold text-foreground">
+              Complete telemetry<span className="text-primary font-black">.</span>
+            </span>
           </h2>
-          <p className="text-lead max-w-[52ch] text-pretty">
-            Verified milestone telemetry. Query statutory{" "}
-            <strong className="font-semibold text-foreground">Air Waybill (AWB)</strong> or surface
-            consignment numbers to review gate intake scans, hub cross-dock transfers,
-            and departure manifests <strong className="font-semibold text-foreground">in real time</strong>.
-          </p>
-          {/* Decorative rule: visual separator before interactive console */}
+          <div className="space-y-3 max-w-[54ch]">
+            <p className="text-base font-medium text-foreground leading-snug tracking-tight text-pretty">
+              Real-time custody tracking across airport gates and cross-dock hubs.
+            </p>
+            <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5 border border-border/80 bg-muted/40 px-2 py-0.5 text-foreground font-semibold rounded-none">
+                <span className="size-1.5 bg-status-delivered rounded-none" aria-hidden="true" />
+                LIVE CUSTODY AUDIT
+              </span>
+              <span className="border border-border/60 bg-muted/20 px-2 py-0.5 text-xs rounded-none">
+                OPTICAL SCAN RECONCILIATION
+              </span>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+              Query statutory <span className="font-mono text-foreground font-semibold bg-muted/50 px-1 py-0.5 border border-border/70 text-xs rounded-none">Air Waybill (AWB)</span> or surface consignment numbers to review gate intake scans, ramp transfers, and scheduled departure manifests in real time.
+            </p>
+          </div>
+          {/* Anchored baseline divider */}
           <div className="flex items-center gap-3 pt-2" aria-hidden="true">
-            <div className="h-px w-12 bg-primary" />
-            <div className="h-px flex-1 max-w-32 bg-border" />
+            <div className="h-px w-16 bg-primary" />
+            <div className="h-px flex-1 max-w-48 bg-border" />
           </div>
         </motion.div>
 
@@ -553,7 +609,7 @@ export function TrackingSection() {
             }}
             className="space-y-6 lg:col-span-5"
           >
-            <div className="relative border border-border/80 bg-card p-5 sm:p-7 shadow-sm hover:shadow-md transition-colors duration-200">
+            <div className="relative border-l-2 border-l-primary border-t border-r border-b border-border/80 bg-card p-5 sm:p-7 shadow-sm hover:shadow-md transition-colors duration-200">
               <BorderBeam size={60} duration={8} colorFrom="var(--color-primary)" colorTo="transparent" borderWidth={1} />
               <form
                 action="/track"
@@ -667,24 +723,59 @@ export function TrackingSection() {
               delay: 0.1,
               ease: motionEasings.editorial,
             }}
-            className="relative border border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-sm transition-colors duration-200 hover:border-primary/40"
+            className="relative border-l-2 border-l-primary border-t border-r border-b border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-sm transition-colors duration-200 hover:border-primary/40"
           >
             <BorderBeam size={80} duration={10} colorFrom="var(--color-primary)" colorTo="transparent" delay={3} borderWidth={1} />
             <div>
-              <div className="flex items-center justify-between border-b border-border/80 pb-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 pb-4">
                 <div>
                   <h3 className="font-heading text-lg font-medium tracking-tight text-foreground">
-                    Milestone audit trail
+                    Air Waybill (AWB) Manifest
                   </h3>
                   <p className="mt-0.5 font-mono text-xs text-muted-foreground">
-                    {isSample ? "5 recorded optical scan events" : "Physical gate milestone sequence"}
+                    Statutory carriage document · Optical barcode & custody ledger
                   </p>
                 </div>
-                {isSample && (
-                  <span className="border border-border bg-muted/60 px-2 py-0.5 font-mono text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-                    Sample preview
-                  </span>
-                )}
+
+                {/* Sub-View Switcher: AWB Manifest vs Milestone Timeline */}
+                <div
+                  role="tablist"
+                  aria-label="Consignment details view selection"
+                  className="flex items-center gap-1 rounded-none border border-border/80 bg-muted/40 p-0.5"
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    id="tab-awb"
+                    aria-selected={trackingView === "awb"}
+                    aria-controls="panel-awb"
+                    onClick={() => setTrackingView("awb")}
+                    className={cn(
+                      "rounded-none px-2.5 py-1 text-xs font-mono font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+                      trackingView === "awb"
+                        ? "bg-primary text-primary-foreground font-semibold shadow-2xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Air Waybill (AWB)
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    id="tab-milestones"
+                    aria-selected={trackingView === "milestones"}
+                    aria-controls="panel-milestones"
+                    onClick={() => setTrackingView("milestones")}
+                    className={cn(
+                      "rounded-none px-2.5 py-1 text-xs font-mono font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+                      trackingView === "milestones"
+                        ? "bg-primary text-primary-foreground font-semibold shadow-2xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Gate Milestones
+                  </button>
+                </div>
               </div>
 
               {/* AnimatePresence for Smooth State Progression */}
@@ -716,13 +807,35 @@ export function TrackingSection() {
                       </div>
                     </div>
                   </motion.div>
-                ) : (
-                  /* Verified Consignment Record Card */
+                ) : trackingView === "awb" ? (
+                  /* Verified Air Waybill (AWB) Component UI */
                   <motion.div
-                    key="found-state"
-                    initial={shouldReduceMotion ? false : { y: 6 }}
-                    animate={{ y: 0 }}
-                    exit={{ y: -6 }}
+                    key="awb-manifest-view"
+                    id="panel-awb"
+                    role="tabpanel"
+                    aria-labelledby="tab-awb"
+                    initial={shouldReduceMotion ? false : { opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: motionDurations.control }}
+                    className="mt-5 flex justify-center w-full"
+                  >
+                    <BoardingPass
+                      flight={currentFlight}
+                      labels={CARGO_LABELS}
+                      className="w-full max-w-sm shadow-md"
+                    />
+                  </motion.div>
+                ) : (
+                  /* Physical Gate Milestone Stepper View */
+                  <motion.div
+                    key="milestones-view"
+                    id="panel-milestones"
+                    role="tabpanel"
+                    aria-labelledby="tab-milestones"
+                    initial={shouldReduceMotion ? false : { opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: motionDurations.control }}
                     className="mt-4"
                   >

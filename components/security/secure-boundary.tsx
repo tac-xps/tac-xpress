@@ -25,7 +25,7 @@ export function SecureBoundary({
   const { canAccess, isLoading, error, refetch } = useRLS()
 
   if (isLoading)
-    return <div className="h-8 w-full animate-pulse rounded bg-muted" />
+    return <div className="h-8 w-full animate-pulse rounded-none bg-muted" />
 
   // The capability check failed. Without this branch the placeholder above
   // would pulse forever, or fall through to a misleading "restricted" state.

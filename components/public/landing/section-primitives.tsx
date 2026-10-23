@@ -21,11 +21,11 @@ export function EditorialEyebrow({ children, className, id }: EditorialEyebrowPr
     <div
       id={id}
       className={cn(
-        "inline-flex items-center gap-2 border border-border/80 bg-muted/50 px-3 py-1 font-sans text-xs uppercase tracking-[0.06em] font-semibold text-foreground select-none",
+        "inline-flex items-center gap-2.5 border border-border/90 bg-muted/50 px-3 py-1 font-mono text-[11px] sm:text-xs uppercase tracking-[0.15em] font-semibold text-foreground select-none",
         className
       )}
     >
-      <span className="inline-block size-2 rounded-none bg-primary" aria-hidden="true" />
+      <span className="inline-block h-px w-4 bg-primary" aria-hidden="true" />
       {children}
     </div>
   )
@@ -90,12 +90,51 @@ export function EditorialLead({
   return (
     <Component
       className={cn(
-        "text-lead max-w-[54ch]",
+        "text-lead max-w-[54ch] text-muted-foreground leading-relaxed font-normal text-pretty",
         className
       )}
     >
       {children}
     </Component>
+  )
+}
+
+export interface EditorialDeckProps {
+  lede?: React.ReactNode
+  children?: React.ReactNode
+  telemetry?: React.ReactNode
+  className?: string
+}
+
+/**
+ * High-contrast two-tier editorial deck.
+ * Solves the "grey brick" by pairing a punchy high-contrast lede with
+ * secondary technical narrative and optional tactical telemetry badges.
+ */
+export function EditorialDeck({
+  lede,
+  children,
+  telemetry,
+  className,
+}: EditorialDeckProps) {
+  return (
+    <div className={cn("space-y-3 max-w-[56ch]", className)}>
+      {lede && (
+        <p className="text-base sm:text-lg font-medium text-foreground leading-snug tracking-tight text-pretty">
+          {lede}
+        </p>
+      )}
+      {telemetry && (
+        <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-muted-foreground">
+          {telemetry}
+        </div>
+      )}
+      {children && (
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-normal text-pretty">
+          {children}
+        </p>
+      )}
+    </div>
   )
 }
 

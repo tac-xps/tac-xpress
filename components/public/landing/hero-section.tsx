@@ -12,17 +12,26 @@ import {
 } from "motion/react"
 import { ArrowUpRight, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { SectionEyebrow, ProofStats } from "./section-primitives"
+import { ProofStats } from "./section-primitives"
 import { LivingCargoLine } from "./living-cargo-line"
 import { GridPattern } from "@/components/ui/grid-pattern"
 import { BorderBeam } from "@/components/ui/border-beam"
+import SplitFlapText from "@/components/kokonutui/split-flap-text"
+import FlowField from "@/components/kokonutui/flow-field"
 import {
   motionDurations,
   motionEasings,
   motionSprings,
   lineMaskReveal,
-  tactileInteraction,
 } from "@/lib/motion/motion.theme"
+
+const LINEHAUL_DEPARTURES = [
+  "DEL-IMF: ON TIME",
+  "IMF-DEL: BOARDING",
+  "DEL-IMF: GATE SCAN",
+  "IMF-DEL: AIRBORNE",
+  "DEL-IMF: IN TRANSIT",
+]
 
 /**
  * Hero section delivering the primary commercial value proposition,
@@ -54,135 +63,157 @@ export function HeroSection() {
       aria-labelledby="hero-heading"
       className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-between overflow-hidden border-b border-border/80 bg-background text-foreground transition-colors"
     >
+      {/* Background High-Altitude Jet Stream Corridor Flow Field */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-15 dark:opacity-25 text-muted-foreground">
+        <FlowField density={0.28} speed={0.55} interactive={false} />
+      </div>
+
       <GridPattern
         width={32}
         height={32}
         strokeDasharray="4 4"
-        className="opacity-25 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)]"
+        className="opacity-25 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] z-0"
       />
       <div className="relative z-10 mx-auto flex w-full max-w-[1360px] flex-1 items-center px-4 sm:px-6 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10 lg:pb-12">
         <div className="grid w-full grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
-        {/* Left Column: Editorial Copy & Chapter Origin */}
-        <motion.div
-          style={shouldReduceMotion ? undefined : { y: headlineY }}
-          className="flex flex-col lg:col-span-7 xl:col-span-7"
-        >
-          {/* Eyebrow with Active Pulse Indicator */}
+          {/* Left Column: Editorial Copy & Chapter Origin */}
           <motion.div
-            initial={shouldReduceMotion ? false : { y: 8 }}
-            animate={{ y: 0 }}
-            transition={{
-              duration: motionDurations.reveal,
-              ease: motionEasings.editorial,
-            }}
+            style={shouldReduceMotion ? undefined : { y: headlineY }}
+            className="flex flex-col lg:col-span-7 xl:col-span-7"
           >
-            <SectionEyebrow className="mb-5 sm:mb-6">
-              15+ Years Corridor Authority · Delhi ⇄ Northeast
-            </SectionEyebrow>
-          </motion.div>
+            {/* Split-Flap Departure Flight Schedule Board & Tactical Modality Badges */}
+            <div className="mb-5 flex flex-wrap items-center gap-2.5">
+              <div className="inline-flex items-center gap-1.5">
+                <span className="inline-flex items-center border border-primary/40 bg-primary/10 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-primary rounded-none">
+                  Express
+                </span>
+                <span className="inline-flex items-center border border-border/90 bg-muted/50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-foreground rounded-none">
+                  Surface
+                </span>
+              </div>
+              <div className="inline-flex w-fit items-center gap-2.5 rounded-none border border-border/90 bg-card/95 px-3 py-1 shadow-xs backdrop-blur-xs transition-colors hover:border-foreground/30">
+                <span className="relative flex size-2 shrink-0 rounded-none">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-status-delivered opacity-75" />
+                  <span className="relative inline-flex size-2 rounded-none bg-status-delivered" />
+                </span>
+                <span className="shrink-0 font-mono text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+                  Linehaul
+                </span>
+                <span className="text-border/80 select-none font-mono" aria-hidden="true">
+                  /
+                </span>
+                <SplitFlapText
+                  words={LINEHAUL_DEPARTURES}
+                  interval={3500}
+                  className="text-xs sm:text-[13px] font-mono font-bold tracking-normal text-foreground"
+                  tileClassName="bg-primary text-primary-foreground border border-primary/40"
+                />
+              </div>
+            </div>
 
-          {/* Headline (fluid display with unclipped typography reveal) */}
-          <h1
-            id="hero-heading"
-            className="text-hero-display text-foreground"
-          >
-            <span className="sr-only">Move cargo. With clarity. </span>
-            <span className="block overflow-hidden py-0.5">
-              <motion.span
-                className="block lg:whitespace-nowrap"
-                custom={0}
-                initial={shouldReduceMotion ? false : "hidden"}
-                animate="visible"
-                variants={lineMaskReveal}
-              >
-                Delhi to Northeast.
-              </motion.span>
-            </span>
-            <span className="block overflow-hidden py-0.5">
-              <motion.span
-                className="block"
-                custom={1}
-                initial={shouldReduceMotion ? false : "hidden"}
-                animate="visible"
-                variants={lineMaskReveal}
-              >
-                Delivered.
-              </motion.span>
-            </span>
-          </h1>
+            {/* Headline (fluid display with unclipped typography reveal) */}
+            <h1
+              id="hero-heading"
+              className="text-hero-display text-foreground"
+            >
+              <span className="sr-only">Move cargo. With clarity. </span>
+              <span className="block overflow-hidden py-0.5">
+                <motion.span
+                  className="block font-medium text-foreground lg:whitespace-nowrap"
+                  custom={0}
+                  initial={shouldReduceMotion ? false : "hidden"}
+                  animate="visible"
+                  variants={lineMaskReveal}
+                >
+                  Delhi to Northeast.
+                </motion.span>
+              </span>
+              <span className="block overflow-hidden py-0.5">
+                <motion.span
+                  className="block font-extrabold text-primary"
+                  custom={1}
+                  initial={shouldReduceMotion ? false : "hidden"}
+                  animate="visible"
+                  variants={lineMaskReveal}
+                >
+                  Delivered.
+                </motion.span>
+              </span>
+            </h1>
 
-          {/* Supporting Copy & Living Cargo Line */}
-          <div className="mt-5 sm:mt-6 space-y-4">
-            <LivingCargoLine variant="rule" className="w-24 sm:w-32" />
-            <motion.p
-              initial={shouldReduceMotion ? false : { y: 10 }}
+            {/* Supporting Copy & Living Cargo Line */}
+            <div className="mt-5 sm:mt-6 space-y-4">
+              <LivingCargoLine variant="rule" className="w-24 sm:w-32" />
+              <motion.div
+                initial={shouldReduceMotion ? false : { y: 10 }}
+                animate={{ y: 0 }}
+                transition={{
+                  duration: motionDurations.editorial,
+                  delay: 0.26,
+                  ease: motionEasings.editorial,
+                }}
+                className="space-y-3 max-w-[56ch]"
+              >
+                <p className="text-base sm:text-lg font-medium text-foreground leading-snug tracking-tight text-pretty">
+                  Scheduled freight linehaul connecting New Delhi and Northeast India.
+                </p>
+                <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5 border border-border/80 bg-muted/40 px-2.5 py-0.5 text-foreground font-semibold rounded-none">
+                    <span className="size-1.5 bg-primary rounded-none" aria-hidden="true" />
+                    DEL ⇄ IMF / GAU
+                  </span>
+                  <span className="border border-border/60 bg-muted/20 px-2 py-0.5 text-xs rounded-none">
+                    COMMERCIAL AIR BELLY-HOLD
+                  </span>
+                  <span className="border border-border/60 bg-muted/20 px-2 py-0.5 text-xs rounded-none">
+                    STATUTORY AWB
+                  </span>
+                </div>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-normal text-pretty">
+                  Commercial air belly-hold space and arterial surface transport with statutory Air Waybill compliance, optical gate scan verification, and dedicated dispatch support.
+                </p>
+              </motion.div>
+            </div>
+
+            {/* Actions Row */}
+            <motion.div
+              initial={shouldReduceMotion ? false : { y: 12 }}
               animate={{ y: 0 }}
               transition={{
-                duration: motionDurations.editorial,
-                delay: 0.26,
+                duration: motionDurations.reveal,
+                delay: 0.34,
                 ease: motionEasings.editorial,
               }}
-              className="max-w-[54ch] text-lead text-muted-foreground leading-relaxed font-normal text-pretty"
+              className="mt-8 sm:mt-10 flex flex-wrap items-center gap-3 sm:gap-4"
             >
-              Scheduled freight linehaul connecting New Delhi and Northeast India. Commercial air belly-hold space and arterial surface transport with statutory Air Waybill compliance, optical gate scan verification, and dedicated dispatch support.
-            </motion.p>
-          </div>
+              <Button
+                asChild
+                size="lg"
+                className="group font-medium tracking-tight text-primary-foreground hover:bg-primary/90"
+              >
+                <Link href="#contact">
+                  Book a shipment
+                  <ArrowUpRight className="ml-2 size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </Link>
+              </Button>
 
-          {/* Actions Row */}
-          <motion.div
-            initial={shouldReduceMotion ? false : { y: 12 }}
-            animate={{ y: 0 }}
-            transition={{
-              duration: motionDurations.reveal,
-              delay: 0.34,
-              ease: motionEasings.editorial,
-            }}
-            className="mt-8 sm:mt-10 flex flex-wrap items-center gap-3 sm:gap-4"
-          >
-            <Button
-              asChild
-              size="lg"
-              className="group font-medium tracking-tight text-primary-foreground hover:bg-primary/90"
-            >
-              <Link href="#contact">
-                Book a shipment
-                <ArrowUpRight className="ml-2 size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </Link>
-            </Button>
-
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="font-medium tracking-tight hover:bg-accent"
-            >
-              <Link href="#visibility-chapter">
-                <Search className="mr-2 size-3.5" />
-                Track cargo
-              </Link>
-            </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="font-medium tracking-tight hover:bg-accent"
+              >
+                <Link href="#visibility-chapter">
+                  <Search className="mr-2 size-3.5" />
+                  Track cargo
+                </Link>
+              </Button>
+            </motion.div>
           </motion.div>
-        </motion.div>
 
-        {/* Right Column: Master Cinematic Motion Window */}
-        <div className="lg:col-span-5 xl:col-span-5">
-          <motion.div
-            initial={
-              shouldReduceMotion
-                ? false
-                : { scale: 0.985, y: 12 }
-            }
-            animate={{ scale: 1, y: 0 }}
-            transition={{
-              duration: motionDurations.hero,
-              delay: 0.16,
-              ease: motionEasings.hero,
-            }}
-            className="relative"
-          >
-            {/* Visual Master Container with BorderBeam accent */}
+          {/* Right Column: Master Cinematic Visual Container (lg:col-span-5) */}
+          <div className="lg:col-span-5 xl:col-span-5">
             <div className="relative overflow-hidden border border-border/80 bg-card shadow-sm isolate">
-              {/* BorderBeam accent on the card */}
               <BorderBeam
                 size={80}
                 duration={10}
@@ -191,8 +222,8 @@ export function HeroSection() {
                 borderWidth={1}
               />
 
-              {/* Master Cinematic Video Wrapper (1:1 / 4:3) */}
-              <div className="relative aspect-[4/3] sm:aspect-square lg:aspect-[4/3] xl:aspect-[4/3] w-full overflow-hidden bg-muted/10">
+              {/* Master Cinematic Video Wrapper (4:3) */}
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted/10">
                 <motion.div
                   style={
                     shouldReduceMotion
@@ -221,13 +252,12 @@ export function HeroSection() {
                 <span className="text-muted-foreground font-medium">Daily Scheduled</span>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
-    </div>
 
-    {/* Docked Hero Baseline: Proof Stats (4-column operational KPI metrics) */}
-    <ProofStats className="relative z-10 border-b-0" />
-  </section>
-)
+      {/* Docked Hero Baseline: Proof Stats (4-column operational KPI metrics) */}
+      <ProofStats className="relative z-10 border-b-0" />
+    </section>
+  )
 }

@@ -149,13 +149,21 @@ export function ServicesSection() {
               id="services-heading"
               className="text-section text-foreground text-balance"
             >
-              Your cargo. The right journey.
+              <span className="font-medium text-foreground/80">Your cargo. </span>
+              <span className="font-bold text-foreground">
+                The right journey<span className="text-primary font-black">.</span>
+              </span>
             </h2>
           </div>
           <div className="md:col-span-4">
-            <p className="text-lead max-w-[48ch] text-muted-foreground leading-relaxed font-normal text-pretty">
-              Calibrated transit modalities. Select high-priority commercial aviation or cost-optimized arterial linehaul matched to payload dimensions, destination cutoffs, and regulatory requirements.
-            </p>
+            <div className="space-y-2">
+              <p className="text-sm sm:text-base font-medium text-foreground leading-snug">
+                Calibrated transit modalities.
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+                Select high-priority commercial aviation or cost-optimized arterial linehaul matched to payload dimensions, destination cutoffs, and regulatory requirements.
+              </p>
+            </div>
           </div>
         </motion.div>
 
@@ -222,8 +230,8 @@ export function ServicesSection() {
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className={cn("font-mono font-semibold text-sm", srv.color)}>{srv.num}</span>
-                    <Badge variant="outline">
+                    <span className={cn("font-mono font-bold text-base", srv.color)}>{srv.num}</span>
+                    <Badge variant="outline" className="rounded-none font-mono text-[11px] uppercase tracking-wider">
                       {srv.tagline}
                     </Badge>
                     <IconTile variant="frame" className="size-8">
@@ -231,14 +239,14 @@ export function ServicesSection() {
                     </IconTile>
                   </div>
                   <h3
-                    className="mt-4 font-heading text-subhead font-medium tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary"
+                    className="mt-4 font-heading text-xl sm:text-2xl font-bold tracking-tight text-foreground transition-colors group-hover:text-primary"
                   >
                     {srv.title}
                   </h3>
-                  <p className="mt-2 text-sm sm:text-base font-medium text-foreground leading-snug">
+                  <p className="mt-2 text-sm sm:text-base font-semibold text-foreground leading-snug">
                     {srv.lead}
                   </p>
-                  <p className="mt-2 text-body-editorial">
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed font-normal">
                     {srv.description}
                   </p>
                 </div>
@@ -253,7 +261,7 @@ export function ServicesSection() {
                         <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
                           {spec.label}
                         </span>
-                        <span className="font-sans text-xs sm:text-sm font-medium text-foreground">
+                        <span className="font-mono text-xs sm:text-sm font-semibold text-foreground">
                           {spec.value}
                         </span>
                       </div>

@@ -77,7 +77,7 @@ All colors follow OKLCH perceptual uniformity and strict WCAG AA contrast (minim
 
 - **Component Library:** ReUI built on Shadcn UI (`components/ui`, `components/reui`).
 - **Data Grids:** Use `data-grid` for shipments, invoices, and hub lists.
-- **Border Radius:** Deliberate hierarchy (`rounded-md` for buttons and badges, `rounded-lg` for cards, `rounded-xl` for modal dialogs). No pill cards or pill inputs.
+- **Geometry & Border Radius:** Zero border radius (`rounded-none`). Rounded corners, curved lines, and pill containers are strictly forbidden. Use precision straight lines, razor-sharp rectangular borders, and industrial technical geometry exclusively.
 - **Shadows:** Grounded matte surfaces (`shadow-xs` / `shadow-sm` on elevated flyouts). Zero floating blurred blobs.
 - **Every Data Region:**
   1. Empty state: Shows icon, explanatory text, and primary creation button.

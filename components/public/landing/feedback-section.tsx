@@ -25,25 +25,25 @@ const TESTIMONIALS = [
   {
     name: "Rajesh K.",
     role: "Operations Manager, LogiPrime",
-    corridor: "DEL → IMF Corridor",
+    corridor: "DEL → IMF Express Corridor",
     message:
-      "TAC-XPRESS lowered our Delhi-Imphal transit time to 36 hours. Milestone tracking provides reliable custody status for our perishable consignments.",
+      "TAC-XPRESS lowered our Delhi to Imphal air freight transit time to under 24 hours. Milestone tracking provides reliable custody status for our consignments.",
     stars: 5,
   },
   {
     name: "Priya S.",
     role: "Supply Chain Lead, NovaChem",
-    corridor: "DEL → GAU Hazmat Route",
+    corridor: "IMF → DEL Return Linehaul",
     message:
-      "Exceptional attention to statutory customs clearance. Our hazmat shipments clear security in half the time compared to legacy providers.",
+      "Daily commercial belly-hold capacity from Imphal to New Delhi gives our high-value consignments direct capital access with zero transshipment delays.",
     stars: 5,
   },
   {
     name: "Arun M.",
-    role: "Founder, FreshNE Foods",
-    corridor: "CCU → DMU Surface Line",
+    role: "Founder, FreshNE Logistics",
+    corridor: "DEL ⇄ IMF Priority Route",
     message:
-      "The dimensional weight calculator saved us from overpaying on air cargo. Transparent corridor pricing with zero hidden surcharges.",
+      "Statutory Air Waybill compliance and optical gate scan verification at both IGI and Tulihal terminals ensure complete cargo accountability.",
     stars: 5,
   },
 ] as const
@@ -91,23 +91,23 @@ function TestimonialCard({
         delay: index * 0.08,
         ease: motionEasings.editorial,
       }}
-      className="group relative flex flex-col justify-between rounded-lg border border-border/80 bg-card p-6 transition-colors duration-200 hover:border-primary/40 hover:bg-muted/20"
+      className="group relative flex flex-col justify-between rounded-none border-l-2 border-l-primary/60 border-t border-r border-b border-border/80 bg-card p-6 transition-colors duration-200 hover:border-l-primary hover:bg-muted/10"
     >
       <div>
         <div className="flex items-center justify-between pb-3 border-b border-border/40">
           <Quote
-            className="size-5 text-primary/30"
+            className="size-5 text-primary/40"
             strokeWidth={1.5}
             aria-hidden="true"
           />
-          <Badge variant="primary-light">
+          <Badge variant="primary-light" className="rounded-none font-mono text-[11px] uppercase tracking-wider">
             {testimonial.corridor}
           </Badge>
         </div>
 
-        <p className="mt-4 text-sm leading-relaxed text-muted-foreground font-sans">
+        <blockquote className="mt-4 border-l-2 border-primary/30 pl-3.5 py-0.5 text-base sm:text-lg leading-relaxed text-foreground/95 italic font-sans text-pretty">
           &ldquo;{testimonial.message}&rdquo;
-        </p>
+        </blockquote>
       </div>
 
       <div className="mt-6 flex items-center justify-between gap-3 border-t border-border/40 pt-4">

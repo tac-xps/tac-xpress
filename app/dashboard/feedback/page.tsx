@@ -154,7 +154,7 @@ export default async function FeedbackPage({
         }}
       />
       
-      <div className="rounded-lg border bg-card overflow-hidden">
+      <div className="rounded-none border bg-card overflow-hidden">
         <TableToolbar
           pathname="/dashboard/feedback"
           query={q}

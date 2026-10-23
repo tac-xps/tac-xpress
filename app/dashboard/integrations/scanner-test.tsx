@@ -118,7 +118,7 @@ function Code39BarcodeSvg({
   const totalWidth = currentX + 8
 
   return (
-    <div className={`flex flex-col items-center bg-card p-2 rounded-sm select-none border border-border/80 ${className}`}>
+    <div className={`flex flex-col items-center bg-card p-2 rounded-none select-none border border-border/80 ${className}`}>
       <svg
         viewBox={`0 0 ${totalWidth} ${height}`}
         className="w-full max-w-[260px] h-12"
@@ -265,7 +265,7 @@ export function ScannerTest() {
   return (
     <div className="space-y-6">
       {/* Diagnostics & Permissions Summary Banner */}
-      <div className="rounded-sm border border-border/80 bg-muted/20 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+      <div className="rounded-none border border-border/80 bg-muted/20 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
         <div className="flex flex-wrap items-center gap-3">
           {getPermissionBadge()}
           <span className="text-muted-foreground flex items-center gap-1.5">
@@ -303,11 +303,11 @@ export function ScannerTest() {
               Your browser or operating system has blocked camera access for this domain.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
-              <div className="bg-destructive/15 p-2 rounded-sm">
+              <div className="bg-destructive/15 p-2 rounded-none">
                 <span className="font-bold block">iOS Safari:</span>
                 Tap <strong>aA</strong> in the search bar → <strong>Website Settings</strong> → Set <strong>Camera</strong> to <strong>Allow</strong>.
               </div>
-              <div className="bg-destructive/15 p-2 rounded-sm">
+              <div className="bg-destructive/15 p-2 rounded-none">
                 <span className="font-bold block">Android Chrome:</span>
                 Tap the lock icon in the URL bar → <strong>Permissions</strong> → Turn on <strong>Camera</strong>.
               </div>
@@ -342,14 +342,14 @@ export function ScannerTest() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Viewfinder Column */}
             <div className="lg:col-span-8 space-y-3">
-              <div className="relative aspect-4/3 w-full max-w-xl mx-auto overflow-hidden rounded-sm border border-border/80 bg-muted/80 dark:bg-black/90 flex flex-col items-center justify-center">
+              <div className="relative aspect-4/3 w-full max-w-xl mx-auto overflow-hidden rounded-none border border-border/80 bg-muted/80 dark:bg-black/90 flex flex-col items-center justify-center">
                 {/* Hardware Video Stream Mount */}
                 <div id="tac-scanner-viewport" className="w-full h-full overflow-hidden" />
 
                 {/* Idle / Off Placeholder */}
                 {!scanner.isScanning && !scanner.isStarting && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-background/95 space-y-3">
-                    <div className="size-12 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                    <div className="size-12 rounded-none bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
                       <Scan className="size-6" />
                     </div>
                     <div className="space-y-1">
@@ -407,8 +407,8 @@ export function ScannerTest() {
                     </div>
 
                     {/* HUD Status Bar */}
-                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs px-2 py-1 rounded-xs font-mono text-[10px] text-foreground border border-border/40 flex items-center gap-1.5">
-                      <span className="size-1.5 rounded-full bg-success animate-pulse" />
+                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs px-2 py-1 rounded-none font-mono text-[10px] text-foreground border border-border/40 flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-none bg-success animate-pulse" />
                       <span>OPTICAL DECODER ACTIVE · 15 FPS</span>
                     </div>
                   </div>
@@ -474,7 +474,7 @@ export function ScannerTest() {
 
             {/* Live Instructions & Quick Specs Column */}
             <div className="lg:col-span-4 space-y-4">
-              <div className="rounded-sm border border-border/80 bg-card p-4 space-y-3">
+              <div className="rounded-none border border-border/80 bg-card p-4 space-y-3">
                 <h4 className="font-semibold text-xs text-foreground uppercase tracking-wider flex items-center gap-2">
                   <ShieldCheck className="size-4 text-primary" />
                   Hardware Scanner Specs
@@ -501,7 +501,7 @@ export function ScannerTest() {
 
               {/* Scanned Result Card */}
               {scannedAwb && (
-                <div className="rounded-sm border border-success/30 bg-success/5 p-4 space-y-3">
+                <div className="rounded-none border border-success/30 bg-success/5 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-success font-bold flex items-center gap-1.5">
                       <CheckCircle2 className="size-3.5" /> Scanned Reference
@@ -536,7 +536,7 @@ export function ScannerTest() {
 
         {/* TAB 2: Mobile Photo Shutter (Native Camera Integration) */}
         <TabsContent value="mobile-photo" className="space-y-4 pt-1">
-          <div className="rounded-sm border border-border/80 bg-card p-6 space-y-5">
+          <div className="rounded-none border border-border/80 bg-card p-6 space-y-5">
             <div className="space-y-1">
               <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
                 <Smartphone className="size-4 text-primary" />
@@ -549,7 +549,7 @@ export function ScannerTest() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Native Camera Trigger */}
-              <div className="border border-dashed border-primary/40 bg-primary/[0.03] p-6 rounded-sm flex flex-col items-center justify-center text-center space-y-3">
+              <div className="border border-dashed border-primary/40 bg-primary/[0.03] p-6 rounded-none flex flex-col items-center justify-center text-center space-y-3">
                 <input
                   ref={fileInputRef}
                   id="native-camera-capture"
@@ -559,7 +559,7 @@ export function ScannerTest() {
                   className="hidden"
                   onChange={handlePhotoCapture}
                 />
-                <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <div className="size-12 rounded-none bg-primary/10 flex items-center justify-center text-primary">
                   <Camera className="size-6" />
                 </div>
                 <div>
@@ -589,8 +589,8 @@ export function ScannerTest() {
               </div>
 
               {/* Image File Upload Alternative */}
-              <div className="border border-border/60 bg-muted/20 p-6 rounded-sm flex flex-col items-center justify-center text-center space-y-3">
-                <div className="size-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+              <div className="border border-border/60 bg-muted/20 p-6 rounded-none flex flex-col items-center justify-center text-center space-y-3">
+                <div className="size-12 rounded-none bg-muted flex items-center justify-center text-muted-foreground">
                   <Upload className="size-6" />
                 </div>
                 <div>
@@ -637,7 +637,7 @@ export function ScannerTest() {
               {SAMPLE_SHIPMENT_CODES.map((item) => (
                 <div
                   key={item.awb}
-                  className="rounded-sm border border-border/80 bg-card p-4 space-y-3.5 flex flex-col justify-between shadow-xs"
+                  className="rounded-none border border-border/80 bg-card p-4 space-y-3.5 flex flex-col justify-between shadow-xs"
                 >
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
@@ -655,7 +655,7 @@ export function ScannerTest() {
                   </div>
 
                   {/* Visual Barcode & QR Display */}
-                  <div className="space-y-3 bg-muted/30 p-3 rounded-sm border border-border/50">
+                  <div className="space-y-3 bg-muted/30 p-3 rounded-none border border-border/50">
                     <div className="flex justify-center">
                       <QRCodeSVG value={item.awb} size={110} level="M" />
                     </div>
@@ -705,7 +705,7 @@ export function ScannerTest() {
         <TabsContent value="pairing" className="space-y-4 pt-1">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
             {/* Pairing QR Card */}
-            <div className="md:col-span-5 rounded-sm border border-border/80 bg-card p-5 space-y-4 text-center flex flex-col items-center">
+            <div className="md:col-span-5 rounded-none border border-border/80 bg-card p-5 space-y-4 text-center flex flex-col items-center">
               <h4 className="font-semibold text-xs text-foreground uppercase tracking-wider">
                 Instant Mobile Pairing
               </h4>
@@ -713,7 +713,7 @@ export function ScannerTest() {
                 Scan with your iPhone Camera or Android Lens to open this terminal directly on your mobile device.
               </p>
 
-              <div className="bg-card p-3 rounded-sm shadow-sm border border-border/80">
+              <div className="bg-card p-3 rounded-none shadow-sm border border-border/80">
                 <QRCodeSVG
                   value={currentOrigin ? `${currentOrigin}/dashboard/integrations` : "https://tac-xpress.com/dashboard/integrations"}
                   size={160}
@@ -735,7 +735,7 @@ export function ScannerTest() {
             {/* Platform Setup Guides */}
             <div className="md:col-span-7 space-y-4 text-xs">
               {/* iOS Guide */}
-              <div className="rounded-sm border border-border/80 bg-card p-4 space-y-2.5">
+              <div className="rounded-none border border-border/80 bg-card p-4 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <h4 className="font-bold text-foreground flex items-center gap-2">
                     <Smartphone className="size-4 text-primary" />
@@ -758,7 +758,7 @@ export function ScannerTest() {
               </div>
 
               {/* Android Guide */}
-              <div className="rounded-sm border border-border/80 bg-card p-4 space-y-2.5">
+              <div className="rounded-none border border-border/80 bg-card p-4 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <h4 className="font-bold text-foreground flex items-center gap-2">
                     <Smartphone className="size-4 text-primary" />

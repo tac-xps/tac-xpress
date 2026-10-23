@@ -68,11 +68,19 @@ export function CareSection() {
             id="care-heading"
             className="text-section text-foreground text-balance"
           >
-            Care begins with the details.
+            <span className="font-medium text-foreground/80">Care begins </span>
+            <span className="font-bold text-foreground">
+              with the details<span className="text-primary font-black">.</span>
+            </span>
           </h2>
-          <p className="mt-5 text-lead max-w-[50ch] text-muted-foreground leading-relaxed font-normal text-pretty">
-            Strict handling protocols. Standardized corrugated packaging, weatherproof barcode labeling, and multi-checkpoint custodial audits protect consignments across every transfer.
-          </p>
+          <div className="mt-5 space-y-2 max-w-[50ch]">
+            <p className="text-base font-medium text-foreground leading-snug tracking-tight">
+              Strict handling protocols.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+              Standardized corrugated packaging, weatherproof barcode labeling, and multi-checkpoint custodial audits protect consignments across every transfer.
+            </p>
+          </div>
 
           <div className="mt-8 flex items-center gap-6 border-t border-border/80 pt-6">
             <div>

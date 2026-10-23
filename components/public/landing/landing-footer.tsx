@@ -46,7 +46,14 @@ export function LandingFooter() {
   const shouldReduceMotion = useReducedMotion()
 
   return (
-    <footer className="w-full border-t border-border/80 bg-surface/50 text-foreground transition-colors">
+    <footer className="relative w-full overflow-hidden border-t border-border/80 bg-surface/50 text-foreground transition-colors">
+      {/* Architectural Atmospheric Background Watermark */}
+      <div
+        className="pointer-events-none select-none absolute -bottom-4 left-0 right-0 overflow-hidden leading-none text-foreground/[0.035] font-mono font-black text-[13vw] uppercase tracking-tighter text-center"
+        aria-hidden="true"
+      >
+        TAC-XPRESS
+      </div>
       <motion.div
         initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
