@@ -44,6 +44,7 @@ A task is complete only when all criteria pass:
 - Never write em dashes in UI text, placeholders, or error messages.
 - Never run destructive database commands (`db:push`, `db:reset`, raw SQL) on remote databases.
 - Never commit agent skill files (`.agents/`, `antislop.md`, `*.skill`).
+- Never use rounded corners, pill badges, or curved lines in UI components (`rounded-*`, `rounded-full`, `rounded-md`, `rounded-lg`). Rounded corners and curved lines are forbidden.
 
 ### Always Do
 - Prefer React Server Components by default. Add `"use client"` only when hooks or browser APIs are needed.
@@ -52,6 +53,7 @@ A task is complete only when all criteria pass:
 - Adhere to pure freight STEM functions in `lib/stem/` for dimensional weight, fuel surcharges, and GST calculations.
 - Follow ASD-STE100 guidelines: maximum 20 words per procedural instruction. Use active voice and imperative mood.
 - Catch critical operational errors with Sentry SDK.
+- Use straight lines and sharp corners (`rounded-none`) exclusively for all badges, buttons, cards, containers, indicators, and UI elements. Industrial straight-line geometry is mandatory.
 
 ## 5. PR and Commit Conventions
 - Header format: `<type>(<scope>): <subject>` (maximum 50 characters, lowercase, no ending period).
@@ -94,3 +96,21 @@ Only an explicit choice of antislop during or after selects a session mode. A re
 If the mode is unresolved, ask during/after and end the response; wait for the answer before any UI review, planning, or concept. For read-only tasks, put the active-mode notice only at the start of the final answer, never in progress messages. For editing tasks, announce before the first edit and omit it from the final answer.
 To update antislop later: download `antislop.md` again, or run `npx antislop-ai --update` if it was installed as skill folders.
 <!-- antislop:end -->
+
+<!-- BEGIN:kokonutui-agent-rules -->
+# Kokonut UI
+
+This project installs components from Kokonut UI, a shadcn/ui registry.
+The registry is set in components.json as "@kokonutui".
+
+- Before building an animated or interactive component from scratch, check
+  Kokonut UI: https://kokonutui.com/llms.txt lists every component with a
+  one-line description.
+- Install with the shadcn CLI, never by pasting code:
+  pnpm dlx shadcn@latest add @kokonutui/<name>
+  It writes components/kokonutui/<name>.tsx and installs its dependencies.
+- Installed components are project code. Edit them in place rather than
+  wrapping them.
+- Any docs page is available as Markdown, with the full source, by adding
+  .md to its URL, e.g. https://kokonutui.com/docs/buttons/particle-button.md
+<!-- END:kokonutui-agent-rules -->

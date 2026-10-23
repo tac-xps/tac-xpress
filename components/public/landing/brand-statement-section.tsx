@@ -55,18 +55,18 @@ export function BrandStatementSection() {
     <EditorialContainer
       id="brand"
       aria-labelledby="brand-statement-heading"
-      className="relative overflow-hidden py-14 sm:py-20 lg:py-24 bg-card/40 border-y border-border/80"
+      className="dark relative overflow-hidden py-16 sm:py-24 lg:py-28 bg-background text-foreground border-y border-border transition-colors"
     >
       <GridPattern
         width={32}
         height={32}
         strokeDasharray="4 4"
-        className="opacity-15 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]"
+        className="opacity-20 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#fff_70%,transparent_100%)] text-muted-foreground"
       />
       <div ref={containerRef} className="relative z-10 mx-auto max-w-4xl text-center">
         {/* Eyebrow & Final Cargo Line Endpoint */}
         <div className="flex flex-col items-center">
-          <SectionEyebrow className="justify-center mb-3">
+          <SectionEyebrow className="justify-center mb-4 border-border bg-card/80 text-foreground">
             Brand · The Meaning Behind Cargo
           </SectionEyebrow>
 
@@ -81,7 +81,7 @@ export function BrandStatementSection() {
             className="text-display text-foreground text-center"
           >
             <motion.span
-              className="block font-heading font-bold tracking-tight text-foreground"
+              className="block font-heading font-extrabold tracking-tight text-foreground"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.1 }}
@@ -90,10 +90,10 @@ export function BrandStatementSection() {
                 ease: motionEasings.editorial,
               }}
             >
-              Every shipment
+              Every shipment.
             </motion.span>
             <motion.span
-              className="block font-heading font-medium text-foreground/80"
+              className="block font-heading font-bold text-primary"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.1 }}
@@ -103,7 +103,7 @@ export function BrandStatementSection() {
                 ease: motionEasings.editorial,
               }}
             >
-              moves something forward.
+              Moves something forward.
             </motion.span>
           </h2>
 
@@ -123,7 +123,7 @@ export function BrandStatementSection() {
         </div>
 
         {/* Brand Pillar Marquee: scrolling operational values */}
-        <div className="w-full max-w-full overflow-hidden mt-9 mb-3 border-y border-border/80 bg-background/50" aria-hidden="true">
+        <div className="w-full max-w-full overflow-hidden mt-10 mb-4 border-y border-border bg-card/60" aria-hidden="true">
           <Marquee
             pauseOnHover
             className="[--duration:28s] [--gap:0rem] py-0"
@@ -131,7 +131,7 @@ export function BrandStatementSection() {
             {BRAND_PILLARS.map((pillar, idx) => (
               <div
                 key={pillar}
-                className="flex items-center gap-6 px-8 py-3 font-sans text-xs uppercase tracking-[0.24em] font-medium text-muted-foreground"
+                className="flex items-center gap-6 px-8 py-3 font-mono text-xs uppercase tracking-[0.24em] font-medium text-muted-foreground"
               >
                 <span
                   className={cn(
@@ -151,7 +151,7 @@ export function BrandStatementSection() {
         </div>
 
         {/* Centerpiece Visual Frame (brand.webp) */}
-        <div className="relative mx-auto mt-8 overflow-hidden border border-border/80 bg-card shadow-sm sm:mt-10">
+        <div className="relative mx-auto mt-8 overflow-hidden border border-border bg-card shadow-md sm:mt-10">
           <BorderBeam size={120} duration={14} colorFrom="var(--color-primary)" colorTo="transparent" borderWidth={1} />
           <motion.div
             style={
@@ -169,7 +169,7 @@ export function BrandStatementSection() {
               sizes="(min-width: 1024px) 896px, 100vw"
             />
           </motion.div>
-          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium">
+          <div className="flex items-center justify-between border-t border-border bg-card px-4 py-2.5 font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium">
             <span className="font-medium text-foreground">Custodial Discipline</span>
             <span>Clarity · Dependability · Care</span>
           </div>

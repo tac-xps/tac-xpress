@@ -49,7 +49,7 @@ export default async function TrackingPage({
               required
               maxLength={40}
               autoCapitalize="characters"
-              className="min-w-0 flex-1"
+              className="min-w-0 flex-1 font-mono uppercase tracking-wider text-sm"
             />
             <Button type="submit">
               <Search data-icon="inline-start" />

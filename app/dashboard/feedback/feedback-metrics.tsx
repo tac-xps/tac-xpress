@@ -100,7 +100,7 @@ export function FeedbackMetrics({ metrics }: FeedbackMetricsProps) {
           Feedback Signal Telemetry
         </span>
         <span className="flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground/70">
-          <span className="size-1.5 rounded-none bg-success animate-pulse" />
+          <span className="size-1.5 rounded-none bg-success" />
           Live Ingestion
         </span>
       </div>

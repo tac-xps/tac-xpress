@@ -136,12 +136,20 @@ export function ProcessSection() {
                 id="process-heading"
                 className="text-section text-foreground text-balance"
               >
-                Four steps. One clear journey.
+                <span className="font-medium text-foreground/80">Four steps. </span>
+                <span className="font-bold text-foreground">
+                  One clear journey<span className="text-primary font-black">.</span>
+                </span>
               </h2>
             </div>
-            <p className="max-w-md text-lead md:text-right text-muted-foreground leading-relaxed font-normal text-pretty">
-              Continuous chain-of-custody. Four coordinated operational phases guarantee transparent statutory intake, manifest security clearance, linehaul dispatch, and signed destination handover.
-            </p>
+            <div className="max-w-md md:text-right space-y-1.5">
+              <p className="text-sm sm:text-base font-medium text-foreground leading-snug">
+                Continuous chain-of-custody.
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+                Four coordinated operational phases guarantee transparent statutory intake, manifest security clearance, linehaul dispatch, and signed destination handover.
+              </p>
+            </div>
           </motion.div>
 
           {/* Middle Stage: 4-Step Architectural Journey Cards */}
@@ -197,21 +205,21 @@ export function ProcessSection() {
                     )}
                     <div>
                       {/* Step Identifier */}
-                      <div className="flex items-center justify-between font-mono text-xs">
+                      <div className="flex items-start justify-between">
                         <span
                           className={cn(
-                            "font-semibold transition-colors",
-                            isActive ? cn(step.color, "font-bold") : "text-muted-foreground"
+                            "font-mono text-3xl sm:text-4xl font-black tracking-tight transition-colors select-none",
+                            isActive ? step.color : "text-foreground/20 group-hover:text-foreground/40"
                           )}
                         >
                           {step.num}
                         </span>
                         <span
                           className={cn(
-                            "rounded-none px-2 py-0.5 font-sans text-xs uppercase tracking-wider font-medium transition-colors",
+                            "rounded-none px-2 py-0.5 font-mono text-[11px] uppercase tracking-wider font-semibold transition-colors",
                             isActive
                               ? step.badge
-                              : "border border-border/60 bg-muted/40 text-muted-foreground"
+                              : "border border-border/70 bg-muted/30 text-muted-foreground"
                           )}
                         >
                           {step.label}
@@ -221,7 +229,7 @@ export function ProcessSection() {
                       {/* Step Title */}
                       <h3
                         className={cn(
-                          "mt-4 font-heading text-subhead font-medium tracking-[-0.015em] transition-colors text-balance",
+                          "mt-4 font-heading text-lg sm:text-xl font-bold tracking-tight transition-colors text-balance",
                           isActive ? step.color : "text-foreground"
                         )}
                       >
@@ -229,8 +237,11 @@ export function ProcessSection() {
                       </h3>
 
                       {/* Step Description */}
-                      <p className="mt-2.5 text-body-editorial text-muted-foreground leading-relaxed font-normal text-pretty">
-                        {step.lead} {step.description}
+                      <p className="mt-2 text-sm text-foreground/90 font-medium leading-snug">
+                        {step.lead}
+                      </p>
+                      <p className="mt-1.5 text-xs sm:text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+                        {step.description}
                       </p>
                     </div>
 

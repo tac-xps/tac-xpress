@@ -111,13 +111,21 @@ export function NetworkSection() {
               id="network-heading"
               className="text-section text-foreground text-balance"
             >
-              Connected across the journey.
+              <span className="font-medium text-foreground/80">Connected </span>
+              <span className="font-bold text-foreground">
+                across the journey<span className="text-primary font-black">.</span>
+              </span>
             </h2>
           </div>
           <div className="md:col-span-4">
-            <p className="text-lead max-w-[55ch] text-muted-foreground leading-relaxed font-normal text-pretty">
-              Dedicated freight infrastructure. High-density sortation facilities, scheduled flight allocations, and regional gateway reconciliation ensure uninterrupted custody.
-            </p>
+            <div className="space-y-2">
+              <p className="text-sm sm:text-base font-medium text-foreground leading-snug">
+                Dedicated freight infrastructure.
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+                High-density sortation facilities, scheduled flight allocations, and regional gateway reconciliation ensure uninterrupted custody.
+              </p>
+            </div>
           </div>
         </motion.div>
 
@@ -177,14 +185,17 @@ export function NetworkSection() {
                       {item.tag}
                     </span>
                   </div>
-                  <h3 className="mt-3 font-heading text-subhead font-medium tracking-[-0.015em] text-foreground text-balance">
+                  <h3 className="mt-3 font-heading text-lg sm:text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-primary text-balance">
                     {item.title}
                   </h3>
-                  <p className="mt-1 font-sans text-xs font-medium text-muted-foreground">
+                  <p className="mt-1 font-mono text-xs uppercase tracking-wider font-semibold text-primary/80">
                     {item.role}
                   </p>
-                  <p className="mt-3 text-body-editorial text-muted-foreground leading-relaxed font-normal text-pretty">
-                    {item.lead} {item.details}
+                  <p className="mt-2.5 text-sm font-semibold text-foreground leading-snug">
+                    {item.lead}
+                  </p>
+                  <p className="mt-1.5 text-xs sm:text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+                    {item.details}
                   </p>
                 </div>
 

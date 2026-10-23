@@ -163,7 +163,7 @@ async function OverviewSection({
         {workQueueSlot}
       </div>
       <ChartBarInteractive data={overview.salesData} />
-      <Suspense fallback={<Skeleton className="h-72 rounded-lg" />}>
+      <Suspense fallback={<Skeleton className="h-72 rounded-none" />}>
         <HubActivitySection hubsData={overview.hubsData} />
       </Suspense>
     </>
@@ -236,14 +236,14 @@ function OverviewSkeleton() {
     <div className="flex flex-col gap-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-28 rounded-lg" />
+          <Skeleton key={i} className="h-28 rounded-none" />
         ))}
       </div>
       <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
-        <Skeleton className="h-64 rounded-lg" />
-        <Skeleton className="h-64 rounded-lg" />
+        <Skeleton className="h-64 rounded-none" />
+        <Skeleton className="h-64 rounded-none" />
       </div>
-      <Skeleton className="h-64 rounded-lg" />
+      <Skeleton className="h-64 rounded-none" />
     </div>
   )
 }
@@ -252,14 +252,14 @@ function ControlCenterSkeleton() {
   return (
     <div className="grid gap-4 lg:grid-cols-3">
       {Array.from({ length: 3 }).map((_, i) => (
-        <Skeleton key={i} className="h-48 rounded-lg" />
+        <Skeleton key={i} className="h-48 rounded-none" />
       ))}
     </div>
   )
 }
 
 function ManifestsSkeleton() {
-  return <Skeleton className="h-72 w-full rounded-lg" />
+  return <Skeleton className="h-72 w-full rounded-none" />
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -283,7 +283,7 @@ export default async function DashboardPage() {
       </PageHeader>
 
       {/* Operations banner */}
-      <div className="w-full overflow-hidden rounded-lg border border-border/80 shadow-xs aspect-[4/1] max-h-56">
+      <div className="w-full overflow-hidden rounded-none border border-border/80 shadow-xs aspect-[4/1] max-h-56">
         <Image
           src="/images/dashboard/banner_dashboard.png"
           alt="TAC-XPRESS operations dashboard banner"
@@ -301,7 +301,7 @@ export default async function DashboardPage() {
       <Suspense fallback={<OverviewSkeleton />}>
         <OverviewSection
           workQueueSlot={
-            <Suspense fallback={<Skeleton className="h-64 rounded-lg" />}>
+            <Suspense fallback={<Skeleton className="h-64 rounded-none" />}>
               <WorkQueueSection />
             </Suspense>
           }

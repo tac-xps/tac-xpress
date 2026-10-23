@@ -158,7 +158,7 @@ export function PricingCalculatorClient() {
           <p className="mb-2 text-sm font-medium text-muted-foreground">
             Total Projected Cost
           </p>
-          <h2 className="text-5xl font-bold tracking-tight text-foreground tabular-nums">
+          <h2 className="font-mono text-4xl sm:text-5xl font-bold tracking-tight text-foreground tabular-nums">
             {total !== null ? `₹${total.toFixed(2)}` : "--"}
           </h2>
           <p className="mt-4 max-w-xs text-xs text-muted-foreground">

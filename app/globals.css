@@ -121,12 +121,12 @@
   --font-mono: var(--font-tac-mono, ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   /* Editorial Landing Page Hierarchy (calibrated fluid clamp) */
-  --type-display-hero: clamp(2.5rem, 3.8vw + 0.25rem, 4.25rem); /* 40px → 68px: Hero Headline */
+  --type-display-hero: clamp(2.8rem, 4.5vw + 0.5rem, 5rem); /* 45px → 80px: Hero Headline */
   --type-display: clamp(3rem, 5.5vw, 5.25rem);       /* 48px → 84px: Brand Statement */
-  --type-section: clamp(2.25rem, 3.8vw, 3.5rem);     /* 36px → 56px: Services, Tracking, Process, Network, Care, Contact, FAQ */
+  --type-section: clamp(2.25rem, 4vw, 3.75rem);       /* 36px → 60px: Services, Tracking, Process, Network, Care, Contact, FAQ */
   --type-subhead: clamp(1.25rem, 1.4vw, 1.5rem);     /* 20px → 24px: Subheadings, card titles */
   --type-sub: clamp(1.25rem, 1.4vw, 1.5rem);         /* Backwards-compatible alias */
-  --type-lead: clamp(1.0625rem, 0.35vw + 1rem, 1.25rem); /* 17px → 20px: Narrative decks / subheads */
+  --type-lead: clamp(1.125rem, 0.5vw + 1rem, 1.35rem); /* 18px → 21.6px: Narrative decks / subheads */
   --text-editorial-display: var(--type-display);
   --text-editorial-section: var(--type-section);
   --text-editorial-sub: var(--type-subhead);
@@ -194,8 +194,9 @@
   font-family: var(--font-heading);
   font-size: var(--type-display-hero);
   font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.035em;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "zero" 1;
   text-wrap: balance;
 }
 
@@ -204,7 +205,8 @@
   font-size: var(--type-display);
   font-weight: 600;
   line-height: 1.02;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.038em;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "zero" 1;
   text-wrap: balance;
 }
 
@@ -212,8 +214,9 @@
   font-family: var(--font-heading);
   font-size: var(--type-section);
   font-weight: 600;
-  line-height: 1.12;
-  letter-spacing: -0.028em;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "zero" 1;
   text-wrap: balance;
 }
 
@@ -222,7 +225,7 @@
   font-size: var(--type-subhead);
   font-weight: 500;
   line-height: 1.25;
-  letter-spacing: -0.018em;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
@@ -232,18 +235,28 @@
   font-size: var(--type-subhead);
   font-weight: 500;
   line-height: 1.25;
-  letter-spacing: -0.018em;
+  letter-spacing: -0.02em;
   text-wrap: balance;
+}
+
+@utility text-lede {
+  font-family: var(--font-sans);
+  font-size: clamp(1.0625rem, 0.35vw + 1rem, 1.25rem);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+  color: var(--foreground);
 }
 
 @utility text-lead {
   font-family: var(--font-sans);
   font-size: var(--type-lead);
   font-weight: 400;
-  line-height: 1.55;
-  letter-spacing: -0.012em;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
   text-wrap: pretty;
-  color: color-mix(in oklch, var(--foreground) 95%, transparent);
+  color: var(--muted-foreground);
 }
 
 @utility text-body-editorial {
@@ -338,6 +351,40 @@
   font-variant-numeric: tabular-nums slashed-zero;
 }
 
+@utility text-metric-display {
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+@utility text-table-cell {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  letter-spacing: normal;
+}
+
+@utility text-table-header {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+@utility prose-cargo {
+  max-width: 65ch;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.625;
+  color: var(--foreground);
+  text-wrap: pretty;
+}
+
 :root {
   color-scheme: light;
 
@@ -351,7 +398,7 @@
   --mn-stone: oklch(0.889 0.010 256);        /* Structural Border: Radix Slate step 6 */
   --mn-stone-strong: oklch(0.601 0.020 256); /* Control Border: Radix Slate step 10 (3.35:1 on cloud) */
   --mn-ink: oklch(0.256 0.011 264);          /* Primary Text: Radix Slate step 12 ink (≥15:1 on cloud) */
-  --mn-slate: oklch(0.498 0.018 256);        /* Secondary Text: Radix Slate step 11 calibrated (Lc ≥ 75 on paper) */
+  --mn-slate: oklch(0.38 0.02 256);         /* Secondary Text: Radix Slate step 11 darkened for premium contrast */
 
   /* Backwards compatibility aliases */
   --mn-bone: var(--mn-cloud);
@@ -1090,14 +1137,27 @@
 }
 
 .cargo-section {
-  padding-block: clamp(4rem, 7.5vw, 7rem);
+  padding-block: clamp(6rem, 10vw, 10rem);
 }
 
 .cargo-eyebrow {
+  font-family: var(--font-mono);
   font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--mn-teal);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cargo-eyebrow::before {
+  content: "";
+  display: block;
+  width: 1.5rem;
+  height: 1px;
+  background: var(--mn-teal);
 }
 
 .cargo-display,

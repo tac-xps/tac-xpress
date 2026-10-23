@@ -97,7 +97,7 @@ export function ManifestCorridorCard({ form, hubs }: ManifestCorridorCardProps) 
           </CardTitle>
           {selectedOrigin && selectedDest && (
             <span className="font-mono text-[10px] font-bold text-status-delivered bg-status-delivered-wash border border-status-delivered/20 px-2 py-0.5 rounded-none uppercase flex items-center gap-1">
-              <span className="size-1.5 rounded-none bg-status-delivered animate-pulse" />
+              <span className="size-1.5 rounded-none bg-status-delivered" />
               Active Corridor
             </span>
           )}

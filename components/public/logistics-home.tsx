@@ -3,6 +3,7 @@ import { MotionProvider } from "./landing/motion-provider"
 import { LandingNav } from "./landing/landing-nav"
 import { HeroSection } from "./landing/hero-section"
 import { CorridorMarquee } from "./landing/section-primitives"
+import { TelemetryStatsBand } from "./landing/telemetry-stats-band"
 import { ServicesSection } from "./landing/services-section"
 import { TrackingSection } from "./landing/tracking-section"
 import { ProcessSection } from "./landing/process-section"
@@ -15,6 +16,7 @@ import { ContactSection } from "./landing/contact-section"
 import { LandingFooter } from "./landing/landing-footer"
 import { SupportChat } from "./support-chat"
 import { BackToTop } from "./landing/back-to-top"
+import { CorridorStatusIsland } from "./landing/corridor-status-island"
 
 /**
  * TAC Express: Master Landing Page (Motion System 2.0: Living Logistics)
@@ -46,6 +48,9 @@ export function LogisticsHome() {
           {/* Living Corridor Movement Ticker Ribbon */}
           <CorridorMarquee />
 
+          {/* Live High-Contrast Corridor Telemetry Performance Monument */}
+          <TelemetryStatsBand />
+
           <ServicesSection />
 
           {/* Chapter 02: Visibility */}
@@ -75,6 +80,9 @@ export function LogisticsHome() {
 
         {/* Global Scroll-to-Top Floating Trigger */}
         <BackToTop />
+
+        {/* Real-time Corridor Operations Island */}
+        <CorridorStatusIsland />
       </div>
     </MotionProvider>
   )

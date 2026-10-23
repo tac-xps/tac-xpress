@@ -83,7 +83,7 @@ export function HomeHero() {
               custom={dur(0.06)}
               className="mb-4 inline-flex items-center gap-2 border border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground shadow-2xs self-start"
             >
-              <span className="size-1.5 rounded-none bg-status-delivered animate-pulse" />
+              <span className="size-1.5 rounded-none bg-status-delivered" />
               <span>DELHI ⇄ IMPHAL CORRIDOR</span>
               <span className="text-border">|</span>
               <span className="text-foreground">SCHEDULED LINEHAULS</span>

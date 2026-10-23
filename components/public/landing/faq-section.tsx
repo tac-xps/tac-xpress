@@ -85,11 +85,19 @@ export function FAQSection() {
             id="faq-heading"
             className="text-section text-foreground text-balance"
           >
-            Questions, answered.
+            <span className="font-medium text-foreground/80">Questions, </span>
+            <span className="font-bold text-foreground">
+              answered<span className="text-primary font-black">.</span>
+            </span>
           </h2>
-          <p className="mt-4 text-lead max-w-[55ch] text-muted-foreground leading-relaxed font-normal text-pretty">
-            Operational advisory. Clear guidelines on consignment booking procedures, corridor transit timelines, chargeable weight calculations, and statutory documentation rules.
-          </p>
+          <div className="mt-4 space-y-2 max-w-[55ch]">
+            <p className="text-base font-medium text-foreground leading-snug tracking-tight">
+              Operational freight advisory.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+              Clear guidelines on consignment booking procedures, corridor transit timelines, chargeable weight calculations, and statutory documentation rules.
+            </p>
+          </div>
         </motion.div>
 
         {/* Shadcn Accordion: Radix primitive with motion entrance */}
@@ -118,14 +126,14 @@ export function FAQSection() {
                 <AccordionTrigger
                   className="py-0 text-left hover:no-underline [&>svg]:hidden group"
                 >
-                  <span className="pr-6 font-heading text-subhead font-medium tracking-[-0.015em] text-foreground transition-colors group-hover:text-primary flex items-baseline text-balance">
+                  <span className="pr-6 font-heading text-base sm:text-lg font-bold tracking-tight text-foreground transition-colors group-hover:text-primary flex items-baseline text-balance">
                     <span
                       className={
                         idx % 3 === 0
-                          ? "font-mono tabular-nums text-xs font-semibold text-primary mr-3.5 shrink-0"
+                          ? "font-mono tabular-nums text-xs sm:text-sm font-bold text-primary mr-3.5 shrink-0"
                           : idx % 3 === 1
-                          ? "font-mono tabular-nums text-xs font-semibold text-info mr-3.5 shrink-0"
-                          : "font-mono tabular-nums text-xs font-semibold text-status-delivered mr-3.5 shrink-0"
+                          ? "font-mono tabular-nums text-xs sm:text-sm font-bold text-info mr-3.5 shrink-0"
+                          : "font-mono tabular-nums text-xs sm:text-sm font-bold text-status-delivered mr-3.5 shrink-0"
                       }
                     >
                       0{idx + 1}
@@ -136,8 +144,13 @@ export function FAQSection() {
                     <Plus className="size-3.5" />
                   </span>
                 </AccordionTrigger>
-                <AccordionContent className="pt-4 pr-12 text-body-editorial text-muted-foreground leading-relaxed font-normal">
-                  {faq.lead} {faq.a}
+                <AccordionContent className="pt-4 pr-12 space-y-2">
+                  <p className="font-sans text-sm sm:text-base font-semibold text-foreground leading-snug">
+                    {faq.lead}
+                  </p>
+                  <p className="font-sans text-xs sm:text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+                    {faq.a}
+                  </p>
                 </AccordionContent>
               </AccordionItem>
             </motion.div>

@@ -47,12 +47,19 @@ export function ContactSection() {
             id="contact-heading"
             className="text-section text-foreground text-balance"
           >
-            A person to help with the next step.
+            <span className="font-medium text-foreground/80">Direct dispatch. </span>
+            <span className="font-bold text-foreground">
+              A person to help<span className="text-primary font-black">.</span>
+            </span>
           </h2>
-          <p className="mt-4 text-lead max-w-[50ch] text-muted-foreground leading-relaxed font-normal text-pretty">
-            Dedicated logistics desk. Submit corridor parameters, dimensional cargo manifests,
-            or dispatch inquiries. Our operations team computes volumetric ratings and responds directly.
-          </p>
+          <div className="mt-4 space-y-2 max-w-[50ch]">
+            <p className="text-base font-medium text-foreground leading-snug tracking-tight">
+              Dedicated freight desk.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+              Submit corridor parameters, dimensional cargo manifests, or dispatch inquiries. Our operations team computes volumetric ratings and responds directly.
+            </p>
+          </div>
 
           {/* Contact Directory: 2x2 icon-card grid with staggered entrance (M3) */}
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-px border border-border/80 bg-border/30">

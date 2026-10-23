@@ -33,6 +33,7 @@
     "@tac-xpress": "./.registry/{name}.json",
     "@kibo-ui": "https://www.kibo-ui.com/r/{name}.json",
     "@magicui": "https://magicui.design/r/{name}.json",
+    "@kokonutui": "https://kokonutui.com/r/{name}.json",
     "@reui": {
       "url": "https://reui.io/r/{style}/{name}.json",
       "headers": {
