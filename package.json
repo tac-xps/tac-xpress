@@ -40,6 +40,7 @@
     "db:sync": "tsx --env-file=.env.local scripts/sync-schema.ts",
     "db:types": "supabase gen types typescript --local > types/supabase.ts",
     "audit:supabase-migration-history": "tsx scripts/audit-supabase-migration-history.ts",
+    "inspect:cargo-leg-preflight": "tsx scripts/inspect-cargo-leg-migration-preflight.ts",
     "gbrain:init": "gbrain init --pglite",
     "gbrain:sync": "gbrain sync",
     "gbrain:serve": "gbrain serve",
