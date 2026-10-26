@@ -327,7 +327,7 @@ export const PROOF_CLAIMS = [
   { label: "Dedicated Dispatch", detail: "Direct operations desk routing", colorClass: "text-status-pending" },
 ]
 
-/** Dedicated corridors requested: IMF to DEL, DEL to IMF, New Delhi – Northeast, Northeast to Imphal */
+/** Dedicated corridors requested: IMF to DEL, DEL to IMF, New Delhi to Northeast, Northeast to Imphal */
 export const CORRIDOR_MARQUEE_ITEMS = [
   {
     corridor: "IMF to DEL",
@@ -338,7 +338,7 @@ export const CORRIDOR_MARQUEE_ITEMS = [
     tag: "Belly-Hold Linehaul",
   },
   {
-    corridor: "New Delhi – Northeast",
+    corridor: "New Delhi to Northeast",
     tag: "Arterial Highway Fleet",
   },
   {
@@ -393,7 +393,7 @@ export function CorridorMarquee({ className }: { className?: string } = {}) {
         <ul>
           {CORRIDOR_MARQUEE_ITEMS.map((item, idx) => (
             <li key={`${item.corridor}-${idx}`}>
-              {item.corridor} · {item.tag}
+              {item.corridor} / {item.tag}
             </li>
           ))}
         </ul>

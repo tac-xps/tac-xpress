@@ -50,7 +50,7 @@ const TERMINAL_HUBS: TerminalHub[] = [
     rampSla: "99.9% Ramp Transfer Compliance",
     capacity: "42.5 MT Lifted Daily",
     capacityPercent: 78,
-    securityGate: "BCAS Gate 4 · Dual X-Ray Cleared",
+    securityGate: "BCAS Gate 4 / Dual X-Ray Cleared",
     status: "OPEN - ACCEPTING",
     statusColor: "text-status-delivered border-status-delivered/40 bg-status-delivered/10",
     summary:
@@ -73,7 +73,7 @@ const TERMINAL_HUBS: TerminalHub[] = [
     rampSla: "Same-Day Station Sortation SLA",
     capacity: "18.2 MT Regional Handling",
     capacityPercent: 64,
-    securityGate: "Apron Bay 3 · Tamper-Evident Sign-off",
+    securityGate: "Apron Bay 3 / Tamper-Evident Sign-off",
     status: "STAGED - BOARDING",
     statusColor: "text-primary border-primary/40 bg-primary/10",
     summary:

@@ -497,7 +497,7 @@ export function TrackingSection() {
       ? "in-transit"
       : "on-time") as FlightStatus,
     note: isSample
-      ? "Commercial belly-hold space secured · BCAS scan cleared"
+      ? "Commercial belly-hold space secured / BCAS scan cleared"
       : `Consignment ${activeAwb} verified in transit`,
   }
 

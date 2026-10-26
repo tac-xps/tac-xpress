@@ -65,7 +65,7 @@ const FREIGHT_COMMANDS: CommandItem[] = [
   },
   {
     id: "service-air",
-    label: "Air Cargo Specifications (24–48h Gateway Linehaul)",
+    label: "Air Cargo Specifications (24 to 48h Gateway Linehaul)",
     group: "Services",
     keywords: ["air", "flight", "belly-hold", "express", "urgent"],
     href: "/services/air-cargo",
