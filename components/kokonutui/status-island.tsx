@@ -53,6 +53,7 @@ export interface StatusIslandProps {
   /** Milliseconds a done task stays. Paused while the island is open. */
   dismissAfter?: number;
   className?: string;
+  dropdown?: boolean;
 }
 
 const ACCORDION_EASE: Transition = { duration: 0.22, ease: [0.22, 1, 0.36, 1] };
@@ -160,6 +161,7 @@ export function StatusIsland({
   onDismiss,
   dismissAfter = 4000,
   className,
+  dropdown = false,
 }: StatusIslandProps) {
   const [open, setOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
@@ -310,9 +312,13 @@ export function StatusIsland({
             >
               {expanded ? (
                 <motion.div
-                  animate={{ opacity: 1 }}
-                  className="flex w-84 max-w-[calc(100vw-2rem)] flex-col outline-none"
-                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={cn(
+                    "flex w-84 max-w-[calc(100vw-2rem)] flex-col outline-none",
+                    dropdown &&
+                      "absolute top-full left-0 mt-2 z-50 rounded-none border border-border bg-card text-card-foreground shadow-xl"
+                  )}
+                  initial={{ opacity: 0, y: dropdown ? -4 : 0 }}
                   key="expanded-ledger"
                   ref={listRef}
                   tabIndex={-1}
@@ -357,32 +363,68 @@ export function StatusIsland({
                     </span>
                   </div>
                 </motion.div>
-              ) : (
+              ) : null}
+
+              {/* Collapsed or Navbar Trigger Pill */}
+              {(!expanded || dropdown) && (
                 <button
-                  aria-expanded={false}
-                  aria-label={`DEL ⇄ IMF Telemetry: ${describe(current)}. Click to open operations ledger`}
-                  className="group relative flex size-11 items-center justify-center transition-colors hover:bg-muted/40 focus-visible:outline-none"
+                  aria-expanded={expanded}
+                  aria-label={`DEL ⇄ IMF Telemetry: ${describe(current)}. Click to toggle operations ledger`}
+                  className={cn(
+                    "group relative flex items-center transition-colors hover:bg-muted/40 focus-visible:outline-none",
+                    dropdown
+                      ? "h-9 px-3 gap-2.5 rounded-none border border-border/70 bg-card text-xs"
+                      : "size-11 justify-center"
+                  )}
                   onClick={() => {
-                    setIsPinned(true);
-                    setOpen(true);
+                    if (dropdown && expanded) {
+                      setIsPinned(false);
+                      setOpen(false);
+                    } else {
+                      setIsPinned(true);
+                      setOpen(true);
+                    }
                   }}
                   ref={pillRef}
                   title={`DEL ⇄ IMF Telemetry · ${current.label}`}
                   type="button"
                 >
                   {/* Corner Live Beacon */}
-                  <span className="absolute top-1.5 right-1.5 flex size-2 rounded-none" aria-hidden="true">
+                  <span
+                    className={cn(
+                      "flex size-2 rounded-none",
+                      dropdown ? "relative" : "absolute top-1.5 right-1.5"
+                    )}
+                    aria-hidden="true"
+                  >
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-status-delivered opacity-75" />
                     <span className="relative inline-flex size-2 rounded-none bg-status-delivered" />
                   </span>
 
-                  {/* Flight Telemetry Glyph & Destination Code */}
-                  <div className="flex flex-col items-center justify-center -space-y-0.5">
-                    <Plane className="size-4 text-foreground transition-transform duration-200 group-hover:scale-110 -rotate-45" />
-                    <span className="font-mono text-xs font-bold tracking-tight text-foreground/80">
-                      IMF
-                    </span>
-                  </div>
+                  {dropdown ? (
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-semibold text-foreground">
+                        DEL ⇄ IMF
+                      </span>
+                      <span className="hidden sm:inline font-sans text-xs text-muted-foreground truncate max-w-[140px]">
+                        {current.label}
+                      </span>
+                      <ChevronDown
+                        className={cn(
+                          "size-3 text-muted-foreground transition-transform duration-200",
+                          expanded && "rotate-180"
+                        )}
+                      />
+                    </div>
+                  ) : (
+                    /* Square Pill: Flight Telemetry Glyph & Destination Code */
+                    <div className="flex flex-col items-center justify-center -space-y-0.5">
+                      <Plane className="size-4 text-foreground transition-transform duration-200 group-hover:scale-110 -rotate-45" />
+                      <span className="font-mono text-xs font-bold tracking-tight text-foreground/80">
+                        IMF
+                      </span>
+                    </div>
+                  )}
                 </button>
               )}
             </motion.div>

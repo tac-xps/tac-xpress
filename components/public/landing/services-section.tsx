@@ -182,7 +182,8 @@ export function ServicesSection() {
                 src="/images/logistics/journey.webp"
                 alt="Panoramic multi-modal logistics corridor across modern Indian metropolis with arterial expressway, container linehaul, rapid rail, and ascending aircraft"
                 fill
-                priority={false}
+                priority={true}
+                loading="eager"
                 style={{ objectPosition }}
                 className="object-cover select-none motion-reduce:transform-none motion-reduce:transition-none"
                 sizes="(min-width: 1360px) 1264px, 100vw"

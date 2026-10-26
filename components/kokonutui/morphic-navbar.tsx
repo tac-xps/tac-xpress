@@ -198,9 +198,9 @@ const KEY_MOVES: Record<string, (i: number, n: number) => number> = {
   End: (_, n) => n - 1,
 };
 
-const SURFACE = "bg-zinc-900 dark:bg-zinc-100";
+const SURFACE = "bg-muted/80 text-foreground border border-border/60 dark:bg-zinc-900/90 dark:border-zinc-800";
 const FOCUS_RING =
-  "outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-inset";
+  "outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset";
 
 /**
  * In-page anchors scroll to their target and record the hash with
@@ -314,8 +314,8 @@ function Segment({
           SURFACE,
           FOCUS_RING,
           highlighted
-            ? "text-zinc-50 dark:text-zinc-950 font-semibold"
-            : "text-zinc-300 hover:text-white dark:text-zinc-700 dark:hover:text-zinc-950"
+            ? "text-primary font-semibold"
+            : "text-muted-foreground hover:text-foreground"
         )}
         draggable={false}
         href={href}
@@ -354,7 +354,7 @@ function Segment({
         <span
           aria-hidden="true"
           className={cn(
-            "absolute bottom-1.5 left-1/2 h-0.5 w-3 -translate-x-1/2 rounded-none bg-orange-500 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
+            "absolute bottom-1.5 left-1/2 h-0.5 w-3 -translate-x-1/2 rounded-none bg-primary transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
             highlighted ? "scale-x-100" : "scale-x-0"
           )}
         />
@@ -737,7 +737,7 @@ export function MorphicNavbar({
             aria-hidden={!folded}
             aria-label="Show all links"
             className={cn(
-              "absolute top-0 left-0 flex size-9 items-center justify-center rounded-none text-zinc-300 transition-colors duration-150 hover:text-white dark:text-zinc-700 dark:hover:text-zinc-950",
+              "absolute top-0 left-0 flex size-9 items-center justify-center rounded-none text-muted-foreground transition-colors duration-150 hover:text-foreground",
               SURFACE,
               FOCUS_RING,
               folded ? "z-30" : "pointer-events-none z-0"

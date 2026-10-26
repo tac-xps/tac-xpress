@@ -16,7 +16,6 @@ import { ContactSection } from "./landing/contact-section"
 import { LandingFooter } from "./landing/landing-footer"
 import { SupportChat } from "./support-chat"
 import { BackToTop } from "./landing/back-to-top"
-import { CorridorStatusIsland } from "./landing/corridor-status-island"
 import ScrollIndex from "@/components/kokonutui/scroll-index"
 
 /**
@@ -84,9 +83,6 @@ export function LogisticsHome() {
 
         {/* Global Scroll-to-Top Floating Trigger */}
         <BackToTop />
-
-        {/* Real-time Corridor Operations Island */}
-        <CorridorStatusIsland />
       </div>
     </MotionProvider>
   )

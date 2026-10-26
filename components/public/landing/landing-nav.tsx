@@ -27,6 +27,7 @@ import { motionSprings } from "@/lib/motion/motion.theme"
 
 import { MorphicNavbar, type NavItem } from "@/components/kokonutui/morphic-navbar"
 import ActionSearchBar, { type CommandItem } from "@/components/kokonutui/action-search-bar"
+import { CorridorStatusIsland } from "./corridor-status-island"
 
 const NAV_LINKS = [
   { href: "#services", label: "Services" },
@@ -44,10 +45,7 @@ const MORPHIC_NAV_ITEMS: Record<string, NavItem> = {
   "#visibility-chapter": { name: "Tracking" },
   "#journey-chapter": { name: "Process" },
   "#network": { name: "Network" },
-  "#delivery-chapter": { name: "Care" },
-  "#feedback": { name: "Feedback" },
-  "#faq": { name: "FAQ" },
-  "#contact": { name: "Contact" },
+  "#contact": { name: "Rates" },
 }
 
 const FREIGHT_COMMANDS: CommandItem[] = [
@@ -196,15 +194,20 @@ export function LandingNav() {
       )}
     >
       <div className="mx-auto flex h-16 w-full max-w-[1360px] items-center justify-between px-4 sm:px-6 lg:px-12">
-        {/* Brand Logo */}
-        <div className="flex items-center gap-6">
+        {/* Brand Logo & Live Corridor Status */}
+        <div className="flex items-center gap-4">
           <Link
             href="/"
             aria-label="TAC-XPRESS home"
-            className="flex items-center gap-2 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
+            className="flex items-center gap-2 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none shrink-0"
           >
             <Logo className="h-7 w-auto" />
           </Link>
+
+          {/* Integrated Live Corridor Status Island */}
+          <div className="hidden md:flex items-center">
+            <CorridorStatusIsland dropdown={true} />
+          </div>
         </div>
 
         {/* Desktop Navigation using Kokonut UI MorphicNavbar */}

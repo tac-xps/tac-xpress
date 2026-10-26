@@ -2,6 +2,7 @@
 
 import React, { useSyncExternalStore } from "react"
 import { StatusIsland } from "@/components/kokonutui/status-island"
+import { cn } from "@/lib/utils"
 import {
   computeCorridorTelemetry,
   type CorridorTelemetryState,
@@ -42,17 +43,39 @@ function getServerSnapshot(): CorridorTelemetryState {
  * Live Indian Standard Time (IST) corridor operations telemetry console.
  * Deterministically computes flight progress and gateway states without external APIs.
  */
-export function CorridorStatusIsland() {
+export function CorridorStatusIsland({
+  className,
+  dropdown = false,
+}: {
+  className?: string
+  dropdown?: boolean
+} = {}) {
   const current = useSyncExternalStore(
     subscribe,
     getSnapshot,
     getServerSnapshot
   )
 
+  if (dropdown) {
+    return (
+      <div className={className}>
+        <StatusIsland
+          tasks={current.tasks}
+          istTime={current.currentIstTime}
+          phaseTitle={current.phaseTitle}
+          dropdown={true}
+        />
+      </div>
+    )
+  }
+
   return (
     <aside
       aria-label="Live Corridor Operations Monitor"
-      className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 pointer-events-auto"
+      className={cn(
+        "fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 pointer-events-auto",
+        className
+      )}
     >
       <StatusIsland
         tasks={current.tasks}
