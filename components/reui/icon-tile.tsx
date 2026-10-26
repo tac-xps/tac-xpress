@@ -111,7 +111,7 @@ function IconTile({
 
   return (
     <Comp
-      data-slot="icon-tile"
+
       data-variant={variant}
       data-size={size}
       className={cn(iconTileVariants({ variant, size, radius, className }))}

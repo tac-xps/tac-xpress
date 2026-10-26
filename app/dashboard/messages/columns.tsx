@@ -99,31 +99,31 @@ export const getColumns = (
                       ? "warning"
                       : "neutral"
                 }
-                className="text-[10px] px-1.5 py-0 h-4 capitalize"
+                className="text-xs px-1.5 py-0 h-4 capitalize"
               >
                 {ticket.priority}
               </Badge>
             )}
             {ticket.needs_human_review && (
-              <Badge variant="warning" className="text-[10px] px-1.5 py-0 h-4 gap-1">
+              <Badge variant="warning" className="text-xs px-1.5 py-0 h-4 gap-1">
                 <AlertCircle className="size-2.5" />
                 Needs Review
               </Badge>
             )}
             {ticket.ai_routing && (
-              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 gap-1 border-primary/30 text-primary">
+              <Badge variant="outline" className="text-xs px-1.5 py-0 h-4 gap-1 border-primary/30 text-primary">
                 <Sparkles className="size-2.5" />
                 {ticket.ai_routing}
                 {ticket.ai_confidence ? ` (${Math.round(ticket.ai_confidence * 100)}%)` : ""}
               </Badge>
             )}
             {ticket.sla_at_risk && !ticket.sla_breached && (
-              <Badge variant="warning" className="text-[10px] px-1.5 py-0 h-4">
+              <Badge variant="warning" className="text-xs px-1.5 py-0 h-4">
                 SLA At Risk
               </Badge>
             )}
             {ticket.sla_breached && (
-              <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4">
+              <Badge variant="destructive" className="text-xs px-1.5 py-0 h-4">
                 SLA Breached
               </Badge>
             )}

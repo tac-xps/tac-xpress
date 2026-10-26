@@ -33,7 +33,7 @@ export default function TermsAndConditionsPage() {
           <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="space-y-2 max-w-3xl">
-                <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-primary font-semibold">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary font-semibold">
                   <FileCheck className="size-3.5 text-primary" />
                   <span>Clause 01 · Statutory Compliance</span>
                 </div>
@@ -51,7 +51,7 @@ export default function TermsAndConditionsPage() {
           <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="space-y-2 max-w-3xl">
-                <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-destructive font-semibold">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-destructive font-semibold">
                   <AlertTriangle className="size-3.5 text-destructive" />
                   <span>Clause 02 · Safety Prohibition</span>
                 </div>
@@ -69,7 +69,7 @@ export default function TermsAndConditionsPage() {
           <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="space-y-2 max-w-3xl">
-                <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-primary font-semibold">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary font-semibold">
                   <Box className="size-3.5 text-primary" />
                   <span>Clause 03 · Custody & Security</span>
                 </div>
@@ -87,7 +87,7 @@ export default function TermsAndConditionsPage() {
           <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="space-y-2 max-w-3xl">
-                <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-primary font-semibold">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary font-semibold">
                   <ShieldCheck className="size-3.5 text-primary" />
                   <span>Clause 04 · Risk Assessment</span>
                 </div>
@@ -105,7 +105,7 @@ export default function TermsAndConditionsPage() {
           <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="space-y-2 max-w-3xl">
-                <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-muted-foreground font-semibold">
                   <Scale className="size-3.5 text-muted-foreground" />
                   <span>Clause 05 · Exceptional Events</span>
                 </div>
@@ -123,7 +123,7 @@ export default function TermsAndConditionsPage() {
           <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="space-y-2 max-w-3xl">
-                <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-muted-foreground font-semibold">
                   <Clock className="size-3.5 text-muted-foreground" />
                   <span>Clause 06 · Destination Protocols</span>
                 </div>
@@ -141,7 +141,7 @@ export default function TermsAndConditionsPage() {
           <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="space-y-2 max-w-3xl">
-                <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-muted-foreground font-semibold">
                   <FileText className="size-3.5 text-muted-foreground" />
                   <span>Clause 07 · Warehouse Disposition</span>
                 </div>
@@ -159,7 +159,7 @@ export default function TermsAndConditionsPage() {
           <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="space-y-2 max-w-3xl">
-                <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-primary font-semibold">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary font-semibold">
                   <Gavel className="size-3.5 text-primary" />
                   <span>Clause 08 · Legal Authority</span>
                 </div>

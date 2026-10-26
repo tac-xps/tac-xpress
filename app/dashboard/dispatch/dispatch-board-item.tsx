@@ -36,7 +36,7 @@ export function DispatchBoardItem({
         <div className="mt-2 flex items-center gap-1.5 text-xs font-medium text-primary">
           <Badge
             variant="outline"
-            className="h-4 border-primary/30 px-1.5 py-0 font-mono text-[10px] text-primary"
+            className="h-4 border-primary/30 px-1.5 py-0 font-mono text-xs text-primary"
           >
             Leg {item.legInfo.legNumber}/{item.legInfo.totalLegs}
           </Badge>

@@ -63,7 +63,7 @@ export function JobDetailDialog({
               ID: {job.id}
             </DialogDescription>
           </div>
-          <Badge variant="destructive" className="capitalize text-[10px]">
+          <Badge variant="destructive" className="capitalize text-xs">
             {job.status}
           </Badge>
         </DialogHeader>
@@ -109,13 +109,13 @@ export function JobDetailDialog({
                   variant="ghost"
                   size="sm"
                   onClick={() => handleCopy(job.lastError!, true)}
-                  className="h-6 px-2 text-[11px] gap-1"
+                  className="h-6 px-2 text-xs gap-1"
                 >
                   {copiedError ? <Check className="size-3 text-status-delivered" /> : <Copy className="size-3" />}
                   Copy Error
                 </Button>
               </div>
-              <pre className="max-h-56 overflow-auto rounded-none border border-destructive/30 bg-destructive/5 p-3 font-mono text-[11px] leading-relaxed text-destructive whitespace-pre-wrap select-all">
+              <pre className="max-h-56 overflow-auto rounded-none border border-destructive/30 bg-destructive/5 p-3 font-mono text-xs leading-relaxed text-destructive whitespace-pre-wrap select-all">
                 {job.lastError}
               </pre>
             </div>
@@ -130,13 +130,13 @@ export function JobDetailDialog({
                   variant="ghost"
                   size="sm"
                   onClick={() => handleCopy(JSON.stringify(job.payload, null, 2), false)}
-                  className="h-6 px-2 text-[11px] gap-1"
+                  className="h-6 px-2 text-xs gap-1"
                 >
                   {copiedPayload ? <Check className="size-3 text-status-delivered" /> : <Copy className="size-3" />}
                   Copy JSON
                 </Button>
               </div>
-              <pre className="max-h-56 overflow-auto rounded-none border border-border/80 bg-muted/30 p-3 font-mono text-[11px] leading-relaxed text-foreground whitespace-pre-wrap select-all">
+              <pre className="max-h-56 overflow-auto rounded-none border border-border/80 bg-muted/30 p-3 font-mono text-xs leading-relaxed text-foreground whitespace-pre-wrap select-all">
                 {JSON.stringify(job.payload, null, 2)}
               </pre>
             </div>

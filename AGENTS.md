@@ -19,6 +19,7 @@ This document defines operational rules, commands, and non-standard repository c
 - Run linter: `pnpm lint`
 - Run CSS stylelint: `pnpm stylelint`
 - Run design token audit: `pnpm audit:tokens`
+- Run Hallmark anti-slop audit: `node .agents/skills/hallmark/scripts/sloplint.mjs components/public/landing app/globals.css`
 - Run production build: `pnpm build`
 
 ## 2. Testing Commands
@@ -35,6 +36,7 @@ A task is complete only when all criteria pass:
 4. `pnpm audit:tokens` reports zero design token drift.
 5. `pnpm build` compiles all static and dynamic routes.
 6. The Delivery Gate PASS/FAIL report is completed.
+7. Ponytail review passes with minimal surgical diff and zero speculative bloat.
 
 ## 4. Boundaries (Always Do / Never Do)
 ### Never Do
@@ -45,6 +47,11 @@ A task is complete only when all criteria pass:
 - Never run destructive database commands (`db:push`, `db:reset`, raw SQL) on remote databases.
 - Never commit agent skill files (`.agents/`, `antislop.md`, `*.skill`).
 - Never use rounded corners, pill badges, or curved lines in UI components (`rounded-*`, `rounded-full`, `rounded-md`, `rounded-lg`). Rounded corners and curved lines are forbidden.
+- Never introduce speculative abstractions, wrapper utilities, or multi-file sprawl for single-use logic.
+- Never bypass TypeScript type checking with `any`, unvalidated `as Type` casts, or non-null assertions (`!`).
+- Never use tracked uppercase (`uppercase tracking-wider`) or stacked category eyebrows on headings (Hallmark Floor 54, 67).
+- Never use middle-dot-joined template strings (`A · B · C`) or decorative status dots before plain labels (Hallmark Floor 63).
+- Never nest cards inside cards (`bg-card` inside `bg-card`) (Hallmark Floor 4).
 
 ### Always Do
 - Prefer React Server Components by default. Add `"use client"` only when hooks or browser APIs are needed.
@@ -54,6 +61,9 @@ A task is complete only when all criteria pass:
 - Follow ASD-STE100 guidelines: maximum 20 words per procedural instruction. Use active voice and imperative mood.
 - Catch critical operational errors with Sentry SDK.
 - Use straight lines and sharp corners (`rounded-none`) exclusively for all badges, buttons, cards, containers, indicators, and UI elements. Industrial straight-line geometry is mandatory.
+- Operate in Ponytail Full Mode: write the smallest surgical change that solves the task.
+- Record non-blocking edge cases with explicit debt tags: `// shortcut: <reason>. Fix condition: <condition>.`
+- Derive domain types from Zod schemas and Drizzle tables.
 
 ## 5. PR and Commit Conventions
 - Header format: `<type>(<scope>): <subject>` (maximum 50 characters, lowercase, no ending period).
@@ -65,6 +75,14 @@ A task is complete only when all criteria pass:
 - When blocked by missing environment variables, verify `.env.local` against `.env.example`.
 - When database migrations conflict, inspect the hosted migration ledger before renaming migration files.
 - When architecture is ambiguous, consult `docs/ARCHITECTURE.md` before modifying service routing or queue logic.
+
+## 7. Ponytail & Total TypeScript Standards
+- Operating standard: all agents must operate in `ponytail: full` mode by default.
+- YAGNI enforcement: keep logic inline until duplicated across three or more distinct call sites.
+- Single read principle: write explanations that a busy human engineer understands in one read.
+- Discriminated unions: model all parcel, invoice, and dispatch workflows with strict discriminated unions.
+- STEM purity: keep freight formulas in `lib/stem/` free of side effects and external network requests.
+- Debt auditing: audit active `shortcut:` annotations before each release using `ponytail-debt`.
 
 
 

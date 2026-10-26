@@ -234,11 +234,11 @@ export function TicketForm({
               <span className="absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-none bg-status-delivered opacity-75" />
               <span className="relative inline-flex size-2 rounded-none bg-status-delivered" />
             </span>
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-foreground">
+            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-foreground">
               {mode === "feedback" ? "Customer Feedback Desk" : "Live Operations Desk"}
             </span>
           </div>
-          <span className="font-mono text-[10px] text-muted-foreground">
+          <span className="font-mono text-xs text-muted-foreground">
             {mode === "feedback" ? "Quality & Experience Signal" : "Direct controller routing"}
           </span>
         </div>
@@ -254,7 +254,7 @@ export function TicketForm({
                 : "Cargo inquiries, quotes, and consignment assistance."}
             </p>
           </div>
-          <div className="flex items-center gap-1.5 self-start pt-1 font-mono text-[10px] text-muted-foreground sm:self-auto sm:pt-0">
+          <div className="flex items-center gap-1.5 self-start pt-1 font-mono text-xs text-muted-foreground sm:self-auto sm:pt-0">
             <span className="size-1.5 rounded-none bg-status-delivered" />
             <span>{mode === "feedback" ? "Direct quality signal" : "Direct controller routing"}</span>
           </div>
@@ -319,12 +319,12 @@ export function TicketForm({
               name="customer_name"
               render={({ field }) => (
                 <FormItem className="space-y-1.5">
-                  <FormLabel className="text-[11px] font-mono font-medium uppercase tracking-wider text-muted-foreground">
+                  <FormLabel className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
                     Name *
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="h-9 rounded-none border-border bg-background px-3 text-sm focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
+                      className="h-9 rounded-none border-border bg-background px-3 text-base sm:text-sm focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
                       placeholder="Your name"
                       {...field}
                     />
@@ -338,13 +338,13 @@ export function TicketForm({
               name="customer_email"
               render={({ field }) => (
                 <FormItem className="space-y-1.5">
-                  <FormLabel className="text-[11px] font-mono font-medium uppercase tracking-wider text-muted-foreground">
+                  <FormLabel className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
                     Email *
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="email"
-                      className="h-9 rounded-none border-border bg-background px-3 text-sm focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
+                      className="h-9 rounded-none border-border bg-background px-3 text-base sm:text-sm focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
                       placeholder="you@company.com"
                       {...field}
                     />
@@ -362,7 +362,7 @@ export function TicketForm({
               name="category"
               render={({ field }) => (
                 <FormItem className="space-y-1.5">
-                  <FormLabel className="text-[11px] font-mono font-medium uppercase tracking-wider text-muted-foreground">
+                  <FormLabel className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
                     Category *
                   </FormLabel>
                   <Select
@@ -374,7 +374,7 @@ export function TicketForm({
                     value={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="h-9 w-full rounded-none border-border bg-background px-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary/20">
+                      <SelectTrigger className="h-9 w-full rounded-none border-border bg-background px-3 text-base sm:text-sm focus:border-primary focus:ring-1 focus:ring-primary/20">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                     </FormControl>
@@ -397,12 +397,12 @@ export function TicketForm({
               name="subject"
               render={({ field }) => (
                 <FormItem className="space-y-1.5">
-                  <FormLabel className="text-[11px] font-mono font-medium uppercase tracking-wider text-muted-foreground">
+                  <FormLabel className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
                     Subject *
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="h-9 rounded-none border-border bg-background px-3 text-sm focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
+                      className="h-9 rounded-none border-border bg-background px-3 text-base sm:text-sm focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
                       placeholder={mode === "feedback" ? "e.g. Service speed / Portal experience" : "What is this regarding?"}
                       {...field}
                     />
@@ -421,12 +421,12 @@ export function TicketForm({
                 name="related_awb"
                 render={({ field }) => (
                   <FormItem className="space-y-1.5">
-                    <FormLabel className="text-[11px] font-mono font-medium uppercase tracking-wider text-muted-foreground">
+                    <FormLabel className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
                       AWB Number (Optional)
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className="h-9 rounded-none border-border bg-background px-3 font-mono text-sm uppercase focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
+                        className="h-9 rounded-none border-border bg-background px-3 font-mono text-base sm:text-sm tabular-nums uppercase focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
                         placeholder="AWB-XXXXXXXXXX"
                         {...field}
                       />
@@ -441,12 +441,12 @@ export function TicketForm({
                 name="customer_phone"
                 render={({ field }) => (
                   <FormItem className="space-y-1.5">
-                    <FormLabel className="text-[11px] font-mono font-medium uppercase tracking-wider text-muted-foreground">
+                    <FormLabel className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
                       Phone (Optional)
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className="h-9 rounded-none border-border bg-background px-3 text-sm focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
+                        className="h-9 rounded-none border-border bg-background px-3 text-base sm:text-sm tabular-nums focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
                         placeholder="+91 99999 99999"
                         {...field}
                       />
@@ -461,7 +461,7 @@ export function TicketForm({
               <button
                 type="button"
                 onClick={() => setShowOptional(true)}
-                className="inline-flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Plus className="size-3 text-primary" />
                 <span>Add AWB number or phone (optional)</span>
@@ -475,7 +475,7 @@ export function TicketForm({
             name="message"
             render={({ field }) => (
               <FormItem className="space-y-1.5">
-                <FormLabel className="text-[11px] font-mono font-medium uppercase tracking-wider text-muted-foreground">
+                <FormLabel className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
                   {mode === "feedback" ? "Feedback & Observations *" : "Message *"}
                 </FormLabel>
                 <FormControl>
@@ -487,7 +487,7 @@ export function TicketForm({
                         : "Describe your cargo requirements, route, or inquiry in detail..."
                     }
                     aria-label="Message"
-                    className="min-h-[72px] resize-y rounded-none border-border bg-background p-3 text-sm focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
+                    className="min-h-[72px] resize-y rounded-none border-border bg-background p-3 text-base sm:text-sm focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20"
                     {...field}
                   />
                 </FormControl>
@@ -524,7 +524,7 @@ export function TicketForm({
                 </span>
               )}
             </Button>
-            <span className="font-mono text-[11px] text-muted-foreground">
+            <span className="font-mono text-xs text-muted-foreground">
               {mode === "feedback"
                 ? "Direct quality telemetry · No account required"
                 : "No account required · Email reply"}

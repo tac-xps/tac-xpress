@@ -140,7 +140,7 @@ export function ManifestFleetCard({
               Fleet &amp; Crew Assignment
             </CardTitle>
             {selectedVehicle && (
-              <span className="font-mono text-[10px] font-bold text-muted-foreground uppercase">
+              <span className="font-mono text-xs font-bold text-muted-foreground uppercase">
                 Cap: {selectedVehicle.capacityKg?.toLocaleString("en-IN") || 0} kg
               </span>
             )}
@@ -195,7 +195,7 @@ export function ManifestFleetCard({
                       )}
                     </SelectContent>
                   </Select>
-                  <FormMessage className="text-[10px]" />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
@@ -215,7 +215,7 @@ export function ManifestFleetCard({
                       variant="ghost"
                       size="sm"
                       onClick={handleCreateDriver}
-                      className="h-5 px-1.5 text-[10px] text-primary hover:text-primary/80 font-medium shrink-0"
+                      className="h-5 px-1.5 text-xs text-primary hover:text-primary/80 font-medium shrink-0"
                     >
                       <UserPlus className="size-2.5 mr-1" />
                       + Add Driver
@@ -254,7 +254,7 @@ export function ManifestFleetCard({
                       )}
                     </SelectContent>
                   </Select>
-                  <FormMessage className="text-[10px]" />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
@@ -268,10 +268,10 @@ export function ManifestFleetCard({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <UserCheck className="size-3.5 text-primary shrink-0" />
-                      <span className="font-mono text-[11px] font-bold text-foreground truncate">
+                      <span className="font-mono text-xs font-bold text-foreground truncate">
                         {selectedDriver.label}
                       </span>
-                      <span className="font-mono text-[10px] text-muted-foreground truncate">
+                      <span className="font-mono text-xs text-muted-foreground truncate">
                         • {selectedDriver.phone}
                       </span>
                       <Button
@@ -279,7 +279,7 @@ export function ManifestFleetCard({
                         variant="ghost"
                         size="sm"
                         onClick={handleEditDriver}
-                        className="h-5 px-1.5 text-[10px] font-mono text-muted-foreground hover:text-foreground shrink-0"
+                        className="h-5 px-1.5 text-xs font-mono text-muted-foreground hover:text-foreground shrink-0"
                         title="Edit driver phone or details"
                       >
                         <Edit2 className="size-2.5 mr-1" />
@@ -293,7 +293,7 @@ export function ManifestFleetCard({
                       size="sm"
                       disabled={isPingingDriver}
                       onClick={handlePingDriver}
-                      className="h-6 px-2 text-[10px] font-mono font-semibold text-status-delivered hover:text-status-delivered/80 border-status-delivered/30 hover:border-status-delivered rounded-none shrink-0"
+                      className="h-6 px-2 text-xs font-mono font-semibold text-status-delivered hover:text-status-delivered/80 border-status-delivered/30 hover:border-status-delivered rounded-none shrink-0"
                     >
                       <Send className="size-2.5 mr-1" />
                       {isPingingDriver ? "Pinging..." : "WhatsApp Ping"}
@@ -310,7 +310,7 @@ export function ManifestFleetCard({
                           onCheckedChange={field.onChange}
                           className="rounded-none size-3.5"
                         />
-                        <FormLabel className="text-[11px] text-muted-foreground cursor-pointer font-normal">
+                        <FormLabel className="text-xs text-muted-foreground cursor-pointer font-normal">
                           Auto-dispatch WhatsApp route notice upon manifest creation
                         </FormLabel>
                       </FormItem>
@@ -321,7 +321,7 @@ export function ManifestFleetCard({
                 <div className="border border-status-pending/30 bg-status-pending-wash p-2 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1.5 text-status-pending">
                     <AlertCircle className="size-3.5 shrink-0" />
-                    <span className="text-[11px]">
+                    <span className="text-xs">
                       No phone on file for {selectedDriver.label}. WhatsApp dispatch disabled.
                     </span>
                   </div>
@@ -330,7 +330,7 @@ export function ManifestFleetCard({
                     variant="outline"
                     size="sm"
                     onClick={handleEditDriver}
-                    className="h-6 px-2 text-[10px] border-status-pending/40 text-status-pending hover:bg-status-pending-wash rounded-none"
+                    className="h-6 px-2 text-xs border-status-pending/40 text-status-pending hover:bg-status-pending-wash rounded-none"
                   >
                     <Phone className="size-2.5 mr-1" />
                     Add Phone

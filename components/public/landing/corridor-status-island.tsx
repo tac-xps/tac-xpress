@@ -43,7 +43,7 @@ function getServerSnapshot(): CorridorTelemetryState {
  * Deterministically computes flight progress and gateway states without external APIs.
  */
 export function CorridorStatusIsland() {
-  const telemetry = useSyncExternalStore(
+  const current = useSyncExternalStore(
     subscribe,
     getSnapshot,
     getServerSnapshot
@@ -52,12 +52,12 @@ export function CorridorStatusIsland() {
   return (
     <aside
       aria-label="Live Corridor Operations Monitor"
-      className="fixed bottom-6 left-16 sm:bottom-8 sm:left-16 z-40 pointer-events-auto"
+      className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 pointer-events-auto"
     >
       <StatusIsland
-        tasks={telemetry.tasks}
-        istTime={telemetry.currentIstTime}
-        phaseTitle={telemetry.phaseTitle}
+        tasks={current.tasks}
+        istTime={current.currentIstTime}
+        phaseTitle={current.phaseTitle}
         className="shadow-lg backdrop-blur-md"
       />
     </aside>

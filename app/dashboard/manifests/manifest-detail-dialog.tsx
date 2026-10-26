@@ -172,7 +172,7 @@ export function ManifestDetailDialog({
                 ["Actual weight", `${totalActualWeight} kg`],
               ].map(([label, value]) => (
                 <div key={label} className="space-y-0.5">
-                  <dt className="text-muted-foreground font-mono text-[10px] uppercase">
+                  <dt className="text-muted-foreground font-mono text-xs uppercase">
                     {label}
                   </dt>
                   <dd className="font-semibold text-foreground truncate">

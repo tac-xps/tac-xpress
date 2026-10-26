@@ -58,13 +58,14 @@ All colors follow OKLCH perceptual uniformity and strict WCAG AA contrast (minim
 ## 4. Typography Standards
 
 - **Primary Body & Headings:** `Inter`, `-apple-system`, `sans-serif`. Clean, legible, high x-height.
-- **STEM & Telemetry Mono:** `Geist Mono`, `JetBrains Mono`, `monospace`.
+- **STEM & Telemetry Mono:** `IBM Plex Mono`, `monospace`.
   Mandatory for:
   - Waybill numbers (e.g., `AWB-2026-90412`)
   - GPS coordinates (e.g., `26.1445° N, 91.7362° E`)
   - Cargo volumetric weight (`cm³ / 5000 = kg`)
   - Currency and tax calculations (`₹12,450.00 + 18% GST`)
 - **Tabular Figures:** Always apply `tabular-nums` / `font-mono` on numbers in data grids to prevent layout jitter during live updates.
+- **Digital type floor:** Use 12px as the minimum size for interface text. Reserve smaller sizes for print layouts and illustrative mini-UI.
 - **Type Scale:**
   - `text-2xl` font-semibold: Page titles
   - `text-lg` font-semibold: Card headers
@@ -92,3 +93,14 @@ All colors follow OKLCH perceptual uniformity and strict WCAG AA contrast (minim
 - No em dashes (`—`) in UI copy: Use commas, colons, or parentheses.
 - Concrete CTAs: "Create Dispatch Manifest", "Generate Tax Invoice", "Track Consignment".
 - Evidence over claims: Only display verified telemetry, active SLA transit hours, and real GSTIN numbers.
+
+---
+
+## 7. Hallmark Anti-AI-Slop Invariants
+
+Enforced via `node .agents/skills/hallmark/scripts/sloplint.mjs`:
+- **Floor 54 & 67 (No Eyebrows, No Tracked Caps)**: Do not place small uppercase category labels stacked over headings. Keep metadata in normal sentence case, body face, untracked.
+- **Floor 63 (No Template Punctuation)**: Do not join strings with middle dots (`A · B · C`). Do not glue arrows to links (`Learn more ->`).
+- **Floor 4 (Single Containment Layer)**: Never nest cards inside cards (`bg-card` inside `bg-card`).
+- **Floor 10a (No transition: all)**: Explicit transitions only (`transition-colors`, `transition-transform`, `transition-opacity`).
+- **Reflex 64 (Monospace Discipline)**: Reserve `font-mono` exclusively for AWB tracking numbers, airport IATA codes (`DEL`, `GAU`), timestamps, and financial figures. Never dress plain prose in monospace.

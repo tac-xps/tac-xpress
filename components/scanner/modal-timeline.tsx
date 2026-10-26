@@ -30,7 +30,7 @@ export function ModalTimeline({ events }: ModalTimelineProps) {
               <Activity className="size-4 text-primary shrink-0" />
               Scan History & Audit Trail
             </CardTitle>
-            <span className="font-mono text-[10px] text-muted-foreground uppercase font-bold">
+            <span className="font-mono text-xs text-muted-foreground uppercase font-bold">
               {totalCount} Event{totalCount === 1 ? "" : "s"}
               {totalCount > 5 ? " (Latest 5)" : ""}
             </span>
@@ -52,18 +52,18 @@ export function ModalTimeline({ events }: ModalTimelineProps) {
                   <div className="space-y-1">
                     <div className="flex items-center justify-between gap-2">
                       <StatusBadge status={evt.status} className="scale-90 origin-left" />
-                      <span className="font-mono text-[10px] text-muted-foreground">
+                      <span className="font-mono text-xs text-muted-foreground">
                         {format(new Date(evt.createdAt), "dd MMM HH:mm")}
                       </span>
                     </div>
                     {evt.location && (
-                      <p className="flex items-center gap-1 text-[11px] text-muted-foreground font-mono">
+                      <p className="flex items-center gap-1 text-xs text-muted-foreground font-mono">
                         <MapPin className="size-3 text-primary/70 shrink-0" />
                         {evt.location}
                       </p>
                     )}
                     {evt.description && (
-                      <p className="text-foreground text-[11px] leading-relaxed">
+                      <p className="text-foreground text-xs leading-relaxed">
                         {evt.description}
                       </p>
                     )}

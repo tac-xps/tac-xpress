@@ -72,7 +72,7 @@ export function ChapterRail() {
               <button
                 type="button"
                 onClick={() => scrollToChapter(chapter.id)}
-                className="group flex items-center gap-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                className="group flex items-center gap-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary active:scale-[0.98] disabled:opacity-50"
                 aria-current={isActive ? "step" : undefined}
                 aria-label={`Jump to Chapter ${chapter.number}: ${chapter.title}`}
               >
@@ -93,7 +93,7 @@ export function ChapterRail() {
                 <div className="flex items-center gap-1.5 pl-0.5">
                   <span
                     className={cn(
-                      "font-mono text-xs tracking-widest transition-colors",
+                      "font-mono text-xs transition-colors",
                       isActive
                         ? "font-semibold text-primary"
                         : "text-muted-foreground group-hover:text-foreground"
@@ -103,7 +103,7 @@ export function ChapterRail() {
                   </span>
                   <span
                     className={cn(
-                      "font-mono text-xs uppercase tracking-wider transition-colors",
+                      "font-sans text-xs transition-colors",
                       isActive
                         ? "font-semibold text-foreground"
                         : isHovered

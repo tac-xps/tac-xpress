@@ -172,7 +172,7 @@ export function ScannerResultModal({
 
         {/* Modal Footer */}
         <div className="border-t bg-card px-5 py-3 sm:px-6 flex items-center justify-between text-xs text-muted-foreground shrink-0">
-          <div className="flex items-center gap-1.5 font-mono text-[11px]">
+          <div className="flex items-center gap-1.5 font-mono text-xs">
             <QrCode className="size-3.5 text-primary" />
             <span>TAC-XPRESS SCANNER ENGINE</span>
           </div>

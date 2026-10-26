@@ -113,11 +113,11 @@ export default async function ShipmentDetailPage({
         className="overflow-hidden rounded-none border border-border/80 bg-card shadow-none"
       >
         <div className="border-b border-border/80 bg-muted/20 px-5 py-2.5 text-xs text-muted-foreground flex items-center justify-between">
-          <span className="flex items-center gap-1.5 font-mono text-[11px]">
+          <span className="flex items-center gap-1.5 font-mono text-xs">
             <Calendar className="size-3 text-muted-foreground" />
             Booked: {format(new Date(shipment.createdAt), "dd MMM yyyy")}
           </span>
-          <span className="font-mono text-[10px] text-muted-foreground">
+          <span className="font-mono text-xs text-muted-foreground">
             AWB: {shipment.awbNumber}
           </span>
         </div>
@@ -153,7 +153,7 @@ export default async function ShipmentDetailPage({
                 <Building2 className="size-3.5 text-primary" />
                 Sender (Consignor)
               </CardTitle>
-              <span className="font-mono text-[10px] text-muted-foreground uppercase">
+              <span className="font-mono text-xs text-muted-foreground uppercase">
                 Origin: {shipment.origin}
               </span>
             </div>
@@ -191,7 +191,7 @@ export default async function ShipmentDetailPage({
                 <User className="size-3.5 text-primary" />
                 Recipient (Consignee)
               </CardTitle>
-              <span className="font-mono text-[10px] text-muted-foreground uppercase">
+              <span className="font-mono text-xs text-muted-foreground uppercase">
                 Destination: {shipment.destination}
               </span>
             </div>

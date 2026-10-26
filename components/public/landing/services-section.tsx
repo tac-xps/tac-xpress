@@ -19,12 +19,9 @@ import {
   motionSprings,
   motionDurations,
   motionEasings,
-  editorialReveal,
-  tactileInteraction,
 } from "@/lib/motion/motion.theme"
 import { cn } from "@/lib/utils"
-import { IconTile } from "@/components/reui/icon-tile"
-import { Badge } from "@/components/reui/badge"
+import CardFlip from "@/components/kokonutui/card-flip"
 
 const MotionImage = motion.create(Image)
 
@@ -35,17 +32,17 @@ const SERVICES = [
     title: "Air cargo",
     href: "/services/air-cargo",
     action: "View air cargo specifications",
-    tagline: "24–48h Gateway Linehaul",
-    lead: "Scheduled air freight. Reliable connections.",
+    tagline: "24 to 48h Air Gateway",
+    lead: "Scheduled air freight.",
     color: "text-primary",
-    accentBorder: "hover:border-t-primary",
-    badge: "border-border/80 bg-muted/40 text-muted-foreground",
-    description:
-      "Scheduled departures connect Delhi NCR with Northeast India, supported by priority belly-hold allocation and compliant Air Waybill processing.",
+    description: "Priority belly-hold space connecting Delhi with Northeast airports under statutory AWB processing.",
     specs: [
-      { label: "Transit", value: "24–48h airport gateway" },
-      { label: "Carriage", value: "Statutory AWB issuance" },
-      { label: "Handling", value: "Priority ramp transfer" },
+      { label: "Transit", value: "24 to 48h Gateway" },
+      { label: "Carriage", value: "Statutory AWB" },
+    ],
+    regulatory: [
+      { label: "Divisor", value: "cm³ / 5000" },
+      { label: "Cutoff", value: "T-180m Departure" },
     ],
   },
   {
@@ -54,17 +51,17 @@ const SERVICES = [
     title: "Surface cargo",
     href: "/services/surface-cargo",
     action: "View surface cargo specifications",
-    tagline: "National Arterial Expressways",
-    lead: "Dedicated corridors for heavy freight.",
+    tagline: "National Arterial Linehaul",
+    lead: "Arterial express highway.",
     color: "text-info",
-    accentBorder: "hover:border-t-info",
-    badge: "border-border/80 bg-muted/40 text-muted-foreground",
-    description:
-      "Highway linehaul for palletized and multi-ton consignments, supported by sealed vehicles and checkpoint scan records.",
+    description: "Express highway linehaul for palletized consignments with sealed container security and checkpoint scans.",
     specs: [
-      { label: "Freight", value: "Palletized & multi-ton" },
-      { label: "Corridor", value: "National highway linehaul" },
-      { label: "Security", value: "Sealed container custody" },
+      { label: "Freight", value: "Palletized Axle" },
+      { label: "Security", value: "GPS E-Seal" },
+    ],
+    regulatory: [
+      { label: "Divisor", value: "cm³ / 4000" },
+      { label: "Documentation", value: "E-Way Bill" },
     ],
   },
   {
@@ -73,17 +70,17 @@ const SERVICES = [
     title: "Door-to-door",
     href: "/shipping-guide",
     action: "Read the shipping guide",
-    tagline: "Unified First & Last Mile",
-    lead: "One accountable delivery chain.",
+    tagline: "Unified Custody Chain",
+    lead: "Single accountable chain.",
     color: "text-status-delivered",
-    accentBorder: "hover:border-t-status-delivered",
-    badge: "border-border/80 bg-muted/40 text-muted-foreground",
-    description:
-      "Coordinated handling from origin pickup to final handover, with digitally recorded proof of delivery.",
+    description: "Direct intake from origin dock to final delivery with verified custodial custody and digital proof of delivery.",
     specs: [
-      { label: "Intake", value: "Origin dock collection" },
-      { label: "Delivery", value: "Last-mile station handover" },
-      { label: "Sign-off", value: "Instantaneous digital POD" },
+      { label: "Intake", value: "Dock Intake" },
+      { label: "Sign-off", value: "Geotagged POD" },
+    ],
+    regulatory: [
+      { label: "Custody", value: "Barcode Docket" },
+      { label: "SLA", value: "Real-time Sync" },
     ],
   },
 ]
@@ -128,13 +125,14 @@ export function ServicesSection() {
     <EditorialContainer
       ref={containerRef}
       id="services"
+      as="div"
       aria-labelledby="services-heading"
-      className="py-12 sm:py-20 lg:py-24 bg-muted/15"
+      className="bg-muted/15 py-10 sm:py-16 lg:py-20"
     >
       <div className="flex flex-col space-y-10 lg:space-y-14">
         {/* Section Header: S1 entrance */}
         <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{
@@ -144,26 +142,21 @@ export function ServicesSection() {
           className="grid grid-cols-1 items-end gap-6 md:grid-cols-12"
         >
           <div className="md:col-span-8">
-            <SectionEyebrow className="mb-4">Services &amp; Modalities</SectionEyebrow>
             <h2
               id="services-heading"
               className="text-section text-foreground text-balance"
             >
               <span className="font-medium text-foreground/80">Your cargo. </span>
-              <span className="font-bold text-foreground">
-                The right journey<span className="text-primary font-black">.</span>
+              <span className="font-semibold text-foreground">
+                The right journey<span className="font-semibold text-primary">.</span>
               </span>
             </h2>
+            <p className="mt-2 text-xs font-sans text-muted-foreground font-medium">Services &amp; Modalities</p>
           </div>
           <div className="md:col-span-4">
-            <div className="space-y-2">
-              <p className="text-sm sm:text-base font-medium text-foreground leading-snug">
-                Calibrated transit modalities.
-              </p>
-              <p className="text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
-                Select high-priority commercial aviation or cost-optimized arterial linehaul matched to payload dimensions, destination cutoffs, and regulatory requirements.
-              </p>
-            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+              High-priority commercial aviation and arterial linehaul matched to payload dimensions and destination cutoffs.
+            </p>
           </div>
         </motion.div>
 
@@ -190,7 +183,7 @@ export function ServicesSection() {
                 alt="Panoramic multi-modal logistics corridor across modern Indian metropolis with arterial expressway, container linehaul, rapid rail, and ascending aircraft"
                 fill
                 priority={false}
-                style={shouldReduceMotion ? undefined : { objectPosition }}
+                style={{ objectPosition }}
                 className="object-cover select-none motion-reduce:transform-none motion-reduce:transition-none"
                 sizes="(min-width: 1360px) 1264px, 100vw"
               />
@@ -198,89 +191,164 @@ export function ServicesSection() {
           </motion.div>
 
           {/* Architectural caption bar */}
-          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-sans text-xs tracking-[0.06em] uppercase text-foreground/80">
-            <span className="font-medium text-foreground">Arterial Linehaul · Commercial Aviation</span>
-            <span className="hidden sm:inline text-muted-foreground font-medium">Delhi NCR Corridor · Northeast Expressways</span>
+          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-sans text-xs text-foreground/80">
+            <span className="font-medium text-foreground">Arterial Linehaul &amp; Commercial Aviation</span>
+            <span className="hidden sm:inline text-muted-foreground font-medium">Delhi NCR Corridor to Northeast Expressways</span>
           </div>
         </div>
 
         {/* Signature Connector Cargo Line */}
         <LivingCargoLine variant="rule" />
 
-        {/* Three Service Modalities with Waypoint Activation on Scroll */}
-        {/* S2+M5: Staggered entrance + hover spring on service cards */}
-        <div className="grid grid-cols-1 divide-y divide-border/80 border-y border-border/80 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+        {/* Three Service Modalities with Kokonut UI 3D CardFlip */}
+        <div data-slot="service-cards" className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {SERVICES.map((srv, idx) => {
             const Icon = srv.icon
-            return (
-              <motion.div
-                key={srv.num}
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-30px" }}
-                transition={{
-                  duration: motionDurations.reveal,
-                  delay: idx * 0.08,
-                  ease: motionEasings.editorial,
-                }}
-                className={cn(
-                  "group flex flex-col justify-between p-6 sm:p-7 lg:p-8 bg-card/60 hover:bg-card border-t-2 border-t-transparent transition-colors duration-200",
-                  srv.accentBorder
-                )}
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className={cn("font-mono font-bold text-base", srv.color)}>{srv.num}</span>
-                    <Badge variant="outline" className="rounded-none font-mono text-[11px] uppercase tracking-wider">
+
+            const frontFace = (
+              <div className="flex h-full flex-col bg-card text-foreground overflow-hidden">
+                {/* Accent Header Strip */}
+                <div className="relative flex items-center justify-between border-b border-border/70 bg-muted/30 px-5 py-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className={cn("font-mono text-sm font-black tracking-tight tabular-nums shrink-0", srv.color)}>
+                      {srv.num}
+                    </span>
+                    <span className="font-sans text-xs font-medium text-muted-foreground truncate">
                       {srv.tagline}
-                    </Badge>
-                    <IconTile variant="frame" className="size-8">
-                      <Icon className={cn("size-4 text-muted-foreground transition-colors", `group-hover:${srv.color}`)} />
-                    </IconTile>
+                    </span>
                   </div>
-                  <h3
-                    className="mt-4 font-heading text-xl sm:text-2xl font-bold tracking-tight text-foreground transition-colors group-hover:text-primary"
-                  >
-                    {srv.title}
-                  </h3>
-                  <p className="mt-2 text-sm sm:text-base font-semibold text-foreground leading-snug">
-                    {srv.lead}
-                  </p>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed font-normal">
-                    {srv.description}
-                  </p>
                 </div>
 
-                <div className="mt-6 sm:mt-8 border-t border-border/70 pt-4">
-                  <div className="space-y-2.5">
-                    {srv.specs.map((spec) => (
-                      <div
-                        key={spec.label}
-                        className="flex items-center justify-between"
-                      >
-                        <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
-                          {spec.label}
-                        </span>
-                        <span className="font-mono text-xs sm:text-sm font-semibold text-foreground">
-                          {spec.value}
-                        </span>
+                {/* Body */}
+                <div className="flex flex-1 flex-col justify-between p-5 sm:p-6">
+                  <div>
+                    {/* Title with inline icon */}
+                    <div className="relative mb-3">
+                      <div className="flex items-center gap-2.5">
+                        <Icon className={cn("size-5 shrink-0", srv.color)} />
+                        <h3 className="font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                          {srv.title}
+                        </h3>
                       </div>
-                    ))}
+                      <p className="mt-1 text-sm font-semibold text-foreground/90 leading-snug">
+                        {srv.lead}
+                      </p>
+                    </div>
+
+                    {/* Accent rule */}
+                    <div className={cn("mb-3 h-px w-10", srv.color.replace("text-", "bg-"))} />
+
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-normal">
+                      {srv.description}
+                    </p>
                   </div>
 
-                  <div className="mt-5 pt-3 border-t border-border/50">
+                  {/* Spec table */}
+                  <div className="mt-5 border-t border-border/70 pt-4">
+                    <div className="space-y-2.5">
+                      {srv.specs.map((spec) => (
+                        <div key={spec.label} className="flex items-center justify-between text-xs">
+                          <span className="font-sans text-muted-foreground">{spec.label}</span>
+                          <span className="font-mono font-semibold text-foreground tabular-nums">{spec.value}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between">
+                      <span className="font-sans text-xs text-muted-foreground/70">
+                        Flip for compliance rules
+                      </span>
+                      <span className={cn("font-sans text-xs font-bold", srv.color)}>
+                        ↻ Rules
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+
+            const backFace = (
+              <div className="flex h-full flex-col bg-card text-foreground overflow-hidden">
+                {/* Back header strip: darker tint */}
+                <div className={cn(
+                  "flex items-center justify-between border-b border-border/70 px-5 py-3.5 bg-muted/50"
+                )}>
+                  <div className="flex items-center gap-2.5">
+                    <span className={cn("size-2 shrink-0 rounded-none bg-current", srv.color)} />
+                    <span className="font-sans text-xs font-bold text-foreground">
+                      Technical Carriage Specs
+                    </span>
+                  </div>
+                  <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                    {srv.num} / 03
+                  </span>
+                </div>
+
+                {/* Body */}
+                <div className="flex flex-1 flex-col justify-between p-5 sm:p-6">
+                  <div>
+                    <h4 className="font-heading text-lg font-semibold text-foreground leading-tight">
+                      {srv.title}
+                    </h4>
+                    <p className="mt-0.5 font-sans text-xs text-muted-foreground">
+                      Statutory regulations / Corridor dimensions
+                    </p>
+
+                    <div className="mt-5 space-y-3">
+                      {srv.regulatory.map((rule) => (
+                        <div
+                          key={rule.label}
+                          className={cn(
+                            "border-l-2 pl-3 py-0.5",
+                            srv.color.replace("text-", "border-")
+                          )}
+                        >
+                          <div className="font-sans text-xs text-muted-foreground">
+                            {rule.label}
+                          </div>
+                          <div className="font-mono text-xs font-semibold text-foreground tabular-nums mt-0.5">
+                            {rule.value}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-5 pt-4 border-t border-border/70">
                     <Button
                       asChild
-                      variant="link"
-                      className="h-auto p-0 font-sans text-xs font-medium tracking-[-0.01em] text-primary hover:text-primary/80 group"
+                      className="w-full rounded-none font-semibold text-xs tracking-tight focus-visible:ring-1 focus-visible:ring-primary active:scale-[0.99] disabled:opacity-50 h-11 px-4"
                     >
                       <Link href={srv.href}>
                         <span>{srv.action}</span>
-                        <ArrowUpRight className="ml-1 size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        <ArrowUpRight className="ml-1.5 size-3.5" />
                       </Link>
                     </Button>
                   </div>
                 </div>
+              </div>
+            )
+
+            return (
+              <motion.div
+                key={srv.num}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-30px" }}
+                transition={{
+                  duration: motionDurations.reveal,
+                  delay: Math.min(idx, 5) * 0.05,
+                  ease: motionEasings.editorial,
+                }}
+                className="w-full flex justify-center"
+              >
+                <CardFlip
+                  front={frontFace}
+                  back={backFace}
+                  label={`${srv.title} details`}
+                  className="w-full min-h-[460px] aspect-auto shadow-sm"
+                  faceClassName="border border-border/90 bg-card rounded-none"
+                />
               </motion.div>
             )
           })}

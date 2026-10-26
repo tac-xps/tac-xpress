@@ -19,11 +19,11 @@ export function PageHeader({
       <div className="min-w-0 space-y-1.5">
         <div className="flex items-center gap-2">
           <span className="size-1.5 bg-primary rounded-none" aria-hidden="true" />
-          <span className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+          <span className="font-mono text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             {eyebrow || "Tac-Xpress / Operations"}
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.03em] text-foreground text-balance">
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground text-balance">
           {title}
         </h1>
         {description && (

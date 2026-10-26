@@ -16,8 +16,11 @@ import { ProofStats } from "./section-primitives"
 import { LivingCargoLine } from "./living-cargo-line"
 import { GridPattern } from "@/components/ui/grid-pattern"
 import { BorderBeam } from "@/components/ui/border-beam"
-import SplitFlapText from "@/components/kokonutui/split-flap-text"
+
 import FlowField from "@/components/kokonutui/flow-field"
+import SplitFlapText from "@/components/kokonutui/split-flap-text"
+import AttractButton from "@/components/kokonutui/attract-button"
+
 import {
   motionDurations,
   motionEasings,
@@ -25,13 +28,6 @@ import {
   lineMaskReveal,
 } from "@/lib/motion/motion.theme"
 
-const LINEHAUL_DEPARTURES = [
-  "DEL-IMF: ON TIME",
-  "IMF-DEL: BOARDING",
-  "DEL-IMF: GATE SCAN",
-  "IMF-DEL: AIRBORNE",
-  "DEL-IMF: IN TRANSIT",
-]
 
 /**
  * Hero section delivering the primary commercial value proposition,
@@ -72,44 +68,16 @@ export function HeroSection() {
         width={32}
         height={32}
         strokeDasharray="4 4"
-        className="opacity-25 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] z-0"
+        className="opacity-25 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,var(--foreground)_70%,transparent_100%)] z-0"
       />
       <div className="relative z-10 mx-auto flex w-full max-w-[1360px] flex-1 items-center px-4 sm:px-6 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10 lg:pb-12">
         <div className="grid w-full grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
           {/* Left Column: Editorial Copy & Chapter Origin */}
           <motion.div
-            style={shouldReduceMotion ? undefined : { y: headlineY }}
+            style={{ y: headlineY }}
             className="flex flex-col lg:col-span-7 xl:col-span-7"
           >
-            {/* Split-Flap Departure Flight Schedule Board & Tactical Modality Badges */}
-            <div className="mb-5 flex flex-wrap items-center gap-2.5">
-              <div className="inline-flex items-center gap-1.5">
-                <span className="inline-flex items-center border border-primary/40 bg-primary/10 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-primary rounded-none">
-                  Express
-                </span>
-                <span className="inline-flex items-center border border-border/90 bg-muted/50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-foreground rounded-none">
-                  Surface
-                </span>
-              </div>
-              <div className="inline-flex w-fit items-center gap-2.5 rounded-none border border-border/90 bg-card/95 px-3 py-1 shadow-xs backdrop-blur-xs transition-colors hover:border-foreground/30">
-                <span className="relative flex size-2 shrink-0 rounded-none">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-status-delivered opacity-75" />
-                  <span className="relative inline-flex size-2 rounded-none bg-status-delivered" />
-                </span>
-                <span className="shrink-0 font-mono text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
-                  Linehaul
-                </span>
-                <span className="text-border/80 select-none font-mono" aria-hidden="true">
-                  /
-                </span>
-                <SplitFlapText
-                  words={LINEHAUL_DEPARTURES}
-                  interval={3500}
-                  className="text-xs sm:text-[13px] font-mono font-bold tracking-normal text-foreground"
-                  tileClassName="bg-primary text-primary-foreground border border-primary/40"
-                />
-              </div>
-            </div>
+
 
             {/* Headline (fluid display with unclipped typography reveal) */}
             <h1
@@ -121,23 +89,27 @@ export function HeroSection() {
                 <motion.span
                   className="block font-medium text-foreground lg:whitespace-nowrap"
                   custom={0}
-                  initial={shouldReduceMotion ? false : "hidden"}
+                  initial={false}
                   animate="visible"
                   variants={lineMaskReveal}
                 >
                   Delhi to Northeast.
                 </motion.span>
               </span>
-              <span className="block overflow-hidden py-0.5">
-                <motion.span
-                  className="block font-extrabold text-primary"
-                  custom={1}
-                  initial={shouldReduceMotion ? false : "hidden"}
-                  animate="visible"
-                  variants={lineMaskReveal}
-                >
-                  Delivered.
-                </motion.span>
+              <span className="block py-0.5">
+                <SplitFlapText
+                  words={[
+                    "DELIVERED.",
+                    "IMPHAL.",
+                    "GUWAHATI.",
+                    "SHILLONG.",
+                    "DIMAPUR.",
+                    "AIZAWL.",
+                    "AGARTALA.",
+                  ]}
+                  interval={3200}
+                  className="font-mono text-hero-display font-semibold tracking-tight text-primary uppercase"
+                />
               </span>
             </h1>
 
@@ -145,39 +117,42 @@ export function HeroSection() {
             <div className="mt-5 sm:mt-6 space-y-4">
               <LivingCargoLine variant="rule" className="w-24 sm:w-32" />
               <motion.div
-                initial={shouldReduceMotion ? false : { y: 10 }}
+                initial={{ y: 10 }}
                 animate={{ y: 0 }}
                 transition={{
                   duration: motionDurations.editorial,
                   delay: 0.26,
                   ease: motionEasings.editorial,
                 }}
-                className="space-y-3 max-w-[56ch]"
+                className="space-y-4 max-w-[56ch]"
               >
-                <p className="text-base sm:text-lg font-medium text-foreground leading-snug tracking-tight text-pretty">
-                  Scheduled freight linehaul connecting New Delhi and Northeast India.
-                </p>
-                <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1.5 border border-border/80 bg-muted/40 px-2.5 py-0.5 text-foreground font-semibold rounded-none">
-                    <span className="size-1.5 bg-primary rounded-none" aria-hidden="true" />
-                    DEL ⇄ IMF / GAU
-                  </span>
-                  <span className="border border-border/60 bg-muted/20 px-2 py-0.5 text-xs rounded-none">
-                    COMMERCIAL AIR BELLY-HOLD
-                  </span>
-                  <span className="border border-border/60 bg-muted/20 px-2 py-0.5 text-xs rounded-none">
-                    STATUTORY AWB
-                  </span>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 border-l-2 border-primary bg-muted/20 py-1.5 pl-3 pr-2 font-sans text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="size-2 rounded-none bg-status-delivered motion-safe:animate-pulse motion-reduce:opacity-100" aria-hidden="true" />
+                    <span className="font-semibold text-primary text-xs">Live Gate:</span>
+                  </div>
+                  <div className="overflow-x-auto max-w-full">
+                    <SplitFlapText
+                      words={[
+                        "6E-6124 DEL-IMF: DEPARTED",
+                        "BCAS GATE 4: CLEAR 100%",
+                        "RAMP SLA: 99.4% ON-TIME",
+                        "AI-889 IMF-DEL: STAGED"
+                      ]}
+                      interval={4200}
+                      className="text-xs font-mono font-semibold text-foreground"
+                    />
+                  </div>
                 </div>
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-normal text-pretty">
-                  Commercial air belly-hold space and arterial surface transport with statutory Air Waybill compliance, optical gate scan verification, and dedicated dispatch support.
+                <p className="text-base sm:text-lg font-medium text-foreground leading-relaxed tracking-tight text-pretty">
+                  Scheduled air cargo and arterial express linehaul connecting Delhi with Northeast India.
                 </p>
               </motion.div>
             </div>
 
-            {/* Actions Row */}
+            {/* Actions Row with Kokonut UI AttractButton */}
             <motion.div
-              initial={shouldReduceMotion ? false : { y: 12 }}
+              initial={{ y: 12 }}
               animate={{ y: 0 }}
               transition={{
                 duration: motionDurations.reveal,
@@ -186,27 +161,62 @@ export function HeroSection() {
               }}
               className="mt-8 sm:mt-10 flex flex-wrap items-center gap-3 sm:gap-4"
             >
-              <Button
-                asChild
-                size="lg"
-                className="group font-medium tracking-tight text-primary-foreground hover:bg-primary/90"
+              <AttractButton
+                className="h-11 px-6 rounded-none font-semibold text-sm bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 transition-colors"
+                onClick={() => {
+                  const el = document.getElementById("contact")
+                  if (el) el.scrollIntoView({ behavior: "smooth" })
+                }}
               >
-                <Link href="#contact">
-                  Book a shipment
-                  <ArrowUpRight className="ml-2 size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
-              </Button>
+                Book a shipment
+                <ArrowUpRight className="size-4 shrink-0" />
+              </AttractButton>
 
               <Button
                 asChild
                 variant="outline"
-                size="lg"
-                className="font-medium tracking-tight hover:bg-accent"
+                className="h-11 px-5 font-medium tracking-tight hover:bg-accent rounded-none border-border/80 inline-flex items-center"
               >
                 <Link href="#visibility-chapter">
                   <Search className="mr-2 size-3.5" />
                   Track cargo
                 </Link>
+              </Button>
+            </motion.div>
+
+            {/* Inline Instant Tracking Lookup Bar */}
+            <motion.div
+              initial={{ y: 12 }}
+              animate={{ y: 0 }}
+              transition={{
+                duration: motionDurations.reveal,
+                delay: 0.38,
+                ease: motionEasings.editorial,
+              }}
+              className="mt-6 flex max-w-md items-center h-11 border border-input bg-card p-1 shadow-xs"
+              data-slot="quick-track"
+            >
+              <Search className="ml-2.5 size-4 text-muted-foreground shrink-0" />
+              <input
+                type="text"
+                placeholder="Track AWB (e.g. TAC-2409-18472)..."
+                className="h-full w-full bg-transparent px-3 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground outline-none"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const el = document.getElementById("visibility-chapter")
+                    if (el) el.scrollIntoView({ behavior: "smooth" })
+                  }
+                }}
+              />
+              <Button
+                size="sm"
+                className="rounded-none bg-primary text-primary-foreground font-sans text-xs px-4 h-9 hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-primary active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => {
+                  const el = document.getElementById("visibility-chapter")
+                  if (el) el.scrollIntoView({ behavior: "smooth" })
+                }}
+              >
+                Track
               </Button>
             </motion.div>
           </motion.div>
@@ -244,7 +254,7 @@ export function HeroSection() {
               </div>
 
               {/* Restrained Architectural Baseline Tag */}
-              <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-sans text-xs tracking-[0.06em] uppercase text-foreground/80">
+              <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-sans text-xs text-foreground/80">
                 <span className="flex items-center gap-2">
                   <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
                   <span className="font-medium text-foreground">DEL ⇄ Northeast Linehaul</span>

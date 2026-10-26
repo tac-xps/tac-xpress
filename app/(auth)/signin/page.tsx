@@ -27,11 +27,11 @@ export default async function SignInPage({
           <Logo className="h-7" />
         </Link>
         <div className="hidden max-w-lg flex-col gap-6 lg:flex">
-          <div className="inline-flex items-center gap-2 border border-border/80 bg-muted/40 px-3 py-1 font-mono text-xs uppercase tracking-[0.06em] text-foreground font-semibold rounded-none self-start">
+          <div className="inline-flex items-center gap-2 border border-border/80 bg-muted/40 px-3 py-1 font-mono text-xs uppercase tracking-wider text-foreground font-semibold rounded-none self-start">
             <span className="size-1.5 bg-primary rounded-none" aria-hidden="true" />
             TAC-XPRESS / Operations Desk
           </div>
-          <h2 className="text-4xl sm:text-5xl leading-[1.08] tracking-[-0.035em]">
+          <h2 className="text-4xl sm:text-5xl leading-[1.08] tracking-tight">
             <span className="block font-medium text-foreground/80">The work behind</span>
             <span className="block font-bold text-foreground">
               every delivery<span className="text-primary font-black">.</span>

@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google"
+import { Inter, IBM_Plex_Mono } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -10,9 +10,9 @@ import { PostHogProvider } from "@/providers/posthog-provider"
 import { Toaster } from "sonner"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 
-const tacSans = IBM_Plex_Sans({
+const tacSans = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "variable",
   variable: "--font-tac-sans",
   display: "swap",
 })

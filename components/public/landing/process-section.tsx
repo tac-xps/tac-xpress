@@ -13,23 +13,22 @@ import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { BorderBeam } from "@/components/ui/border-beam"
 import {
   motionSprings,
-  motionDurations,
   motionEasings,
-  editorialReveal,
 } from "@/lib/motion/motion.theme"
 import { cn } from "@/lib/utils"
+import PageFlip from "@/components/kokonutui/page-flip"
 
 const STEPS = [
   {
     num: "01",
     label: "INTAKE",
     title: "Consignment Intake",
-    lead: "Route & dimensional registration.",
+    lead: "Route & dimensional audit.",
     color: "text-primary",
     activeBorder: "border-primary",
     badge: "border-primary/40 bg-primary/10 text-primary",
     description:
-      "Register corridor origin, destination, piece counts, and volumetric weight to generate immediate GST-itemized freight estimates.",
+      "Register corridor route, piece counts, and dimensions for instant freight billing.",
   },
   {
     num: "02",
@@ -40,29 +39,29 @@ const STEPS = [
     activeBorder: "border-info",
     badge: "border-info/40 bg-info/10 text-info",
     description:
-      "Issue unique 10-digit Air Waybill (AWB) documents with mandatory E-Way bill verification, consignor declarations, and security audit.",
+      "Issue 10-digit Air Waybills with verified E-Way bills and security checks.",
   },
   {
     num: "03",
     label: "LINEHAUL",
     title: "Arterial Transit",
-    lead: "Scheduled gateway movement.",
+    lead: "Scheduled movement.",
     color: "text-status-pending",
     activeBorder: "border-status-pending",
     badge: "border-status-pending/40 bg-status-pending/10 text-status-pending",
     description:
-      "Cargo departs via commercial flight belly-hold space or sealed container highway fleets with optical gate checkpoint scans.",
+      "Flight belly-hold departures and sealed highway fleets with gate checkpoint scans.",
   },
   {
     num: "04",
     label: "HANDOVER",
     title: "Custodial Delivery",
-    lead: "Verified destination sign-off.",
+    lead: "Verified sign-off.",
     color: "text-status-delivered",
     activeBorder: "border-status-delivered",
     badge: "border-status-delivered/40 bg-status-delivered/10 text-status-delivered",
     description:
-      "Consignment is unloaded at the regional destination terminal with physical package condition audit and digital proof of delivery.",
+      "Terminal unloading with physical condition audit and digital proof of delivery.",
   },
 ]
 
@@ -76,7 +75,7 @@ export function ProcessSection() {
   const shouldReduceMotion = useReducedMotion()
   const [activeStep, setActiveStep] = useState<number>(0)
 
-  // Primary scroll tracker with controlled 150vh travel distance
+  // Track progress through the section content without an artificial spacer.
   const { scrollYProgress, scrollY } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
@@ -112,33 +111,20 @@ export function ProcessSection() {
       aria-labelledby="process-heading"
       className="p-0 border-b border-border/80 bg-background"
     >
-      <div
-        ref={containerRef}
-        className="relative w-full lg:min-h-[150vh]"
-      >
+      <div ref={containerRef} className="relative w-full">
         <div className="flex w-full flex-col justify-between py-12 sm:py-16 lg:sticky lg:top-20 lg:py-14">
           {/* Top Row: Section Header */}
-          <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{
-              duration: motionDurations.editorial,
-              ease: motionEasings.editorial,
-            }}
+          <div
             className="flex flex-col gap-4 border-b border-border/80 pb-6 md:flex-row md:items-end md:justify-between"
           >
             <div>
-              <SectionEyebrow className="mb-3">
-                Living Cargo Line · Dispatch Lifecycle
-              </SectionEyebrow>
               <h2
                 id="process-heading"
                 className="text-section text-foreground text-balance"
               >
                 <span className="font-medium text-foreground/80">Four steps. </span>
-                <span className="font-bold text-foreground">
-                  One clear journey<span className="text-primary font-black">.</span>
+                <span className="font-semibold text-foreground">
+                  One clear journey<span className="font-semibold text-primary">.</span>
                 </span>
               </h2>
             </div>
@@ -147,13 +133,13 @@ export function ProcessSection() {
                 Continuous chain-of-custody.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
-                Four coordinated operational phases guarantee transparent statutory intake, manifest security clearance, linehaul dispatch, and signed destination handover.
+                Four operational phases guarantee statutory booking, ramp clearance, arterial dispatch, and signed handover.
               </p>
             </div>
-          </motion.div>
+          </div>
 
           {/* Middle Stage: 4-Step Architectural Journey Cards */}
-          <div className="my-8 sm:my-10 grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div data-slot="process-stepper" className="my-8 sm:my-10 grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((step, idx) => {
               const isActive = activeStep === idx
               const isPassed = activeStep > idx
@@ -161,7 +147,7 @@ export function ProcessSection() {
               return (
                   <motion.div
                     key={step.num}
-                    initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+                    initial={{ opacity: 0, y: 8 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-30px" }}
                     animate={
@@ -172,13 +158,13 @@ export function ProcessSection() {
                           }
                     }
                     transition={{
-                      duration: motionDurations.reveal,
-                      delay: idx * 0.08,
+                      duration: 0.2,
+                      delay: Math.min(idx, 5) * 0.05,
                       ease: motionEasings.editorial,
                       scale: motionSprings.springTactile,
                     }}
                     className={cn(
-                      "relative overflow-hidden flex flex-col justify-between border p-5 sm:p-6 transition-colors duration-300",
+                      "relative overflow-hidden flex flex-col justify-between border p-5 sm:p-6 transition-colors",
                       isActive
                         ? cn(step.activeBorder, "bg-card shadow-sm")
                         : isPassed
@@ -208,7 +194,7 @@ export function ProcessSection() {
                       <div className="flex items-start justify-between">
                         <span
                           className={cn(
-                            "font-mono text-3xl sm:text-4xl font-black tracking-tight transition-colors select-none",
+                            "font-mono text-3xl font-semibold tracking-tight transition-colors select-none sm:text-4xl",
                             isActive ? step.color : "text-foreground/20 group-hover:text-foreground/40"
                           )}
                         >
@@ -216,7 +202,7 @@ export function ProcessSection() {
                         </span>
                         <span
                           className={cn(
-                            "rounded-none px-2 py-0.5 font-mono text-[11px] uppercase tracking-wider font-semibold transition-colors",
+                            "rounded-none px-2 py-0.5 font-sans text-xs font-semibold transition-colors",
                             isActive
                               ? step.badge
                               : "border border-border/70 bg-muted/30 text-muted-foreground"
@@ -229,7 +215,7 @@ export function ProcessSection() {
                       {/* Step Title */}
                       <h3
                         className={cn(
-                          "mt-4 font-heading text-lg sm:text-xl font-bold tracking-tight transition-colors text-balance",
+                          "mt-4 font-heading text-lg font-semibold tracking-tight transition-colors text-balance sm:text-xl",
                           isActive ? step.color : "text-foreground"
                         )}
                       >
@@ -247,7 +233,7 @@ export function ProcessSection() {
 
                     {/* Active Step Indicator Accent */}
                     <div className="mt-6 border-t border-border/60 pt-3">
-                      <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider">
+                      <div className="flex items-center gap-2 font-sans text-xs">
                         <span
                           className={cn(
                             "size-1.5 transition-colors",
@@ -279,6 +265,90 @@ export function ProcessSection() {
                   </motion.div>
                 )
               })}
+            </div>
+
+            {/* Illustrated shipment record for the four-stage process. */}
+            <div
+              data-slot="shipment-manifest-preview"
+              className="my-8 border-l-2 border-l-info border-t border-r border-b border-border/80 bg-card p-6 shadow-sm rounded-none"
+            >
+              <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+                <div className="max-w-md">
+                  <h3 className="font-heading text-xl font-semibold tracking-tight text-foreground">
+                    One record. Every handoff.
+                  </h3>
+                  <div className="mt-1.5 flex items-center gap-2 font-sans text-xs text-info font-medium">
+                    <span className="size-1.5 bg-info rounded-none" />
+                    Cargo journey record
+                  </div>
+                  <p className="mt-2 max-w-md text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+                    Turn through booking, statutory checks, transit scans and verified delivery.
+                  </p>
+                </div>
+
+                <div className="w-full xl:max-w-xl">
+                  <PageFlip
+                    ariaLabel="Illustrated cargo journey record"
+                    className="mx-auto"
+                    pages={[
+                      <div key="cover" className="flex size-full flex-col justify-between border border-border p-4 sm:p-5">
+                        <div className="flex items-center justify-between gap-2 font-mono text-xs">
+                          <span className="font-semibold">TAC-XPRESS</span>
+                          <span className="text-muted-foreground">Journey record</span>
+                        </div>
+                        <div>
+                          <p className="font-mono text-xs font-medium tracking-wider text-primary">DEL <span aria-hidden="true">/</span> IMF</p>
+                          <h4 className="mt-2 max-w-48 font-heading text-xl font-semibold leading-tight tracking-tight text-balance">One clear cargo journey.</h4>
+                          <p className="mt-2 max-w-64 text-sm leading-relaxed text-muted-foreground">The shipment record, from booking to handover.</p>
+                        </div>
+                        <p className="border-t border-border pt-2 font-mono text-xs text-muted-foreground">Illustrative record</p>
+                      </div>,
+                      <div key="booking" className="flex size-full flex-col p-4 sm:p-5">
+                        <p className="font-mono text-xs uppercase tracking-wider text-info">01 / Intake</p>
+                        <h4 className="mt-2 font-heading text-lg font-semibold leading-tight tracking-tight">Booking details</h4>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">The shipment is registered before dispatch.</p>
+                        <dl className="mt-4 grid gap-3 text-sm">
+                          <div className="border-t border-border pt-2">
+                            <dt className="text-xs text-muted-foreground">Route</dt>
+                            <dd className="mt-0.5 font-medium">Origin and destination recorded</dd>
+                          </div>
+                          <div className="border-t border-border pt-2">
+                            <dt className="text-xs text-muted-foreground">Cargo</dt>
+                            <dd className="mt-0.5 font-medium">Pieces and chargeable weight logged</dd>
+                          </div>
+                        </dl>
+                      </div>,
+                      <div key="clearance" className="flex size-full flex-col p-4 sm:p-5">
+                        <p className="font-mono text-xs uppercase tracking-wider text-info">02 / Clearance</p>
+                        <h4 className="mt-2 font-heading text-lg font-semibold leading-tight tracking-tight">AWB and checks</h4>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Required records are checked before linehaul.</p>
+                        <ul className="mt-4 flex flex-col gap-3 text-sm">
+                          <li className="border-t border-border pt-2">
+                            <span className="block text-xs text-muted-foreground">Air Waybill</span>
+                            Unique shipment record issued
+                          </li>
+                          <li className="border-t border-border pt-2">
+                            <span className="block text-xs text-muted-foreground">Compliance</span>
+                            E-Way bill and screening reviewed
+                          </li>
+                        </ul>
+                      </div>,
+                      <div key="handover" className="flex size-full flex-col p-4 sm:p-5">
+                        <p className="font-mono text-xs uppercase tracking-wider text-info">03–04 / Transit & handover</p>
+                        <h4 className="mt-2 font-heading text-lg font-semibold leading-tight tracking-tight">Custody stays visible</h4>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Gateway scans trace movement between terminals.</p>
+                        <div className="mt-4 border-t border-border pt-2 text-sm">
+                          <span className="block text-xs text-muted-foreground">Delivery record</span>
+                          Condition check and proof of delivery
+                        </div>
+                      </div>,
+                    ]}
+                  />
+                  <p className="mt-2 text-center text-xs text-muted-foreground">
+                    Tap or drag a page, or use the arrows.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Bottom Stage: The Living Cargo Line Continuous Progress Track */}
@@ -316,7 +386,7 @@ export function ProcessSection() {
                           )}
                         />
                       </div>
-                      <div className="mt-2 font-mono text-xs tracking-wider">
+                      <div className="mt-2 font-mono text-xs">
                         <span
                           className={cn(
                             "font-semibold transition-colors",
@@ -327,7 +397,7 @@ export function ProcessSection() {
                         </span>{" "}
                         <span
                           className={cn(
-                            "transition-colors",
+                            "sr-only transition-colors sm:not-sr-only",
                             isActive ? "text-foreground font-medium" : "text-muted-foreground"
                           )}
                         >

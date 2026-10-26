@@ -21,7 +21,7 @@ export function EditorialEyebrow({ children, className, id }: EditorialEyebrowPr
     <div
       id={id}
       className={cn(
-        "inline-flex items-center gap-2.5 border border-border/90 bg-muted/50 px-3 py-1 font-mono text-[11px] sm:text-xs uppercase tracking-[0.15em] font-semibold text-foreground select-none",
+        "inline-flex items-center gap-2.5 border border-border/90 bg-muted/50 px-3 py-1 font-sans text-xs font-medium text-foreground select-none",
         className
       )}
     >
@@ -303,7 +303,7 @@ export function TheCargoLine({ className, variant = "hero" }: TheCargoLineProps)
   return (
     <motion.div
       aria-hidden="true"
-      initial={shouldReduceMotion ? false : { scaleX: 0 }}
+      initial={{ scaleX: 0 }}
       whileInView={{ scaleX: 1 }}
       viewport={{ once: true, margin: "-10px" }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
@@ -357,19 +357,17 @@ export function ProofStats({ className }: { className?: string } = {}) {
       {/* Capability Row: Aligned with 1360px container */}
       <div className="mx-auto grid w-full max-w-[1360px] grid-cols-2 divide-y divide-border/80 px-4 sm:px-6 lg:px-12 md:grid-cols-4 md:divide-x md:divide-y-0">
         {PROOF_CLAIMS.map((claim) => (
-          <motion.div
+          <div
             key={claim.label}
-            whileHover={{ y: -1 }}
-            transition={{ duration: 0.2 }}
             className="group flex flex-col justify-center py-4 sm:py-5 md:px-6 transition-colors hover:bg-muted/40"
           >
-            <span className={cn("font-sans text-xs sm:text-sm font-medium uppercase tracking-[0.06em] transition-colors", claim.colorClass)}>
+            <span className={cn("font-sans text-xs sm:text-sm font-medium transition-colors", claim.colorClass)}>
               {claim.label}
             </span>
             <span className="mt-1 font-sans text-xs sm:text-sm text-muted-foreground font-normal leading-normal">
               {claim.detail}
             </span>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
@@ -384,7 +382,7 @@ export function CorridorMarquee({ className }: { className?: string } = {}) {
   return (
     <section
       className={cn(
-        "relative w-full overflow-hidden border-y border-border/80 bg-muted/20 py-1.5 sm:py-2 transition-colors",
+        "relative w-full border-y border-border/80 bg-muted/20 py-1.5 sm:py-2 transition-colors",
         className
       )}
       aria-label="Daily scheduled corridor routes"
@@ -401,34 +399,38 @@ export function CorridorMarquee({ className }: { className?: string } = {}) {
         </ul>
       </div>
 
-      {/* Soft edge gradient masks blending seamlessly into background */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 sm:w-16 bg-gradient-to-r from-background via-background/70 to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 sm:w-16 bg-gradient-to-l from-background via-background/70 to-transparent" />
+      {/* Constrained inner container aligning with section grid */}
+      <div className="relative mx-auto w-full max-w-[1360px] overflow-hidden px-4 sm:px-6 lg:px-12">
+        {/* Soft edge gradient masks */}
+        <div className="pointer-events-none absolute inset-y-0 left-4 sm:left-6 lg:left-12 z-10 w-10 sm:w-16 bg-gradient-to-r from-muted/20 via-muted/10 to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-4 sm:right-6 lg:right-12 z-10 w-10 sm:w-16 bg-gradient-to-l from-muted/20 via-muted/10 to-transparent" />
 
-      <Marquee
-        repeat={4}
-        pauseOnHover
-        className="[--duration:42s] [--gap:0rem] py-0"
-        aria-hidden="true"
-      >
-        {CORRIDOR_MARQUEE_ITEMS.map((item, idx) => (
-          <div
-            key={`${item.corridor}-${idx}`}
-            className="flex items-center gap-3.5 border-r border-border/70 px-6 sm:px-8 py-2 font-sans text-xs sm:text-sm"
-          >
-            <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
-            <span className="font-medium text-foreground tracking-normal text-xs sm:text-sm">
-              {item.corridor}
-            </span>
-            <span className="border border-border/80 bg-card/90 px-2 py-0.5 font-sans text-xs text-muted-foreground font-medium tracking-normal">
-              {item.tag}
-            </span>
-          </div>
-        ))}
-      </Marquee>
+        <Marquee
+          repeat={4}
+          pauseOnHover
+          className="[--duration:42s] [--gap:0rem] py-0"
+          aria-hidden="true"
+        >
+          {CORRIDOR_MARQUEE_ITEMS.map((item, idx) => (
+            <div
+              key={`${item.corridor}-${idx}`}
+              className="flex items-center gap-3.5 border-r border-border/70 px-6 sm:px-8 py-2 font-sans text-xs sm:text-sm"
+            >
+              <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
+              <span className="font-medium text-foreground tracking-normal text-xs sm:text-sm">
+                {item.corridor}
+              </span>
+              <span className="border border-border/80 bg-card/90 px-2 py-0.5 font-sans text-xs text-muted-foreground font-medium tracking-normal">
+                {item.tag}
+              </span>
+            </div>
+          ))}
+        </Marquee>
+      </div>
     </section>
   )
 }
+
 
 /**
  * Backwards compatible alias combining ProofStats and CorridorMarquee

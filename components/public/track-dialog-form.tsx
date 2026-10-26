@@ -140,7 +140,7 @@ function TrackingDialogBody({ result }: { result: TrackingResult }) {
                     )}
                   >
                     <div className="mb-2 flex items-center justify-between">
-                      <span className="font-mono text-[11px] font-semibold text-foreground">
+                      <span className="font-mono text-xs font-semibold text-foreground">
                         Segment #{leg.legNumber}
                       </span>
                       {isComplete ? (
@@ -169,7 +169,7 @@ function TrackingDialogBody({ result }: { result: TrackingResult }) {
                       <p className="font-medium text-foreground leading-tight">
                         {leg.originLocation}
                       </p>
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         ↓ to
                       </p>
                       <p className="font-medium text-foreground leading-tight">

@@ -173,7 +173,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
           {/* Message UUID Pill */}
           <div className="mt-3 flex items-center justify-between rounded-none border border-border/60 bg-muted/30 px-3 py-1.5 font-mono text-xs text-muted-foreground">
             <div className="flex items-center gap-2 min-w-0">
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/80 shrink-0">
+              <span className="text-xs uppercase tracking-wider font-semibold text-muted-foreground/80 shrink-0">
                 DISPATCH ID:
               </span>
               <span className="text-foreground text-xs font-mono truncate select-all">
@@ -183,7 +183,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
             <button
               type="button"
               onClick={() => copyText(message.id, "Dispatch ID")}
-              className="ml-2 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors shrink-0"
+              className="ml-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
               title="Copy UUID"
             >
               {copiedField === "Dispatch ID" ? (
@@ -207,7 +207,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             {/* Recipient Phone */}
             <div className="rounded-none border border-border/60 bg-card p-3 space-y-1">
-              <span className="text-muted-foreground block text-[10px] uppercase tracking-wider font-semibold">
+              <span className="text-muted-foreground block text-xs uppercase tracking-wider font-semibold">
                 Recipient Phone
               </span>
               <div className="flex items-center justify-between">
@@ -231,7 +231,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
 
             {/* Template */}
             <div className="rounded-none border border-border/60 bg-card p-3 space-y-1">
-              <span className="text-muted-foreground block text-[10px] uppercase tracking-wider font-semibold">
+              <span className="text-muted-foreground block text-xs uppercase tracking-wider font-semibold">
                 Template
               </span>
               <span
@@ -244,7 +244,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
 
             {/* Related AWB */}
             <div className="rounded-none border border-border/60 bg-card p-3 space-y-1">
-              <span className="text-muted-foreground block text-[10px] uppercase tracking-wider font-semibold">
+              <span className="text-muted-foreground block text-xs uppercase tracking-wider font-semibold">
                 Consignment AWB
               </span>
               {message.relatedAwb ? (
@@ -263,7 +263,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
 
             {/* Language / Related Invoice */}
             <div className="rounded-none border border-border/60 bg-card p-3 space-y-1">
-              <span className="text-muted-foreground block text-[10px] uppercase tracking-wider font-semibold">
+              <span className="text-muted-foreground block text-xs uppercase tracking-wider font-semibold">
                 {message.relatedInvoiceId ? "Invoice Ref" : "Language"}
               </span>
               {message.relatedInvoiceId ? (
@@ -310,7 +310,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-6 px-2 text-[11px] text-muted-foreground hover:text-foreground"
+                  className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
                   onClick={() => copyText(message.body!, "Message text")}
                 >
                   {copiedField === "Message text" ? (
@@ -370,7 +370,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
 
         {/* Pinned Footer */}
         <div className="border-t border-border/70 bg-muted/40 px-5 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
-          <div className="text-[11px] font-mono text-muted-foreground flex items-center gap-2">
+          <div className="text-xs font-mono text-muted-foreground flex items-center gap-2">
             <ShieldCheck className="size-3.5 text-primary" />
             <span>Audited dispatch record</span>
           </div>

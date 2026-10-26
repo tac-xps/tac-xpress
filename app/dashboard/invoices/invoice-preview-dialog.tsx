@@ -153,7 +153,7 @@ export function InvoicePreviewDialog({
                           ? "warning"
                           : "outline"
                     }
-                    className="capitalize text-[11px] px-2 py-0.5"
+                    className="capitalize text-xs px-2 py-0.5"
                   >
                     {data.status}
                   </Badge>
@@ -239,7 +239,7 @@ export function InvoicePreviewDialog({
               </TabsTrigger>
             </TabsList>
 
-            <span className="text-[11px] font-mono text-muted-foreground">
+            <span className="text-xs font-mono text-muted-foreground">
               {activeTab === "invoice"
                 ? "GST Triplicate • 210mm × 297mm"
                 : "Thermal Roll • 4\" × 3\" (4:3 Aspect)"}
@@ -319,7 +319,7 @@ export function InvoicePreviewDialog({
                       />
                     </div>
 
-                    <div className="text-center font-mono text-[11px] text-muted-foreground">
+                    <div className="text-center font-mono text-xs text-muted-foreground">
                       Standard 4&quot; × 3&quot; (101.6mm × 76.2mm) Landscape Thermal Roll • High Contrast Barcodes
                     </div>
                   </motion.div>

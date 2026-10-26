@@ -25,6 +25,9 @@ import {
 import { cn } from "@/lib/utils"
 import { motionSprings } from "@/lib/motion/motion.theme"
 
+import { MorphicNavbar, type NavItem } from "@/components/kokonutui/morphic-navbar"
+import ActionSearchBar, { type CommandItem } from "@/components/kokonutui/action-search-bar"
+
 const NAV_LINKS = [
   { href: "#services", label: "Services" },
   { href: "#visibility-chapter", label: "Tracking" },
@@ -34,6 +37,69 @@ const NAV_LINKS = [
   { href: "#feedback", label: "Feedback" },
   { href: "#faq", label: "FAQ" },
   { href: "#contact", label: "Contact" },
+]
+
+const MORPHIC_NAV_ITEMS: Record<string, NavItem> = {
+  "#services": { name: "Services" },
+  "#visibility-chapter": { name: "Tracking" },
+  "#journey-chapter": { name: "Process" },
+  "#network": { name: "Network" },
+  "#delivery-chapter": { name: "Care" },
+  "#feedback": { name: "Feedback" },
+  "#faq": { name: "FAQ" },
+  "#contact": { name: "Contact" },
+}
+
+const FREIGHT_COMMANDS: CommandItem[] = [
+  {
+    id: "track-sample-1",
+    label: "Track AWB: TAC-2409-18472 (DEL ⇄ IMF)",
+    group: "Consignments",
+    keywords: ["tracking", "delhi", "imphal", "belly-hold", "awb"],
+    href: "#visibility-chapter",
+  },
+  {
+    id: "track-sample-2",
+    label: "Track Flight Manifest: 6E-2419 Airborne",
+    group: "Consignments",
+    keywords: ["flight", "manifest", "indigo", "airborne"],
+    href: "#visibility-chapter",
+  },
+  {
+    id: "service-air",
+    label: "Air Cargo Specifications (24–48h Gateway Linehaul)",
+    group: "Services",
+    keywords: ["air", "flight", "belly-hold", "express", "urgent"],
+    href: "/services/air-cargo",
+  },
+  {
+    id: "service-surface",
+    label: "Surface Cargo Specifications (National Highway Fleet)",
+    group: "Services",
+    keywords: ["road", "truck", "expressway", "pallet", "multi-ton"],
+    href: "/services/surface-cargo",
+  },
+  {
+    id: "calc-freight",
+    label: "Volumetric Freight Calculator (Weight to INR)",
+    group: "Tools",
+    keywords: ["rate", "quote", "cost", "gst", "pricing", "fuel"],
+    href: "#visibility-chapter",
+  },
+  {
+    id: "book-shipment",
+    label: "Book Consignment Dispatch Manifest",
+    group: "Actions",
+    keywords: ["book", "dispatch", "order", "ticket", "new"],
+    href: "#contact",
+  },
+  {
+    id: "dispatch-hotline",
+    label: "Operations Dispatch Desk: +91 98561 73829",
+    group: "Contacts",
+    keywords: ["phone", "call", "hotline", "support", "help"],
+    href: "tel:+919856173829",
+  },
 ]
 
 /**
@@ -123,10 +189,10 @@ export function LandingNav() {
         if (hidden) setHidden(false)
       }}
       className={cn(
-        "sticky top-0 z-50 w-full transition-colors duration-300",
+        "sticky top-0 z-50 w-full transition-colors duration-300 bg-background",
         scrolled
-          ? "border-b border-border/80 bg-background/95 shadow-sm backdrop-blur-md"
-          : "border-b border-transparent bg-background/80 backdrop-blur-sm"
+          ? "border-b border-border shadow-xs"
+          : "border-b border-border/60"
       )}
     >
       <div className="mx-auto flex h-16 w-full max-w-[1360px] items-center justify-between px-4 sm:px-6 lg:px-12">
@@ -139,59 +205,46 @@ export function LandingNav() {
           >
             <Logo className="h-7 w-auto" />
           </Link>
-          <span className="hidden border-l border-border/80 py-0.5 pl-4 font-sans text-xs font-medium tracking-[0.06em] text-muted-foreground uppercase lg:inline-block">
-            Cargo &amp; Freight Desk
-          </span>
         </div>
 
-        {/* Desktop Editorial Navigation Links with Shared Layout Hover Pill */}
-        <nav
-          aria-label="Main navigation"
-          className="hidden items-center space-x-1 lg:flex"
-          onMouseLeave={() => setHoveredLink(null)}
-        >
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onMouseEnter={() => setHoveredLink(link.href)}
-              className={cn(
-                "relative px-3 py-1.5 font-sans text-sm font-medium transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none",
-                activeSection === link.href
-                  ? "text-foreground"
-                  : "text-foreground/75 hover:text-foreground"
-              )}
-            >
-              {/* Hover pill */}
-              {hoveredLink === link.href && (
-                <motion.span
-                  layoutId="navHoverPill"
-                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                  className="absolute inset-0 -z-10 rounded-none bg-muted/70"
-                />
-              )}
-              {/* N4: Active section underline indicator */}
-              {activeSection === link.href && !hoveredLink && (
-                <motion.span
-                  layoutId="navActiveIndicator"
-                  transition={{ type: "spring", stiffness: 380, damping: 28 }}
-                  className="absolute inset-x-1 -bottom-px h-px bg-primary"
-                />
-              )}
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        {/* Desktop Navigation using Kokonut UI MorphicNavbar */}
+        <div className="hidden lg:flex items-center">
+          <MorphicNavbar
+            items={MORPHIC_NAV_ITEMS}
+            defaultPath={activeSection || "#services"}
+            compact={false}
+            className="py-0 scale-95 origin-center"
+          />
+        </div>
 
-        {/* Right Action Stack with Tactile Micro-Springs */}
-        <div className="flex items-center gap-3">
+        {/* Right Action Stack with Kokonut UI ActionSearchBar */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="hidden xl:block w-48 2xl:w-60">
+            <ActionSearchBar
+              items={FREIGHT_COMMANDS}
+              placeholder="⌘K Search freight…"
+              shortcut={true}
+              className="h-[36px] w-full text-xs"
+              onSelect={(item) => {
+                if (item.href) {
+                  if (item.href.startsWith("#")) {
+                    const el = document.getElementById(item.href.slice(1))
+                    if (el) el.scrollIntoView({ behavior: "smooth" })
+                  } else {
+                    window.location.href = item.href
+                  }
+                }
+              }}
+            />
+          </div>
+
           <ThemeSwitcher />
 
           <Button
             asChild
             variant="ghost"
-            size="sm"
-            className="hidden font-sans text-xs font-medium text-foreground/80 hover:text-foreground sm:inline-flex"
+            size="default"
+            className="hidden font-sans text-xs font-medium text-foreground/80 hover:text-foreground sm:inline-flex rounded-none border border-border/60 hover:bg-muted/40 h-10 px-3 items-center"
           >
             <Link href="#visibility-chapter">
               <Search className="mr-1.5 size-3.5" />
@@ -202,7 +255,7 @@ export function LandingNav() {
           <div className="hidden sm:inline-block">
             <Button
               asChild
-              size="sm"
+              size="default"
               className="rounded-none bg-primary px-4 font-sans text-xs font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
             >
               <Link href="#contact">
@@ -217,7 +270,7 @@ export function LandingNav() {
             <SheetTrigger asChild>
               <button
                 type="button"
-                className="flex size-9 items-center justify-center border border-border bg-card text-foreground transition-colors hover:bg-accent focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none lg:hidden"
+                className="flex size-10 items-center justify-center border border-border bg-card text-foreground transition-colors hover:bg-accent focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none lg:hidden"
                 aria-label="Open navigation"
               >
                 <Menu className="size-4" />
@@ -228,7 +281,7 @@ export function LandingNav() {
               className="w-[300px] border-l border-border bg-background p-6"
             >
               <SheetHeader className="mb-4 p-0">
-                <SheetTitle className="text-left font-sans text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase">
+                <SheetTitle className="text-left font-sans text-xs font-semibold text-muted-foreground">
                   Navigation
                 </SheetTitle>
                 <SheetDescription className="sr-only">
@@ -239,7 +292,7 @@ export function LandingNav() {
                 {NAV_LINKS.map((link, idx) => (
                   <motion.div
                     key={link.href}
-                    initial={shouldReduceMotion ? false : { opacity: 0, x: 16 }}
+                    initial={{ opacity: 0, x: 16 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{
                       duration: 0.3,
@@ -263,7 +316,7 @@ export function LandingNav() {
                 ))}
                 <div className="border-t border-border/80 pt-4">
                   <motion.div
-                    initial={shouldReduceMotion ? false : { opacity: 0, x: 16 }}
+                    initial={{ opacity: 0, x: 16 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{
                       duration: 0.3,
@@ -273,7 +326,7 @@ export function LandingNav() {
                   >
                     <Button
                       asChild
-                      className="w-full rounded-none bg-primary font-sans text-xs font-semibold tracking-wider text-primary-foreground uppercase"
+                      className="w-full rounded-none bg-primary font-sans text-xs font-semibold text-primary-foreground"
                     >
                       <Link
                         href="#contact"

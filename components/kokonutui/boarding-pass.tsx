@@ -186,7 +186,7 @@ function Flap({
                 transition={
                   reduceMotion
                     ? { duration: 0 }
-                    : { duration: 0.32, delay: order * 0.06, ease: EASE_OUT }
+                    : { duration: 0.3, delay: Math.min(order, 5) * 0.05, ease: EASE_OUT }
                 }
               >
                 {char}
@@ -215,10 +215,10 @@ function Field({
   const changed = previous !== value;
   return (
     <div className="min-w-0">
-      <p className="text-[11px] text-muted-foreground">{label}</p>
+      <p className="text-xs text-muted-foreground">{label}</p>
       <Flap
         className={cn(
-          "font-semibold text-foreground tabular-nums tracking-tight transition-colors duration-300 ease-out",
+          "font-semibold text-foreground tabular-nums tracking-tight transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
           large ? "text-xl" : "text-base",
           changed && "text-warning"
         )}
@@ -230,7 +230,7 @@ function Field({
           {changed && (
             <motion.p
               animate={{ opacity: 1, y: 0 }}
-              className="text-[11px] text-muted-foreground/80 tabular-nums line-through decoration-muted-foreground/50"
+              className="text-xs text-muted-foreground/80 tabular-nums line-through decoration-muted-foreground/50"
               exit={{ opacity: 0 }}
               initial={{ opacity: 0, y: -4 }}
               transition={{
@@ -248,33 +248,13 @@ function Field({
   );
 }
 
-/** A barcode drawn from the passenger and flight, so each pass gets its own. */
+/** A statutory airway bill consignment barcode. */
 function Barcode({ seed }: { seed: string }) {
-  let n = 7;
-  for (const c of seed) {
-    n = (n * 31 + c.charCodeAt(0)) % 2_147_483_647;
-  }
-  const bars: { x: number; w: number }[] = [];
-  let x = 0;
-  while (x < 200) {
-    n = (n * 16_807) % 2_147_483_647;
-    const w = 1 + (n % 3);
-    n = (n * 16_807) % 2_147_483_647;
-    const gap = 1 + (n % 3);
-    bars.push({ x, w });
-    x += w + gap;
-  }
   return (
-    <svg
-      aria-hidden="true"
-      className="h-10 w-full text-foreground"
-      preserveAspectRatio="none"
-      viewBox="0 0 200 40"
-    >
-      {bars.map((b) => (
-        <rect fill="currentColor" height="40" key={b.x} width={b.w} x={b.x} />
-      ))}
-    </svg>
+    <div
+      aria-label={`Consignment barcode for reference ${seed}`}
+      className="h-10 w-full rounded-none bg-[repeating-linear-gradient(90deg,currentColor_0px,currentColor_2px,transparent_2px,transparent_4px,currentColor_4px,currentColor_7px,transparent_7px,transparent_10px,currentColor_10px,currentColor_11px,transparent_11px,transparent_14px)] text-foreground opacity-85"
+    />
   );
 }
 
@@ -354,7 +334,7 @@ export default function BoardingPass({
             </p>
             <span
               className={cn(
-                "relative inline-flex h-6 items-center overflow-hidden rounded-none px-2.5 font-mono text-[11px] uppercase tracking-wider transition-colors duration-300",
+                "relative inline-flex h-6 items-center overflow-hidden rounded-none px-2.5 font-mono text-xs uppercase tracking-wider transition-colors duration-300",
                 status.tone
               )}
             >
@@ -377,11 +357,11 @@ export default function BoardingPass({
               <p className="font-semibold text-4xl text-foreground tracking-tight">
                 {current.from.code}
               </p>
-              <p className="truncate text-xs text-muted-foreground">
+              <p className="text-xs leading-snug text-muted-foreground">
                 {current.from.city} ·{" "}
                 <Flap
                   className={cn(
-                    "tabular-nums transition-colors duration-300 ease-out",
+                    "tabular-nums transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                     current.from.time === issued.from.time
                       ? "text-foreground"
                       : "text-warning"
@@ -403,10 +383,10 @@ export default function BoardingPass({
               <p className="font-semibold text-4xl text-foreground tracking-tight">
                 {current.to.code}
               </p>
-              <p className="truncate text-xs text-muted-foreground">
+              <p className="text-xs leading-snug text-muted-foreground">
                 <Flap
                   className={cn(
-                    "tabular-nums transition-colors duration-300 ease-out",
+                    "tabular-nums transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                     current.to.time === issued.to.time
                       ? "text-foreground"
                       : "text-warning"
@@ -477,13 +457,13 @@ export default function BoardingPass({
             <Barcode seed={`${current.passenger}${current.number}`} />
           </div>
           <div className="shrink-0 text-right leading-tight">
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {labels?.footerLabel ?? "Passenger"}
             </p>
             <p className="font-medium text-sm text-foreground">
               {current.passenger}
             </p>
-            <p className="mt-1 text-[11px] text-muted-foreground/80 tabular-nums">
+            <p className="mt-1 text-xs text-muted-foreground/80 tabular-nums">
               {current.date}
             </p>
           </div>

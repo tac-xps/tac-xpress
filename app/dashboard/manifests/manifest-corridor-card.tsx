@@ -96,7 +96,7 @@ export function ManifestCorridorCard({ form, hubs }: ManifestCorridorCardProps) 
             Transit Corridor
           </CardTitle>
           {selectedOrigin && selectedDest && (
-            <span className="font-mono text-[10px] font-bold text-status-delivered bg-status-delivered-wash border border-status-delivered/20 px-2 py-0.5 rounded-none uppercase flex items-center gap-1">
+            <span className="font-mono text-xs font-bold text-status-delivered bg-status-delivered-wash border border-status-delivered/20 px-2 py-0.5 rounded-none uppercase flex items-center gap-1">
               <span className="size-1.5 rounded-none bg-status-delivered" />
               Active Corridor
             </span>
@@ -109,11 +109,11 @@ export function ManifestCorridorCard({ form, hubs }: ManifestCorridorCardProps) 
         {activeCorridorPresets.length > 0 && (
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+              <span className="font-mono text-xs font-bold text-muted-foreground uppercase flex items-center gap-1">
                 <Waypoints className="size-3 text-primary shrink-0" />
                 Active Corridors
               </span>
-              <span className="font-mono text-[9px] text-muted-foreground">
+              <span className="font-mono text-xs text-muted-foreground">
                 Scroll to view ({activeCorridorPresets.length})
               </span>
             </div>
@@ -137,7 +137,7 @@ export function ManifestCorridorCard({ form, hubs }: ManifestCorridorCardProps) 
                         shouldDirty: true,
                       })
                     }}
-                    className={`shrink-0 flex items-center gap-1 px-2 py-1 text-[11px] font-mono border rounded-none transition-colors select-none ${
+                    className={`shrink-0 flex items-center gap-1 px-2 py-1 text-xs font-mono border rounded-none transition-colors select-none ${
                       isSelected
                         ? "bg-primary text-primary-foreground border-primary font-bold shadow-xs"
                         : "bg-background hover:bg-muted/80 text-foreground border-border hover:border-primary/50"
@@ -191,7 +191,7 @@ export function ManifestCorridorCard({ form, hubs }: ManifestCorridorCardProps) 
                     )}
                   </SelectContent>
                 </Select>
-                <FormMessage className="text-[10px]" />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
@@ -232,7 +232,7 @@ export function ManifestCorridorCard({ form, hubs }: ManifestCorridorCardProps) 
                     )}
                   </SelectContent>
                 </Select>
-                <FormMessage className="text-[10px]" />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
@@ -241,7 +241,7 @@ export function ManifestCorridorCard({ form, hubs }: ManifestCorridorCardProps) 
         {/* Visual Corridor Direction Indicator */}
         <div className="border border-border/80 bg-muted/20 p-2 flex items-center justify-between text-xs">
           <div className="space-y-0.5 min-w-0 flex-1">
-            <span className="font-mono text-[9px] font-bold text-muted-foreground uppercase">
+            <span className="font-mono text-xs font-bold text-muted-foreground uppercase">
               Origin Facility
             </span>
             <p className="font-mono text-xs font-bold text-foreground truncate">
@@ -266,7 +266,7 @@ export function ManifestCorridorCard({ form, hubs }: ManifestCorridorCardProps) 
           </div>
 
           <div className="space-y-0.5 min-w-0 flex-1 text-right">
-            <span className="font-mono text-[9px] font-bold text-muted-foreground uppercase">
+            <span className="font-mono text-xs font-bold text-muted-foreground uppercase">
               Receiving Hub
             </span>
             <p className="font-mono text-xs font-bold text-foreground truncate">

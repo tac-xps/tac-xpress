@@ -140,7 +140,7 @@ export function TicketDetailsDialog({
                 <Sparkles className="size-4 text-primary shrink-0" />
                 <span className="font-medium text-foreground">AI Triage:</span>
                 {ticket.ai_routing && (
-                  <Badge variant="outline" className="text-[11px] font-mono capitalize">
+                  <Badge variant="outline" className="text-xs font-mono capitalize">
                     {ticket.ai_routing}
                   </Badge>
                 )}
@@ -152,12 +152,12 @@ export function TicketDetailsDialog({
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 {ticket.sla_breached && (
-                  <Badge variant="destructive" className="text-[11px]">
+                  <Badge variant="destructive" className="text-xs">
                     SLA Breached
                   </Badge>
                 )}
                 {ticket.sla_at_risk && !ticket.sla_breached && (
-                  <Badge variant="warning" className="text-[11px]">
+                  <Badge variant="warning" className="text-xs">
                     SLA At Risk
                   </Badge>
                 )}
@@ -169,7 +169,7 @@ export function TicketDetailsDialog({
                         ? "warning"
                         : "secondary"
                   }
-                  className="text-[11px] capitalize font-medium"
+                  className="text-xs capitalize font-medium"
                 >
                   Priority: {ticket.priority}
                 </Badge>

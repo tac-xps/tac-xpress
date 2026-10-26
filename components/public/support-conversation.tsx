@@ -5,9 +5,9 @@ import { DefaultChatTransport } from "ai"
 import Link from "next/link"
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
 import { bubblePopVariant, microGestures } from "@/lib/animations"
+import AIInputSearch, { type SearchTool } from "@/components/kokonutui/ai-input-search"
+import { Package, MapPin, Phone } from "lucide-react"
 
 const transport = new DefaultChatTransport({
   api: "/api/chat",
@@ -16,8 +16,37 @@ const transport = new DefaultChatTransport({
   }),
 })
 
+const CARGO_TOOLS: SearchTool[] = [
+  {
+    id: "tracking",
+    label: "Track shipment",
+    icon: Package,
+    activity: "Querying custody ledger",
+    placeholder: "Enter AWB number or consignment ID",
+    hint: "Real-time gate audit trail",
+    color: "var(--color-primary)",
+  },
+  {
+    id: "routes",
+    label: "Route inquiry",
+    icon: MapPin,
+    activity: "Fetching corridor data",
+    placeholder: "Ask about corridors, hubs, or transit times",
+    hint: "DEL, IMF, CCU and all gateways",
+    color: "var(--color-info)",
+  },
+  {
+    id: "support",
+    label: "Operations desk",
+    icon: Phone,
+    activity: "Routing to operations",
+    placeholder: "Ask anything about cargo, packaging, or billing",
+    hint: "Mon–Sat 08:00–20:00 IST",
+    color: "var(--color-status-delivered)",
+  },
+]
+
 export default function SupportConversation() {
-  const [input, setInput] = useState("")
   const shouldReduceMotion = useReducedMotion()
   const { messages, sendMessage, status, error, stop, regenerate } = useChat({ transport })
   const bottom = useRef<HTMLDivElement>(null)
@@ -40,7 +69,7 @@ export default function SupportConversation() {
         {!messages.length && (
           <div className="space-y-4 text-sm leading-relaxed">
             <p>
-              Tell me what you’re planning to send, or ask about preparing your
+              Tell me what you&apos;re planning to send, or ask about preparing your
               cargo.
             </p>
             <Link href="/track" className="font-medium text-primary underline">
@@ -94,7 +123,7 @@ export default function SupportConversation() {
 
         {error && (
           <div role="alert" className="flex flex-col gap-3 text-sm text-destructive">
-            The assistant couldn’t reply. Try again shortly or{" "}
+            The assistant couldn&apos;t reply. Try again shortly or{" "}
             <Link href="/contact" className="underline">
               contact our team
             </Link>
@@ -114,46 +143,39 @@ export default function SupportConversation() {
         <div ref={bottom} />
       </div>
 
-      <form
-        className="space-y-3 border-t p-6"
-        onSubmit={(event) => {
-          event.preventDefault()
-          if (!input.trim() || busy) return
-          void sendMessage({ text: input.trim() })
-          setInput("")
-        }}
-      >
-        <Label htmlFor="support-chat-message">Your question</Label>
-        <Input
-          id="support-chat-message"
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          maxLength={4000}
-          autoComplete="off"
-          placeholder="How should I pack my cargo?"
-        />
-        <div className="flex items-center justify-end">
-          {busy ? (
-            <motion.div
-              whileHover={shouldReduceMotion ? undefined : microGestures.hoverScale}
-              whileTap={shouldReduceMotion ? undefined : microGestures.tap}
+      {/* AIInputSearch replaces the plain input form */}
+      <div className="border-t p-4">
+        {busy ? (
+          <div className="flex items-center justify-between px-2 py-3">
+            <span className="flex items-center gap-1.5 text-xs text-muted-foreground font-sans">
+              <span className="size-1.5 rounded-none bg-primary animate-pulse" />
+              Assistant is responding…
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="rounded-none text-xs"
+              onClick={() => stop()}
             >
-              <Button type="button" variant="outline" onClick={() => stop()}>
-                Stop reply
-              </Button>
-            </motion.div>
-          ) : (
-            <motion.div
-              whileHover={shouldReduceMotion ? undefined : microGestures.hoverScale}
-              whileTap={shouldReduceMotion ? undefined : microGestures.tap}
-            >
-              <Button type="submit" disabled={!input.trim()}>
-                Send question
-              </Button>
-            </motion.div>
-          )}
-        </div>
-      </form>
+              Stop
+            </Button>
+          </div>
+        ) : (
+          <AIInputSearch
+            placeholder="Ask about cargo, routes, or packaging…"
+            tools={CARGO_TOOLS}
+            defaultTool="support"
+            models={["TAC Express AI"]}
+            defaultModel="TAC Express AI"
+            onSearch={async (query, { signal }) => {
+              if (!query.trim()) return
+              await sendMessage({ text: query.trim() })
+            }}
+            className="w-full rounded-none border-0 shadow-none p-0"
+          />
+        )}
+      </div>
     </>
   )
 }

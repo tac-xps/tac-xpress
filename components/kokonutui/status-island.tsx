@@ -73,7 +73,7 @@ function TaskIcon({ task }: { task: IslandTask }) {
     return (
       <span
         aria-hidden="true"
-        className="flex size-4 shrink-0 items-center justify-center rounded-none bg-destructive/20 text-destructive border border-destructive/50 font-mono text-[10px] font-bold"
+        className="flex size-4 shrink-0 items-center justify-center rounded-none bg-destructive/20 text-destructive border border-destructive/50 font-mono text-xs font-bold"
       >
         !
       </span>
@@ -134,7 +134,7 @@ function TaskRow({ task }: { task: IslandTask }) {
             {task.label}
           </div>
           {task.detail ? (
-            <div className="truncate font-sans text-[11px] text-muted-foreground">
+            <div className="truncate font-sans text-xs text-muted-foreground">
               {task.detail}
             </div>
           ) : null}
@@ -319,19 +319,19 @@ export function StatusIsland({
                   transition={ACCORDION_EASE}
                 >
                   <div className="flex items-center justify-between border-b border-border/80 bg-muted/40 px-3.5 py-2">
-                    <span className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-wider text-foreground">
+                    <span className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-foreground">
                       <span className="size-2 rounded-none bg-status-delivered animate-pulse" />
                       DEL ⇄ IMF Telemetry
                     </span>
                     <div className="flex items-center gap-2.5">
                       {istTime ? (
-                        <span className="font-mono text-[10px] text-muted-foreground tabular-nums">
+                        <span className="font-mono text-xs text-muted-foreground tabular-nums">
                           {istTime}
                         </span>
                       ) : null}
                       <button
                         aria-label="Collapse operations ledger"
-                        className="flex items-center gap-1 font-mono text-[10px] uppercase text-muted-foreground transition-colors hover:text-foreground"
+                        className="flex items-center gap-1 font-mono text-xs uppercase text-muted-foreground transition-colors hover:text-foreground"
                         onClick={() => {
                           setIsPinned(false);
                           setOpen(false);
@@ -350,7 +350,7 @@ export function StatusIsland({
                     ))}
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-border/60 bg-muted/20 px-3.5 py-1.5 font-mono text-[10px] text-muted-foreground">
+                  <div className="flex items-center justify-between border-t border-border/60 bg-muted/20 px-3.5 py-1.5 font-mono text-xs text-muted-foreground">
                     <span>Direct: Delhi (DEL) ⇄ Imphal (IMF)</span>
                     <span className="font-semibold text-status-delivered">
                       {phaseTitle ?? "Active Corridor"}
@@ -379,7 +379,7 @@ export function StatusIsland({
                   {/* Flight Telemetry Glyph & Destination Code */}
                   <div className="flex flex-col items-center justify-center -space-y-0.5">
                     <Plane className="size-4 text-foreground transition-transform duration-200 group-hover:scale-110 -rotate-45" />
-                    <span className="font-mono text-[9px] font-bold tracking-tight text-foreground/80">
+                    <span className="font-mono text-xs font-bold tracking-tight text-foreground/80">
                       IMF
                     </span>
                   </div>

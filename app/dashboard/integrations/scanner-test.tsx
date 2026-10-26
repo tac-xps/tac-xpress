@@ -128,7 +128,7 @@ function Code39BarcodeSvg({
           <rect key={idx} x={r.x} y={0} width={r.width} height={height} className="fill-foreground" />
         ))}
       </svg>
-      <span className="font-mono text-[10px] font-bold tracking-widest text-foreground mt-1 uppercase">
+      <span className="font-mono text-xs font-bold tracking-widest text-foreground mt-1 uppercase">
         {value}
       </span>
     </div>
@@ -302,7 +302,7 @@ export function ScannerTest() {
             <p>
               Your browser or operating system has blocked camera access for this domain.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
               <div className="bg-destructive/15 p-2 rounded-none">
                 <span className="font-bold block">iOS Safari:</span>
                 Tap <strong>aA</strong> in the search bar → <strong>Website Settings</strong> → Set <strong>Camera</strong> to <strong>Allow</strong>.
@@ -407,7 +407,7 @@ export function ScannerTest() {
                     </div>
 
                     {/* HUD Status Bar */}
-                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs px-2 py-1 rounded-none font-mono text-[10px] text-foreground border border-border/40 flex items-center gap-1.5">
+                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs px-2 py-1 rounded-none font-mono text-xs text-foreground border border-border/40 flex items-center gap-1.5">
                       <span className="size-1.5 rounded-none bg-success animate-pulse" />
                       <span>OPTICAL DECODER ACTIVE · 15 FPS</span>
                     </div>
@@ -503,10 +503,10 @@ export function ScannerTest() {
               {scannedAwb && (
                 <div className="rounded-none border border-success/30 bg-success/5 p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-success font-bold flex items-center gap-1.5">
+                    <span className="text-xs font-mono uppercase tracking-wider text-success font-bold flex items-center gap-1.5">
                       <CheckCircle2 className="size-3.5" /> Scanned Reference
                     </span>
-                    <Badge variant="delivered" className="font-mono text-[10px]">
+                    <Badge variant="delivered" className="font-mono text-xs">
                       Validated AWB
                     </Badge>
                   </div>
@@ -566,7 +566,7 @@ export function ScannerTest() {
                   <h4 className="font-bold text-xs text-foreground">
                     Snap with Mobile Camera
                   </h4>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     Opens native iOS Camera or Android Camera
                   </p>
                 </div>
@@ -597,7 +597,7 @@ export function ScannerTest() {
                   <h4 className="font-bold text-xs text-foreground">
                     Upload Barcode / QR Image
                   </h4>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     Select existing screenshot or digital PDF label
                   </p>
                 </div>
@@ -644,12 +644,12 @@ export function ScannerTest() {
                       <span className="font-mono text-xs font-bold text-primary">
                         {item.awb}
                       </span>
-                      <Badge variant="outline" className="text-[10px] font-mono">
+                      <Badge variant="outline" className="text-xs font-mono">
                         {item.status}
                       </Badge>
                     </div>
                     <p className="text-xs font-semibold text-foreground">{item.title}</p>
-                    <p className="text-[11px] font-mono text-muted-foreground">
+                    <p className="text-xs font-mono text-muted-foreground">
                       {item.corridor}
                     </p>
                   </div>
@@ -722,11 +722,11 @@ export function ScannerTest() {
                 />
               </div>
 
-              <div className="space-y-1 font-mono text-[11px] text-muted-foreground w-full">
+              <div className="space-y-1 font-mono text-xs text-muted-foreground w-full">
                 <span className="block truncate select-all font-semibold text-foreground">
                   {currentOrigin ? `${currentOrigin}/dashboard/integrations` : "/dashboard/integrations"}
                 </span>
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   Same Wi-Fi network or HTTPS tunnel required
                 </span>
               </div>
@@ -741,7 +741,7 @@ export function ScannerTest() {
                     <Smartphone className="size-4 text-primary" />
                     Apple iOS (iPhone / iPad Safari)
                   </h4>
-                  <Badge variant="outline" className="font-mono text-[10px]">
+                  <Badge variant="outline" className="font-mono text-xs">
                     iOS 14.3+ WebKit
                   </Badge>
                 </div>
@@ -764,7 +764,7 @@ export function ScannerTest() {
                     <Smartphone className="size-4 text-primary" />
                     Google Android (Chrome / Samsung Internet)
                   </h4>
-                  <Badge variant="outline" className="font-mono text-[10px]">
+                  <Badge variant="outline" className="font-mono text-xs">
                     Chromium Engine
                   </Badge>
                 </div>

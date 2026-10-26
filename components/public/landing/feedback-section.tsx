@@ -83,12 +83,12 @@ function TestimonialCard({
 }) {
   return (
     <motion.div
-      initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-30px" }}
       transition={{
         duration: motionDurations.reveal,
-        delay: index * 0.08,
+        delay: Math.min(index, 5) * 0.05,
         ease: motionEasings.editorial,
       }}
       className="group relative flex flex-col justify-between rounded-none border-l-2 border-l-primary/60 border-t border-r border-b border-border/80 bg-card p-6 transition-colors duration-200 hover:border-l-primary hover:bg-muted/10"
@@ -100,7 +100,7 @@ function TestimonialCard({
             strokeWidth={1.5}
             aria-hidden="true"
           />
-          <Badge variant="primary-light" className="rounded-none font-mono text-[11px] uppercase tracking-wider">
+          <Badge variant="primary-light" className="rounded-none font-mono text-xs">
             {testimonial.corridor}
           </Badge>
         </div>
@@ -153,7 +153,7 @@ export function FeedbackSection() {
     >
       {/* Section Header */}
       <motion.div
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+        initial={{ opacity: 0, y: 14 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
         transition={{
@@ -162,9 +162,6 @@ export function FeedbackSection() {
         }}
         className="mb-10 max-w-2xl"
       >
-        <SectionEyebrow className="mb-4">
-          Feedback · Signal Loop
-        </SectionEyebrow>
         <h2
           id="feedback-heading"
           className="text-section text-foreground text-balance"
@@ -178,7 +175,7 @@ export function FeedbackSection() {
       </motion.div>
 
       {/* Testimonials 3-Column Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div data-slot="testimonial-deck" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {TESTIMONIALS.map((t, i) => (
           <TestimonialCard
             key={t.name}
@@ -191,7 +188,7 @@ export function FeedbackSection() {
 
       {/* Aggregate Quality Strip & Combined CTA Banner */}
       <motion.div
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-30px" }}
         transition={{
@@ -205,34 +202,34 @@ export function FeedbackSection() {
           {/* Quality Metrics */}
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-8">
             <div className="space-y-0.5">
-              <span className="font-mono text-xl font-bold tabular-nums text-foreground">
+              <span className="font-mono text-xl font-semibold tabular-nums text-foreground">
                 4.8 / 5
               </span>
-              <span className="block font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium">
+              <span className="block font-sans text-xs text-muted-foreground font-medium">
                 Avg. Corridor Rating
               </span>
             </div>
             <div className="space-y-0.5">
-              <span className="font-mono text-xl font-bold tabular-nums text-foreground">
+              <span className="font-mono text-xl font-semibold tabular-nums text-foreground">
                 &lt; 24h
               </span>
-              <span className="block font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium">
+              <span className="block font-sans text-xs text-muted-foreground font-medium">
                 SLA Review Response
               </span>
             </div>
             <div className="space-y-0.5">
-              <span className="font-mono text-xl font-bold tabular-nums text-foreground">
+              <span className="font-mono text-xl font-semibold tabular-nums text-foreground">
                 +72
               </span>
-              <span className="block font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium">
+              <span className="block font-sans text-xs text-muted-foreground font-medium">
                 Net Promoter Score
               </span>
             </div>
             <div className="space-y-0.5">
-              <span className="font-mono text-xl font-bold tabular-nums text-foreground">
+              <span className="font-mono text-xl font-semibold tabular-nums text-foreground">
                 99.4%
               </span>
-              <span className="block font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium">
+              <span className="block font-sans text-xs text-muted-foreground font-medium">
                 On-Time Reliability
               </span>
             </div>
@@ -243,7 +240,7 @@ export function FeedbackSection() {
             <Button
               type="button"
               onClick={scrollToFeedbackForm}
-              className="gap-2 rounded-none font-sans text-xs font-semibold uppercase tracking-wider"
+              className="gap-2 rounded-none font-sans text-xs font-semibold focus-visible:ring-1 focus-visible:ring-primary active:scale-[0.99] disabled:opacity-50 h-11 px-4"
             >
               <Sparkles className="size-3.5" />
               Share Feedback on Operations Desk
@@ -251,9 +248,8 @@ export function FeedbackSection() {
             </Button>
             <Button
               variant="outline"
-              size="sm"
               asChild
-              className="rounded-none font-mono text-xs"
+              className="rounded-none font-sans text-xs focus-visible:ring-1 focus-visible:ring-primary active:scale-[0.99] disabled:opacity-50 h-11 px-4"
             >
               <Link href="/feedback">
                 Dedicated Feedback Page

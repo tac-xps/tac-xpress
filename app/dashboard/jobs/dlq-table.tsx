@@ -126,7 +126,7 @@ export function DlqTable({
           {row.original.retryCount > 0 && (
             <Badge
               variant={row.original.retryCount >= 3 ? "destructive" : "secondary"}
-              className="text-[10px] tabular-nums"
+              className="text-xs tabular-nums"
             >
               {row.original.retryCount} {row.original.retryCount === 1 ? "retry" : "retries"}
             </Badge>

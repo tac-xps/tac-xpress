@@ -44,7 +44,7 @@ export function OverviewMetrics({ stats }: { stats: DashboardStats }) {
     >
       <div className="border-b border-border/80 bg-muted/30 px-5 py-2.5 text-xs text-muted-foreground flex items-center justify-between">
         <span>All-time totals · excludes deleted shipments</span>
-        <span className="flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground/70">
+        <span className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground/70">
           <span className="size-1.5 rounded-none bg-status-delivered" />
           Live
         </span>

@@ -123,11 +123,11 @@ export function LoginForm({
     <div className={cn("flex w-full flex-col gap-6", className)} {...props}>
       <div className="w-full text-foreground">
         <div className="mb-8 flex flex-col gap-2.5">
-          <div className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-primary font-semibold">
+          <div className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-primary font-semibold">
             <span className="size-1.5 bg-primary rounded-none" aria-hidden="true" />
             Operations Command Access
           </div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.03em] text-foreground">
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
             Staff sign in
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed">

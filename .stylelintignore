@@ -8,3 +8,4 @@ out
 coverage
 isolated-env
 app/typeset.css
+components/v2/**

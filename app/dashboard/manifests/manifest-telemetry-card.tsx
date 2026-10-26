@@ -95,7 +95,7 @@ export function ManifestTelemetryCard({
             <Scale className="size-4 text-primary shrink-0" />
             Cargo Load &amp; Vehicle Telemetry
           </CardTitle>
-          <span className="font-mono text-[10px] font-bold text-muted-foreground uppercase">
+          <span className="font-mono text-xs font-bold text-muted-foreground uppercase">
             {selectedShipmentIds.length} Consignment{selectedShipmentIds.length === 1 ? "" : "s"}
           </span>
         </div>
@@ -105,32 +105,32 @@ export function ManifestTelemetryCard({
         {/* Load Metrics 3-Stat Grid */}
         <div className="grid grid-cols-3 gap-2">
           <div className="border border-border/80 bg-muted/20 p-2 space-y-0.5">
-            <span className="font-mono text-[9px] font-bold tracking-wider text-muted-foreground uppercase">
+            <span className="font-mono text-xs font-bold tracking-wider text-muted-foreground uppercase">
               Gross Weight
             </span>
             <p className="font-mono text-sm sm:text-base font-bold text-foreground">
               {totalWeightKg.toFixed(1)}{" "}
-              <span className="text-[10px] font-normal text-muted-foreground">KG</span>
+              <span className="text-xs font-normal text-muted-foreground">KG</span>
             </p>
           </div>
 
           <div className="border border-border/80 bg-muted/20 p-2 space-y-0.5">
-            <span className="font-mono text-[9px] font-bold tracking-wider text-muted-foreground uppercase">
+            <span className="font-mono text-xs font-bold tracking-wider text-muted-foreground uppercase">
               Total Packages
             </span>
             <p className="font-mono text-sm sm:text-base font-bold text-foreground">
               {totalPieces}{" "}
-              <span className="text-[10px] font-normal text-muted-foreground">Pcs</span>
+              <span className="text-xs font-normal text-muted-foreground">Pcs</span>
             </p>
           </div>
 
           <div className="border border-border/80 bg-muted/20 p-2 space-y-0.5">
-            <span className="font-mono text-[9px] font-bold tracking-wider text-muted-foreground uppercase">
+            <span className="font-mono text-xs font-bold tracking-wider text-muted-foreground uppercase">
               Payload Limit
             </span>
             <p className="font-mono text-sm sm:text-base font-bold text-foreground">
               {isVehicleSelected ? vehicleCapacityKg : "-"}{" "}
-              <span className="text-[10px] font-normal text-muted-foreground">KG</span>
+              <span className="text-xs font-normal text-muted-foreground">KG</span>
             </p>
           </div>
         </div>
@@ -138,11 +138,11 @@ export function ManifestTelemetryCard({
         {/* Vehicle Payload Utilization Progress */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-1 font-mono text-[10px] font-bold uppercase text-muted-foreground">
+            <span className="flex items-center gap-1 font-mono text-xs font-bold uppercase text-muted-foreground">
               <Truck className="size-3 text-primary" /> Vehicle Payload Utilization
             </span>
             <span
-              className={`font-mono text-[11px] font-bold ${
+              className={`font-mono text-xs font-bold ${
                 isOverloaded
                   ? "text-destructive"
                   : utilizationPercent > 85
@@ -185,7 +185,7 @@ export function ManifestTelemetryCard({
                 : "border-status-delivered/30 bg-status-delivered-wash text-status-delivered"
             }`}
           >
-            <div className="flex items-center gap-1.5 font-bold uppercase text-[10px]">
+            <div className="flex items-center gap-1.5 font-bold uppercase text-xs">
               {hasCorridorMismatch ? (
                 <>
                   <AlertTriangle className="size-3.5 text-status-pending shrink-0" />
@@ -199,14 +199,14 @@ export function ManifestTelemetryCard({
               )}
             </div>
             {hasCorridorMismatch ? (
-              <p className="text-[11px] leading-snug">
+              <p className="text-xs leading-snug">
                 {mismatchedShipments.length} selected consignment
                 {mismatchedShipments.length === 1 ? "" : "s"} destination (
                 {mismatchedShipments.map((s) => s.destination).join(", ")}) deviates from
                 the destination hub ({selectedDestinationHub.label}).
               </p>
             ) : (
-              <p className="text-[11px] leading-snug">
+              <p className="text-xs leading-snug">
                 Cargo routes match linehaul destination: {selectedDestinationHub.label}.
               </p>
             )}

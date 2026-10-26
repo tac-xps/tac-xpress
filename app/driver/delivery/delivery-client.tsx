@@ -284,7 +284,7 @@ export function DeliveryClient({
                   style={{ width: `${completionPercent}%` }}
                 />
               </div>
-              <p className="text-[11px] text-muted-foreground tabular-nums">
+              <p className="text-xs text-muted-foreground tabular-nums">
                 {completionPercent}% completed • {summary.pendingStops} pending
               </p>
             </div>
@@ -305,16 +305,16 @@ export function DeliveryClient({
               {activeManifest && (
                 <Badge
                   variant={activeManifest.status === "finalized" ? "default" : "outline"}
-                  className="text-[10px] uppercase"
+                  className="text-xs uppercase"
                 >
                   {activeManifest.status}
                 </Badge>
               )}
             </div>
-            <p className="text-[11px] text-muted-foreground truncate">
+            <p className="text-xs text-muted-foreground truncate">
               {activeManifest ? `${activeManifest.originHub} → ${activeManifest.destinationHub}` : "No active route"}
             </p>
-            <p className="text-[11px] font-mono text-muted-foreground/80 truncate">
+            <p className="text-xs font-mono text-muted-foreground/80 truncate">
               {activeManifest?.vehicleReg ?? "No vehicle assigned"}
             </p>
           </CardContent>
@@ -330,10 +330,10 @@ export function DeliveryClient({
             <div className="text-2xl font-bold tracking-tight tabular-nums">
               {summary.totalPieces} <span className="text-sm font-normal text-muted-foreground">pcs</span>
             </div>
-            <p className="text-[11px] text-muted-foreground tabular-nums">
+            <p className="text-xs text-muted-foreground tabular-nums">
               {summary.totalWeightKg} kg total weight
             </p>
-            <p className="text-[11px] text-muted-foreground/80 truncate">
+            <p className="text-xs text-muted-foreground/80 truncate">
               Assigned Driver: {activeManifest?.driverName ?? "Staff"}
             </p>
           </CardContent>
@@ -349,10 +349,10 @@ export function DeliveryClient({
             <div className="text-2xl font-bold tracking-tight tabular-nums">
               ₹{summary.codPendingAmount.toLocaleString()}
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {summary.codPendingAmount > 0 ? "Pending collection at delivery" : "All shipments prepaid"}
             </p>
-            <p className="text-[11px] text-muted-foreground/80">
+            <p className="text-xs text-muted-foreground/80">
               Receipts generated on handoff
             </p>
           </CardContent>
@@ -499,11 +499,11 @@ export function DeliveryClient({
                               ? "warning"
                               : "neutral"
                         }
-                        className="text-[11px]"
+                        className="text-xs"
                       >
                         {isDelivered ? "Delivered" : shipment.status.replace(/-/g, " ")}
                       </Badge>
-                      <Badge variant="outline" className="font-mono text-[10px] hidden sm:inline-flex">
+                      <Badge variant="outline" className="font-mono text-xs hidden sm:inline-flex">
                         {shipment.serviceType.replace(/_/g, " ")}
                       </Badge>
                     </div>
@@ -537,7 +537,7 @@ export function DeliveryClient({
                         <span className="font-mono text-xs font-semibold text-foreground tabular-nums">
                           ₹{shipment.invoiceAmount.toLocaleString()}
                         </span>
-                        <p className="text-[10px] text-muted-foreground capitalize">
+                        <p className="text-xs text-muted-foreground capitalize">
                           {shipment.paymentStatus === "paid" ? "Prepaid" : "Collect COD"}
                         </p>
                       </div>
@@ -651,7 +651,7 @@ export function DeliveryClient({
                         <p className="text-xs text-muted-foreground line-clamp-1">
                           {shipment.consigneeAddress}
                         </p>
-                        <div className="flex items-center gap-3 text-[11px] text-muted-foreground/80 font-mono">
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground/80 font-mono">
                           <span>{shipment.pieces} pcs</span>
                           <span>{shipment.weightKg} kg</span>
                           {shipment.consigneePhone && (
@@ -672,7 +672,7 @@ export function DeliveryClient({
                               ? "warning"
                               : "neutral"
                         }
-                        className="text-[10px]"
+                        className="text-xs"
                       >
                         {shipment.status.replace(/-/g, " ")}
                       </Badge>
