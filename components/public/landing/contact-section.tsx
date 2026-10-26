@@ -70,7 +70,7 @@ export function ContactSection() {
   return (
     <EditorialContainer
       id="contact"
-      as="div"
+      as="section"
       aria-labelledby="contact-heading"
       className="py-10 sm:py-16 lg:py-20"
     >
@@ -376,7 +376,7 @@ export function ContactSection() {
               {/* 3. Dead / Chargeable Weight */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="font-sans text-xs text-muted-foreground font-semibold">
+                  <label htmlFor="cargo-weight-range" className="font-sans text-xs text-muted-foreground font-semibold">
                     03. Chargeable Weight (KG)
                   </label>
                   <span className="font-sans text-sm font-semibold tabular-nums text-foreground">
@@ -385,6 +385,8 @@ export function ContactSection() {
                 </div>
                 <div className="flex items-center gap-3">
                   <input
+                    id="cargo-weight-range"
+                    aria-label="Chargeable weight in kilograms"
                     type="range"
                     min={5}
                     max={500}

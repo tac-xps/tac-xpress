@@ -964,7 +964,7 @@ function SendStopButton({
   return (
     <motion.button
       animate={{ width }}
-      aria-label={running ? "Stop" : "Ask"}
+      aria-label={running ? "Stop" : "Send question"}
       className={cn(
         "h-8 shrink-0 overflow-hidden rounded-none",
         "transition-[background-color,color,box-shadow] duration-150",
@@ -1211,7 +1211,7 @@ export default function AI_Input_Search({
             </AnimatePresence>
 
             <Textarea
-              aria-label="Message"
+              aria-label="Your question"
               className="min-h-[56px] w-full resize-none rounded-none border-none bg-transparent px-4 pt-3.5 pb-1 text-base sm:text-sm text-black leading-relaxed placeholder:text-black/35 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-transparent dark:text-white dark:placeholder:text-white/35"
               onChange={(e) => {
                 setValue(e.target.value);

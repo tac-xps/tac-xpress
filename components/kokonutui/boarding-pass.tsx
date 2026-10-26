@@ -252,6 +252,7 @@ function Field({
 function Barcode({ seed }: { seed: string }) {
   return (
     <div
+      role="img"
       aria-label={`Consignment barcode for reference ${seed}`}
       className="h-10 w-full rounded-none bg-[repeating-linear-gradient(90deg,currentColor_0px,currentColor_2px,transparent_2px,transparent_4px,currentColor_4px,currentColor_7px,transparent_7px,transparent_10px,currentColor_10px,currentColor_11px,transparent_11px,transparent_14px)] text-foreground opacity-85"
     />

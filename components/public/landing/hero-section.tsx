@@ -131,7 +131,12 @@ export function HeroSection() {
                     <span className="size-2 rounded-none bg-status-delivered motion-safe:animate-pulse motion-reduce:opacity-100" aria-hidden="true" />
                     <span className="font-semibold text-primary text-xs">Live Gate:</span>
                   </div>
-                  <div className="overflow-x-auto max-w-full">
+                  <div
+                    tabIndex={0}
+                    role="region"
+                    aria-label="Live flight departure board"
+                    className="overflow-x-auto max-w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                  >
                     <SplitFlapText
                       words={[
                         "6E-6124 DEL-IMF: DEPARTED",

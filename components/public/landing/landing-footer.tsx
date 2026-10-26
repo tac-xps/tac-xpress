@@ -48,12 +48,22 @@ export function LandingFooter() {
   return (
     <footer data-slot="footer" className="relative w-full overflow-hidden border-t border-border/80 bg-surface/50 text-foreground transition-colors">
       {/* Architectural Atmospheric Background Watermark */}
-      <div
-        className="pointer-events-none select-none absolute -bottom-4 left-0 right-0 overflow-hidden leading-none text-foreground/[0.035] font-mono font-black text-[13vw] uppercase tracking-tighter text-center"
+      <svg
+        className="pointer-events-none select-none absolute -bottom-4 left-0 right-0 h-[13vw] w-full overflow-hidden text-foreground/[0.035]"
         aria-hidden="true"
+        role="presentation"
+        viewBox="0 0 1000 130"
       >
-        TAC-XPRESS
-      </div>
+        <text
+          x="50%"
+          y="85%"
+          textAnchor="middle"
+          fill="currentColor"
+          className="font-mono font-black text-[110px] uppercase tracking-tighter"
+        >
+          TAC-XPRESS
+        </text>
+      </svg>
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}

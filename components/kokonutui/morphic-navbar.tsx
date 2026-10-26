@@ -314,8 +314,8 @@ function Segment({
           SURFACE,
           FOCUS_RING,
           highlighted
-            ? "text-white dark:text-zinc-950"
-            : "text-zinc-400 hover:text-zinc-100 dark:text-zinc-500 dark:hover:text-zinc-800"
+            ? "text-zinc-50 dark:text-zinc-950 font-semibold"
+            : "text-zinc-300 hover:text-white dark:text-zinc-700 dark:hover:text-zinc-950"
         )}
         draggable={false}
         href={href}
@@ -737,7 +737,7 @@ export function MorphicNavbar({
             aria-hidden={!folded}
             aria-label="Show all links"
             className={cn(
-              "absolute top-0 left-0 flex size-9 items-center justify-center rounded-none text-zinc-400 transition-colors duration-150 hover:text-zinc-100 dark:text-zinc-500 dark:hover:text-zinc-800",
+              "absolute top-0 left-0 flex size-9 items-center justify-center rounded-none text-zinc-300 transition-colors duration-150 hover:text-white dark:text-zinc-700 dark:hover:text-zinc-950",
               SURFACE,
               FOCUS_RING,
               folded ? "z-30" : "pointer-events-none z-0"

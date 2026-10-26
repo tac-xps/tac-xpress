@@ -123,7 +123,7 @@ export default function SupportConversation() {
 
         {error && (
           <div role="alert" className="flex flex-col gap-3 text-sm text-destructive">
-            The assistant couldn&apos;t reply. Try again shortly or{" "}
+            The assistant couldn&rsquo;t reply. Try again shortly or{" "}
             <Link href="/contact" className="underline">
               contact our team
             </Link>
