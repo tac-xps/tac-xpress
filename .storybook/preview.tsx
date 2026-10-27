@@ -5,6 +5,36 @@ import { MotionGlobalConfig } from 'motion/react'
 import React from 'react'
 
 import '../app/globals.css'
+import { LayoutRouterContext } from 'next/dist/shared/lib/app-router-context.shared-runtime.js'
+
+// Next.js 16.4.3 compatibility patch: LayoutRouterContext.Provider in @storybook/nextjs
+// lacks parentRenderTree, causing layout?.parentRenderTree.data.bfcacheId to throw TypeError in RedirectBoundary.
+if (LayoutRouterContext) {
+  const origUseContext = React.useContext
+  // @ts-expect-error patching useContext for Storybook Next.js 16 compatibility
+  React.useContext = function (context: any) {
+    const val = origUseContext(context)
+    if (context === LayoutRouterContext && val && typeof val === 'object' && !val.parentRenderTree) {
+      val.parentRenderTree = { data: { bfcacheId: 0 } }
+    }
+    return val
+  }
+
+  const origCreateElement = React.createElement
+  // @ts-expect-error patching createElement for Storybook Next.js 16 compatibility
+  React.createElement = function (type: any, props: any, ...children: any[]) {
+    if (type === LayoutRouterContext.Provider || type === LayoutRouterContext) {
+      if (props && props.value && typeof props.value === 'object' && !props.value.parentRenderTree) {
+        props.value.parentRenderTree = {
+          data: {
+            bfcacheId: 0,
+          },
+        }
+      }
+    }
+    return origCreateElement.apply(this, [type, props, ...children])
+  }
+}
 
 /* ─── Animation kill-switch for Chromatic ──────────────────────────────────
    Chromatic captures a snapshot mid-render which causes blurry diffs when
