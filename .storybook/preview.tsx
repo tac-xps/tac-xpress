@@ -14,8 +14,8 @@ if (LayoutRouterContext) {
   // @ts-expect-error patching useContext for Storybook Next.js 16 compatibility
   React.useContext = function (context: any) {
     const val = origUseContext(context)
-    if (context === LayoutRouterContext && val && typeof val === 'object' && !val.parentRenderTree) {
-      val.parentRenderTree = { data: { bfcacheId: 0 } }
+    if (context === LayoutRouterContext && val && typeof val === 'object' && !('parentRenderTree' in val)) {
+      (val as Record<string, unknown>).parentRenderTree = { data: { bfcacheId: 0 } }
     }
     return val
   }
@@ -24,8 +24,9 @@ if (LayoutRouterContext) {
   // @ts-expect-error patching createElement for Storybook Next.js 16 compatibility
   React.createElement = function (type: any, props: any, ...children: any[]) {
     if (type === LayoutRouterContext.Provider || type === LayoutRouterContext) {
-      if (props && props.value && typeof props.value === 'object' && !props.value.parentRenderTree) {
-        props.value.parentRenderTree = {
+      const val = props?.value
+      if (val && typeof val === 'object' && !('parentRenderTree' in val)) {
+        (val as Record<string, unknown>).parentRenderTree = {
           data: {
             bfcacheId: 0,
           },
@@ -98,7 +99,7 @@ const preview: Preview = {
           { value: 'light', title: 'Light', icon: 'sun' },
           { value: 'dark', title: 'Dark', icon: 'moon' },
         ],
-        showName: true,
+        title: 'Theme',
         dynamicTitle: true,
       },
     },

@@ -21,5 +21,9 @@
     "net"
   ],
   "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
-  "npm.packageManager": "pnpm"
+  "npm.packageManager": "pnpm",
+  "files.associations": {
+    "**/.github/workflows/*.yml": "yaml",
+    "**/.github/workflows/*.yaml": "yaml"
+  }
 }
