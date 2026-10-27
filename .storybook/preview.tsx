@@ -1,6 +1,7 @@
 import type { Preview, Decorator } from '@storybook/nextjs'
 import { ThemeProvider } from 'next-themes'
 import isChromatic from 'chromatic/isChromatic'
+import { MotionGlobalConfig } from 'motion/react'
 import React from 'react'
 
 import '../app/globals.css'
@@ -10,24 +11,23 @@ import '../app/globals.css'
    GSAP / Motion / CSS animations are running. We disable everything when
    running inside Chromatic's headless browser.
 ─────────────────────────────────────────────────────────────────────────── */
-if (isChromatic()) {
+if (typeof window !== 'undefined' && isChromatic()) {
   // Disable CSS animations and transitions globally
-  const style = document.createElement('style')
-  style.textContent = `
-    *, *::before, *::after {
-      animation-duration: 0s !important;
-      animation-delay: 0s !important;
-      transition-duration: 0s !important;
-      transition-delay: 0s !important;
-    }
-  `
-  document.head.appendChild(style)
-
+  if (typeof document !== 'undefined') {
+    const style = document.createElement('style')
+    style.textContent = `
+      *, *::before, *::after {
+        animation-duration: 0s !important;
+        animation-delay: 0s !important;
+        transition-duration: 0s !important;
+        transition-delay: 0s !important;
+      }
+    `
+    document.head?.appendChild(style)
+  }
 
   // Disable Motion (Framer Motion) animations globally
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { MotionGlobalConfig } = require('motion/react')
     MotionGlobalConfig.skipAnimations = true
   } catch {
     // motion/react not loaded yet — no-op
