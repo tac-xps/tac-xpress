@@ -8,8 +8,10 @@ DO $$
 BEGIN
   IF to_regclass('public.shipments') IS NULL
      OR to_regclass('public.manifests') IS NULL
-     OR (to_regclass('public.manifest_items') IS NULL AND to_regclass('public.manifest_shipments') IS NULL) THEN
-    RAISE EXCEPTION 'Required cargo tables are missing; stop and inspect schema history';
+     OR to_regclass('public.manifest_items') IS NULL
+     OR to_regclass('public.users') IS NULL
+     OR to_regclass('public.tracking_events') IS NULL THEN
+    RAISE EXCEPTION 'Required cargo tables are missing (shipments, manifests, manifest_items, users, tracking_events); stop and inspect schema history';
   END IF;
 
   -- Normalize manifest items across legacy and modern table structures

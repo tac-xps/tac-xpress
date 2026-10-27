@@ -417,17 +417,19 @@ export function MorphicNavbar({
   compact = false,
   className,
 }: MorphicNavbarProps) {
-  const entries = Object.entries(items);
-  const paths = entries.map(([path]) => path);
-  const count = entries.length;
+  const entries = useMemo(() => Object.entries(items), [items]);
+  const paths = useMemo(() => entries.map(([path]) => path), [entries]);
+  const count = paths.length;
   const pathname = usePathname();
   const [activePath, setActivePath] = useState(
     () => findItemPath(paths, pathname) ?? defaultPath ?? paths[0] ?? "/"
   );
 
-  // Sync activePath when defaultPath changes from prop updates (e.g. section scroll spy)
+  const prevDefaultPathRef = useRef(defaultPath);
+  // Sync activePath only when defaultPath actually changes from prop updates (e.g. section scroll spy)
   useEffect(() => {
-    if (defaultPath && paths.includes(defaultPath)) {
+    if (defaultPath && defaultPath !== prevDefaultPathRef.current && paths.includes(defaultPath)) {
+      prevDefaultPathRef.current = defaultPath;
       setActivePath(defaultPath);
     }
   }, [defaultPath, paths]);

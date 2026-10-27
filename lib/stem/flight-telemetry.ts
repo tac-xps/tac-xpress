@@ -175,7 +175,7 @@ export function computeCorridorTelemetry(date: Date = new Date()): CorridorTelem
   let nightStagingStatus: "running" | "done" = "done"
   let nightStagingProgress: number | undefined
 
-  if (totalMinutes >= CORRIDOR_SCHEDULE.NIGHT_STAGING_START) {
+  if (totalMinutes >= CORRIDOR_SCHEDULE.NIGHT_STAGING_START && totalMinutes < CORRIDOR_SCHEDULE.NIGHT_STAGING_END) {
     nightStagingStatus = "running"
     nightStagingProgress = calculatePhaseProgress(
       totalMinutes,
@@ -184,11 +184,12 @@ export function computeCorridorTelemetry(date: Date = new Date()): CorridorTelem
     )
   } else {
     nightStagingStatus = "done"
+    nightStagingProgress = totalMinutes >= CORRIDOR_SCHEDULE.NIGHT_STAGING_END ? 1 : undefined
   }
 
   // Determine current active corridor phase
-  let phaseTitle = "Capital Staging Active"
-  let activeFlightCode = "6E-6124"
+  let phaseTitle = "Dawn Gate Screening Queued"
+  let activeFlightCode = "DEL-GATE4"
   let headlineStatus = "DEL ⇄ IMF Telemetry"
 
   if (totalMinutes >= CORRIDOR_SCHEDULE.OUTBOUND_FLIGHT_START && totalMinutes < CORRIDOR_SCHEDULE.OUTBOUND_FLIGHT_END) {
@@ -207,7 +208,7 @@ export function computeCorridorTelemetry(date: Date = new Date()): CorridorTelem
     phaseTitle = "BCAS Security Gate Clearance"
     activeFlightCode = "DEL-GATE4"
     headlineStatus = "DEL IGI Gate 4 Verification"
-  } else if (totalMinutes >= CORRIDOR_SCHEDULE.NIGHT_STAGING_START) {
+  } else if (totalMinutes >= CORRIDOR_SCHEDULE.NIGHT_STAGING_START && totalMinutes < CORRIDOR_SCHEDULE.NIGHT_STAGING_END) {
     phaseTitle = "Capital Staging & Manifest Consolidation"
     activeFlightCode = "DEL-STAGE"
     headlineStatus = `Capital Linehaul Staging (${Math.round((nightStagingProgress ?? 0) * 100)}%)`

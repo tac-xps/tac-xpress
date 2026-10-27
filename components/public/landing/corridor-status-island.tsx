@@ -20,6 +20,8 @@ let intervalId: ReturnType<typeof setInterval> | null = null
 function subscribe(callback: () => void) {
   listeners.add(callback)
   if (listeners.size === 1 && typeof window !== "undefined") {
+    clientSnapshot = computeCorridorTelemetry()
+    callback()
     intervalId = setInterval(() => {
       clientSnapshot = computeCorridorTelemetry()
       listeners.forEach((listener) => listener())

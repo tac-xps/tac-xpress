@@ -101,4 +101,16 @@ describe("Logistics STEM Engine: IST Corridor Flight Telemetry", () => {
     const gateTask = telemetry.tasks.find((t) => t.id === "del-gateway")
     expect(gateTask?.status).toBe("running")
   })
+
+  it("finalizes night staging at 23:59 IST boundary", () => {
+    // 23:59 IST is 18:29 UTC
+    const endOfDay = new Date("2026-10-23T18:29:00.000Z")
+    const telemetry = computeCorridorTelemetry(endOfDay)
+
+    expect(telemetry.currentIstTime).toBe("23:59:00 IST")
+    const stagingTask = telemetry.tasks.find((t) => t.id === "del-staging")
+    expect(stagingTask?.status).toBe("done")
+    expect(stagingTask?.progress).toBe(1)
+    expect(stagingTask?.detail).toBe("Consolidated outbound manifests locked for dawn departure")
+  })
 })

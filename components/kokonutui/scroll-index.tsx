@@ -164,12 +164,12 @@ export default function ScrollIndex({
         start = 0;
         end = Math.max(box.scrollHeight - box.clientHeight, 1);
       }
-      const origin = usesWindow ? 0 : (box ? box.getBoundingClientRect().top - scroll : 0);
+      const origin = usesWindow ? 0 : (box ? box.getBoundingClientRect().top : 0);
       list = Array.from(content.querySelectorAll<HTMLElement>(selector)).map(
         (el) => {
           const at = Math.min(
             Math.max(
-              el.getBoundingClientRect().top + scroll - origin - OFFSET,
+              el.getBoundingClientRect().top - origin + scroll - OFFSET,
               start
             ),
             end
