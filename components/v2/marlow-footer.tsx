@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { ArrowUpRight, Check, Loader2 } from "lucide-react"
+import { ArrowUpRight } from "lucide-react"
 
 interface DispatchIssue {
   number: string
@@ -46,9 +46,6 @@ const RECENT_ISSUES: DispatchIssue[] = [
 ]
 
 export function MarlowFooter() {
-  const [email, setEmail] = React.useState("")
-  const [submitting, setSubmitting] = React.useState(false)
-  const [subscribed, setSubscribed] = React.useState(false)
   const [istTime, setIstTime] = React.useState("01:45 IST")
   const [lisbonTime, setLisbonTime] = React.useState("21:15 UTC")
 
@@ -78,22 +75,6 @@ export function MarlowFooter() {
     return () => clearInterval(interval)
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email.trim()) return
-    setSubmitting(true)
-    try {
-      if (typeof window !== "undefined") {
-        const existing = JSON.parse(localStorage.getItem("tac_newsletter_subscribers") || "[]")
-        existing.push({ email: email.trim(), subscribedAt: new Date().toISOString() })
-        localStorage.setItem("tac_newsletter_subscribers", JSON.stringify(existing))
-      }
-      setSubscribed(true)
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
   return (
     <footer className="w-full border-t border-[rgba(20,20,19,0.08)] bg-[#FAFAF8] text-[#141413]">
       <div className="max-w-6xl mx-auto px-6">
@@ -114,40 +95,22 @@ export function MarlowFooter() {
               </p>
             </div>
 
-            <div className="mt-8">
-              {subscribed ? (
-                <div className="flex items-center gap-2 p-3.5 rounded-none bg-[#1F9A55]/10 border border-[#1F9A55]/20 text-[#1F9A55] text-xs font-medium">
-                  <Check className="w-4 h-4 shrink-0" />
-                  <span>You&apos;re subscribed to The Corridor Dispatch. Check your inbox for Issue 48.</span>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-                  <div className="flex gap-2">
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@company.com"
-                      required
-                      className="h-10 min-w-0 flex-1 rounded-none border border-[rgba(20,20,19,0.12)] bg-white px-3.5 text-sm outline-none transition-colors duration-150 placeholder:text-[#141413]/40 focus:border-[#141413] text-[#141413]"
-                    />
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-none bg-[#141413] px-5 font-medium text-xs text-[#FAFAF8] transition-colors duration-150 hover:bg-[#141413]/85 disabled:opacity-50 shadow-xs"
-                    >
-                      {submitting ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <span>Subscribe</span>
-                      )}
-                    </button>
-                  </div>
-                  <p className="text-[11px] text-[#141413]/40 font-mono mt-1">
-                    Issue 49 lands Oct 28.
-                  </p>
-                </form>
-              )}
+            <div className="mt-8 p-4 border border-[rgba(20,20,19,0.12)] bg-white rounded-none">
+              <p className="text-xs font-mono text-[#141413]/70">
+                Direct dispatch archive and publication inquiries:
+              </p>
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                <Link
+                  href="/v2/contact"
+                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-none bg-[#141413] px-4 font-medium text-xs text-[#FAFAF8] transition-colors duration-150 hover:bg-[#141413]/85"
+                >
+                  <span>Contact Editorial Desk</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 opacity-60" />
+                </Link>
+                <span className="text-[11px] font-mono text-[#141413]/40">
+                  Issue 49 lands Oct 28
+                </span>
+              </div>
             </div>
           </section>
 
