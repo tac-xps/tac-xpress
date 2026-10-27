@@ -37,9 +37,9 @@ export default function TermsAndConditionsPage() {
                   <FileCheck className="size-3.5 text-primary" />
                   <span>Clause 01 · Statutory Compliance</span>
                 </div>
-                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                <h2 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
                   Accurate Cargo Declaration
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
                   The Consignor must accurately declare contents, actual invoice valuation, piece count, and condition of goods prior to terminal intake. Statutory documentation including GST E-Way bills must match physical freight.
                 </p>
@@ -55,9 +55,9 @@ export default function TermsAndConditionsPage() {
                   <AlertTriangle className="size-3.5 text-destructive" />
                   <span>Clause 02 · Safety Prohibition</span>
                 </div>
-                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                <h2 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
                   Prohibited & Hazardous Articles
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
                   Booking contraband, combustible materials, narcotics, or undeclared dangerous goods is strictly prohibited under civil aviation and carriage laws. The Consignor assumes absolute legal and financial liability if such items are tendered.
                 </p>
@@ -73,9 +73,9 @@ export default function TermsAndConditionsPage() {
                   <Box className="size-3.5 text-primary" />
                   <span>Clause 03 · Custody & Security</span>
                 </div>
-                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                <h2 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
                   Inspection and X-Ray Authority
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
                   The carrier reserves the operational right to inspect, weigh, and submit any consignment to airport security X-ray screening to verify regulatory compliance and aviation safety standards.
                 </p>
@@ -91,9 +91,9 @@ export default function TermsAndConditionsPage() {
                   <ShieldCheck className="size-3.5 text-primary" />
                   <span>Clause 04 · Risk Assessment</span>
                 </div>
-                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                <h2 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
                   Carriage Liability & Insurance Coverage
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
                   Fragile and commercial electronic items are consigned under owner risk unless insured under a declared-value carrier policy. For uninsured consignments, maximum compensation for proven loss or transit damage is strictly capped at ₹150/kg.
                 </p>
@@ -109,11 +109,11 @@ export default function TermsAndConditionsPage() {
                   <Scale className="size-3.5 text-muted-foreground" />
                   <span>Clause 05 · Exceptional Events</span>
                 </div>
-                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                <h2 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
                   Force Majeure Exclusions
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
-                  The carrier is not liable for SLA transit delays or schedule disruptions resulting from natural weather hazards, landslides, flight cancellations, civil unrest, or regulatory highway checkpoints beyond carrier control.
+                  The company shall not be held liable for delays, loss, or damages caused by Acts of God, natural disasters, strikes, political unrest, or circumstances beyond its control.
                 </p>
               </div>
             </div>
@@ -127,11 +127,11 @@ export default function TermsAndConditionsPage() {
                   <Clock className="size-3.5 text-muted-foreground" />
                   <span>Clause 06 · Destination Protocols</span>
                 </div>
-                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                <h2 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
                   Hub Demurrage & Storage Schedules
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
-                  Consignments must be accepted or cleared from destination terminal warehouses within 7 calendar days of notice. Demurrage warehouse charges of ₹55 per day accrue beginning 21 days from receipt date.
+                  Consignments must be collected from the destination office within 7 days. Demurrage (godown) charges of ₹55/day will apply starting 21 days from the date of receipt.
                 </p>
               </div>
             </div>
@@ -145,11 +145,11 @@ export default function TermsAndConditionsPage() {
                   <FileText className="size-3.5 text-muted-foreground" />
                   <span>Clause 07 · Warehouse Disposition</span>
                 </div>
-                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                <h2 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
                   Carrier Lien and Unclaimed Freight Disposal
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
-                  Consignments unclaimed for 45 calendar days are designated abandoned. The carrier exercises legal lien and reserves the right to auction or dispose of unclaimed cargo after 100 days from arrival to recover freight and storage dues.
+                  Consignments left unclaimed for 45 days will be marked as abandoned. The company reserves the right to dispose of or auction unclaimed items after 100 days from the receipt date to recover dues, without further communication.
                 </p>
               </div>
             </div>
@@ -163,9 +163,9 @@ export default function TermsAndConditionsPage() {
                   <Gavel className="size-3.5 text-primary" />
                   <span>Clause 08 · Legal Authority</span>
                 </div>
-                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                <h2 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
                   Governing Law & Delhi Jurisdiction
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
                   All consignments are subject to standard contract terms of Tapan Associate Courier and Cargo Service. All arbitration and legal disputes are subject to the exclusive jurisdiction of the competent courts of New Delhi, India.
                 </p>
@@ -183,3 +183,4 @@ export default function TermsAndConditionsPage() {
     </PublicPage>
   )
 }
+

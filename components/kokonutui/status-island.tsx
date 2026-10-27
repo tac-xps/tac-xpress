@@ -84,7 +84,7 @@ function TaskIcon({ task }: { task: IslandTask }) {
       aria-hidden="true"
       className="relative flex size-4 shrink-0 items-center justify-center rounded-none bg-status-transit/20 text-status-transit border border-status-transit/50"
     >
-      <span className="size-1.5 rounded-none bg-status-transit animate-pulse" />
+      <span className="size-1.5 rounded-none bg-status-transit animate-pulse motion-reduce:animate-none" />
     </span>
   );
 }
@@ -94,7 +94,7 @@ function TaskTrailing({ task }: { task: IslandTask }) {
     const { label, onClick } = task.action;
     return (
       <button
-        className="shrink-0 rounded-none border border-border/80 bg-muted/60 px-2 py-0.5 font-mono font-medium text-foreground text-xs transition-colors hover:bg-accent focus-visible:outline-none"
+        className="shrink-0 rounded-none border border-border/80 bg-muted/60 px-2 py-0.5 font-mono font-medium text-foreground text-xs transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         onClick={(event) => {
           event.stopPropagation();
           onClick();
@@ -319,8 +319,8 @@ export function StatusIsland({
                   transition={ACCORDION_EASE}
                 >
                   <div className="flex items-center justify-between border-b border-border/80 bg-muted/40 px-3.5 py-2">
-                    <span className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-wider text-foreground">
-                      <span className="size-2 rounded-none bg-status-delivered animate-pulse" />
+                    <span className="flex items-center gap-2 font-mono text-xs font-bold text-foreground">
+                      <span className="size-2 rounded-none bg-status-delivered animate-pulse motion-reduce:animate-none" />
                       DEL ⇄ IMF Telemetry
                     </span>
                     <div className="flex items-center gap-2.5">
@@ -331,7 +331,7 @@ export function StatusIsland({
                       ) : null}
                       <button
                         aria-label="Collapse operations ledger"
-                        className="flex items-center gap-1 font-mono text-[10px] uppercase text-muted-foreground transition-colors hover:text-foreground"
+                        className="flex items-center gap-1 font-mono text-[10px] uppercase text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                         onClick={() => {
                           setIsPinned(false);
                           setOpen(false);
@@ -361,18 +361,18 @@ export function StatusIsland({
                 <button
                   aria-expanded={false}
                   aria-label={`DEL ⇄ IMF Telemetry: ${describe(current)}. Click to open operations ledger`}
-                  className="group relative flex size-11 items-center justify-center transition-colors hover:bg-muted/40 focus-visible:outline-none"
+                  className="group relative flex size-11 items-center justify-center transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   onClick={() => {
                     setIsPinned(true);
                     setOpen(true);
                   }}
                   ref={pillRef}
-                  title={`DEL ⇄ IMF Telemetry · ${current.label}`}
+                  title={`DEL ⇄ IMF Telemetry, ${current.label}`}
                   type="button"
                 >
                   {/* Corner Live Beacon */}
                   <span className="absolute top-1.5 right-1.5 flex size-2 rounded-none" aria-hidden="true">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-status-delivered opacity-75" />
+                    <span className="absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-none bg-status-delivered opacity-75" />
                     <span className="relative inline-flex size-2 rounded-none bg-status-delivered" />
                   </span>
 

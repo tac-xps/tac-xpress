@@ -57,13 +57,12 @@ export const CORRIDOR_SCHEDULE = {
  * Returns hours, minutes, seconds, and total fractional minutes since midnight.
  */
 export function getIstTimeComponents(date: Date = new Date()) {
-  const utcMillis = date.getTime() + date.getTimezoneOffset() * 60 * 1000
   const istOffsetMillis = 5.5 * 60 * 60 * 1000
-  const istDate = new Date(utcMillis + istOffsetMillis)
+  const istDate = new Date(date.getTime() + istOffsetMillis)
 
-  const hours = istDate.getHours()
-  const minutes = istDate.getMinutes()
-  const seconds = istDate.getSeconds()
+  const hours = istDate.getUTCHours()
+  const minutes = istDate.getUTCMinutes()
+  const seconds = istDate.getUTCSeconds()
   const totalMinutes = hours * 60 + minutes + seconds / 60
 
   const timeString = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")} IST`
@@ -105,7 +104,7 @@ export function computeCorridorTelemetry(date: Date = new Date()): CorridorTelem
   if (totalMinutes < CORRIDOR_SCHEDULE.OUTBOUND_GATE_START) {
     // Overnight: Queued for dawn screening
     gateStatus = "running"
-    gateProgress = 0.35
+    gateProgress = 0
   } else if (totalMinutes < CORRIDOR_SCHEDULE.OUTBOUND_GATE_END) {
     // Active dawn screening
     gateStatus = "running"
@@ -159,8 +158,8 @@ export function computeCorridorTelemetry(date: Date = new Date()): CorridorTelem
   let inboundProgress: number | undefined
 
   if (totalMinutes < CORRIDOR_SCHEDULE.INBOUND_FLIGHT_START) {
-    inboundStatus = totalMinutes > CORRIDOR_SCHEDULE.HUB_DECONSOLIDATION_END ? "running" : "done"
-    inboundProgress = totalMinutes > CORRIDOR_SCHEDULE.HUB_DECONSOLIDATION_END ? 0.15 : undefined
+    inboundStatus = "running"
+    inboundProgress = totalMinutes > CORRIDOR_SCHEDULE.HUB_DECONSOLIDATION_END ? 0.15 : 0
   } else if (totalMinutes < CORRIDOR_SCHEDULE.INBOUND_FLIGHT_END) {
     inboundStatus = "running"
     inboundProgress = calculatePhaseProgress(
@@ -214,7 +213,7 @@ export function computeCorridorTelemetry(date: Date = new Date()): CorridorTelem
       detail:
         outboundStatus === "running"
           ? totalMinutes < CORRIDOR_SCHEDULE.OUTBOUND_FLIGHT_START
-            ? "Air belly-hold space secured · Boarding"
+            ? "Air belly-hold space secured, boarding active"
             : "Commercial belly-hold en route in flight"
           : "Tulihal runway touchdown & apron handover",
       status: outboundStatus,

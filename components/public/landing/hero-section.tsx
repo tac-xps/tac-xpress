@@ -84,19 +84,19 @@ export function HeroSection() {
             {/* Split-Flap Departure Flight Schedule Board & Tactical Modality Badges */}
             <div className="mb-5 flex flex-wrap items-center gap-2.5">
               <div className="inline-flex items-center gap-1.5">
-                <span className="inline-flex items-center border border-primary/40 bg-primary/10 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-primary rounded-none">
+                <span className="inline-flex items-center border border-primary/40 bg-primary/10 px-2.5 py-1 font-mono text-[10px] font-bold uppercase text-primary rounded-none">
                   Express
                 </span>
-                <span className="inline-flex items-center border border-border/90 bg-muted/50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-foreground rounded-none">
+                <span className="inline-flex items-center border border-border/90 bg-muted/50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase text-foreground rounded-none">
                   Surface
                 </span>
               </div>
               <div className="inline-flex w-fit items-center gap-2.5 rounded-none border border-border/90 bg-card/95 px-3 py-1 shadow-xs backdrop-blur-xs transition-colors hover:border-foreground/30">
                 <span className="relative flex size-2 shrink-0 rounded-none">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-status-delivered opacity-75" />
+                  <span className="absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-none bg-status-delivered opacity-75" />
                   <span className="relative inline-flex size-2 rounded-none bg-status-delivered" />
                 </span>
-                <span className="shrink-0 font-mono text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+                <span className="shrink-0 font-mono text-xs font-bold text-muted-foreground uppercase">
                   Linehaul
                 </span>
                 <span className="text-border/80 select-none font-mono" aria-hidden="true">
@@ -244,7 +244,7 @@ export function HeroSection() {
               </div>
 
               {/* Restrained Architectural Baseline Tag */}
-              <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-sans text-xs tracking-[0.06em] uppercase text-foreground/80">
+              <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-sans text-xs uppercase text-foreground/80">
                 <span className="flex items-center gap-2">
                   <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
                   <span className="font-medium text-foreground">DEL ⇄ Northeast Linehaul</span>

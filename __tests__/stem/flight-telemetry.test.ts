@@ -87,5 +87,10 @@ describe("Logistics STEM Engine: IST Corridor Flight Telemetry", () => {
     expect(telemetry.currentIstTime).toBe("02:00:00 IST")
     const gateTask = telemetry.tasks.find((t) => t.id === "del-gateway")
     expect(gateTask?.status).toBe("running")
+    expect(gateTask?.progress).toBe(0)
+
+    const inboundTask = telemetry.tasks.find((t) => t.id === "flight-imf-del")
+    expect(inboundTask?.status).toBe("running")
+    expect(inboundTask?.progress).toBe(0)
   })
 })

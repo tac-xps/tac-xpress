@@ -207,12 +207,12 @@ function MilestoneProgressRail({
   return (
     <div className="mb-6 space-y-2 select-none" aria-hidden="true">
       <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span className="flex items-center gap-1.5 font-sans uppercase tracking-[0.06em] font-medium">
+        <span className="flex items-center gap-1.5 font-sans uppercase font-medium">
           <span className="size-1.5 rounded-none bg-primary" />
           Milestone Fulfillment
         </span>
         <span className="font-mono font-semibold tabular-nums text-foreground">
-          {percentage}% · Phase {completedSteps} of {totalSteps}
+          {percentage}%, Phase {completedSteps} of {totalSteps}
         </span>
       </div>
 
@@ -509,9 +509,11 @@ export function TrackingSection() {
       ? "delivered"
       : liveData?.status?.toLowerCase().includes("transit")
       ? "in-transit"
+      : isSample
+      ? "in-transit"
       : "on-time") as FlightStatus,
     note: isSample
-      ? "Commercial belly-hold space secured · BCAS scan cleared"
+      ? "Commercial belly-hold space secured, BCAS scan cleared"
       : `Consignment ${activeAwb} verified in transit`,
   }
 
@@ -561,7 +563,7 @@ export function TrackingSection() {
           className="max-w-2xl space-y-5"
         >
           <SectionEyebrow className="mb-2">
-            Consignment Console · Milestone Verification
+            Consignment Console, Milestone Verification
           </SectionEyebrow>
           <h2
             id="tracking-heading"
@@ -620,7 +622,7 @@ export function TrackingSection() {
               >
                 <label
                   htmlFor="home-awb"
-                  className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium"
+                  className="block font-sans text-xs uppercase text-muted-foreground font-medium"
                 >
                   AWB / shipment reference
                 </label>
@@ -672,23 +674,23 @@ export function TrackingSection() {
               {/* Active Consignment Meta Details Well */}
               <div className="mt-6 border border-border/80 bg-muted/20 p-4 space-y-3.5">
                 <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
-                  <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
+                  <span className="font-sans text-xs uppercase text-muted-foreground font-medium">
                     Consignment Reference
                   </span>
-                  <span className="font-mono text-sm font-bold tracking-wider text-primary tabular-nums">{activeAwb}</span>
+                  <span className="font-mono text-sm font-bold text-primary tabular-nums">{activeAwb}</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Corridor</span>
+                    <span className="block font-sans text-xs uppercase text-muted-foreground font-medium">Corridor</span>
                     <span className="font-sans font-medium text-foreground text-xs sm:text-sm">
                       {liveData ? `${liveData.origin} → ${liveData.destination}` : "Delhi (DEL) → Imphal (IMF)"}
                     </span>
                   </div>
                   <div>
-                    <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Service Mode</span>
+                    <span className="block font-sans text-xs uppercase text-muted-foreground font-medium">Service Mode</span>
                     <span className="font-sans font-medium text-info text-xs sm:text-sm">
-                      {liveData ? liveData.service : "Air Express · Priority"}
+                      {liveData ? liveData.service : "Air Express / Priority"}
                     </span>
                   </div>
                 </div>
@@ -705,7 +707,7 @@ export function TrackingSection() {
                       Consignment status
                     </Badge>
                   )}
-                  <Badge variant="warning-light" className="font-mono uppercase tracking-wider">
+                  <Badge variant="warning-light" className="font-mono uppercase">
                     {liveData ? liveData.status : "IN TRANSIT"}
                   </Badge>
                 </div>
@@ -733,7 +735,7 @@ export function TrackingSection() {
                     Air Waybill (AWB) Manifest
                   </h3>
                   <p className="mt-0.5 font-mono text-xs text-muted-foreground">
-                    Statutory carriage document · Optical barcode & custody ledger
+                    Statutory carriage document, optical barcode & custody ledger
                   </p>
                 </div>
 
@@ -879,11 +881,11 @@ export function TrackingSection() {
                 <RadarSyncDot shouldReduceMotion={!!shouldReduceMotion} />
                 <span className="font-normal text-muted-foreground">
                   {isSample
-                    ? "Verified physical scan trail · Synced within 120s of gate intake"
+                    ? "Verified physical scan trail, synced within 120s of gate intake"
                     : "Consignment record synchronized with central tracking log"}
                 </span>
               </div>
-              <span className="font-sans text-xs uppercase tracking-[0.06em] text-primary font-medium">
+              <span className="font-sans text-xs uppercase text-primary font-medium">
                 Optical Gate Audit
               </span>
             </div>

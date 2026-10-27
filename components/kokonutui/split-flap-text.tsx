@@ -116,16 +116,21 @@ function Tile({
     }
     const from = shownRef.current;
     const to = target;
+    let finishTimer: ReturnType<typeof setTimeout> | undefined;
     const timer = setTimeout(() => {
       setFlip({ id: Date.now(), from, to });
-      const finishTimer = setTimeout(() => {
+      finishTimer = setTimeout(() => {
         shownRef.current = to;
         setShown(to);
         setFlip(null);
       }, FLIP_DURATION);
-      return () => clearTimeout(finishTimer);
     }, delay);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (finishTimer) {
+        clearTimeout(finishTimer);
+      }
+    };
   }, [target, delay, reduceMotion]);
 
   // The top flap falls on its hinge, the bottom of the next letter lands,

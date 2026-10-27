@@ -292,7 +292,7 @@ export default function BoardingPass({
 }: BoardingPassProps) {
   const [step, setStep] = useState(0);
   const reduceMotion = Boolean(useReducedMotion());
-  const list = flights ?? DEMO;
+  const list = flights && flights.length > 0 ? flights : DEMO;
   const current = flight ?? list[step % list.length];
   // What the pass said when it was issued: the baseline for "changed".
   const [issued] = useState(flight ?? list[0]);
@@ -354,7 +354,7 @@ export default function BoardingPass({
             </p>
             <span
               className={cn(
-                "relative inline-flex h-6 items-center overflow-hidden rounded-none px-2.5 font-mono text-[11px] uppercase tracking-wider transition-colors duration-300",
+                "relative inline-flex h-6 items-center overflow-hidden rounded-none px-2.5 font-mono text-xs uppercase transition-colors duration-300",
                 status.tone
               )}
             >
@@ -378,7 +378,7 @@ export default function BoardingPass({
                 {current.from.code}
               </p>
               <p className="truncate text-xs text-muted-foreground">
-                {current.from.city} ·{" "}
+                {current.from.city},{" "}
                 <Flap
                   className={cn(
                     "tabular-nums transition-colors duration-300 ease-out",
@@ -413,8 +413,8 @@ export default function BoardingPass({
                   )}
                   reduceMotion={reduceMotion}
                   value={current.to.time}
-                />{" "}
-                · {current.to.city}
+                />
+                {`, ${current.to.city}`}
               </p>
             </div>
           </div>
@@ -461,7 +461,7 @@ export default function BoardingPass({
                 transition={fade}
               >
                 {current.note ??
-                  `${current.date} · Scheduled commercial belly-hold space`}
+                  `${current.date}, Scheduled commercial belly-hold space`}
               </motion.p>
             </AnimatePresence>
           </div>

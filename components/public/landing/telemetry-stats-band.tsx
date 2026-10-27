@@ -56,17 +56,17 @@ export function TelemetryStatsBand() {
       <div className="mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-12">
         {/* Architectural Header Bar */}
         <div className="mb-8 flex flex-col justify-between gap-3 border-b border-border/80 pb-4 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.16em] text-foreground font-semibold">
+          <div className="flex items-center gap-2.5 font-mono text-xs uppercase text-foreground font-semibold">
             <span className="relative flex size-2 shrink-0 rounded-none">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-status-delivered opacity-75" />
+              <span className="absolute inline-flex h-full w-full animate-ping motion-reduce:animate-none rounded-none bg-status-delivered opacity-75" />
               <span className="relative inline-flex size-2 rounded-none bg-status-delivered" />
             </span>
             <span>Live Corridor Telemetry</span>
             <span className="text-muted-foreground select-none">/</span>
-            <span className="text-muted-foreground font-normal">Active Operations Benchmarks</span>
+            <span className="text-muted-foreground font-normal">Contracted Operational Benchmarks</span>
           </div>
           <div className="font-mono text-xs text-muted-foreground">
-            Optical Reconciled Ledger · Q4 Audit
+            Optical Reconciled Ledger, Q4 Audit
           </div>
         </div>
 
@@ -87,10 +87,10 @@ export function TelemetryStatsBand() {
             >
               {/* Top Sub-Chip Row */}
               <div className="flex items-center justify-between border-b border-border/60 pb-3 font-mono text-[11px]">
-                <span className="font-bold text-muted-foreground uppercase tracking-wider">
+                <span className="font-bold text-muted-foreground uppercase">
                   {metric.code}
                 </span>
-                <span className={cn("font-bold uppercase tracking-wider flex items-center gap-1.5", metric.statusColor)}>
+                <span className={cn("font-bold uppercase flex items-center gap-1.5", metric.statusColor)}>
                   <span className="size-1.5 rounded-none bg-current" aria-hidden="true" />
                   {metric.status}
                 </span>
