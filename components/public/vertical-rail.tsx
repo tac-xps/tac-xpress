@@ -139,7 +139,7 @@ export function VerticalRailStep({
         {/* Step number */}
         <span
           className={cn(
-            "font-mono text-xs font-bold tracking-[0.15em] uppercase transition-colors duration-300 leading-normal",
+            "font-mono text-xs font-bold tracking-widest uppercase transition-colors duration-300 leading-normal",
             isActive ? "text-primary" : "text-muted-foreground",
           )}
         >

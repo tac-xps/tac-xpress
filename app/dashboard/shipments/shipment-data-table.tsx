@@ -62,8 +62,8 @@ const columns: ColumnDef<ShipmentWithRelations>[] = [
     enableSorting: false,
     cell: ({ row }) => (
       <div className="flex flex-wrap items-center gap-1.5">
-        {row.original.isFragile && <Badge variant="outline" className="text-[11px]">Fragile</Badge>}
-        {row.original.insuranceOptIn && <Badge variant="outline" className="text-[11px]">Insurance requested</Badge>}
+        {row.original.isFragile && <Badge variant="outline" className="text-xs">Fragile</Badge>}
+        {row.original.insuranceOptIn && <Badge variant="outline" className="text-xs">Insurance requested</Badge>}
         {!row.original.isFragile && !row.original.insuranceOptIn && (
           <span className="text-xs text-muted-foreground">Standard</span>
         )}

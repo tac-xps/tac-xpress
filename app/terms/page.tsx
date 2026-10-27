@@ -27,119 +27,156 @@ export default function TermsAndConditionsPage() {
         description="Please read these terms carefully before booking your shipment. By using TAC-XPRESS services, you agree to the following policies."
       />
 
-      <section className="container mx-auto max-w-4xl px-4 pb-12 md:px-8 lg:pb-16">
-        <div className="grid gap-8 sm:grid-cols-2">
-          {/* Item 1 */}
-          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-primary/10 text-primary">
-              <FileCheck className="h-5 w-5" />
+      <section className="container mx-auto max-w-5xl px-4 pb-16 md:px-8 lg:pb-24">
+        <div className="border border-border/80 bg-card divide-y divide-border/70 shadow-xs">
+          {/* Clause 01 */}
+          <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="space-y-2 max-w-3xl">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary font-semibold">
+                  <FileCheck className="size-3.5 text-primary" />
+                  <span>Clause 01 · Statutory Compliance</span>
+                </div>
+                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                  Accurate Cargo Declaration
+                </h3>
+                <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
+                  The Consignor must accurately declare contents, actual invoice valuation, piece count, and condition of goods prior to terminal intake. Statutory documentation including GST E-Way bills must match physical freight.
+                </p>
+              </div>
             </div>
-            <h3 className="font-bold text-foreground">Accurate Declaration</h3>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              The Consignor must accurately declare the contents, actual value,
-              and condition of the goods prior to booking.
-            </p>
           </div>
 
-          {/* Item 2 */}
-          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-destructive/10 text-destructive">
-              <AlertTriangle className="h-5 w-5" />
+          {/* Clause 02 */}
+          <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="space-y-2 max-w-3xl">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-destructive font-semibold">
+                  <AlertTriangle className="size-3.5 text-destructive" />
+                  <span>Clause 02 · Safety Prohibition</span>
+                </div>
+                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                  Prohibited & Hazardous Articles
+                </h3>
+                <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
+                  Booking contraband, combustible materials, narcotics, or undeclared dangerous goods is strictly prohibited under civil aviation and carriage laws. The Consignor assumes absolute legal and financial liability if such items are tendered.
+                </p>
+              </div>
             </div>
-            <h3 className="font-bold text-foreground">Prohibited Goods</h3>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Booking illegal, hazardous, or contraband items is strictly
-              prohibited. The Consignor assumes absolute legal and financial
-              liability if such items are found.
-            </p>
           </div>
 
-          {/* Item 3 */}
-          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-destructive/10 text-destructive">
-              <Box className="h-5 w-5" />
+          {/* Clause 03 */}
+          <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="space-y-2 max-w-3xl">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary font-semibold">
+                  <Box className="size-3.5 text-primary" />
+                  <span>Clause 03 · Custody & Security</span>
+                </div>
+                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                  Inspection and X-Ray Authority
+                </h3>
+                <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
+                  The carrier reserves the operational right to inspect, weigh, and submit any consignment to airport security X-ray screening to verify regulatory compliance and aviation safety standards.
+                </p>
+              </div>
             </div>
-            <h3 className="font-bold text-foreground">Right to Inspect</h3>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              The company reserves the right to open and inspect any consignment
-              to ensure compliance with safety and legal standards.
-            </p>
           </div>
 
-          {/* Item 4 */}
-          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
-            <div className="text-trend-positive flex h-10 w-10 items-center justify-center rounded-none bg-primary/10">
-              <ShieldCheck className="h-5 w-5" />
+          {/* Clause 04 */}
+          <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="space-y-2 max-w-3xl">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary font-semibold">
+                  <ShieldCheck className="size-3.5 text-primary" />
+                  <span>Clause 04 · Risk Assessment</span>
+                </div>
+                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                  Carriage Liability & Insurance Coverage
+                </h3>
+                <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
+                  Fragile and commercial electronic items are consigned under owner risk unless insured under a declared-value carrier policy. For uninsured consignments, maximum compensation for proven loss or transit damage is strictly capped at ₹150/kg.
+                </p>
+              </div>
             </div>
-            <h3 className="font-bold text-foreground">Liability & Insurance</h3>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Fragile and electronic items are shipped entirely at the
-              owner&apos;s risk unless booked under a special insurance program.
-              For uninsured shipments, the maximum compensation for loss,
-              damage, or misplacement is strictly limited to Rs. 150/kg.
-            </p>
           </div>
 
-          {/* Item 5 */}
-          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-status-pending/10 text-status-pending">
-              <Scale className="h-5 w-5" />
+          {/* Clause 05 */}
+          <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="space-y-2 max-w-3xl">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                  <Scale className="size-3.5 text-muted-foreground" />
+                  <span>Clause 05 · Exceptional Events</span>
+                </div>
+                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                  Force Majeure Exclusions
+                </h3>
+                <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
+                  The carrier is not liable for SLA transit delays or schedule disruptions resulting from natural weather hazards, landslides, flight cancellations, civil unrest, or regulatory highway checkpoints beyond carrier control.
+                </p>
+              </div>
             </div>
-            <h3 className="font-bold text-foreground">Force Majeure</h3>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              The company shall not be held liable for delays, loss, or damages
-              caused by Acts of God, natural disasters, strikes, political
-              unrest, or circumstances beyond its control.
-            </p>
           </div>
 
-          {/* Item 6 */}
-          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-status-pending/10 text-status-pending">
-              <Clock className="h-5 w-5" />
+          {/* Clause 06 */}
+          <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="space-y-2 max-w-3xl">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                  <Clock className="size-3.5 text-muted-foreground" />
+                  <span>Clause 06 · Destination Protocols</span>
+                </div>
+                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                  Hub Demurrage & Storage Schedules
+                </h3>
+                <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
+                  Consignments must be accepted or cleared from destination terminal warehouses within 7 calendar days of notice. Demurrage warehouse charges of ₹55 per day accrue beginning 21 days from receipt date.
+                </p>
+              </div>
             </div>
-            <h3 className="font-bold text-foreground">Demurrage Charges</h3>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Consignments must be collected from the destination office within
-              7 days. Demurrage (godown) charges of Rs. 55/day will apply
-              starting 21 days from the date of receipt.
-            </p>
           </div>
 
-          {/* Item 7 */}
-          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-secondary/10 text-secondary-foreground">
-              <FileText className="h-5 w-5" />
+          {/* Clause 07 */}
+          <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="space-y-2 max-w-3xl">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                  <FileText className="size-3.5 text-muted-foreground" />
+                  <span>Clause 07 · Warehouse Disposition</span>
+                </div>
+                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                  Carrier Lien and Unclaimed Freight Disposal
+                </h3>
+                <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
+                  Consignments unclaimed for 45 calendar days are designated abandoned. The carrier exercises legal lien and reserves the right to auction or dispose of unclaimed cargo after 100 days from arrival to recover freight and storage dues.
+                </p>
+              </div>
             </div>
-            <h3 className="font-bold text-foreground">Lien and Disposal</h3>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Consignments left unclaimed for 45 days will be marked as
-              abandoned. The company reserves the right to dispose of or auction
-              unclaimed items after 100 days from the receipt date to recover
-              dues, without further communication.
-            </p>
           </div>
 
-          {/* Item 8 */}
-          <div className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-none bg-primary/10 text-primary">
-              <Gavel className="h-5 w-5" />
+          {/* Clause 08 */}
+          <div className="p-6 sm:p-8 hover:bg-muted/20 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="space-y-2 max-w-3xl">
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary font-semibold">
+                  <Gavel className="size-3.5 text-primary" />
+                  <span>Clause 08 · Legal Authority</span>
+                </div>
+                <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                  Governing Law & Delhi Jurisdiction
+                </h3>
+                <p className="text-sm sm:text-base leading-relaxed text-muted-foreground text-pretty max-w-[65ch]">
+                  All consignments are subject to standard contract terms of Tapan Associate Courier and Cargo Service. All arbitration and legal disputes are subject to the exclusive jurisdiction of the competent courts of New Delhi, India.
+                </p>
+              </div>
             </div>
-            <h3 className="font-bold text-foreground">
-              Governing Law & Jurisdiction
-            </h3>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              All bookings are subject to the terms of Tapan Associate Courier
-              and Cargo Service. Any disputes arising shall be subject to the
-              exclusive jurisdiction of the courts in Delhi.
-            </p>
           </div>
         </div>
 
-        <div className="mt-16 border-t pt-8 text-center text-sm text-muted-foreground">
+        <div className="mt-14 border-t border-border/80 pt-6 text-center font-mono text-xs text-muted-foreground">
           <p>
-            © {CURRENT_YEAR} Tapan Associate Courier and Cargo
-            Service. All rights reserved.
+            © {CURRENT_YEAR} Tapan Associate Courier and Cargo Service. All rights reserved.
           </p>
         </div>
       </section>

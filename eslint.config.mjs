@@ -42,4 +42,11 @@ export default [...nextVitals, {
   rules: {
     "no-console": "off",
   },
+}, {
+  files: ["components/kokonutui/**"],
+  rules: {
+    "react-hooks/refs": "off",
+    "react-hooks/immutability": "off",
+    "react-hooks/set-state-in-effect": "off",
+  },
 }, ...storybook.configs["flat/recommended"]];

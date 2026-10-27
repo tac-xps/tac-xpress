@@ -1,0 +1,75 @@
+/* Marlow v2 Design System CSS */
+.marlow-theme {
+  --marlow-bg: rgb(244 241 233);
+  --marlow-surface: rgb(250 250 248);
+  --marlow-surface-card: rgb(255 255 255);
+  --marlow-surface-alt: rgb(233 228 216);
+  --marlow-surface-tint: rgb(238 217 176);
+  --marlow-surface-blue: rgb(201 216 228);
+  --marlow-text: rgb(20 20 19);
+  --marlow-text-light: rgb(250 250 248);
+  --marlow-text-muted: rgb(20 20 19 / 0.64);
+  --marlow-text-subtle: rgb(20 20 19 / 0.44);
+  --marlow-border: rgb(20 20 19 / 0.08);
+  --marlow-border-strong: rgb(20 20 19 / 0.18);
+  --marlow-accent-green: rgb(31 154 85);
+  --marlow-accent-forest: rgb(23 51 34);
+  --marlow-accent-blue: rgb(47 111 228);
+  --marlow-accent-terracotta: rgb(200 85 61);
+  --marlow-accent-amber: rgb(242 194 48);
+  --marlow-dark-bg: rgb(20 20 19);
+  --marlow-dark-card: rgb(29 29 27);
+  --marlow-font-serif: "Newsreader", Georgia, Cambria, "Times New Roman", Times, serif;
+  --marlow-font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  background-color: var(--marlow-bg);
+  color: var(--marlow-text);
+  font-family: var(--marlow-font-sans);
+  min-height: 100vh;
+}
+
+.marlow-serif {
+  font-family: var(--marlow-font-serif);
+  font-feature-settings: "liga" 1, "dlig" 1;
+}
+
+.marlow-sans {
+  font-family: var(--marlow-font-sans);
+}
+
+/* Subtle border utility */
+.marlow-border {
+  border: 1px solid var(--marlow-border);
+}
+
+.marlow-border-b {
+  border-bottom: 1px solid var(--marlow-border);
+}
+
+.marlow-border-t {
+  border-top: 1px solid var(--marlow-border);
+}
+
+/* Motion transition presets */
+.marlow-transition {
+  transition:
+    color 0.2s cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 0.2s cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.marlow-rise {
+  animation: marlow-rise 0.72s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes marlow-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

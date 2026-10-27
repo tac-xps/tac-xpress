@@ -59,9 +59,8 @@ const badgeVariants = cva(
       },
       /** `default`: active style radius. `full`: pill radius. */
       radius: {
-        default:
-          "rounded-sm",
-        full: "rounded-full",
+        default: "rounded-none",
+        full: "rounded-none",
       },
     },
     defaultVariants: {
@@ -89,7 +88,7 @@ function Badge({
 
   return (
     <Comp
-      data-slot="badge"
+
       className={cn(badgeVariants({ variant, size, radius, className }))}
       {...props}
     />

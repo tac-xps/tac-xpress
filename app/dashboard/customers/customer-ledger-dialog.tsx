@@ -246,7 +246,7 @@ export function CustomerLedgerDialog({
                           <TableCell className="text-xs">
                             <Badge
                               variant={inv.status === "paid" ? "success" : "outline"}
-                              className="capitalize text-[10px]"
+                              className="capitalize text-xs"
                             >
                               {inv.status}
                             </Badge>
@@ -283,7 +283,7 @@ export function CustomerLedgerDialog({
                     </TableBody>
                   </Table>
                   {totals.totalCount && totals.totalCount > invoices.length && (
-                    <div className="border-t border-border/70 bg-muted/20 px-4 py-2 text-[11px] text-muted-foreground">
+                    <div className="border-t border-border/70 bg-muted/20 px-4 py-2 text-xs text-muted-foreground">
                       Displaying the 50 most recent invoices. Total financial metrics reflect the complete customer ledger.
                     </div>
                   )}

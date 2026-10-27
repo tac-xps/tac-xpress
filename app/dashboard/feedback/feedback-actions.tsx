@@ -180,7 +180,7 @@ export function FeedbackActions({ feedback }: { feedback: FeedbackData }) {
 
             {/* Message Body */}
             <div>
-              <span className="block font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
+              <span className="block font-mono text-xs uppercase tracking-wider text-muted-foreground mb-1.5">
                 Message Content
               </span>
               <div className="rounded-none border border-border/80 bg-background p-4 text-sm leading-relaxed text-foreground whitespace-pre-wrap font-sans max-h-60 overflow-y-auto">

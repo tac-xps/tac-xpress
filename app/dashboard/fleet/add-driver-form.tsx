@@ -62,7 +62,7 @@ export function AddDriverForm({
                     {...field}
                   />
                 </FormControl>
-                <p id="driver-phone-hint" className="text-[11px] text-muted-foreground">
+                <p id="driver-phone-hint" className="text-xs text-muted-foreground">
                   E.164 format, e.g. +919876543210
                 </p>
                 <FormMessage />

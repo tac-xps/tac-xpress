@@ -171,7 +171,7 @@ export function DriverFormDialog({
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage className="text-[10px]" />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
@@ -191,7 +191,7 @@ export function DriverFormDialog({
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage className="text-[10px]" />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
@@ -210,7 +210,7 @@ export function DriverFormDialog({
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-[10px]" />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -239,7 +239,7 @@ export function DriverFormDialog({
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage className="text-[10px]" />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />

@@ -65,7 +65,7 @@ export function ModalFinancials({ shipmentId, invoice }: ModalFinancialsProps) {
             </CardTitle>
             <Badge
               variant={isPaid ? "default" : "destructive"}
-              className="rounded-none uppercase font-mono text-[10px] tracking-wider font-semibold"
+              className="rounded-none uppercase font-mono text-xs tracking-wider font-semibold"
             >
               {isPaid ? (
                 <CheckCircle2 className="size-3 mr-1" />
@@ -81,7 +81,7 @@ export function ModalFinancials({ shipmentId, invoice }: ModalFinancialsProps) {
           {/* Total & Balance Grid */}
           <div className="grid grid-cols-2 gap-3">
             <div className="border border-border/80 bg-muted/20 p-3 space-y-1">
-              <span className="font-mono text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+              <span className="font-mono text-xs font-bold tracking-wider text-muted-foreground uppercase">
                 Total Amount
               </span>
               <p className="font-mono text-lg font-bold text-foreground truncate">
@@ -96,7 +96,7 @@ export function ModalFinancials({ shipmentId, invoice }: ModalFinancialsProps) {
                   : "border-destructive/30 bg-destructive/5 text-destructive"
               }`}
             >
-              <span className="font-mono text-[10px] font-bold tracking-wider uppercase opacity-80">
+              <span className="font-mono text-xs font-bold tracking-wider uppercase opacity-80">
                 Balance Due
               </span>
               <p className="font-mono text-lg font-bold truncate">
@@ -108,7 +108,7 @@ export function ModalFinancials({ shipmentId, invoice }: ModalFinancialsProps) {
           {/* Payment Terms Meta */}
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div className="space-y-0.5">
-              <span className="font-mono text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+              <span className="font-mono text-xs font-bold tracking-wider text-muted-foreground uppercase">
                 Payment Mode
               </span>
               <p className="font-semibold text-foreground capitalize">
@@ -118,7 +118,7 @@ export function ModalFinancials({ shipmentId, invoice }: ModalFinancialsProps) {
 
             {invoice.advancePaid != null && invoice.advancePaid > 0 && (
               <div className="space-y-0.5">
-                <span className="font-mono text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+                <span className="font-mono text-xs font-bold tracking-wider text-muted-foreground uppercase">
                   Advance Paid
                 </span>
                 <p className="font-mono font-medium text-foreground">

@@ -138,3 +138,7 @@ Desktop.ini
 .auth0-mcp-state.json
 
 .auth0-mcp-writes.log
+
+# Superdesign & Hallmark tool caches
+.superdesign/
+.hallmark/

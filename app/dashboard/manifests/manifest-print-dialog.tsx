@@ -105,13 +105,13 @@ export function ManifestPrintDialog({
                 </DialogTitle>
                 <Badge
                   variant="outline"
-                  className="rounded-none font-mono text-[11px] font-semibold uppercase px-1.5 py-0.5"
+                  className="rounded-none font-mono text-xs font-semibold uppercase px-1.5 py-0.5"
                 >
                   {referenceId}
                 </Badge>
                 <Badge
                   variant={status === "finalized" ? "default" : "secondary"}
-                  className="rounded-none text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5"
+                  className="rounded-none text-xs font-bold uppercase tracking-wider px-1.5 py-0.5"
                 >
                   {status}
                 </Badge>

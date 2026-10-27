@@ -26,25 +26,40 @@ export default async function SignInPage({
         <Link href="/" aria-label="TAC-XPRESS home">
           <Logo className="h-7" />
         </Link>
-        <div className="hidden max-w-lg flex-col gap-8 lg:flex">
-          <p className="text-sm text-muted-foreground">
-            TAC-XPRESS / Operations
-          </p>
-          <h2 className="text-5xl leading-tight font-medium tracking-tight">
-            The work behind
-            <br />
-            every delivery.
+        <div className="hidden max-w-lg flex-col gap-6 lg:flex">
+          <div className="inline-flex items-center gap-2 border border-border/80 bg-muted/40 px-3 py-1 font-mono text-xs uppercase tracking-wider text-foreground font-semibold rounded-none self-start">
+            <span className="size-1.5 bg-primary rounded-none" aria-hidden="true" />
+            TAC-XPRESS / Operations Desk
+          </div>
+          <h2 className="text-4xl sm:text-5xl leading-[1.08] tracking-tight">
+            <span className="block font-medium text-foreground/80">The work behind</span>
+            <span className="block font-bold text-foreground">
+              every delivery<span className="text-primary font-black">.</span>
+            </span>
           </h2>
-          <p className="max-w-md text-lg leading-relaxed text-muted-foreground">
-            A shared workspace for the team managing shipments, dispatch,
-            warehouse, billing and support.
-          </p>
-          <p className="border-t pt-6 text-sm text-muted-foreground">
-            For provisioned admins and staff.
-          </p>
+          <div className="space-y-3 max-w-md">
+            <p className="text-base font-medium text-foreground leading-snug tracking-tight">
+              A unified command desk for multi-modal linehaul operations.
+            </p>
+            <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-muted-foreground">
+              <span className="border border-border/70 bg-muted/30 px-2 py-0.5 text-xs rounded-none">
+                DEL ⇄ IMF / GAU
+              </span>
+              <span className="border border-border/70 bg-muted/30 px-2 py-0.5 text-xs rounded-none">
+                RESTRICTED ACCESS
+              </span>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+              Shared operations workspace for authorized personnel managing real-time shipments, flight manifests, warehouse cross-dock sortation, and GST carriage ledgers.
+            </p>
+          </div>
+          <div className="border-t border-border/70 pt-5 text-xs font-mono text-muted-foreground flex items-center justify-between">
+            <span>Provisioned staff credentials required</span>
+            <span className="size-1.5 bg-status-delivered rounded-none" aria-hidden="true" />
+          </div>
         </div>
-        <p className="hidden text-sm text-muted-foreground lg:block">
-          New Delhi ↔ Northeast India
+        <p className="hidden font-mono text-xs text-muted-foreground lg:block">
+          Corridor: New Delhi ⇄ Northeast India
         </p>
       </section>
       <section className="relative flex flex-col items-center justify-center p-6 py-16 sm:p-12">

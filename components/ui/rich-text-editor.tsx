@@ -87,7 +87,7 @@ function ToolbarButton({ onClick, isActive, disabled, tooltip, children }: Toolb
           {children}
         </button>
       </TooltipTrigger>
-      <TooltipContent side="top" className="text-[11px] py-1 px-2">
+      <TooltipContent side="top" className="text-xs py-1 px-2">
         {tooltip}
       </TooltipContent>
     </Tooltip>
@@ -158,7 +158,7 @@ function LinkToolbarButton({ editor, disabled }: LinkToolbarButtonProps) {
             </button>
           </PopoverTrigger>
         </TooltipTrigger>
-        <TooltipContent side="top" className="text-[11px] py-1 px-2">
+        <TooltipContent side="top" className="text-xs py-1 px-2">
           {isActive ? "Edit link" : "Add link"}
         </TooltipContent>
       </Tooltip>
@@ -569,7 +569,7 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
         {(showCharacterCount || maxLength) && (
           <div
             data-slot="rich-text-status"
-            className="flex items-center justify-end gap-3 border-t border-border/40 bg-muted/20 px-3 py-1 text-[11px] text-muted-foreground select-none"
+            className="flex items-center justify-end gap-3 border-t border-border/40 bg-muted/20 px-3 py-1 text-xs text-muted-foreground select-none"
           >
             <span>{wordCount} words</span>
             <span>

@@ -3,6 +3,7 @@ import { MotionProvider } from "./landing/motion-provider"
 import { LandingNav } from "./landing/landing-nav"
 import { HeroSection } from "./landing/hero-section"
 import { CorridorMarquee } from "./landing/section-primitives"
+import { TelemetryStatsBand } from "./landing/telemetry-stats-band"
 import { ServicesSection } from "./landing/services-section"
 import { TrackingSection } from "./landing/tracking-section"
 import { ProcessSection } from "./landing/process-section"
@@ -15,6 +16,7 @@ import { ContactSection } from "./landing/contact-section"
 import { LandingFooter } from "./landing/landing-footer"
 import { SupportChat } from "./support-chat"
 import { BackToTop } from "./landing/back-to-top"
+import ScrollIndex from "@/components/kokonutui/scroll-index"
 
 /**
  * TAC Express: Master Landing Page (Motion System 2.0: Living Logistics)
@@ -27,7 +29,7 @@ import { BackToTop } from "./landing/back-to-top"
 export function LogisticsHome() {
   return (
     <MotionProvider>
-      <div className="cargo-public min-h-svh w-full max-w-full overflow-x-clip bg-background text-foreground antialiased selection:bg-primary/20 selection:text-foreground">
+      <div className="cargo-public min-h-svh w-full max-w-full overflow-x-clip bg-background text-foreground selection:bg-primary/20 selection:text-foreground">
         {/* Accessible Skip-to-Content Link */}
         <a
           href="#main-content"
@@ -39,33 +41,39 @@ export function LogisticsHome() {
         {/* Direction-Aware Header */}
         <LandingNav />
 
-        <main id="main-content" className="relative">
-          {/* Chapter 01: Cargo */}
-          <HeroSection />
+        {/* Page Chapter Rail: ScrollIndex in overlay mode (fixed right-edge) */}
+        <ScrollIndex
+          scroller="overlay"
+          selector="h2[id], h2"
+        >
+          <main id="main-content" className="relative">
+            {/* Chapter 01: Cargo */}
+            <HeroSection />
 
-          {/* Living Corridor Movement Ticker Ribbon */}
-          <CorridorMarquee />
+            {/* Live High-Contrast Corridor Telemetry Performance Monument */}
+            <TelemetryStatsBand />
 
-          <ServicesSection />
+            <ServicesSection />
 
-          {/* Chapter 02: Visibility */}
-          <TrackingSection />
+            {/* Chapter 02: Visibility */}
+            <TrackingSection />
 
-          {/* Chapter 03: Journey */}
-          <ProcessSection />
-          <NetworkSection />
+            {/* Chapter 03: Journey */}
+            <ProcessSection />
+            <NetworkSection />
 
-          {/* Chapter 04: Delivery */}
-          <CareSection />
-          <BrandStatementSection />
+            {/* Chapter 04: Delivery */}
+            <CareSection />
+            <BrandStatementSection />
 
-          {/* Chapter 05: Feedback Signal Loop */}
-          <FeedbackSection />
-          <ContactSection />
+            {/* Chapter 05: Feedback Signal Loop */}
+            <FeedbackSection />
+            <ContactSection />
 
-          {/* Utility: Operational Clarity */}
-          <FAQSection />
-        </main>
+            {/* Utility: Operational Clarity */}
+            <FAQSection />
+          </main>
+        </ScrollIndex>
 
         {/* Utility: Editorial Closing Directory */}
         <LandingFooter />

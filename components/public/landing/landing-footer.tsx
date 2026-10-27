@@ -46,9 +46,9 @@ export function LandingFooter() {
   const shouldReduceMotion = useReducedMotion()
 
   return (
-    <footer className="w-full border-t border-border/80 bg-surface/50 text-foreground transition-colors">
+    <footer data-slot="footer" className="relative w-full overflow-hidden border-t border-border/80 bg-surface/50 text-foreground transition-colors">
       <motion.div
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
         transition={{
@@ -60,17 +60,17 @@ export function LandingFooter() {
         {/* Top Editorial Callout */}
         <div className="mb-12 flex flex-col justify-between gap-6 border-b border-border/80 pb-10 md:flex-row md:items-end">
           <div>
-            <span className="font-sans text-xs uppercase tracking-[0.06em] text-primary font-semibold">
-              Freight Commitment
-            </span>
-            <p className="mt-2 text-section text-foreground">
+            <div className="flex items-center gap-2 mb-2 font-sans text-xs text-status-delivered font-semibold">
+              <span className="size-2 rounded-none bg-status-delivered motion-safe:animate-pulse motion-reduce:opacity-100" />
+              <span>All 14 Northeast Corridors Operational / Active Dispatch</span>
+            </div>
+            <p className="mt-1 text-section text-foreground">
               Move cargo. With clarity.
             </p>
           </div>
           <Button
             asChild
-            size="lg"
-            className="w-fit font-semibold tracking-tight text-primary-foreground hover:bg-primary/90"
+            className="w-fit rounded-none font-semibold tracking-tight text-primary-foreground hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-primary active:scale-[0.99] h-11 px-6"
           >
             <Link href="#contact">
               Start a shipment inquiry
@@ -98,7 +98,7 @@ export function LandingFooter() {
           {/* Links Columns */}
           {FOOTER_GROUPS.map((grp) => (
             <div key={grp.title}>
-              <h4 className="font-sans text-xs uppercase tracking-wider text-foreground font-semibold">
+              <h4 className="font-sans text-xs text-foreground font-semibold">
                 {grp.title}
               </h4>
               <ul className="mt-4 space-y-2.5 text-sm">
@@ -119,14 +119,14 @@ export function LandingFooter() {
 
         {/* Copyright and Metadata */}
         <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-border/80 pt-8 sm:flex-row sm:items-center font-sans text-xs text-muted-foreground">
-          <p suppressHydrationWarning>© {new Date().getFullYear()} TAC-XPRESS LOGISTICS LLP. All rights reserved.</p>
-          <div className="flex flex-wrap items-center gap-4">
+          <p suppressHydrationWarning>© {new Date().getFullYear()} TAC-XPRESS LOGISTICS LLP. Indian Freight Forwarding &amp; Inter-State Consignment Services.</p>
+          <div className="flex flex-wrap items-center gap-3">
             <span>GST Registered</span>
-            <span>·</span>
+            <span className="h-3 w-px bg-border" aria-hidden="true" />
             <span>IATA Associated</span>
-            <span>·</span>
+            <span className="h-3 w-px bg-border" aria-hidden="true" />
             <span className="text-primary font-medium">Delhi ⇄ Imphal Corridor</span>
-            <span>·</span>
+            <span className="h-3 w-px bg-border" aria-hidden="true" />
             <button
               type="button"
               onClick={() =>
@@ -135,11 +135,9 @@ export function LandingFooter() {
                   behavior: shouldReduceMotion ? "instant" : "smooth",
                 })
               }
-              className="group inline-flex items-center gap-1.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
-              aria-label="Scroll to top of page"
+              className="text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary active:scale-[0.99] disabled:opacity-50"
             >
-              <span>Back to top</span>
-              <ArrowUp className="size-3 text-primary transition-transform duration-200 group-hover:-translate-y-0.5" strokeWidth={2} />
+              Back to top ↑
             </button>
           </div>
         </div>

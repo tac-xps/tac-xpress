@@ -26,11 +26,28 @@ import {
 } from "@/components/reui/stepper"
 import { SectionEyebrow, EditorialContainer } from "./section-primitives"
 import { BorderBeam } from "@/components/ui/border-beam"
+import BoardingPass, {
+  type Flight,
+  type BoardingPassLabels,
+  type FlightStatus,
+} from "@/components/kokonutui/boarding-pass"
+import { cn } from "@/lib/utils"
 import {
   motionDurations,
   motionEasings,
   tactileInteraction,
 } from "@/lib/motion/motion.theme"
+import SignaturePad from "@/components/kokonutui/signature-pad"
+import CurrencyTransfer from "@/components/kokonutui/currency-transfer"
+import ReceiptPrinter from "@/components/kokonutui/receipt-printer"
+
+const CARGO_LABELS: BoardingPassLabels = {
+  field1: "Gate",
+  field2: "Loading",
+  field3: "Payload",
+  field4: "Bay",
+  footerLabel: "Consignee / Destination Hub",
+}
 
 interface SampleMilestone {
   title: string
@@ -87,7 +104,7 @@ function RadarBeaconNode({ shouldReduceMotion }: RadarBeaconNodeProps) {
   if (shouldReduceMotion) {
     return (
       <div className="relative flex size-4 items-center justify-center" aria-hidden="true">
-        <span className="size-2 rounded-full bg-status-transit ring-2 ring-status-transit/30" />
+        <span className="size-2 rounded-none bg-status-transit ring-2 ring-status-transit/30" />
       </div>
     )
   }
@@ -96,7 +113,7 @@ function RadarBeaconNode({ shouldReduceMotion }: RadarBeaconNodeProps) {
     <div className="relative flex size-4 items-center justify-center" aria-hidden="true">
       {/* Outer expanding radar wave ring 1 */}
       <motion.span
-        className="absolute size-4 rounded-full border border-status-transit/60"
+        className="absolute size-4 rounded-none border border-status-transit/60"
         initial={{ scale: 0.7, opacity: 0.8 }}
         animate={{ scale: [0.7, 2.1], opacity: [0.8, 0] }}
         transition={{
@@ -107,7 +124,7 @@ function RadarBeaconNode({ shouldReduceMotion }: RadarBeaconNodeProps) {
       />
       {/* Outer expanding radar wave ring 2 (phase offset) */}
       <motion.span
-        className="absolute size-4 rounded-full border border-status-transit/40"
+        className="absolute size-4 rounded-none border border-status-transit/40"
         initial={{ scale: 0.7, opacity: 0.8 }}
         animate={{ scale: [0.7, 2.1], opacity: [0.8, 0] }}
         transition={{
@@ -119,7 +136,7 @@ function RadarBeaconNode({ shouldReduceMotion }: RadarBeaconNodeProps) {
       />
       {/* Core beacon dot with subtle breathing luminosity */}
       <motion.span
-        className="relative size-2 rounded-full bg-status-transit shadow-[0_0_8px_rgba(234,88,12,0.6)]"
+        className="relative size-2 rounded-none bg-status-transit"
         animate={{ scale: [1, 1.25, 1], opacity: [0.9, 1, 0.9] }}
         transition={{
           duration: 1.6,
@@ -158,7 +175,7 @@ function TravelingConnectorBeam({ shouldReduceMotion }: TravelingConnectorBeamPr
 
       {/* Traveling photon packet moving continuously along the corridor line */}
       <motion.div
-        className="absolute -left-[1px] h-2.5 w-[3px] rounded-full bg-status-transit shadow-[0_0_6px_var(--color-status-transit)]"
+        className="absolute -left-[1px] h-2.5 w-[3px] rounded-none bg-status-transit shadow-[0_0_6px_var(--color-status-transit)]"
         initial={{ y: -2, opacity: 0 }}
         animate={{
           y: [-2, 24],
@@ -193,12 +210,12 @@ function MilestoneProgressRail({
   return (
     <div className="mb-6 space-y-2 select-none" aria-hidden="true">
       <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span className="flex items-center gap-1.5 font-sans uppercase tracking-[0.06em] font-medium">
+        <span className="flex items-center gap-1.5 font-sans font-medium">
           <span className="size-1.5 rounded-none bg-primary" />
           Milestone Fulfillment
         </span>
         <span className="font-mono font-semibold tabular-nums text-foreground">
-          {percentage}% · Phase {completedSteps} of {totalSteps}
+          {percentage}% (Phase {completedSteps} of {totalSteps})
         </span>
       </div>
 
@@ -232,31 +249,13 @@ function MilestoneProgressRail({
   )
 }
 
-interface RadarSyncDotProps {
-  shouldReduceMotion: boolean
-}
-
 /**
  * Radar Sync Dot: Looping radar ping for optical gate audit trail.
  */
-function RadarSyncDot({ shouldReduceMotion }: RadarSyncDotProps) {
-  if (shouldReduceMotion) {
-    return <span className="size-2 rounded-none bg-status-delivered" aria-hidden="true" />
-  }
-
+function RadarSyncDot() {
   return (
     <span className="relative flex size-2 items-center justify-center" aria-hidden="true">
-      {/* Looping pulse ping */}
-      <motion.span
-        className="absolute inset-0 rounded-none bg-status-delivered/40"
-        initial={{ scale: 1, opacity: 0.8 }}
-        animate={{ scale: [1, 2.4], opacity: [0.8, 0] }}
-        transition={{
-          duration: 1.8,
-          repeat: Infinity,
-          ease: "easeOut",
-        }}
-      />
+      <span className="absolute inset-0 rounded-none bg-status-delivered/40 motion-safe:animate-ping motion-reduce:hidden" />
       <span className="relative size-1.5 rounded-none bg-status-delivered" />
     </span>
   )
@@ -299,7 +298,7 @@ function SampleMilestoneStepper({ shouldReduceMotion }: SampleMilestoneStepperPr
               step={stepNumber}
               completed={isCompleted}
               className={`!flex-row !items-start gap-3.5 !justify-start ${
-                isCurrent ? "relative rounded-sm bg-primary/[0.03] -mx-2 px-2 py-1.5" : ""
+                isCurrent ? "relative rounded-none bg-primary/[0.03] -mx-2 px-2 py-1.5" : ""
               }`}
             >
               {/* Indicator column: icon + connector */}
@@ -470,6 +469,53 @@ export function TrackingSection() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const shouldReduceMotion = useReducedMotion()
+  const [trackingView, setTrackingView] = useState<"awb" | "milestones" | "pod" | "calculator" | "docket">("awb")
+  const [podSigned, setPodSigned] = useState<boolean>(false)
+  const [prevAwb, setPrevAwb] = useState(activeAwb)
+
+  if (activeAwb !== prevAwb) {
+    setPrevAwb(activeAwb)
+    setPodSigned(false)
+  }
+
+  const isSurfaceCargo = Boolean(
+    liveData?.service?.toLowerCase().includes("surface") ||
+    liveData?.service?.toLowerCase().includes("road")
+  )
+  const routeOrigin = liveData?.origin || "DEL"
+  const routeDestination = liveData?.destination || "IMF"
+  const estimatorWeightKg = isSample ? 740 : 150
+  const ratePerKg = isSurfaceCargo ? 18 : 25
+  const estimatedFreightInr = estimatorWeightKg * ratePerKg
+
+  const currentFlight: Flight = {
+    airline: "TAC Express Air Cargo",
+    number: activeAwb,
+    from: {
+      code: liveData?.origin ? liveData.origin.slice(0, 3).toUpperCase() : "DEL",
+      city: liveData?.origin ? `${liveData.origin} Cargo Terminal` : "Delhi Cargo Terminal 3",
+      time: "06:15",
+    },
+    to: {
+      code: liveData?.destination ? liveData.destination.slice(0, 3).toUpperCase() : "IMF",
+      city: liveData?.destination ? `${liveData.destination} Air Cargo` : "Imphal Tulihal Air Cargo",
+      time: "09:30",
+    },
+    date: isSample ? "Daily Linehaul" : "Scheduled Flight",
+    gate: "BAY 14",
+    boards: "05:40",
+    seat: isSample ? "740 KG" : "Statutory Manifest",
+    group: "AIR-01",
+    passenger: isSample ? "Imphal Distribution Hub" : "Consignee Cargo Station",
+    status: (liveData?.status?.toLowerCase().includes("deliver")
+      ? "delivered"
+      : liveData?.status?.toLowerCase().includes("transit")
+      ? "in-transit"
+      : "on-time") as FlightStatus,
+    note: isSample
+      ? "Commercial belly-hold space secured / BCAS scan cleared"
+      : `Consignment ${activeAwb} verified in transit`,
+  }
 
   const handleTrackSubmit = (e: React.FormEvent) => {
     const trimmed = awbInput.trim().toUpperCase()
@@ -502,12 +548,12 @@ export function TrackingSection() {
     <EditorialContainer
       id="visibility-chapter"
       aria-labelledby="tracking-heading"
-      className="py-16 sm:py-24 lg:py-32 bg-muted/30"
+      className="bg-muted/30 py-12 sm:py-16 lg:py-20"
     >
-      <div id="shipment-desk" className="space-y-12 lg:space-y-16">
+      <div id="shipment-desk" data-slot="workbench" className="space-y-12 lg:space-y-16">
         {/* Section Header: S1 entrance */}
         <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{
@@ -516,27 +562,36 @@ export function TrackingSection() {
           }}
           className="max-w-2xl space-y-5"
         >
-          <SectionEyebrow className="mb-1">
-            Consignment Console · Milestone Verification
-          </SectionEyebrow>
           <h2
             id="tracking-heading"
-            className="text-section text-foreground tracking-tight text-balance font-bold"
+            className="text-section text-foreground tracking-tight text-balance"
           >
-            A number.{" "}
-            <br className="hidden sm:inline" />
-            A clearer picture.
+            <span className="block font-medium text-foreground/80">A single reference.</span>
+            <span className="block font-semibold text-foreground">
+              Complete telemetry<span className="font-semibold text-primary">.</span>
+            </span>
           </h2>
-          <p className="text-lead max-w-[52ch] text-pretty">
-            Verified milestone telemetry. Query statutory{" "}
-            <strong className="font-semibold text-foreground">Air Waybill (AWB)</strong> or surface
-            consignment numbers to review gate intake scans, hub cross-dock transfers,
-            and departure manifests <strong className="font-semibold text-foreground">in real time</strong>.
-          </p>
-          {/* Decorative rule: visual separator before interactive console */}
+          <div className="space-y-3 max-w-[54ch]">
+            <p className="text-base font-medium text-foreground leading-snug tracking-tight text-pretty">
+              Real-time custody tracking across airport gates and cross-dock hubs.
+            </p>
+            <div className="flex flex-wrap items-center gap-2 font-sans text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5 border border-border/80 bg-muted/40 px-2 py-0.5 text-foreground font-semibold rounded-none">
+                <span className="size-1.5 bg-status-delivered rounded-none" aria-hidden="true" />
+                Live custody audit
+              </span>
+              <span className="border border-border/60 bg-muted/20 px-2 py-0.5 text-xs rounded-none">
+                Optical scan reconciliation
+              </span>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed font-normal text-pretty">
+              Query statutory <span className="font-mono text-foreground font-semibold bg-muted/50 px-1 py-0.5 border border-border/70 text-xs rounded-none">Air Waybill (AWB)</span> or surface consignment numbers to review gate intake scans, ramp transfers, and scheduled departure manifests in real time.
+            </p>
+          </div>
+          {/* Anchored baseline divider */}
           <div className="flex items-center gap-3 pt-2" aria-hidden="true">
-            <div className="h-px w-12 bg-primary" />
-            <div className="h-px flex-1 max-w-32 bg-border" />
+            <div className="h-px w-16 bg-primary" />
+            <div className="h-px flex-1 max-w-48 bg-border" />
           </div>
         </motion.div>
 
@@ -544,7 +599,7 @@ export function TrackingSection() {
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-12">
           {/* Left Column: Search Form & Consignment Profile (lg:col-span-5) */}
           <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-30px" }}
             transition={{
@@ -553,7 +608,7 @@ export function TrackingSection() {
             }}
             className="space-y-6 lg:col-span-5"
           >
-            <div className="relative border border-border/80 bg-card p-5 sm:p-7 shadow-sm hover:shadow-md transition-colors duration-200">
+            <div className="relative border-l-2 border-l-primary border-t border-r border-b border-border/80 bg-card p-5 sm:p-7 shadow-sm hover:shadow-md transition-colors duration-200">
               <BorderBeam size={60} duration={8} colorFrom="var(--color-primary)" colorTo="transparent" borderWidth={1} />
               <form
                 action="/track"
@@ -564,16 +619,12 @@ export function TrackingSection() {
               >
                 <label
                   htmlFor="home-awb"
-                  className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium"
+                  className="block font-sans text-xs text-muted-foreground font-medium"
                 >
                   AWB / shipment reference
                 </label>
-                <div
-                  className={`relative flex items-center border bg-background transition-colors ${
-                    isFocused ? "border-primary ring-1 ring-primary/40" : "border-border/80"
-                  }`}
-                >
-                  <Search className="absolute left-3.5 size-4 text-muted-foreground pointer-events-none" />
+                <div className="relative flex items-center">
+                  <Search className="absolute left-3.5 size-4 text-muted-foreground pointer-events-none z-10" />
                   <Input
                     id="home-awb"
                     name="awb"
@@ -583,7 +634,7 @@ export function TrackingSection() {
                     onBlur={() => setIsFocused(false)}
                     onChange={(e) => setAwbInput(e.target.value)}
                     placeholder="Enter shipment number"
-                    className="h-11 border-0 bg-transparent pl-10 pr-3 font-mono text-sm tracking-wide text-foreground uppercase placeholder:normal-case focus-visible:ring-0"
+                    className="h-11 border border-input bg-card pl-10 pr-3 font-mono text-base sm:text-sm text-foreground uppercase placeholder:normal-case focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/40"
                   />
                 </div>
 
@@ -591,7 +642,7 @@ export function TrackingSection() {
                   <Button
                     type="submit"
                     disabled={isPending}
-                    className="bg-primary px-6 font-sans text-xs font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90"
+                    className="h-11 bg-primary px-6 font-sans text-xs font-semibold tracking-[-0.01em] text-primary-foreground hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-primary active:scale-[0.99]"
                   >
                     {isPending ? (
                       <>
@@ -606,33 +657,67 @@ export function TrackingSection() {
                   <button
                     type="button"
                     onClick={handleResetToSample}
-                    className="font-sans text-xs text-muted-foreground hover:text-foreground underline underline-offset-4"
+                    className="font-sans text-xs text-muted-foreground hover:text-foreground underline underline-offset-4 focus-visible:ring-1 focus-visible:ring-primary"
                   >
                     Reset sample
                   </button>
+                </div>
+
+                {/* Instant Sample Waybills */}
+                <div className="pt-2">
+                  <span className="block font-sans text-xs text-muted-foreground font-semibold mb-1.5">
+                    Test Live Consignments:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { awb: "TAC-2409-18472", label: "DEL to IMF (Air)" },
+                      { awb: "TAC-510294-GAU", label: "DEL to GAU (Surface)" },
+                      { awb: "TAC-908123-SHL", label: "DEL to SHL (Express)" },
+                    ].map((sample) => (
+                      <button
+                        key={sample.awb}
+                        type="button"
+                        onClick={() => {
+                          setAwbInput(sample.awb)
+                          setActiveAwb(sample.awb)
+                          setIsSample(true)
+                          setLiveData(null)
+                          setErrorMessage(null)
+                        }}
+                        className={cn(
+                          "px-2 py-0.5 font-mono text-[11px] rounded-none border transition-colors cursor-pointer focus-visible:ring-1 focus-visible:ring-primary active:scale-[0.98] disabled:opacity-50",
+                          activeAwb === sample.awb
+                            ? "border-primary bg-primary/10 text-primary font-semibold"
+                            : "border-border/80 bg-muted/20 text-muted-foreground hover:text-foreground hover:border-border"
+                        )}
+                      >
+                        {sample.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </form>
 
               {/* Active Consignment Meta Details Well */}
               <div className="mt-6 border border-border/80 bg-muted/20 p-4 space-y-3.5">
                 <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
-                  <span className="font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">
+                  <span className="font-sans text-xs text-muted-foreground font-medium">
                     Consignment Reference
                   </span>
-                  <span className="font-mono text-sm font-bold tracking-wider text-primary tabular-nums">{activeAwb}</span>
+                  <span className="font-mono text-sm font-semibold text-primary tabular-nums">{activeAwb}</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Corridor</span>
+                    <span className="block font-sans text-xs text-muted-foreground font-medium">Corridor</span>
                     <span className="font-sans font-medium text-foreground text-xs sm:text-sm">
                       {liveData ? `${liveData.origin} → ${liveData.destination}` : "Delhi (DEL) → Imphal (IMF)"}
                     </span>
                   </div>
                   <div>
-                    <span className="block font-sans text-xs uppercase tracking-wider text-muted-foreground font-medium">Service Mode</span>
+                    <span className="block font-sans text-xs text-muted-foreground font-medium">Service Mode</span>
                     <span className="font-sans font-medium text-info text-xs sm:text-sm">
-                      {liveData ? liveData.service : "Air Express · Priority"}
+                      {liveData ? liveData.service : "Air Express (Priority)"}
                     </span>
                   </div>
                 </div>
@@ -649,7 +734,7 @@ export function TrackingSection() {
                       Consignment status
                     </Badge>
                   )}
-                  <Badge variant="warning-light" className="font-mono uppercase tracking-wider">
+                  <Badge variant="warning-light" className="font-mono text-xs">
                     {liveData ? liveData.status : "IN TRANSIT"}
                   </Badge>
                 </div>
@@ -659,7 +744,7 @@ export function TrackingSection() {
 
           {/* Right Column: Milestone Log & Progress Console (lg:col-span-7) */}
           <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-30px" }}
             transition={{
@@ -667,24 +752,107 @@ export function TrackingSection() {
               delay: 0.1,
               ease: motionEasings.editorial,
             }}
-            className="relative border border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-sm transition-colors duration-200 hover:border-primary/40"
+            className="relative border-l-2 border-l-primary border-t border-r border-b border-border/80 bg-card p-5 sm:p-7 lg:col-span-7 shadow-sm transition-colors duration-200 hover:border-primary/40"
           >
             <BorderBeam size={80} duration={10} colorFrom="var(--color-primary)" colorTo="transparent" delay={3} borderWidth={1} />
             <div>
-              <div className="flex items-center justify-between border-b border-border/80 pb-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 pb-4">
                 <div>
                   <h3 className="font-heading text-lg font-medium tracking-tight text-foreground">
-                    Milestone audit trail
+                    Air Waybill (AWB) Manifest
                   </h3>
-                  <p className="mt-0.5 font-mono text-xs text-muted-foreground">
-                    {isSample ? "5 recorded optical scan events" : "Physical gate milestone sequence"}
+                  <p className="mt-0.5 font-sans text-xs text-muted-foreground">
+                    Statutory carriage document / Optical barcode &amp; custody ledger
                   </p>
                 </div>
-                {isSample && (
-                  <span className="border border-border bg-muted/60 px-2 py-0.5 font-mono text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-                    Sample preview
-                  </span>
-                )}
+
+                {/* Sub-View Switcher: AWB Manifest vs Milestone Timeline vs POD vs Calculator */}
+                <div
+                  role="tablist"
+                  aria-label="Consignment details view selection"
+                  className="flex flex-wrap items-center gap-1 rounded-none border border-border/80 bg-muted/40 p-0.5"
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    id="tab-awb"
+                    aria-selected={trackingView === "awb"}
+                    aria-controls="panel-awb"
+                    onClick={() => setTrackingView("awb")}
+                    className={cn(
+                      "rounded-none px-2.5 py-1 text-xs font-sans font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:scale-[0.98] disabled:opacity-50",
+                      trackingView === "awb"
+                        ? "bg-primary text-primary-foreground font-semibold shadow-2xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Air Waybill (AWB)
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    id="tab-milestones"
+                    aria-selected={trackingView === "milestones"}
+                    aria-controls="panel-milestones"
+                    onClick={() => setTrackingView("milestones")}
+                    className={cn(
+                      "rounded-none px-2.5 py-1 text-xs font-sans font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:scale-[0.98] disabled:opacity-50",
+                      trackingView === "milestones"
+                        ? "bg-primary text-primary-foreground font-semibold shadow-2xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Gate Milestones
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    id="tab-pod"
+                    aria-selected={trackingView === "pod"}
+                    aria-controls="panel-pod"
+                    onClick={() => setTrackingView("pod")}
+                    className={cn(
+                      "rounded-none px-2.5 py-1 text-xs font-sans font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:scale-[0.98] disabled:opacity-50",
+                      trackingView === "pod"
+                        ? "bg-primary text-primary-foreground font-semibold shadow-2xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Digital POD
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    id="tab-calculator"
+                    aria-selected={trackingView === "calculator"}
+                    aria-controls="panel-calculator"
+                    onClick={() => setTrackingView("calculator")}
+                    className={cn(
+                      "rounded-none px-2.5 py-1 text-xs font-sans font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:scale-[0.98] disabled:opacity-50",
+                      trackingView === "calculator"
+                        ? "bg-primary text-primary-foreground font-semibold shadow-2xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Rate Estimator
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    id="tab-docket"
+                    aria-selected={trackingView === "docket"}
+                    aria-controls="panel-docket"
+                    onClick={() => setTrackingView("docket")}
+                    className={cn(
+                      "rounded-none px-2.5 py-1 text-xs font-sans font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:scale-[0.98] disabled:opacity-50",
+                      trackingView === "docket"
+                        ? "bg-primary text-primary-foreground font-semibold shadow-2xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Docket Print
+                  </button>
+                </div>
               </div>
 
               {/* AnimatePresence for Smooth State Progression */}
@@ -693,7 +861,7 @@ export function TrackingSection() {
                   /* Error State */
                   <motion.div
                     key="error-state"
-                    initial={shouldReduceMotion ? false : { opacity: 0, y: 6 }}
+                    initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: motionDurations.fast }}
@@ -709,20 +877,78 @@ export function TrackingSection() {
                         <button
                           type="button"
                           onClick={handleResetToSample}
-                          className="mt-3 font-sans text-xs font-medium underline underline-offset-4 hover:text-foreground"
+                          className="mt-3 font-sans text-xs font-medium underline underline-offset-4 hover:text-foreground whitespace-nowrap focus-visible:ring-1 focus-visible:ring-primary"
                         >
-                          Restore sample consignment preview
+                          Restore sample reference
                         </button>
                       </div>
                     </div>
                   </motion.div>
-                ) : (
-                  /* Verified Consignment Record Card */
+                ) : trackingView === "awb" ? (
+                  /* Verified Consignment Manifest UI: Highway Linehaul for Surface, BoardingPass for Air */
                   <motion.div
-                    key="found-state"
-                    initial={shouldReduceMotion ? false : { y: 6 }}
-                    animate={{ y: 0 }}
-                    exit={{ y: -6 }}
+                    key="awb-manifest-view"
+                    id="panel-awb"
+                    role="tabpanel"
+                    aria-labelledby="tab-awb"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: motionDurations.control }}
+                    className="mt-5 flex justify-center w-full"
+                  >
+                    {isSurfaceCargo ? (
+                      <div className="w-full max-w-sm border border-border bg-card p-5 space-y-4 rounded-none shadow-sm">
+                        <div className="flex items-center justify-between border-b border-border pb-3">
+                          <div className="space-y-0.5">
+                            <span className="text-xs text-muted-foreground font-sans">Arterial highway linehaul</span>
+                            <h4 className="font-mono text-sm font-bold text-foreground">{activeAwb}</h4>
+                          </div>
+                          <Badge variant="outline" className="rounded-none font-mono text-[11px]">
+                            {liveData?.status || "In Transit"}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 text-xs">
+                          <div>
+                            <span className="text-muted-foreground block text-[11px] font-sans">Origin dock</span>
+                            <span className="font-semibold text-foreground font-sans">{routeOrigin} Hub Terminal</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground block text-[11px] font-sans">Destination hub</span>
+                            <span className="font-semibold text-foreground font-sans">{routeDestination} Hub Terminal</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground block text-[11px] font-sans">Corridor routing</span>
+                            <span className="font-semibold text-foreground font-sans">NH-27 Arterial Freight</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground block text-[11px] font-sans">Cross-dock bay</span>
+                            <span className="font-semibold text-foreground font-sans">Bay S-04</span>
+                          </div>
+                        </div>
+                        <div className="border-t border-dashed border-border pt-3 flex justify-between items-center text-xs text-muted-foreground font-sans">
+                          <span>Mode: Express surface linehaul</span>
+                          <span className="font-semibold text-foreground">GPS monitored</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <BoardingPass
+                        flight={currentFlight}
+                        labels={CARGO_LABELS}
+                        className="w-full max-w-sm shadow-md"
+                      />
+                    )}
+                  </motion.div>
+                ) : trackingView === "milestones" ? (
+                  /* Physical Gate Milestone Stepper View */
+                  <motion.div
+                    key="milestones-view"
+                    id="panel-milestones"
+                    role="tabpanel"
+                    aria-labelledby="tab-milestones"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: motionDurations.control }}
                     className="mt-4"
                   >
@@ -757,20 +983,144 @@ export function TrackingSection() {
                       )}
                     </div>
                   </motion.div>
+                ) : trackingView === "pod" ? (
+                  /* Proof of Delivery (SignaturePad) View */
+                  <motion.div
+                    key="pod-signature-view"
+                    id="panel-pod"
+                    role="tabpanel"
+                    aria-labelledby="tab-pod"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: motionDurations.control }}
+                    className="mt-5 flex flex-col items-center w-full space-y-4"
+                  >
+                    <div className="w-full text-left space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-sans text-xs text-primary font-semibold">
+                          Milestone 05: Custodial Verification
+                        </span>
+                        <Badge variant="outline" className="font-sans text-xs rounded-none">
+                          {podSigned ? "Signed & Verified" : "Pending Signature"}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground font-sans">
+                        Sign below for custodial handover verification. Confirms final destination release.
+                      </p>
+                    </div>
+                    <SignaturePad
+                      label="Consignee Proof of Delivery Signature"
+                      onChange={(svg) => setPodSigned(!!svg)}
+                      className="w-full max-w-sm border border-border/80 bg-background"
+                    />
+                  </motion.div>
+                ) : trackingView === "calculator" ? (
+                  /* Rate Calculator (CurrencyTransfer) View */
+                  <motion.div
+                    key="calculator-view"
+                    id="panel-calculator"
+                    role="tabpanel"
+                    aria-labelledby="tab-calculator"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: motionDurations.control }}
+                    className="mt-5 flex flex-col items-center w-full space-y-4"
+                  >
+                    <div className="w-full text-left space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-sans text-xs text-primary font-semibold">
+                          Freight STEM Engine: Rate Estimator
+                        </span>
+                        <Badge variant="outline" className="font-sans text-xs rounded-none">
+                          18%&nbsp;GST Itemized
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground font-sans">
+                        Chargeable weight to Indian Rupee conversion based on volumetric density rules.
+                      </p>
+                    </div>
+                    <CurrencyTransfer
+                      from={{
+                        amount: estimatorWeightKg,
+                        currency: "KG",
+                        symbol: "KG",
+                        bank: `${routeOrigin.slice(0, 3).toUpperCase()} Cargo Terminal`,
+                        last4: isSurfaceCargo ? "SURF" : "AIR1",
+                      }}
+                      to={{
+                        amount: estimatedFreightInr,
+                        currency: "INR",
+                        symbol: "₹",
+                        bank: "TAC Express Corridor Escrow",
+                        last4: activeAwb.slice(-4),
+                        name: `${routeDestination.slice(0, 3).toUpperCase()} Regional Hub`,
+                      }}
+                      rate={ratePerKg}
+                      txnId={`AWB-${activeAwb}`}
+                      timestamp="14:15 IST"
+                      status="completed"
+                      className="w-full max-w-sm border border-border/80 bg-background"
+                    />
+                  </motion.div>
+                ) : (
+                  /* Thermal Consignment Docket Print (ReceiptPrinter) View */
+                  <motion.div
+                    key="docket-print-view"
+                    id="panel-docket"
+                    role="tabpanel"
+                    aria-labelledby="tab-docket"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: motionDurations.control }}
+                    className="mt-5 flex flex-col items-center w-full space-y-4"
+                  >
+                    <div className="w-full text-left space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-sans text-xs text-primary font-semibold">
+                          Terminal Waybill: Thermal Docket
+                        </span>
+                        <Badge variant="outline" className="font-sans text-xs rounded-none">
+                          Optical Barcode Verified
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground font-sans">
+                        Interactive receipt printer for statutory gate passes and commercial consignments. Pull down on paper to tear.
+                      </p>
+                    </div>
+                    <div className="flex justify-center w-full pt-2">
+                      <ReceiptPrinter
+                        merchant="TAC EXPRESS CARGO AIRWAYS"
+                        order={activeAwb}
+                        date="26 OCT 2026 / 14:15 IST"
+                        currency="₹"
+                        tax={0.18}
+                        items={[
+                          { name: "Air Linehaul (DEL → IMF)", quantity: 1, price: 4200 },
+                          { name: "Optical Manifest Processing", quantity: 1, price: 350 },
+                          { name: "BCAS Gate 4 Security Screening", quantity: 1, price: 450 },
+                          { name: "Aviation Fuel Surcharge (FSC)", quantity: 1, price: 720 },
+                        ]}
+                        className="w-72 shadow-lg"
+                      />
+                    </div>
+                  </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
             <div className="mt-6 border-t border-border/80 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-sans text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
-                <RadarSyncDot shouldReduceMotion={!!shouldReduceMotion} />
+                <RadarSyncDot />
                 <span className="font-normal text-muted-foreground">
                   {isSample
-                    ? "Verified physical scan trail · Synced within 120s of gate intake"
+                    ? "Verified physical scan trail, synced within 120\u00A0s of gate intake"
                     : "Consignment record synchronized with central tracking log"}
                 </span>
               </div>
-              <span className="font-sans text-xs uppercase tracking-[0.06em] text-primary font-medium">
+              <span className="font-sans text-xs text-primary font-medium">
                 Optical Gate Audit
               </span>
             </div>

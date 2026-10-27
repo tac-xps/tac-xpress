@@ -95,12 +95,12 @@ export function FeedbackMetrics({ metrics }: FeedbackMetricsProps) {
       className="overflow-hidden rounded-none border border-border/80 bg-card shadow-xs"
     >
       <div className="flex items-center justify-between border-b border-border/80 bg-muted/30 px-5 py-2.5 text-xs text-muted-foreground">
-        <span className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider">
+        <span className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider">
           <TrendingUp className="size-3.5 text-primary" />
           Feedback Signal Telemetry
         </span>
-        <span className="flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground/70">
-          <span className="size-1.5 rounded-none bg-success animate-pulse" />
+        <span className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground/70">
+          <span className="size-1.5 rounded-none bg-success" />
           Live Ingestion
         </span>
       </div>
@@ -137,7 +137,7 @@ export function FeedbackMetrics({ metrics }: FeedbackMetricsProps) {
               <div className="mt-2 font-mono text-2xl font-bold tabular-nums text-foreground">
                 <AnimatedCounter value={item.value} />
               </div>
-              <span className="mt-1 font-mono text-[11px] text-muted-foreground">
+              <span className="mt-1 font-mono text-xs text-muted-foreground">
                 {item.subtext}
               </span>
             </motion.button>

@@ -157,6 +157,7 @@ export async function POST(req: Request) {
     })
 
     return result.toUIMessageStreamResponse({
+      sendReasoning: false,
       onError: () =>
         "The assistant could not finish its reply. Please retry or contact our team.",
     })

@@ -101,7 +101,7 @@ export function WebhookEndpointsCard({ endpoints }: WebhookEndpointsCardProps) {
                     className="font-mono text-xs bg-background select-all"
                   />
                   {!ep.secretValue && ep.isConfigured && (
-                    <span className="text-[11px] text-muted-foreground italic shrink-0 px-2 font-mono">
+                    <span className="text-xs text-muted-foreground italic shrink-0 px-2 font-mono">
                       Server-managed
                     </span>
                   )}

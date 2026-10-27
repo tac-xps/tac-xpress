@@ -12,7 +12,7 @@ export function ContactSection() {
         {/* Left Column: Context, FAQs and Escalation Guidance */}
         <div className="flex flex-col gap-8 lg:col-span-5">
           <div className="border-t-2 border-t-primary/70 border-x border-b border-border/80 bg-card/60 p-5 shadow-xs">
-            <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-primary">
+            <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary">
               <span className="size-1.5 rounded-none bg-primary" aria-hidden="true" />
               Consignment Quotation
             </div>
@@ -26,7 +26,7 @@ export function ContactSection() {
           </div>
 
           <div className="border-t-2 border-t-primary/70 border-x border-b border-border/80 bg-card/60 p-5 shadow-xs">
-            <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-primary">
+            <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary">
               <span className="size-1.5 rounded-none bg-primary" aria-hidden="true" />
               Consignment Support
             </div>

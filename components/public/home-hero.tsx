@@ -81,9 +81,9 @@ export function HomeHero() {
             <motion.div
               variants={fadeUp}
               custom={dur(0.06)}
-              className="mb-4 inline-flex items-center gap-2 border border-border bg-surface px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground shadow-2xs self-start"
+              className="mb-4 inline-flex items-center gap-2 border border-border bg-surface px-3 py-1 font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground shadow-2xs self-start"
             >
-              <span className="size-1.5 rounded-none bg-status-delivered animate-pulse" />
+              <span className="size-1.5 rounded-none bg-status-delivered" />
               <span>DELHI ⇄ IMPHAL CORRIDOR</span>
               <span className="text-border">|</span>
               <span className="text-foreground">SCHEDULED LINEHAULS</span>
@@ -115,7 +115,7 @@ export function HomeHero() {
               <TrackDialogForm variant="inline" />
 
               {/* Quiet Trust Signals */}
-              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-muted-foreground">
+              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted-foreground">
                 <span className="flex items-center gap-1.5">
                   <ShieldCheck className="size-3.5 text-primary" aria-hidden="true" />
                   <span>Escorted freight</span>
@@ -167,7 +167,7 @@ export function HomeHero() {
               <HeroLottieTruck className="w-full aspect-[4/3]" />
 
               {/* Quiet Route Caption Strip */}
-              <div className="mt-3 pt-3 border-t border-border/60 flex items-center justify-between font-mono text-[11px] text-muted-foreground">
+              <div className="mt-3 pt-3 border-t border-border/60 flex items-center justify-between font-mono text-xs text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <span className="size-1.5 rounded-none bg-status-delivered" />
                   <span className="uppercase">Direct Linehaul Corridor</span>

@@ -66,7 +66,7 @@ export function BackToTop() {
                 transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={shouldReduceMotion ? undefined : { y: -2 }}
                 whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
-                className="fixed bottom-20 right-5 z-40 flex size-10 cursor-pointer items-center justify-center rounded-none border border-border/80 bg-card/95 text-muted-foreground shadow-md backdrop-blur-xs transition-colors hover:border-primary/60 hover:bg-muted/80 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:bottom-24 sm:right-8"
+                className="fixed bottom-20 right-5 z-40 flex size-11 cursor-pointer items-center justify-center rounded-none border border-border/80 bg-card/95 text-muted-foreground shadow-md backdrop-blur-xs transition-colors hover:border-primary/60 hover:bg-muted/80 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.96] disabled:opacity-50 sm:bottom-24 sm:right-8"
               >
                 <ArrowUp className="size-4" strokeWidth={1.75} aria-hidden="true" />
                 <span className="sr-only">Back to top</span>

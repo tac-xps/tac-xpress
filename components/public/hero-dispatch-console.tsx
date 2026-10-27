@@ -145,7 +145,7 @@ export function HeroDispatchConsole({
                   <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Origin</span>
                   <div className="border border-border px-3.5 py-2 font-mono text-sm flex items-center justify-between bg-surface text-foreground rounded-none">
                     <span>DEL / New Delhi</span>
-                    <span className="text-[10px] px-1.5 py-0.5 font-bold bg-primary/10 text-primary rounded-none">
+                    <span className="text-xs px-1.5 py-0.5 font-bold bg-primary/10 text-primary rounded-none">
                       HUB 01
                     </span>
                   </div>

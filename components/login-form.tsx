@@ -122,10 +122,16 @@ export function LoginForm({
   return (
     <div className={cn("flex w-full flex-col gap-6", className)} {...props}>
       <div className="w-full text-foreground">
-        <div className="mb-8 flex flex-col gap-3">
-          <h1 className="text-3xl font-medium tracking-tight">Staff sign in</h1>
-          <p className="text-sm text-muted-foreground">
-            Use your work email and password to open the operations workspace.
+        <div className="mb-8 flex flex-col gap-2.5">
+          <div className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-primary font-semibold">
+            <span className="size-1.5 bg-primary rounded-none" aria-hidden="true" />
+            Operations Command Access
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+            Staff sign in
+          </h1>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Use your authorized credentials or Windows Hello to access live dispatch and manifests.
           </p>
         </div>
 
@@ -199,7 +205,7 @@ export function LoginForm({
               />
 
               {error && (
-                <p role="alert" className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+                <p role="alert" className="rounded-none border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
                   {error}
                 </p>
               )}

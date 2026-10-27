@@ -17,16 +17,16 @@ import { GridPattern } from "@/components/ui/grid-pattern"
 import { motionDurations, motionEasings, motionSprings } from "@/lib/motion/motion.theme"
 import { cn } from "@/lib/utils"
 
-/** Brand pillar words scrolled as a marquee across the statement section */
-const BRAND_PILLARS = [
-  "Clarity",
-  "Dependability",
-  "Care",
-  "Precision",
-  "Trust",
-  "Integrity",
-  "Speed",
-  "Accountability",
+/** Operational freight specifications scrolled across the statement section */
+const OPERATIONAL_SPECIFICATIONS = [
+  "BCAS Cargo Gate 4 Cleared",
+  "IATA 5000 Volumetric Ratio",
+  "DG Class UN 3480 Verified",
+  "DEL Runway 28 Linehaul",
+  "Tulihal Apron Handover",
+  "Statutory 10-Digit AWB",
+  "18% GST E-Way Reconciled",
+  "Digital POD Geotag Audit",
 ]
 
 /**
@@ -54,24 +54,21 @@ export function BrandStatementSection() {
   return (
     <EditorialContainer
       id="brand"
+      as="div"
       aria-labelledby="brand-statement-heading"
-      className="relative overflow-hidden py-14 sm:py-20 lg:py-24 bg-card/40 border-y border-border/80"
+      className="dark relative overflow-hidden border-y border-border bg-background py-12 text-foreground transition-colors sm:py-16 lg:py-20"
     >
       <GridPattern
         width={32}
         height={32}
         strokeDasharray="4 4"
-        className="opacity-15 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]"
+        className="opacity-20 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,var(--foreground)_70%,transparent_100%)] text-muted-foreground"
       />
       <div ref={containerRef} className="relative z-10 mx-auto max-w-4xl text-center">
-        {/* Eyebrow & Final Cargo Line Endpoint */}
+        {/* Living Cargo Line Endpoint */}
         <div className="flex flex-col items-center">
-          <SectionEyebrow className="justify-center mb-3">
-            Brand · The Meaning Behind Cargo
-          </SectionEyebrow>
-
           {/* Living Cargo Line Final Endpoint */}
-          <div className="w-28 py-1 mb-4">
+          <div className="w-32 py-1 mb-8">
             <LivingCargoLine progress={lineProgress} variant="rule" />
           </div>
 
@@ -81,8 +78,8 @@ export function BrandStatementSection() {
             className="text-display text-foreground text-center"
           >
             <motion.span
-              className="block font-heading font-bold tracking-tight text-foreground"
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+              className="block font-heading font-semibold tracking-tight text-foreground"
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.1 }}
               transition={{
@@ -90,11 +87,11 @@ export function BrandStatementSection() {
                 ease: motionEasings.editorial,
               }}
             >
-              Every shipment
+              Every shipment.
             </motion.span>
             <motion.span
-              className="block font-heading font-medium text-foreground/80"
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+              className="block font-heading font-semibold text-primary"
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.1 }}
               transition={{
@@ -103,12 +100,12 @@ export function BrandStatementSection() {
                 ease: motionEasings.editorial,
               }}
             >
-              moves something forward.
+              Moves something forward.
             </motion.span>
           </h2>
 
           <motion.p
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.1 }}
             transition={{
@@ -118,20 +115,24 @@ export function BrandStatementSection() {
             }}
             className="mx-auto mt-5 max-w-[54ch] text-lead text-center text-muted-foreground leading-relaxed font-normal text-pretty"
           >
-            Operational purpose. Behind every consignment is essential enterprise: commercial supply continuity, critical regional inventory, and verified delivery custody.
+            Behind every consignment is essential enterprise: commercial continuity and verified delivery custody.
           </motion.p>
         </div>
 
-        {/* Brand Pillar Marquee: scrolling operational values */}
-        <div className="w-full max-w-full overflow-hidden mt-9 mb-3 border-y border-border/80 bg-background/50" aria-hidden="true">
+        {/* Operational Specifications Marquee: verified statutory compliance standards */}
+        <div
+          data-slot="specifications-ticker"
+          className="w-full max-w-full overflow-hidden mt-10 mb-4 border-y border-border bg-card/60"
+          aria-hidden="true"
+        >
           <Marquee
             pauseOnHover
             className="[--duration:28s] [--gap:0rem] py-0"
           >
-            {BRAND_PILLARS.map((pillar, idx) => (
+            {OPERATIONAL_SPECIFICATIONS.map((spec, idx) => (
               <div
-                key={pillar}
-                className="flex items-center gap-6 px-8 py-3 font-sans text-xs uppercase tracking-[0.24em] font-medium text-muted-foreground"
+                key={spec}
+                className="flex items-center gap-6 px-8 py-3 font-sans text-xs font-medium text-muted-foreground"
               >
                 <span
                   className={cn(
@@ -144,14 +145,14 @@ export function BrandStatementSection() {
                   )}
                   aria-hidden="true"
                 />
-                <span>{pillar}</span>
+                <span>{spec}</span>
               </div>
             ))}
           </Marquee>
         </div>
 
         {/* Centerpiece Visual Frame (brand.webp) */}
-        <div className="relative mx-auto mt-8 overflow-hidden border border-border/80 bg-card shadow-sm sm:mt-10">
+        <div className="relative mx-auto mt-8 overflow-hidden border border-border bg-card shadow-md sm:mt-10">
           <BorderBeam size={120} duration={14} colorFrom="var(--color-primary)" colorTo="transparent" borderWidth={1} />
           <motion.div
             style={
@@ -169,9 +170,15 @@ export function BrandStatementSection() {
               sizes="(min-width: 1024px) 896px, 100vw"
             />
           </motion.div>
-          <div className="flex items-center justify-between border-t border-border/80 bg-background px-4 py-2.5 font-sans text-xs uppercase tracking-[0.06em] text-muted-foreground font-medium">
+          <div className="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-2.5 font-sans text-xs text-muted-foreground">
             <span className="font-medium text-foreground">Custodial Discipline</span>
-            <span>Clarity · Dependability · Care</span>
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <span>Clarity</span>
+              <span className="h-3 w-px bg-border" aria-hidden="true" />
+              <span>Dependability</span>
+              <span className="h-3 w-px bg-border" aria-hidden="true" />
+              <span>Care</span>
+            </div>
           </div>
         </div>
       </div>

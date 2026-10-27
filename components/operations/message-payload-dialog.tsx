@@ -99,7 +99,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
             variant="outline"
             className="border-success/30 bg-success/10 text-success font-mono text-xs gap-1.5"
           >
-            <span className="size-1.5 rounded-full bg-success animate-pulse" />
+            <span className="size-1.5 rounded-none bg-success animate-pulse" />
             Provider Accepted
           </Badge>
         )
@@ -149,7 +149,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
         <DialogHeader className="border-b border-border/70 bg-card px-5 sm:px-6 py-4">
           <div className="flex flex-wrap items-center justify-between gap-3 pr-8">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-sm bg-primary/10 text-primary border border-primary/20">
+              <div className="flex size-9 items-center justify-center rounded-none bg-primary/10 text-primary border border-primary/20">
                 <MessageSquare className="size-4" />
               </div>
               <div>
@@ -171,9 +171,9 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
           </div>
 
           {/* Message UUID Pill */}
-          <div className="mt-3 flex items-center justify-between rounded-sm border border-border/60 bg-muted/30 px-3 py-1.5 font-mono text-xs text-muted-foreground">
+          <div className="mt-3 flex items-center justify-between rounded-none border border-border/60 bg-muted/30 px-3 py-1.5 font-mono text-xs text-muted-foreground">
             <div className="flex items-center gap-2 min-w-0">
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/80 shrink-0">
+              <span className="text-xs uppercase tracking-wider font-semibold text-muted-foreground/80 shrink-0">
                 DISPATCH ID:
               </span>
               <span className="text-foreground text-xs font-mono truncate select-all">
@@ -183,7 +183,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
             <button
               type="button"
               onClick={() => copyText(message.id, "Dispatch ID")}
-              className="ml-2 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors shrink-0"
+              className="ml-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
               title="Copy UUID"
             >
               {copiedField === "Dispatch ID" ? (
@@ -206,8 +206,8 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
           {/* Key metadata grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             {/* Recipient Phone */}
-            <div className="rounded-sm border border-border/60 bg-card p-3 space-y-1">
-              <span className="text-muted-foreground block text-[10px] uppercase tracking-wider font-semibold">
+            <div className="rounded-none border border-border/60 bg-card p-3 space-y-1">
+              <span className="text-muted-foreground block text-xs uppercase tracking-wider font-semibold">
                 Recipient Phone
               </span>
               <div className="flex items-center justify-between">
@@ -230,8 +230,8 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
             </div>
 
             {/* Template */}
-            <div className="rounded-sm border border-border/60 bg-card p-3 space-y-1">
-              <span className="text-muted-foreground block text-[10px] uppercase tracking-wider font-semibold">
+            <div className="rounded-none border border-border/60 bg-card p-3 space-y-1">
+              <span className="text-muted-foreground block text-xs uppercase tracking-wider font-semibold">
                 Template
               </span>
               <span
@@ -243,8 +243,8 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
             </div>
 
             {/* Related AWB */}
-            <div className="rounded-sm border border-border/60 bg-card p-3 space-y-1">
-              <span className="text-muted-foreground block text-[10px] uppercase tracking-wider font-semibold">
+            <div className="rounded-none border border-border/60 bg-card p-3 space-y-1">
+              <span className="text-muted-foreground block text-xs uppercase tracking-wider font-semibold">
                 Consignment AWB
               </span>
               {message.relatedAwb ? (
@@ -262,8 +262,8 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
             </div>
 
             {/* Language / Related Invoice */}
-            <div className="rounded-sm border border-border/60 bg-card p-3 space-y-1">
-              <span className="text-muted-foreground block text-[10px] uppercase tracking-wider font-semibold">
+            <div className="rounded-none border border-border/60 bg-card p-3 space-y-1">
+              <span className="text-muted-foreground block text-xs uppercase tracking-wider font-semibold">
                 {message.relatedInvoiceId ? "Invoice Ref" : "Language"}
               </span>
               {message.relatedInvoiceId ? (
@@ -301,7 +301,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-success" />
+                  <span className="size-2 rounded-none bg-success" />
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     WhatsApp Message Preview
                   </span>
@@ -310,7 +310,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-6 px-2 text-[11px] text-muted-foreground hover:text-foreground"
+                  className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
                   onClick={() => copyText(message.body!, "Message text")}
                 >
                   {copiedField === "Message text" ? (
@@ -324,7 +324,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
                   )}
                 </Button>
               </div>
-              <div className="rounded-sm border border-success/25 bg-success/[0.04] p-4 border-l-4 border-l-success shadow-xs">
+              <div className="rounded-none border border-success/25 bg-success/[0.04] p-4 border-l-4 border-l-success shadow-xs">
                 <div className="font-sans text-xs leading-relaxed text-foreground select-text whitespace-pre-wrap">
                   <RichTextRenderer content={message.body} />
                 </div>
@@ -359,7 +359,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
                   )}
                 </Button>
               </div>
-              <div className="relative rounded-sm border border-border/60 bg-muted/60 dark:bg-black/80 overflow-hidden shadow-inner">
+              <div className="relative rounded-none border border-border/60 bg-muted/60 dark:bg-black/80 overflow-hidden shadow-inner">
                 <pre className="max-h-64 overflow-x-auto p-4 font-mono text-xs text-foreground leading-relaxed">
                   {payloadString}
                 </pre>
@@ -370,7 +370,7 @@ export function MessagePayloadDialog({ message }: MessagePayloadDialogProps) {
 
         {/* Pinned Footer */}
         <div className="border-t border-border/70 bg-muted/40 px-5 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
-          <div className="text-[11px] font-mono text-muted-foreground flex items-center gap-2">
+          <div className="text-xs font-mono text-muted-foreground flex items-center gap-2">
             <ShieldCheck className="size-3.5 text-primary" />
             <span>Audited dispatch record</span>
           </div>

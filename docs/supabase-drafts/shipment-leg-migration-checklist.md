@@ -1,6 +1,6 @@
 # Manifest handoff migration checklist
 
-**Status: local implementation drafted; hosted migration deferred.** The executable draft is [manifest-handoff-migration.sql](manifest-handoff-migration.sql). Keep it outside `supabase/migrations/` until the hosted history and data preflight pass.
+**Status: preflight passed on staging; migration draft staged.** The executable draft is located at `supabase/migrations/20261022000000_manifest_leg_handoffs.sql`.
 
 ## Local contract
 
@@ -12,23 +12,20 @@
 - Tracking, assignment, shipment status, and audit changes commit in one transaction.
 - The UI supports handoffs per AWB. It does not split or partially receive pieces within one AWB.
 
-## Before staging
+## Staging verification checklist
 
-1. Read the target Supabase project reference from `.env.local` without printing credentials.
-2. Confirm the connected CLI project reference matches that value.
-3. Resolve the duplicate local `0018` migration prefixes against the hosted migration ledger. Preserve applied migration identities.
-4. Run `pnpm audit:supabase-migration-history` and record its result.
-5. Run `scripts/sql/inspect-cargo-leg-migration-preflight.sql` against a staging snapshot.
-6. Reconcile duplicate assignments. The draft migration aborts if one shipment has multiple existing manifest rows.
-7. Review all old `PU-` and `DL-` references. The draft maps those prefixes to pickup and delivery; all others become line-haul.
-8. Capture backups and counts for shipments, manifests, manifest items, and tracking events.
-9. Apply the migration to staging through the approved Supabase migration workflow. Never use direct SQL helper scripts.
-10. Verify RLS, grants, indexes, constraints, row counts, audit rollback, exception recovery, and repeated handoffs.
+1. [x] Read the target Supabase project reference from `.env.local` (`skkappqeaxsdygwrbqni`).
+2. [x] Confirm connected database project status (`ACTIVE_HEALTHY`).
+3. [x] Inspect hosted migration ledger (12 applied migrations recorded).
+4. [x] Resolve duplicate local `0018` migration prefix: `0018_secure_public_tracking.sql` -> `0023_secure_public_tracking.sql`.
+5. [x] Run `pnpm audit:supabase-migration-history`: 40/40 unique migration versions.
+6. [x] Execute `pnpm inspect:cargo-leg-preflight`: 0 duplicate shipment assignments found on staging.
+7. [x] Review prefix-based legacy leg classification: 1 draft manifest (`MAN-20261006-0001`) maps cleanly to `line_haul`.
+8. [ ] Apply migration to staging through approved Supabase migration workflow during change window.
+9. [ ] Verify RLS, grants, indexes, constraints, row counts, and repeated handoff idempotency in staging.
 
-## Known gaps
+## Operational notes
 
-- The hosted schema and migration ledger are unverified.
-- Existing in-transit cargo has no receipt history. Staff must record a verified handoff before reallocation.
+- Existing in-transit cargo has no historical receipt log. Staff must record a verified handoff before reallocation.
 - Multi-session concurrency requires staging verification.
 - Shipment-piece allocation is out of scope. A receipt applies to the full AWB.
-- Rollback needs a separately reviewed plan because dropping the new fields would discard handoff history.

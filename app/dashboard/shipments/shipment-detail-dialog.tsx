@@ -184,7 +184,7 @@ export function ShipmentDetailDialog({
             </DialogTitle>
             {effectiveShipment?.status && <StatusBadge status={effectiveShipment.status} />}
             {effectiveShipment?.serviceType && (
-              <Badge variant="outline" className="hidden sm:inline-flex text-[11px] gap-1 items-center">
+              <Badge variant="outline" className="hidden sm:inline-flex text-xs gap-1 items-center">
                 <ServiceIcon className="size-3" />
                 {serviceMeta.label}
               </Badge>
@@ -263,7 +263,7 @@ export function ShipmentDetailDialog({
                   className="overflow-hidden rounded-none border border-border/80 bg-card shadow-none"
                 >
                   <div className="border-b border-border/80 bg-muted/20 px-4 py-2.5 text-xs text-muted-foreground flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-foreground/80">
+                    <span className="flex items-center gap-1.5 text-xs font-medium text-foreground/80">
                       <Calendar className="size-3.5 text-muted-foreground" />
                       Booked:{" "}
                       {effectiveShipment.createdAt
@@ -272,12 +272,12 @@ export function ShipmentDetailDialog({
                     </span>
                     <div className="flex items-center gap-1.5">
                       {effectiveShipment.isFragile && (
-                        <Badge variant="outline" className="text-[10px] text-destructive border-destructive/30">
+                        <Badge variant="outline" className="text-xs text-destructive border-destructive/30">
                           Fragile
                         </Badge>
                       )}
                       {effectiveShipment.insuranceOptIn && (
-                        <Badge variant="outline" className="text-[10px] text-primary border-primary/30">
+                        <Badge variant="outline" className="text-xs text-primary border-primary/30">
                           Insurance
                         </Badge>
                       )}
@@ -349,7 +349,7 @@ export function ShipmentDetailDialog({
                         <Building2 className="size-3.5 text-primary" />
                         Sender (Consignor)
                       </span>
-                      <span className="font-mono text-[10px] text-muted-foreground uppercase">
+                      <span className="font-mono text-xs text-muted-foreground uppercase">
                         {effectiveShipment.origin}
                       </span>
                     </div>
@@ -384,7 +384,7 @@ export function ShipmentDetailDialog({
                         <User className="size-3.5 text-primary" />
                         Recipient (Consignee)
                       </span>
-                      <span className="font-mono text-[10px] text-muted-foreground uppercase">
+                      <span className="font-mono text-xs text-muted-foreground uppercase">
                         {effectiveShipment.destination}
                       </span>
                     </div>
@@ -432,7 +432,7 @@ export function ShipmentDetailDialog({
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-muted-foreground">Status:</span>
-                            <Badge variant="outline" className="capitalize text-[10px]">
+                            <Badge variant="outline" className="capitalize text-xs">
                               {assignedManifest.status}
                             </Badge>
                           </div>
@@ -469,7 +469,7 @@ export function ShipmentDetailDialog({
                                 variant={
                                   effectiveShipment.invoice.status === "paid" ? "success" : "outline"
                                 }
-                                className="capitalize text-[10px]"
+                                className="capitalize text-xs"
                               >
                                 {effectiveShipment.invoice.status}
                               </Badge>

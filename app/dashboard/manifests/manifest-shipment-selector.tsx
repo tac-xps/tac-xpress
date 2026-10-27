@@ -167,7 +167,7 @@ export function ManifestShipmentSelector({
             <h3 className="text-xs font-bold tracking-widest text-foreground uppercase">
               Shipment Selection
             </h3>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Scan barcodes or check cargo to bundle into this load.
             </p>
           </div>
@@ -230,7 +230,7 @@ export function ManifestShipmentSelector({
           {/* Corridor Quick Filter Button */}
           {selectedDestinationHub && (
             <div className="flex items-center justify-between border border-border/60 bg-muted/30 p-2 text-xs">
-              <span className="flex items-center gap-1 font-mono text-[10px] text-muted-foreground uppercase">
+              <span className="flex items-center gap-1 font-mono text-xs text-muted-foreground uppercase">
                 <Filter className="size-3 text-primary" /> Corridor Filter:
               </span>
               <Button
@@ -241,7 +241,7 @@ export function ManifestShipmentSelector({
                   setCorridorOnly(!corridorOnly)
                   setCurrentPage(1)
                 }}
-                className="h-6 rounded-none px-2.5 text-[11px] font-medium"
+                className="h-6 rounded-none px-2.5 text-xs font-medium"
               >
                 {corridorOnly
                   ? `Showing Corridor Only (${filteredShipments.length})`
@@ -260,7 +260,7 @@ export function ManifestShipmentSelector({
                 <p className="text-xs font-semibold text-foreground">
                   No matching eligible shipments
                 </p>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {searchQuery || corridorOnly
                     ? "Try adjusting your search or corridor filters."
                     : "All available shipments are already manifested."}
@@ -316,12 +316,12 @@ export function ManifestShipmentSelector({
                             {shipment.awbNumber}
                           </span>
                           {shipment.serviceType && (
-                            <span className="py-0.2 border border-border bg-muted px-1 font-mono text-[9px] text-muted-foreground uppercase">
+                            <span className="py-0.2 border border-border bg-muted px-1 font-mono text-xs text-muted-foreground uppercase">
                               {shipment.serviceType.replace(/_/g, " ")}
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 font-mono text-[10px] text-muted-foreground">
+                        <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
                           <span className="flex items-center gap-0.5">
                             <Scale className="size-2.5 text-primary" />
                             {shipment.weightKg || 0} kg
@@ -342,7 +342,7 @@ export function ManifestShipmentSelector({
                     <div className="flex shrink-0 items-center gap-2 text-right">
                       {!matchesCorridor && (
                         <span
-                          className="inline-flex items-center gap-1 rounded-none border border-status-pending/40 bg-status-pending-wash px-1.5 py-0.5 font-mono text-[9px] font-medium text-status-pending uppercase"
+                          className="inline-flex items-center gap-1 rounded-none border border-status-pending/40 bg-status-pending-wash px-1.5 py-0.5 font-mono text-xs font-medium text-status-pending uppercase"
                           title="Cargo destination differs from selected destination hub"
                         >
                           <AlertTriangle className="size-2.5 shrink-0 text-status-pending" />
@@ -351,7 +351,7 @@ export function ManifestShipmentSelector({
                       )}
                       <Badge
                         variant={isChecked ? "default" : "outline"}
-                        className="rounded-none font-mono text-[10px] font-semibold tracking-wider uppercase"
+                        className="rounded-none font-mono text-xs font-semibold tracking-wider uppercase"
                       >
                         {shipment.destination}
                       </Badge>
@@ -375,7 +375,7 @@ export function ManifestShipmentSelector({
               >
                 Previous
               </Button>
-              <span className="font-mono text-[11px] text-muted-foreground">
+              <span className="font-mono text-xs text-muted-foreground">
                 Page {currentPage} of {totalPages} ({filteredShipments.length}{" "}
                 total)
               </span>
