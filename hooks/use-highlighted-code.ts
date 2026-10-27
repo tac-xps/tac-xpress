@@ -62,7 +62,7 @@ export function useHighlightedCode(value: string, language: string) {
     setDone(next)
   }
 
-  // The last line is still being written, so it is tokenized on every render.
+  // The last line is still being written; safely highlight or fallback to plain text while streaming.
   const tail = code.slice(end)
 
   return React.useMemo(() => {
@@ -70,6 +70,11 @@ export function useHighlightedCode(value: string, language: string) {
       return code.split("\n")
     }
 
-    return [...next.lines, highlighter.highlight(tail, next.state).lines[0]]
-  }, [code, highlighter, next, tail])
+    try {
+      const highlightedTail = highlighter.highlight(tail, next.state).lines[0]
+      return [...next.lines, highlightedTail ?? tail]
+    } catch {
+      return [...next.lines, tail]
+    }
+  }, [code, highlighter, next.lines, next.state, tail])
 }

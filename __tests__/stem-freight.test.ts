@@ -8,11 +8,20 @@ import {
   calculateWeightVariance,
   calculateSlaBreachRisk,
   AIR_VOLUMETRIC_DIVISOR,
+  AIR_EXPRESS_VOLUMETRIC_DIVISOR,
+  IATA_AIR_CARGO_DIVISOR,
   SURFACE_VOLUMETRIC_DIVISOR,
 } from "@/lib/stem/freight"
 
 describe("Logistics STEM Engine - Dimensional & Volumetric Formulas", () => {
-  it("computes IATA air volumetric weight correctly with ceiling precision", () => {
+  it("exports correct volumetric divisors according to freight standards", () => {
+    expect(AIR_EXPRESS_VOLUMETRIC_DIVISOR).toBe(5000)
+    expect(IATA_AIR_CARGO_DIVISOR).toBe(6000)
+    expect(AIR_VOLUMETRIC_DIVISOR).toBe(5000)
+    expect(SURFACE_VOLUMETRIC_DIVISOR).toBe(4500)
+  })
+
+  it("computes air express volumetric weight correctly with ceiling precision", () => {
     // 50 x 40 x 30 cm = 60,000 cm³ / 5000 = 12 kg
     const weight = calculateAirVolumetricWeight(50, 40, 30)
     expect(weight).toBe(12)

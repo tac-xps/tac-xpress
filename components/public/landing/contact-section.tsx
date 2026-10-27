@@ -24,6 +24,7 @@ import {
 } from "@/lib/motion/motion.theme"
 import SlideToConfirm from "@/components/kokonutui/slide-to-confirm"
 import { cn } from "@/lib/utils"
+import { calculateFreightPricing, calculateGstPaise } from "@/lib/stem/freight"
 
 interface HubTariff {
   code: string
@@ -58,13 +59,19 @@ export function ContactSection() {
   const [weightKg, setWeightKg] = useState<number>(30)
   const [pickupSlot, setPickupSlot] = useState<string>("today")
 
-  // STEM Freight Tariff Computations
+  // STEM Freight Tariff Computations via pure engine
   const unitRate = mode === "AIR" ? selectedHub.airRate : selectedHub.surfRate
-  const baseFreight = weightKg * unitRate
-  const surcharge = Math.round(baseFreight * 0.10) // 10% Aviation FSC / Highway Toll Index
-  const taxableAmount = baseFreight + surcharge
-  const gst18 = Math.round(taxableAmount * 0.18) // Statutory 18% GST
-  const totalTariff = taxableAmount + gst18
+  const freightResult = calculateFreightPricing({
+    chargedWeightKg: weightKg,
+    ratePerKgPaise: unitRate * 100,
+    minimumChargePaise: 50000,
+    fuelSurchargePercent: 10,
+  })
+  const gstResult = calculateGstPaise(freightResult.subtotalTaxablePaise, 18, true)
+  const baseFreight = Math.round(freightResult.baseFreightPaise / 100)
+  const surcharge = Math.round(freightResult.fuelSurchargePaise / 100)
+  const gst18 = Math.round(gstResult.totalTaxPaise / 100)
+  const totalTariff = Math.round(gstResult.totalPaise / 100)
   const activeSla = mode === "AIR" ? selectedHub.airSla : selectedHub.surfSla
 
   return (
@@ -430,36 +437,36 @@ export function ContactSection() {
                   <span className="text-foreground font-semibold tabular-nums">₹{gst18.toLocaleString("en-IN")}</span>
                 </div>
                 <div className="border-t border-border/80 pt-2 flex justify-between items-baseline font-sans">
-                  <span className="font-bold text-foreground text-sm">Total Estimated Freight</span>
+                  <div>
+                    <span className="font-bold text-foreground text-sm block">Illustrative Baseline Estimate</span>
+                    <span className="text-[11px] text-muted-foreground font-normal">Standard tariff. Confirmed upon physical gate weigh-in.</span>
+                  </div>
                   <span className="font-mono text-xl font-bold text-primary tabular-nums">₹{totalTariff.toLocaleString("en-IN")}</span>
                 </div>
               </div>
 
-              {/* 5. Slide to Dispatch Gesture */}
+              {/* 5. Slide to Booking Form */}
               <div className="border border-border/80 bg-background p-4 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-sans text-xs text-muted-foreground font-semibold">
-                    Instant Dispatch Reservation
+                    Request Consignment Booking
                   </span>
                   {dispatched && (
                     <span className="flex items-center gap-1 font-sans text-xs text-status-delivered font-semibold">
                       <CheckCircle2 className="size-3.5" />
-                      Manifest Logged
+                      Opening booking desk
                     </span>
                   )}
                 </div>
                 <SlideToConfirm
-                  label="Slide to dispatch consignment"
+                  label="Slide to request consignment booking"
                   confirmingLabel="Routing to operations desk…"
-                  doneLabel="Consignment dispatch queued"
-                  onConfirm={() =>
-                    new Promise<void>((resolve) => {
-                      setTimeout(() => {
-                        setDispatched(true)
-                        resolve()
-                      }, 1200)
-                    })
-                  }
+                  doneLabel="Proceeding to booking details"
+                  onConfirm={async () => {
+                    await new Promise((resolve) => setTimeout(resolve, 400))
+                    setDispatched(true)
+                    setActiveTab("ticket")
+                  }}
                   className="w-full rounded-none"
                 />
               </div>

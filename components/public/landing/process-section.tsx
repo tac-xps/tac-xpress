@@ -469,7 +469,7 @@ export function ProcessSection() {
                     type="button"
                     onClick={() => setActiveStep(idx)}
                     className={cn(
-                      "px-2.5 py-1 font-mono text-xs font-medium transition-colors cursor-pointer rounded-none focus-visible:ring-1 focus-visible:ring-primary outline-none",
+                      "px-2.5 py-1 font-sans text-xs font-medium transition-colors cursor-pointer rounded-none focus-visible:ring-1 focus-visible:ring-primary outline-none",
                       activeStep === idx
                         ? "bg-primary text-primary-foreground font-semibold"
                         : "text-muted-foreground hover:text-foreground"
@@ -496,7 +496,7 @@ export function ProcessSection() {
                   {/* Phase Identity & Route Header */}
                   <div className="border border-border/80 bg-muted/20 p-4">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs text-primary font-semibold">
+                      <span className="font-sans text-xs text-primary font-semibold">
                         Phase {currentTelemetry.phase} / 04
                       </span>
                       <span className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
@@ -519,7 +519,7 @@ export function ProcessSection() {
                     {currentTelemetry.metrics.map((metric) => (
                       <div
                         key={metric.label}
-                        className="border border-border/70 bg-card p-3.5 space-y-1"
+                        className="border border-border/70 bg-background p-3.5 space-y-1"
                       >
                         <span className="block font-sans text-xs text-muted-foreground">
                           {metric.label}
@@ -535,7 +535,7 @@ export function ProcessSection() {
                   </div>
 
                   {/* Statutory Audit Checklist */}
-                  <div className="border border-border/80 bg-card p-4 space-y-2.5">
+                  <div className="border border-border/80 bg-background p-4 space-y-2.5">
                     <div className="flex items-center gap-2 font-sans text-xs font-semibold text-foreground">
                       <ShieldCheck className="size-4 text-status-delivered" />
                       <span>Statutory Custody Checks</span>

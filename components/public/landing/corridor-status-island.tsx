@@ -15,19 +15,22 @@ const ssrSnapshot = computeCorridorTelemetry(SSR_BASELINE_DATE)
 // Live external telemetry store
 let clientSnapshot = computeCorridorTelemetry()
 const listeners = new Set<() => void>()
-
-if (typeof window !== "undefined") {
-  // Update telemetry snapshot on a 5-second interval
-  setInterval(() => {
-    clientSnapshot = computeCorridorTelemetry()
-    listeners.forEach((listener) => listener())
-  }, 5000)
-}
+let intervalId: ReturnType<typeof setInterval> | null = null
 
 function subscribe(callback: () => void) {
   listeners.add(callback)
+  if (listeners.size === 1 && typeof window !== "undefined") {
+    intervalId = setInterval(() => {
+      clientSnapshot = computeCorridorTelemetry()
+      listeners.forEach((listener) => listener())
+    }, 5000)
+  }
   return () => {
     listeners.delete(callback)
+    if (listeners.size === 0 && intervalId !== null) {
+      clearInterval(intervalId)
+      intervalId = null
+    }
   }
 }
 

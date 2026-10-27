@@ -57,13 +57,12 @@ export const CORRIDOR_SCHEDULE = {
  * Returns hours, minutes, seconds, and total fractional minutes since midnight.
  */
 export function getIstTimeComponents(date: Date = new Date()) {
-  const utcMillis = date.getTime() + date.getTimezoneOffset() * 60 * 1000
-  const istOffsetMillis = 5.5 * 60 * 60 * 1000
-  const istDate = new Date(utcMillis + istOffsetMillis)
+  const istMillis = date.getTime() + 5.5 * 60 * 60 * 1000
+  const istDate = new Date(istMillis)
 
-  const hours = istDate.getHours()
-  const minutes = istDate.getMinutes()
-  const seconds = istDate.getSeconds()
+  const hours = istDate.getUTCHours()
+  const minutes = istDate.getUTCMinutes()
+  const seconds = istDate.getUTCSeconds()
   const totalMinutes = hours * 60 + minutes + seconds / 60
 
   const timeString = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")} IST`
@@ -172,6 +171,21 @@ export function computeCorridorTelemetry(date: Date = new Date()): CorridorTelem
     inboundStatus = "done"
   }
 
+  // 5. Delhi Capital Logistics Staging (Night Linehaul Staging)
+  let nightStagingStatus: "running" | "done" = "done"
+  let nightStagingProgress: number | undefined
+
+  if (totalMinutes >= CORRIDOR_SCHEDULE.NIGHT_STAGING_START) {
+    nightStagingStatus = "running"
+    nightStagingProgress = calculatePhaseProgress(
+      totalMinutes,
+      CORRIDOR_SCHEDULE.NIGHT_STAGING_START,
+      CORRIDOR_SCHEDULE.NIGHT_STAGING_END
+    )
+  } else {
+    nightStagingStatus = "done"
+  }
+
   // Determine current active corridor phase
   let phaseTitle = "Capital Staging Active"
   let activeFlightCode = "6E-6124"
@@ -193,6 +207,10 @@ export function computeCorridorTelemetry(date: Date = new Date()): CorridorTelem
     phaseTitle = "BCAS Security Gate Clearance"
     activeFlightCode = "DEL-GATE4"
     headlineStatus = "DEL IGI Gate 4 Verification"
+  } else if (totalMinutes >= CORRIDOR_SCHEDULE.NIGHT_STAGING_START) {
+    phaseTitle = "Capital Staging & Manifest Consolidation"
+    activeFlightCode = "DEL-STAGE"
+    headlineStatus = `Capital Linehaul Staging (${Math.round((nightStagingProgress ?? 0) * 100)}%)`
   }
 
   const tasks: TelemetryStage[] = [
@@ -250,10 +268,24 @@ export function computeCorridorTelemetry(date: Date = new Date()): CorridorTelem
       scheduledStart: "13:45 IST",
       scheduledEnd: "16:55 IST",
     },
+    {
+      id: "del-staging",
+      label: "Delhi Capital Logistics Staging",
+      detail:
+        nightStagingStatus === "running"
+          ? "Capital terminal clearance & night linehaul staging active"
+          : totalMinutes < CORRIDOR_SCHEDULE.NIGHT_STAGING_START
+            ? "Capital linehaul staging scheduled"
+            : "Consolidated outbound manifests locked for dawn departure",
+      status: nightStagingStatus,
+      progress: nightStagingProgress,
+      scheduledStart: "17:00 IST",
+      scheduledEnd: "23:59 IST",
+    },
   ]
 
   // Select the single most relevant task for the collapsed HUD pill
-  // Priority: in-flight leg -> active hub/gate -> last running -> latest completed
+  // Priority: in-flight leg -> active hub/gate/staging -> last running -> latest completed
   let currentTask = tasks.find(
     (t) =>
       t.status === "running" &&

@@ -289,6 +289,9 @@ export default function SupportConversation() {
             defaultTool="support"
             models={["TAC Express AI"]}
             defaultModel="TAC Express AI"
+            maxLength={4000}
+            showAttachments={false}
+            showModelSelector={false}
             onSearch={async (query) => {
               if (!query.trim()) return
               await sendMessage({ text: query.trim() })

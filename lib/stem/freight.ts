@@ -41,9 +41,21 @@ export interface GstSplitResult {
 }
 
 /**
- * Air freight volumetric weight divisor defined by IATA standards (5000 cm³/kg).
+ * Commercial air express volumetric weight divisor (5000 cm³/kg = 200 kg/m³).
+ * Standard across domestic express couriers.
  */
-export const AIR_VOLUMETRIC_DIVISOR = 5000
+export const AIR_EXPRESS_VOLUMETRIC_DIVISOR = 5000
+
+/**
+ * Standard IATA air cargo volumetric weight divisor (6000 cm³/kg = 166.67 kg/m³).
+ * Standard under IATA TACT rules for scheduled airline bellyhold cargo.
+ */
+export const IATA_AIR_CARGO_DIVISOR = 6000
+
+/**
+ * Default air freight volumetric divisor for Tac-Xpress express air consignments (5000 cm³/kg).
+ */
+export const AIR_VOLUMETRIC_DIVISOR = AIR_EXPRESS_VOLUMETRIC_DIVISOR
 
 /**
  * Surface road transport volumetric weight divisor (4500 cm³/kg).
@@ -51,9 +63,9 @@ export const AIR_VOLUMETRIC_DIVISOR = 5000
 export const SURFACE_VOLUMETRIC_DIVISOR = 4500
 
 /**
- * Compute volumetric weight for air cargo using standard IATA formula.
+ * Compute volumetric weight for air cargo using standard commercial air express formula.
  *
- * Formula: ceil((L × W × H × pieces) / 5000)
+ * Formula: ceil((L × W × H × pieces) / AIR_VOLUMETRIC_DIVISOR)
  */
 export function calculateAirVolumetricWeight(
   lengthCm: number,

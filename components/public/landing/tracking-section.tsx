@@ -471,6 +471,22 @@ export function TrackingSection() {
   const shouldReduceMotion = useReducedMotion()
   const [trackingView, setTrackingView] = useState<"awb" | "milestones" | "pod" | "calculator" | "docket">("awb")
   const [podSigned, setPodSigned] = useState<boolean>(false)
+  const [prevAwb, setPrevAwb] = useState(activeAwb)
+
+  if (activeAwb !== prevAwb) {
+    setPrevAwb(activeAwb)
+    setPodSigned(false)
+  }
+
+  const isSurfaceCargo = Boolean(
+    liveData?.service?.toLowerCase().includes("surface") ||
+    liveData?.service?.toLowerCase().includes("road")
+  )
+  const routeOrigin = liveData?.origin || "DEL"
+  const routeDestination = liveData?.destination || "IMF"
+  const estimatorWeightKg = isSample ? 740 : 150
+  const ratePerKg = isSurfaceCargo ? 18 : 25
+  const estimatedFreightInr = estimatorWeightKg * ratePerKg
 
   const currentFlight: Flight = {
     airline: "TAC Express Air Cargo",
@@ -869,7 +885,7 @@ export function TrackingSection() {
                     </div>
                   </motion.div>
                 ) : trackingView === "awb" ? (
-                  /* Verified Air Waybill (AWB) Component UI */
+                  /* Verified Consignment Manifest UI: Highway Linehaul for Surface, BoardingPass for Air */
                   <motion.div
                     key="awb-manifest-view"
                     id="panel-awb"
@@ -881,11 +897,47 @@ export function TrackingSection() {
                     transition={{ duration: motionDurations.control }}
                     className="mt-5 flex justify-center w-full"
                   >
-                    <BoardingPass
-                      flight={currentFlight}
-                      labels={CARGO_LABELS}
-                      className="w-full max-w-sm shadow-md"
-                    />
+                    {isSurfaceCargo ? (
+                      <div className="w-full max-w-sm border border-border bg-card p-5 space-y-4 rounded-none shadow-sm">
+                        <div className="flex items-center justify-between border-b border-border pb-3">
+                          <div className="space-y-0.5">
+                            <span className="text-xs text-muted-foreground font-sans">Arterial highway linehaul</span>
+                            <h4 className="font-mono text-sm font-bold text-foreground">{activeAwb}</h4>
+                          </div>
+                          <Badge variant="outline" className="rounded-none font-mono text-[11px]">
+                            {liveData?.status || "In Transit"}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 text-xs">
+                          <div>
+                            <span className="text-muted-foreground block text-[11px] font-sans">Origin dock</span>
+                            <span className="font-semibold text-foreground font-sans">{routeOrigin} Hub Terminal</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground block text-[11px] font-sans">Destination hub</span>
+                            <span className="font-semibold text-foreground font-sans">{routeDestination} Hub Terminal</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground block text-[11px] font-sans">Corridor routing</span>
+                            <span className="font-semibold text-foreground font-sans">NH-27 Arterial Freight</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground block text-[11px] font-sans">Cross-dock bay</span>
+                            <span className="font-semibold text-foreground font-sans">Bay S-04</span>
+                          </div>
+                        </div>
+                        <div className="border-t border-dashed border-border pt-3 flex justify-between items-center text-xs text-muted-foreground font-sans">
+                          <span>Mode: Express surface linehaul</span>
+                          <span className="font-semibold text-foreground">GPS monitored</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <BoardingPass
+                        flight={currentFlight}
+                        labels={CARGO_LABELS}
+                        className="w-full max-w-sm shadow-md"
+                      />
+                    )}
                   </motion.div>
                 ) : trackingView === "milestones" ? (
                   /* Physical Gate Milestone Stepper View */
@@ -991,22 +1043,22 @@ export function TrackingSection() {
                     </div>
                     <CurrencyTransfer
                       from={{
-                        amount: 740,
+                        amount: estimatorWeightKg,
                         currency: "KG",
                         symbol: "KG",
-                        bank: "DEL IGI Air Cargo Terminal",
-                        last4: "AIR1",
+                        bank: `${routeOrigin.slice(0, 3).toUpperCase()} Cargo Terminal`,
+                        last4: isSurfaceCargo ? "SURF" : "AIR1",
                       }}
                       to={{
-                        amount: 18500,
+                        amount: estimatedFreightInr,
                         currency: "INR",
                         symbol: "₹",
                         bank: "TAC Express Corridor Escrow",
-                        last4: "2419",
-                        name: "Imphal Regional Cargo Hub",
+                        last4: activeAwb.slice(-4),
+                        name: `${routeDestination.slice(0, 3).toUpperCase()} Regional Hub`,
                       }}
-                      rate={25}
-                      txnId="AWB-TAC-2409-18472"
+                      rate={ratePerKg}
+                      txnId={`AWB-${activeAwb}`}
                       timestamp="14:15 IST"
                       status="completed"
                       className="w-full max-w-sm border border-border/80 bg-background"

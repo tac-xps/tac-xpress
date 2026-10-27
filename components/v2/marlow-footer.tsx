@@ -80,12 +80,18 @@ export function MarlowFooter() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email) return
+    if (!email.trim()) return
     setSubmitting(true)
-    setTimeout(() => {
-      setSubmitting(false)
+    try {
+      if (typeof window !== "undefined") {
+        const existing = JSON.parse(localStorage.getItem("tac_newsletter_subscribers") || "[]")
+        existing.push({ email: email.trim(), subscribedAt: new Date().toISOString() })
+        localStorage.setItem("tac_newsletter_subscribers", JSON.stringify(existing))
+      }
       setSubscribed(true)
-    }, 600)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (

@@ -182,10 +182,10 @@ export function MarlowFeature() {
               <div className="flex flex-col items-center">
                 <div className="relative aspect-[3/4] w-full max-w-[340px] sm:max-w-[370px] overflow-hidden rounded-none border border-black/10 dark:border-white/10 bg-neutral-200 dark:bg-neutral-800 shadow-sm select-none">
                   <div className="absolute left-3.5 top-3.5 z-20 rounded-none bg-neutral-900/60 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-md">
-                    Before
+                    After
                   </div>
                   <div className="absolute right-3.5 top-3.5 z-20 rounded-none bg-neutral-900/60 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-md">
-                    After
+                    Before
                   </div>
 
                   {/* Layer 1: BEFORE Portrait (Cool studio lighting, unretouched, raw film vibe) */}

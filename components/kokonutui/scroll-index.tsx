@@ -112,10 +112,13 @@ export default function ScrollIndex({
     const rail = railRef.current;
     const head = headRef.current;
     const label = labelRef.current;
-    if (!(box && content && rail && head && label)) {
+    if (!(content && rail && head && label)) {
       return;
     }
-    const usesWindow = scroller === "window";
+    const usesWindow = scroller === "window" || scroller === "overlay";
+    if (!usesWindow && !box) {
+      return;
+    }
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -139,11 +142,11 @@ export default function ScrollIndex({
     } | null = null;
     const swell: number[] = [];
 
-    const getScroll = () => (usesWindow ? window.scrollY : box.scrollTop);
+    const getScroll = () => (usesWindow ? window.scrollY : (box?.scrollTop ?? 0));
     const setScroll = (value: number) => {
       if (usesWindow) {
         window.scrollTo(0, value);
-      } else {
+      } else if (box) {
         box.scrollTop = value;
       }
     };
@@ -157,11 +160,11 @@ export default function ScrollIndex({
           top + content.offsetHeight - window.innerHeight,
           start + 1
         );
-      } else {
+      } else if (box) {
         start = 0;
         end = Math.max(box.scrollHeight - box.clientHeight, 1);
       }
-      const origin = usesWindow ? 0 : box.getBoundingClientRect().top - scroll;
+      const origin = usesWindow ? 0 : (box ? box.getBoundingClientRect().top - scroll : 0);
       list = Array.from(content.querySelectorAll<HTMLElement>(selector)).map(
         (el) => {
           const at = Math.min(
@@ -385,7 +388,7 @@ export default function ScrollIndex({
       schedule();
     };
 
-    const scrollTarget: HTMLElement | Window = usesWindow ? window : box;
+    const scrollTarget: HTMLElement | Window = usesWindow ? window : (box ?? window);
     const onScroll = () => schedule();
     // Any scroll input of the reader's own cancels a jump in progress.
     const onInput = () => stopTween();
@@ -397,7 +400,9 @@ export default function ScrollIndex({
       schedule();
     });
     resize.observe(content);
-    resize.observe(box);
+    if (box) {
+      resize.observe(box);
+    }
     scrollTarget.addEventListener("scroll", onScroll, { passive: true });
     scrollTarget.addEventListener("wheel", onInput, { passive: true });
     scrollTarget.addEventListener("touchstart", onInput, { passive: true });

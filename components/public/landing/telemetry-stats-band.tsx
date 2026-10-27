@@ -64,7 +64,7 @@ export function TelemetryStatsBand() {
             </span>
             <span>Live Corridor Telemetry</span>
             <span className="text-muted-foreground select-none">/</span>
-            <span className="text-muted-foreground font-normal">Active Operations Benchmarks</span>
+            <span className="text-muted-foreground font-normal">Contracted Operational Benchmarks</span>
           </div>
           <div className="font-sans text-xs text-muted-foreground flex items-center gap-2">
             <span className="size-1.5 rounded-none bg-primary" />

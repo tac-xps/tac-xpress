@@ -85,6 +85,9 @@ export interface AIInputSearchProps {
   defaultTool?: string | null;
   models?: string[];
   defaultModel?: string;
+  maxLength?: number;
+  showAttachments?: boolean;
+  showModelSelector?: boolean;
   /**
    * Runs the request. Call `onSource` for each source as it is read, and
    * resolve when the answer is ready; `signal` aborts on Stop. Without it,
@@ -1022,6 +1025,9 @@ export default function AI_Input_Search({
   defaultTool = "browse",
   models = DEFAULT_MODELS,
   defaultModel = "Sonnet 5.5",
+  maxLength,
+  showAttachments = true,
+  showModelSelector = true,
   onSearch,
   className,
 }: AIInputSearchProps) {
@@ -1213,6 +1219,7 @@ export default function AI_Input_Search({
             <Textarea
               aria-label="Your question"
               className="min-h-[56px] w-full resize-none rounded-none border-none bg-transparent px-4 pt-3.5 pb-1 text-base sm:text-sm text-black leading-relaxed placeholder:text-black/35 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-transparent dark:text-white dark:placeholder:text-white/35"
+              maxLength={maxLength}
               onChange={(e) => {
                 setValue(e.target.value);
                 adjustHeight();
@@ -1245,55 +1252,63 @@ export default function AI_Input_Search({
             />
 
             <div className="flex items-center gap-1 px-2.5 pt-1 pb-2.5">
-              <button
-                aria-label="Attach files"
-                className={cn(
-                  "flex size-8 shrink-0 items-center justify-center rounded-none text-black/60 outline-hidden ring-1 ring-black/10 dark:text-white/60 dark:ring-white/15",
-                  "transition-[background-color,color] duration-150",
-                  EASE_OUT_CSS,
-                  "hover:bg-black/5 hover:text-black dark:hover:bg-white/10 dark:hover:text-white",
-                  "focus-visible:ring-2 focus-visible:ring-black/20 dark:focus-visible:ring-white/25"
-                )}
-                onClick={() => fileInputRef.current?.click()}
-                type="button"
-              >
-                <Plus aria-hidden="true" className="size-4" />
-              </button>
-              <input
-                className="hidden"
-                multiple
-                onChange={(e) => {
-                  const picked = Array.from(e.target.files ?? []);
-                  // The same file picked twice would share a chip key.
-                  setFiles((current) => [
-                    ...current,
-                    ...picked.filter(
-                      (file) =>
-                        !current.some((f) => fileKey(f) === fileKey(file))
-                    ),
-                  ]);
-                  e.target.value = "";
-                }}
-                ref={fileInputRef}
-                tabIndex={-1}
-                type="file"
-              />
-              <ToolPill
-                onCloseAutoFocus={backToField}
-                onOpenChange={setMenuOpen}
-                onSelect={pickTool}
-                open={menuOpen}
-                remaining={remaining}
-                tool={tool}
-                tools={tools}
-              />
+              {showAttachments && (
+                <>
+                  <button
+                    aria-label="Attach files"
+                    className={cn(
+                      "flex size-8 shrink-0 items-center justify-center rounded-none text-black/60 outline-hidden ring-1 ring-black/10 dark:text-white/60 dark:ring-white/15",
+                      "transition-[background-color,color] duration-150",
+                      EASE_OUT_CSS,
+                      "hover:bg-black/5 hover:text-black dark:hover:bg-white/10 dark:hover:text-white",
+                      "focus-visible:ring-2 focus-visible:ring-black/20 dark:focus-visible:ring-white/25"
+                    )}
+                    onClick={() => fileInputRef.current?.click()}
+                    type="button"
+                  >
+                    <Plus aria-hidden="true" className="size-4" />
+                  </button>
+                  <input
+                    className="hidden"
+                    multiple
+                    onChange={(e) => {
+                      const picked = Array.from(e.target.files ?? []);
+                      // The same file picked twice would share a chip key.
+                      setFiles((current) => [
+                        ...current,
+                        ...picked.filter(
+                          (file) =>
+                            !current.some((f) => fileKey(f) === fileKey(file))
+                        ),
+                      ]);
+                      e.target.value = "";
+                    }}
+                    ref={fileInputRef}
+                    tabIndex={-1}
+                    type="file"
+                  />
+                </>
+              )}
+              {tools && tools.length > 0 && (
+                <ToolPill
+                  onCloseAutoFocus={backToField}
+                  onOpenChange={setMenuOpen}
+                  onSelect={pickTool}
+                  open={menuOpen}
+                  remaining={remaining}
+                  tool={tool}
+                  tools={tools}
+                />
+              )}
               <div className="min-w-0 flex-1" />
-              <ModelMenu
-                models={models}
-                onCloseAutoFocus={backToField}
-                onSelect={setModel}
-                selected={model}
-              />
+              {showModelSelector && models && models.length > 1 && (
+                <ModelMenu
+                  models={models}
+                  onCloseAutoFocus={backToField}
+                  onSelect={setModel}
+                  selected={model}
+                />
+              )}
               <SendStopButton
                 canSubmit={canSubmit}
                 onStop={stop}

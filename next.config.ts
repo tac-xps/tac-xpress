@@ -185,7 +185,7 @@ export default async function config() {
     Boolean(process.env.SENTRY_AUTH_TOKEN)
 
   if (shouldEnableSentry) {
-    const { withSentryConfig } = await import("@sentry/nextjs")
+    const { withSentryConfig } = await import("@sentry/nextjs/config")
     return withSentryConfig(finalConfig, {
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,

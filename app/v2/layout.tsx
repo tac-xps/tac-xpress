@@ -17,6 +17,10 @@ export const metadata: Metadata = {
   title: "Marlow · Ines Calder, product designer and design engineer",
   description:
     "Interfaces for the tools people use every day. Product design, design engineering, and design systems for web and mobile.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default function MarlowV2Layout({

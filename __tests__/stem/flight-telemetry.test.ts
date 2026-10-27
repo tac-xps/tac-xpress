@@ -78,12 +78,25 @@ describe("Logistics STEM Engine: IST Corridor Flight Telemetry", () => {
     expect(telemetry.currentTask.id).toBe("flight-imf-del")
   })
 
+  it("computes evening linehaul staging state (20:00 IST)", () => {
+    // 20:00 IST is 14:30 UTC
+    const eveningTime = new Date("2026-10-23T14:30:00.000Z")
+    const telemetry = computeCorridorTelemetry(eveningTime)
+
+    expect(telemetry.phaseTitle).toContain("Capital Staging")
+    expect(telemetry.activeFlightCode).toBe("DEL-STAGE")
+    const stagingTask = telemetry.tasks.find((t) => t.id === "del-staging")
+    expect(stagingTask?.status).toBe("running")
+    expect(stagingTask?.progress).toBeGreaterThan(0.4)
+    expect(telemetry.currentTask.id).toBe("del-staging")
+  })
+
   it("computes overnight staging state (02:00 IST)", () => {
     // 02:00 IST is 20:30 UTC previous day
     const nightTime = new Date("2026-10-22T20:30:00.000Z")
     const telemetry = computeCorridorTelemetry(nightTime)
 
-    expect(telemetry.tasks).toHaveLength(4)
+    expect(telemetry.tasks).toHaveLength(5)
     expect(telemetry.currentIstTime).toBe("02:00:00 IST")
     const gateTask = telemetry.tasks.find((t) => t.id === "del-gateway")
     expect(gateTask?.status).toBe("running")

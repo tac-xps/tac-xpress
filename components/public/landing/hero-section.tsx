@@ -1,8 +1,9 @@
 "use client"
 
-import React, { useRef } from "react"
+import React, { useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import {
   motion,
   useScroll,
@@ -35,8 +36,20 @@ import {
  * and grounded baseline telemetry proof strip (KPI stats + route marquee).
  */
 export function HeroSection() {
+  const router = useRouter()
   const containerRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = useReducedMotion()
+  const [quickTrackAwb, setQuickTrackAwb] = useState("")
+
+  const handleQuickTrack = () => {
+    const trimmed = quickTrackAwb.trim().toUpperCase()
+    if (!trimmed) {
+      const el = document.getElementById("visibility-chapter")
+      if (el) el.scrollIntoView({ behavior: "smooth" })
+      return
+    }
+    router.push(`/track?awb=${encodeURIComponent(trimmed)}`)
+  }
 
   // Scroll-linked editorial zoom and parallax on scroll exit
   const { scrollYProgress } = useScroll({
@@ -205,21 +218,19 @@ export function HeroSection() {
               <input
                 type="text"
                 placeholder="Track AWB (e.g. TAC-2409-18472)..."
+                value={quickTrackAwb}
+                onChange={(e) => setQuickTrackAwb(e.target.value)}
                 className="h-full w-full bg-transparent px-3 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground outline-none"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    const el = document.getElementById("visibility-chapter")
-                    if (el) el.scrollIntoView({ behavior: "smooth" })
+                    handleQuickTrack()
                   }
                 }}
               />
               <Button
                 size="sm"
                 className="rounded-none bg-primary text-primary-foreground font-sans text-xs px-4 h-9 hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-primary active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={() => {
-                  const el = document.getElementById("visibility-chapter")
-                  if (el) el.scrollIntoView({ behavior: "smooth" })
-                }}
+                onClick={handleQuickTrack}
               >
                 Track
               </Button>

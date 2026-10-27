@@ -16,10 +16,32 @@ export function MarlowContactView() {
   const [about, setAbout] = React.useState("")
   const [submitted, setSubmitted] = React.useState(false)
 
+  const [submitting, setSubmitting] = React.useState(false)
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim() || !email.trim()) return
-    setSubmitted(true)
+    setSubmitting(true)
+    try {
+      if (typeof window !== "undefined") {
+        const brief = {
+          name: name.trim(),
+          email: email.trim(),
+          company: company.trim(),
+          about: about.trim(),
+          workType,
+          needType,
+          budget,
+          submittedAt: new Date().toISOString(),
+        }
+        const briefs = JSON.parse(localStorage.getItem("marlow_submitted_briefs") || "[]")
+        briefs.push(brief)
+        localStorage.setItem("marlow_submitted_briefs", JSON.stringify(briefs))
+      }
+      setSubmitted(true)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (

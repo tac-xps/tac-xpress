@@ -425,6 +425,13 @@ export function MorphicNavbar({
     () => findItemPath(paths, pathname) ?? defaultPath ?? paths[0] ?? "/"
   );
 
+  // Sync activePath when defaultPath changes from prop updates (e.g. section scroll spy)
+  useEffect(() => {
+    if (defaultPath && paths.includes(defaultPath)) {
+      setActivePath(defaultPath);
+    }
+  }, [defaultPath, paths]);
+
   // Follow the route when it changes to one of the items, so the active link
   // stays right after the back button or navigation from elsewhere. Clicks
   // still update it right away. In-page anchors (the demo) never match.
@@ -457,9 +464,9 @@ export function MorphicNavbar({
   const highlightIndex = previewIndex ?? activeIndex;
 
   // One spring-driven offset per link, rebuilt only when the count changes.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: the first split only seeds new values; later moves animate them
   const xs = useMemo(
     () => splitOffsets(count, activeIndex, null).map((x) => motionValue(x)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [count]
   );
   const fold = useMotionValue(0);

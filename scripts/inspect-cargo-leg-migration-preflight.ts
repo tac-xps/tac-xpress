@@ -29,19 +29,13 @@ async function main() {
         BEGIN
           IF to_regclass('public.shipments') IS NULL
              OR to_regclass('public.manifests') IS NULL
-             OR (to_regclass('public.manifest_items') IS NULL AND to_regclass('public.manifest_shipments') IS NULL) THEN
-            RAISE EXCEPTION 'Required cargo tables are missing; stop and inspect schema history';
+             OR to_regclass('public.manifest_items') IS NULL THEN
+            RAISE EXCEPTION 'Required cargo tables are missing (shipments, manifests, manifest_items); stop and inspect schema history';
           END IF;
 
-          IF to_regclass('public.manifest_items') IS NOT NULL THEN
-            CREATE OR REPLACE TEMP VIEW v_cargo_manifest_items AS
-              SELECT id, manifest_id, shipment_id, created_at AS assigned_at
-              FROM public.manifest_items;
-          ELSE
-            CREATE OR REPLACE TEMP VIEW v_cargo_manifest_items AS
-              SELECT id, manifest_id, shipment_id, added_at AS assigned_at
-              FROM public.manifest_shipments;
-          END IF;
+          CREATE OR REPLACE TEMP VIEW v_cargo_manifest_items AS
+            SELECT id, manifest_id, shipment_id, created_at AS assigned_at
+            FROM public.manifest_items;
 
           IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'manifests' AND column_name = 'reference_id') THEN
             CREATE OR REPLACE TEMP VIEW v_cargo_manifests AS

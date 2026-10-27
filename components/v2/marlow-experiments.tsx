@@ -129,14 +129,31 @@ export function MarlowExperiments() {
           <div>
             {itemArchived ? (
               <div className="flex items-center justify-between p-2.5 bg-[#141413] text-[#FAFAF8] text-xs">
-                <span className="text-[11px]">Item archived ({undoCountdown}s)</span>
-                <button
-                  type="button"
-                  onClick={cancelArchive}
-                  className="px-2.5 py-1 bg-[#FAFAF8] text-[#141413] text-[11px] font-semibold hover:bg-[#FAFAF8]/90 transition-colors"
-                >
-                  Undo
-                </button>
+                {undoCountdown > 0 ? (
+                  <>
+                    <span className="text-[11px]">Item archived ({undoCountdown}s)</span>
+                    <button
+                      type="button"
+                      onClick={cancelArchive}
+                      className="px-2.5 py-1 bg-[#FAFAF8] text-[#141413] text-[11px] font-semibold hover:bg-[#FAFAF8]/90 transition-colors"
+                    >
+                      Undo
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-[11px] flex items-center gap-1.5 text-[#1F9A55]">
+                      <Check className="w-3.5 h-3.5" /> Permanently archived
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setItemArchived(false)}
+                      className="text-[11px] text-[#FAFAF8]/60 hover:text-[#FAFAF8] transition-colors"
+                    >
+                      Reset
+                    </button>
+                  </>
+                )}
               </div>
             ) : (
               <button
