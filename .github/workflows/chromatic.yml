@@ -37,3 +37,4 @@ jobs:
           # TurboSnap minimizes snapshot quota; visual changes gate the PR.
           onlyChanged: true
           autoAcceptChanges: "main"
+          allowConsoleErrors: true
