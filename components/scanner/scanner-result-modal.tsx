@@ -21,14 +21,17 @@ import {
   Loader2,
 } from "lucide-react"
 import { useTransition } from "react"
-import { updateScannedShipmentStatus } from "@/app/actions/scanner-actions"
+import {
+  updateScannedShipmentStatus,
+  type ScannedShipment,
+} from "@/app/actions/scanner-actions"
 import { toast } from "sonner"
 import Link from "next/link"
 
 interface ScannerResultModalProps {
   isOpen: boolean
   onClose: () => void
-  shipmentData: any
+  shipmentData: ScannedShipment | null
   onStatusUpdate: () => void
 }
 
@@ -114,7 +117,7 @@ export function ScannerResultModal({
               </Button>
             )}
 
-            {(shipmentData.status === "in-transit" || shipmentData.status === "out-for-delivery") && (
+            {shipmentData.status === "in-transit" && (
               <Button
                 size="sm"
                 className="rounded-none font-semibold text-xs bg-status-delivered hover:bg-status-delivered/90 text-primary-foreground"

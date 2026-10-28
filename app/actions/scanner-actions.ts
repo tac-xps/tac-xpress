@@ -47,19 +47,26 @@ export async function getScannedShipmentDetails(code: string) {
     })
 
     if (!targetShipment) {
-      return { success: false, error: "Shipment not found for this barcode." }
+      return { success: false as const, error: "Shipment not found for this barcode." }
     }
 
-    return { success: true, data: targetShipment }
-  } catch (error: any) {
+    return { success: true as const, data: targetShipment }
+  } catch (error: unknown) {
     Sentry.captureException(error)
     console.error("Error fetching scanned shipment:", error)
     return {
-      success: false,
+      success: false as const,
       error: "Database error occurred while fetching shipment.",
     }
   }
 }
+
+export type ScannedShipment = NonNullable<
+  Extract<
+    Awaited<ReturnType<typeof getScannedShipmentDetails>>,
+    { success: true }
+  >["data"]
+>
 
 export async function updateScannedShipmentStatus(
   shipmentId: string,

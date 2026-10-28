@@ -5,12 +5,15 @@ import {
   useContext,
   useState,
   useRef,
-  ReactNode,
+  type ReactNode,
   useCallback,
 } from "react"
 import { useBarcodeScanner } from "@/hooks/use-barcode-scanner"
 import { ScannerResultModal } from "./scanner-result-modal"
-import { getScannedShipmentDetails } from "@/app/actions/scanner-actions"
+import {
+  getScannedShipmentDetails,
+  type ScannedShipment,
+} from "@/app/actions/scanner-actions"
 import { toast } from "sonner"
 import * as Sentry from "@sentry/nextjs"
 
@@ -28,13 +31,28 @@ const ScannerContext = createContext<ScannerContextType>({
   triggerScan: async () => {},
 })
 
-let sharedAudioContext: any = null
+let sharedAudioContext: AudioContext | null = null
 
-// Utility for zero-latency audio feedback using Web Audio API
+// Haptic feedback for mobile PWA and handheld barcode scanners
+export const triggerScanHaptic = (success = true) => {
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+    try {
+      navigator.vibrate(success ? [45] : [100, 50, 100])
+    } catch {
+      // Ignore vibration error if not supported or permitted
+    }
+  }
+}
+
+// Zero-latency audio feedback using Web Audio API
 export const playScanBeep = (success = true) => {
+  triggerScanHaptic(success)
   try {
     const AudioContextClass =
-      window.AudioContext || (window as any).webkitAudioContext
+      typeof window !== "undefined"
+        ? window.AudioContext ||
+          (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+        : undefined
     if (!AudioContextClass) return
     if (!sharedAudioContext) {
       sharedAudioContext = new AudioContextClass()
@@ -57,7 +75,7 @@ export const playScanBeep = (success = true) => {
 
     osc.start()
     osc.stop(ctx.currentTime + (success ? 0.1 : 0.3))
-  } catch (e) {
+  } catch {
     // Ignore audio context errors silently
   }
 }
@@ -65,7 +83,7 @@ export const playScanBeep = (success = true) => {
 export function ScannerProvider({ children }: { children: ReactNode }) {
   const [lastScannedCode, setLastScannedCode] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [shipmentData, setShipmentData] = useState<any>(null)
+  const [shipmentData, setShipmentData] = useState<ScannedShipment | null>(null)
   const overrideHandlerRef = useRef<
     ((code: string) => Promise<boolean>) | null
   >(null)
@@ -79,7 +97,7 @@ export function ScannerProvider({ children }: { children: ReactNode }) {
 
   const handleScan = useCallback(async (barcode: string) => {
     // Basic sanitization and normalization for barcodes
-    let rawCode = barcode.trim()
+    const rawCode = barcode.trim()
     let code = rawCode.toUpperCase()
 
     // Extract AWB from full URL QR codes (e.g. from generated shipping labels)
@@ -105,8 +123,8 @@ export function ScannerProvider({ children }: { children: ReactNode }) {
           const match = rawCode.match(/AWB-[A-Za-z0-9]+/i)
           if (match) code = match[0].toUpperCase()
         }
-      } catch (e) {
-        // Ignore URL parsing errors
+      } catch {
+        // Fallback on regex if URL parsing fails
         const match = rawCode.match(/AWB-[A-Za-z0-9]+/i)
         if (match) code = match[0].toUpperCase()
       }
@@ -133,7 +151,7 @@ export function ScannerProvider({ children }: { children: ReactNode }) {
     }
 
     // Fallback: Default Global Dashboard Modal logic
-    const toastId = toast.loading(`Scanning barcode: ${code}...`)
+    const toastId = toast.loading(`Scanning barcode: ${code}…`)
 
     try {
       const result = await getScannedShipmentDetails(code)
