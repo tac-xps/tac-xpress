@@ -136,15 +136,15 @@ export function FleetShowcaseSection() {
 
   return (
     <section
-      id="features"
-      aria-labelledby="features-heading"
+      id="fleet"
+      aria-labelledby="fleet-heading"
       className="w-full border-b border-border bg-background py-20 lg:py-28"
     >
       <div className="mx-auto w-full max-w-[1320px] px-6 lg:px-12">
         {/* Exact Atomist Heading format */}
         <div className="text-center max-w-xl mx-auto mb-16">
           <h2
-            id="features-heading"
+            id="fleet-heading"
             className="text-2xl font-medium tracking-tight text-foreground sm:text-4xl"
           >
             We provide best <span className="text-mn-ochre">linehaul</span>

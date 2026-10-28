@@ -6,6 +6,7 @@ import { ArrowUpRight } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useSpring } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { MorphicNavbar, type NavItem } from "@/components/kokonutui/morphic-navbar"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { cn } from "@/lib/utils"
 
 const LANDING_NAV_ITEMS: Record<string, NavItem> = {
@@ -35,18 +36,23 @@ export function LandingNav() {
   }, [scrollY])
 
   useEffect(() => {
-    const sectionIds = ["features", "method", "customers", "pricing", "company"]
+    const sectionIds = ["hero", "features", "method", "customers", "pricing", "company"]
     const observer = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveSection(`#${entry.target.id}`)
+        // Find visible intersecting sections
+        const visible = entries.filter((e) => e.isIntersecting)
+        if (visible.length > 0) {
+          const topEntry = visible[0]
+          if (topEntry.target.id === "hero") {
+            setActiveSection("#features")
+          } else {
+            setActiveSection(`#${topEntry.target.id}`)
           }
         }
       },
       {
-        rootMargin: "-20% 0px -60% 0px",
-        threshold: 0,
+        rootMargin: "-15% 0px -55% 0px",
+        threshold: [0, 0.25],
       }
     )
 
@@ -55,7 +61,18 @@ export function LandingNav() {
       if (el) observer.observe(el)
     }
 
-    return () => observer.disconnect()
+    const handleScroll = () => {
+      if (window.scrollY < 200) {
+        setActiveSection("#features")
+      }
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll()
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener("scroll", handleScroll)
+    }
   }, [])
 
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -74,7 +91,7 @@ export function LandingNav() {
         "sticky top-0 z-50 h-[72px] w-full border-b transition-colors duration-200",
         isScrolled
           ? "border-border bg-background shadow-xs"
-          : "border-border/60 bg-background/95"
+          : "border-border/60 bg-background"
       )}
     >
       <div className="mx-auto flex h-full w-full max-w-[1320px] items-center justify-between px-6 lg:px-12">
@@ -107,8 +124,9 @@ export function LandingNav() {
           />
         </div>
 
-        {/* Right: Tactical Action CTA */}
-        <div className="hidden md:flex items-center gap-4 shrink-0">
+        {/* Right: Tactical Action CTA & Star Theme Toggle */}
+        <div className="hidden md:flex items-center gap-3 shrink-0">
+          <ThemeToggle />
           <Button
             asChild
             className="group relative h-8.5 px-4 rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary-hover transition-colors duration-150 active:scale-[0.98] shadow-2xs overflow-hidden"
@@ -168,7 +186,7 @@ export function LandingNav() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="md:hidden overflow-hidden border-b border-border bg-background/98 backdrop-blur-md px-6 py-6 shadow-sm"
+            className="md:hidden overflow-hidden border-b border-border bg-background px-6 py-6 shadow-sm"
           >
             <motion.nav
               initial="closed"
@@ -206,6 +224,10 @@ export function LandingNav() {
                   </motion.a>
                 )
               })}
+              <div className="flex items-center justify-between border-t border-border/80 pt-3 mt-1">
+                <span className="text-xs font-sans text-muted-foreground">Theme Appearance</span>
+                <ThemeToggle />
+              </div>
               <motion.div
                 variants={{
                   open: { opacity: 1, y: 0 },

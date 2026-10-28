@@ -42,7 +42,7 @@ const DEFAULT_NAV_ITEMS: Record<string, NavItem> = {
 
 const ACTIVE_SPRING = {
   type: "spring",
-  stiffness: 400,
+  stiffness: 420,
   damping: 32,
   mass: 0.8,
 } as const;
@@ -158,7 +158,7 @@ export function MorphicNavbar({
   return (
     <nav
       className={cn(
-        "relative inline-flex items-center gap-1 border border-border/50 bg-muted/40 p-1 rounded-none shadow-2xs backdrop-blur-xs",
+        "relative inline-flex items-center gap-1 border border-border/70 bg-muted/60 dark:bg-card/60 p-1 rounded-none shadow-2xs transition-colors duration-200",
         className
       )}
       role="navigation"
@@ -181,7 +181,7 @@ export function MorphicNavbar({
             {isHovered && !isActive && (
               <motion.div
                 layoutId="hoverNavIndicator"
-                className="absolute inset-0 bg-muted/60 rounded-none z-0"
+                className="absolute inset-0 bg-muted/80 dark:bg-muted/40 rounded-none z-0"
                 transition={
                   prefersReduced
                     ? { duration: 0 }
@@ -191,11 +191,11 @@ export function MorphicNavbar({
               />
             )}
 
-            {/* Active Shared Layout Indicator */}
+            {/* Active Shared Layout Indicator with Micro-Animation Spring */}
             {isActive && (
               <motion.div
                 layoutId="activeNavIndicator"
-                className="absolute inset-0 bg-card border border-border/70 shadow-2xs rounded-none z-10"
+                className="absolute inset-0 bg-background dark:bg-card border border-border/80 dark:border-border shadow-xs rounded-none z-10"
                 transition={
                   prefersReduced
                     ? { duration: 0 }
@@ -203,7 +203,7 @@ export function MorphicNavbar({
                 }
                 aria-hidden="true"
               >
-                <span className="absolute bottom-0 inset-x-2.5 h-[2px] bg-primary rounded-none" />
+                <span className="absolute bottom-0 inset-x-2.5 h-[2px] bg-primary dark:bg-mn-ochre rounded-none transition-colors duration-200" />
               </motion.div>
             )}
 
@@ -219,7 +219,7 @@ export function MorphicNavbar({
                 "relative z-20 flex h-8 items-center px-3.5 text-xs font-medium tracking-tight rounded-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring select-none",
                 isActive
                   ? "text-foreground font-semibold"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground active:scale-[0.98]"
               )}
               onClick={(e: MouseEvent<HTMLAnchorElement>) => {
                 setActivePath(href);

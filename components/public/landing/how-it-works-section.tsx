@@ -34,6 +34,7 @@ const STEPS = [
 export function HowItWorksSection() {
   return (
     <section
+      id="method"
       aria-labelledby="how-heading"
       className="w-full border-b border-border bg-background py-20 lg:py-28 text-center"
     >

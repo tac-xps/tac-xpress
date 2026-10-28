@@ -82,7 +82,7 @@ export function OperationalCapabilitiesSection() {
 
   return (
     <section
-      id="operational-capabilities"
+      id="features"
       aria-labelledby="capabilities-heading"
       className="w-full border-b border-border bg-background py-14 sm:py-18 lg:py-20"
     >

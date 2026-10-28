@@ -34,7 +34,7 @@ const TRUSTED_CARRIERS = [
 export function CarrierTrustBand() {
   return (
     <section
-      id="method"
+      id="trust"
       aria-labelledby="trust-heading"
       className="w-full border-b border-border bg-background py-16 sm:py-20 text-center"
     >
