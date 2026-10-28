@@ -46,8 +46,10 @@ const BUMP_DAMPING = 2 * Math.sqrt(BUMP_STIFFNESS) * 0.7
 const BUMP = 0.45
 // Columns rise in a wave from where you grabbed; the far end lags by this share of the whole rise.
 const WAVE = 0.7
-const PADDING_X = 36
-const PADDING_Y = 22
+const PADDING_LEFT = 56
+const PADDING_RIGHT = 22
+const PADDING_TOP = 28
+const PADDING_BOTTOM = 20
 const REST_EPSILON = 0.0005
 const LABELS = ["Mon", "", "Wed", "", "Fri", "", ""]
 
@@ -180,15 +182,52 @@ function shade([r, g, b]: Rgb, amount: number) {
   return `rgb(${Math.round(r * k)},${Math.round(g * k)},${Math.round(b * k)})`
 }
 
+export const NORDIC_PINE_PALETTE_LIGHT: Palette = {
+  levels: [
+    [226, 232, 240], // Level 0: #e2e8f0 (subtle quiet stone baseline)
+    [148, 210, 189], // Level 1: #94d2bd (soft pine mineral)
+    [61, 139, 116],  // Level 2: #3d8b74 (medium corridor pine)
+    [27, 99, 76],    // Level 3: #1b634c (deep bilateral linehaul pine)
+    [10, 56, 44],    // Level 4: #0a382c (peak surge nocturnal pine)
+  ],
+  accent: [192, 132, 26], // #c0841a (warm arterial ochre)
+  text: "#475569",
+  font: "sans-serif",
+}
+
+export const NORDIC_PINE_PALETTE_DARK: Palette = {
+  levels: [
+    [30, 41, 59],    // Level 0: #1e293b (basalt slate)
+    [22, 78, 99],    // Level 1: #164e63 (subtle dark cyan/pine wash)
+    [13, 148, 136],  // Level 2: #0d9488 (teal-600)
+    [20, 184, 166],  // Level 3: #14b8a6 (teal-500)
+    [94, 234, 212],  // Level 4: #5eead4 (luminous peak emerald)
+  ],
+  accent: [251, 191, 36], // #fbbf24 (luminous amber ochre)
+  text: "#94a3b8",
+  font: "sans-serif",
+}
+
 function readPalette(node: HTMLElement): Palette {
+  const isDark =
+    typeof document !== "undefined" &&
+    (document.documentElement.classList.contains("dark") ||
+      document.documentElement.dataset.theme === "dark")
+  const base = isDark ? NORDIC_PINE_PALETTE_DARK : NORDIC_PINE_PALETTE_LIGHT
   const style = getComputedStyle(node)
-  const read = (name: string) => style.getPropertyValue(name).trim() || "#888888"
-  return {
-    levels: [0, 1, 2, 3, 4].map((l) => hexToRgb(read(`--terrain-${l}`))),
-    accent: hexToRgb(read("--terrain-accent")),
-    text: read("--terrain-text"),
-    font: style.fontFamily || "sans-serif",
-  }
+  const font = style.fontFamily || "sans-serif"
+  const read = (name: string) => style.getPropertyValue(name).trim()
+
+  const levels: Rgb[] = [0, 1, 2, 3, 4].map((l) => {
+    const val = read(`--terrain-${l}`)
+    return val ? hexToRgb(val) : base.levels[l]
+  })
+  const accentVal = read("--terrain-accent")
+  const accent = accentVal ? hexToRgb(accentVal) : base.accent
+  const textVal = read("--terrain-text")
+  const text = textVal || base.text
+
+  return { levels, accent, text, font }
 }
 
 function project(pose: Pose, x: number, y: number, z: number) {
@@ -371,16 +410,23 @@ export function ActivityTerrain({
         maxY = Math.max(maxY, py)
       }
     }
+    const availableW = s.width - PADDING_LEFT - PADDING_RIGHT
+    const availableH = s.height - PADDING_TOP - PADDING_BOTTOM
     const scale = Math.min(
-      (s.width - PADDING_X * 2) / (maxX - minX),
-      (s.height - PADDING_Y * 2) / (maxY - minY)
+      availableW / (maxX - minX),
+      availableH / (maxY - minY)
     )
     return {
       yaw: s.yaw,
       pitch: s.pitch,
       scale,
-      cx: s.width / 2 - ((minX + maxX) / 2) * scale,
-      cy: s.height / 2 - ((minY + maxY) / 2) * scale + (s.pitch > 0.1 ? 6 : 2),
+      cx:
+        (PADDING_LEFT + s.width - PADDING_RIGHT) / 2 -
+        ((minX + maxX) / 2) * scale,
+      cy:
+        (PADDING_TOP + s.height - PADDING_BOTTOM) / 2 -
+        ((minY + maxY) / 2) * scale +
+        (s.pitch > 0.1 ? 6 : 2),
       lift,
     }
   }, [weeks])
@@ -433,8 +479,8 @@ export function ActivityTerrain({
       ctx.textAlign = "right"
       for (let row = 0; row < DAYS; row++) {
         if (LABELS[row]) {
-          // Generous offset (-0.85) to avoid colliding with column 0
-          const [x, y] = project(p, -0.85 - weeks / 2, 0, row + 0.45 - DAYS / 2)
+          // Dedicated gutter offset with 20px+ buffer from canvas boundary
+          const [x, y] = project(p, -0.65 - weeks / 2, 0, row + 0.45 - DAYS / 2)
           ctx.fillText(LABELS[row], x, y)
         }
       }
