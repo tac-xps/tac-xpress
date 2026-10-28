@@ -3,7 +3,7 @@
 import React from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowUpRight, Plane } from "lucide-react"
+import { ArrowUpRight, Plane, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function HeroSection() {
@@ -11,9 +11,10 @@ export function HeroSection() {
     <section
       id="hero"
       aria-labelledby="hero-heading"
-      className="relative w-full border-b border-border bg-background pt-24 sm:pt-28 lg:pt-32 xl:pt-36 pb-10 sm:pb-12 lg:pb-14 overflow-hidden"
+      className="relative w-full border-b border-border bg-background min-h-[calc(100svh-4rem)] flex flex-col justify-between pt-20 sm:pt-24 lg:pt-28 pb-8 lg:pb-10 overflow-hidden"
     >
-      <div className="mx-auto w-full max-w-[1240px] px-6 lg:px-12">
+      {/* Primary Hero Two-Column Grid (Vertically Balanced in Fold) */}
+      <div className="mx-auto w-full max-w-[1240px] px-6 lg:px-12 my-auto py-2 sm:py-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Proposition, Headline, CTAs & Route Scope */}
           <div className="lg:col-span-6 flex flex-col items-start text-left">
@@ -53,9 +54,9 @@ export function HeroSection() {
                 variant="outline"
                 className="h-10 px-5 rounded-none font-medium text-xs border-border bg-card text-foreground hover:bg-muted transition-colors shadow-2xs"
               >
-                <a href="#quick-calculator">
+                <Link href="#pricing">
                   Get an Instant Quote
-                </a>
+                </Link>
               </Button>
             </div>
 
@@ -140,12 +141,15 @@ export function HeroSection() {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Compact Minimalistic 15+ Years Service Milestone Stats */}
-        <div className="mt-8 sm:mt-10 pt-5 sm:pt-6 border-t border-border/80">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-            <div className="flex flex-col text-left">
-              <div className="font-mono text-xl sm:text-2xl lg:text-[1.75rem] font-bold tracking-tight text-foreground leading-none">
+      {/* Docked Base: Enclosed Architectural Telemetry Dock + Live Gateway Status Band */}
+      <div className="mx-auto w-full max-w-[1240px] px-6 lg:px-12 mt-4 lg:mt-6">
+        <div className="border border-border bg-card/70 p-4 sm:p-5 lg:p-6 rounded-none shadow-2xs">
+          {/* 4 Architectural Milestone Metric Cells */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-border/60">
+            <div className="flex flex-col text-left sm:pr-4">
+              <div className="font-mono text-xl sm:text-2xl lg:text-[1.85rem] font-bold tracking-tight text-foreground leading-none">
                 15<span className="text-primary font-sans">+</span> Years
               </div>
               <div className="mt-1.5 text-xs font-semibold text-foreground">
@@ -156,8 +160,8 @@ export function HeroSection() {
               </div>
             </div>
 
-            <div className="flex flex-col text-left">
-              <div className="font-mono text-xl sm:text-2xl lg:text-[1.75rem] font-bold tracking-tight text-foreground leading-none">
+            <div className="flex flex-col text-left pt-3 sm:pt-0 sm:px-4">
+              <div className="font-mono text-xl sm:text-2xl lg:text-[1.85rem] font-bold tracking-tight text-foreground leading-none">
                 500k<span className="text-primary font-sans">+</span>
               </div>
               <div className="mt-1.5 text-xs font-semibold text-foreground">
@@ -168,8 +172,8 @@ export function HeroSection() {
               </div>
             </div>
 
-            <div className="flex flex-col text-left">
-              <div className="font-mono text-xl sm:text-2xl lg:text-[1.75rem] font-bold tracking-tight text-foreground leading-none">
+            <div className="flex flex-col text-left pt-3 sm:pt-0 sm:px-4">
+              <div className="font-mono text-xl sm:text-2xl lg:text-[1.85rem] font-bold tracking-tight text-foreground leading-none">
                 99.8<span className="text-primary font-sans">%</span>
               </div>
               <div className="mt-1.5 text-xs font-semibold text-foreground">
@@ -180,8 +184,8 @@ export function HeroSection() {
               </div>
             </div>
 
-            <div className="flex flex-col text-left">
-              <div className="font-mono text-xl sm:text-2xl lg:text-[1.75rem] font-bold tracking-tight text-foreground leading-none">
+            <div className="flex flex-col text-left pt-3 sm:pt-0 sm:pl-4">
+              <div className="font-mono text-xl sm:text-2xl lg:text-[1.85rem] font-bold tracking-tight text-foreground leading-none">
                 10,000<span className="text-primary font-sans">+</span>
               </div>
               <div className="mt-1.5 text-xs font-semibold text-foreground">
@@ -190,6 +194,25 @@ export function HeroSection() {
               <div className="text-[11px] text-muted-foreground">
                 Pharma, retail, and trade
               </div>
+            </div>
+          </div>
+
+          {/* Live Bilateral Gateway Telemetry & Custody Ticker */}
+          <div className="mt-4 pt-3.5 border-t border-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-1.5">
+                <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
+                <span className="text-[11px] font-semibold text-foreground">DEL ⇄ IMF Gateway Status</span>
+              </div>
+              <span className="text-[11px] text-muted-foreground">IGI Terminal 4 Airside Ready</span>
+              <span className="text-border/80" aria-hidden="true">/</span>
+              <span className="text-[11px] text-muted-foreground">Tulihal Apron Receiving</span>
+              <span className="text-border/80" aria-hidden="true">/</span>
+              <span className="text-[11px] text-muted-foreground">BCAS Screening Active</span>
+            </div>
+            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5 shrink-0">
+              <ShieldCheck className="size-3.5 text-primary" />
+              <span>Continuous Chain of Custody</span>
             </div>
           </div>
         </div>
