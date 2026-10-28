@@ -1,15 +1,5 @@
 "use client";
 
-/**
- * @author: @dorianbaffier
- * @description: Split Flap Text
- * @version: 1.0.0
- * @date: 2026-10-22
- * @license: MIT
- * @website: https://kokonutui.com
- * @github: https://github.com/kokonut-labs/kokonutui
- */
-
 import {
   type CSSProperties,
   type Ref,
@@ -18,7 +8,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 /** The order the flaps are printed in. A tile can only flip forward. */
@@ -26,7 +15,7 @@ const CHARSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:.-/&!?";
 /** One flap falling, in ms. Quick, so long trips round the drum still feel brisk. */
 const FLIP = 56;
 /** Tiles start a beat apart, left to right. */
-const STAGGER = 24;
+const STAGGER = 40;
 
 export interface SplitFlapTextProps {
   /** Show this text. Leave out to cycle through `words`. */
@@ -70,8 +59,8 @@ function Half({
     >
       <span
         className={cn(
-          "absolute inset-x-0 flex h-[200%] items-center justify-center font-mono font-bold leading-none select-none",
-          half === "top" ? "top-0" : "-top-full"
+          "absolute inset-x-0 flex h-[200%] items-center justify-center font-bold leading-none select-none",
+          half === "top" ? "top-0" : "bottom-0"
         )}
       >
         {char}
@@ -85,8 +74,6 @@ interface Flip {
   from: string;
   to: string;
 }
-
-const FLIP_DURATION = 140;
 
 function Tile({
   target,
@@ -109,22 +96,28 @@ function Tile({
   useEffect(() => {
     if (reduceMotion) {
       shownRef.current = target;
+      setShown(target);
       return;
     }
-    if (shownRef.current === target) {
-      return;
-    }
-    const from = shownRef.current;
-    const to = target;
-    const timer = setTimeout(() => {
-      setFlip({ id: Date.now(), from, to });
-      const finishTimer = setTimeout(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    let id = 0;
+    // Step through the drum one flap at a time until the target is up.
+    const step = () => {
+      const from = shownRef.current;
+      if (from === target) {
+        setFlip(null);
+        return;
+      }
+      const to = CHARSET[(CHARSET.indexOf(from) + 1) % CHARSET.length];
+      id += 1;
+      setFlip({ id, from, to });
+      timer = setTimeout(() => {
         shownRef.current = to;
         setShown(to);
-        setFlip(null);
-      }, FLIP_DURATION);
-      return () => clearTimeout(finishTimer);
-    }, delay);
+        step();
+      }, FLIP);
+    };
+    timer = setTimeout(step, delay);
     return () => clearTimeout(timer);
   }, [target, delay, reduceMotion]);
 
@@ -134,7 +127,7 @@ function Tile({
     if (!flip) {
       return;
     }
-    const half = FLIP_DURATION / 2;
+    const half = FLIP / 2;
     topRef.current?.animate(
       [{ transform: "rotateX(0deg)" }, { transform: "rotateX(-90deg)" }],
       {
@@ -153,32 +146,22 @@ function Tile({
       }
     );
     shadeRef.current?.animate(
-      [{ opacity: 0 }, { opacity: 0.8 }, { opacity: 0 }],
+      [{ opacity: 0 }, { opacity: 1 }, { opacity: 0 }],
       {
-        duration: FLIP_DURATION,
+        duration: FLIP,
         easing: "linear",
       }
     );
   }, [flip]);
 
-  const front = reduceMotion ? target : flip ? flip.to : shown;
-  const back = reduceMotion ? target : flip ? flip.from : shown;
-  const isSpace = front === " " && back === " " && !flip;
-
-  if (isSpace) {
-    return (
-      <span
-        aria-hidden="true"
-        className="relative inline-block h-[1.48em] w-[0.38em] rounded-none select-none"
-      />
-    );
-  }
+  const front = flip ? flip.to : shown;
+  const back = flip ? flip.from : shown;
 
   return (
     <span
       aria-hidden="true"
       className={cn(
-        "relative inline-block h-[1.48em] w-[0.96em] rounded-none bg-primary text-primary-foreground shadow-[inset_0_0_0_1px_rgba(255,255,255,0.14)] [perspective:8em]",
+        "relative inline-block h-[1.15em] w-[0.72em] rounded-none bg-zinc-900 text-zinc-50 dark:bg-zinc-950 dark:text-zinc-100 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)] [perspective:5em] select-none",
         className
       )}
     >
@@ -186,7 +169,7 @@ function Tile({
       <Half char={front} half="top" />
       <Half char={back} half="bottom" />
       <span
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 rounded-none bg-black/40 opacity-0"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 rounded-none bg-black/50 opacity-0"
         ref={shadeRef}
       />
       {flip && (
@@ -207,8 +190,8 @@ function Tile({
           />
         </>
       )}
-      {/* Precision hairline split dividing top and bottom mechanical flaps */}
-      <span className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-black/35 dark:bg-black/60" />
+      {/* The mechanical hinge. */}
+      <span className="pointer-events-none absolute inset-x-0 top-1/2 h-[0.04em] -translate-y-1/2 bg-black/70" />
     </span>
   );
 }
@@ -218,17 +201,24 @@ function Tile({
  * as its new letter, the tiles start a beat apart, and the flaps fall on a
  * real hinge with the half below darkening under them.
  */
-export default function SplitFlapText({
+export function SplitFlapText({
   text,
-  words = ["NOW BOARDING", "GATE 12", "ON TIME", "LAST CALL"],
+  words = ["DEL TO IMF", "IMF TO DEL"],
   interval = 3800,
   length,
   className,
   tileClassName,
 }: SplitFlapTextProps) {
   const [index, setIndex] = useState(0);
-  const shouldReduceMotion = useReducedMotion();
-  const reduceMotion = Boolean(shouldReduceMotion);
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduceMotion(query.matches);
+    const onChange = () => setReduceMotion(query.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
 
   useEffect(() => {
     if (text !== undefined || words.length < 2) {
@@ -254,7 +244,7 @@ export default function SplitFlapText({
     <span
       className={cn(
         "inline-flex gap-[0.08em] font-semibold tabular-nums leading-none",
-        className || "text-3xl sm:text-5xl"
+        className
       )}
     >
       {/* Only announce text the app sets; a board cycling on its own would
@@ -277,3 +267,5 @@ export default function SplitFlapText({
     </span>
   );
 }
+
+export default SplitFlapText;

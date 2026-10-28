@@ -179,7 +179,7 @@ export function ServicesSection() {
               className="relative h-full w-full"
             >
               <MotionImage
-                src="/images/logistics/journey.webp"
+                src="/images/corridor-ink/journey-modal.png"
                 alt="Panoramic multi-modal logistics corridor across modern Indian metropolis with arterial expressway, container linehaul, rapid rail, and ascending aircraft"
                 fill
                 priority={true}

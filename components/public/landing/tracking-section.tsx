@@ -37,9 +37,20 @@ import {
   motionEasings,
   tactileInteraction,
 } from "@/lib/motion/motion.theme"
-import SignaturePad from "@/components/kokonutui/signature-pad"
-import CurrencyTransfer from "@/components/kokonutui/currency-transfer"
-import ReceiptPrinter from "@/components/kokonutui/receipt-printer"
+import dynamic from "next/dynamic"
+
+const SignaturePad = dynamic(() => import("@/components/kokonutui/signature-pad"), {
+  ssr: false,
+  loading: () => <div className="h-64 w-full animate-pulse bg-muted/20" />,
+})
+const CurrencyTransfer = dynamic(() => import("@/components/kokonutui/currency-transfer"), {
+  ssr: false,
+  loading: () => <div className="h-64 w-full animate-pulse bg-muted/20" />,
+})
+const ReceiptPrinter = dynamic(() => import("@/components/kokonutui/receipt-printer"), {
+  ssr: false,
+  loading: () => <div className="h-64 w-full animate-pulse bg-muted/20" />,
+})
 
 const CARGO_LABELS: BoardingPassLabels = {
   field1: "Gate",

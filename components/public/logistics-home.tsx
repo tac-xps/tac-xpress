@@ -1,35 +1,52 @@
+"use client"
+
 import React from "react"
 import { MotionProvider } from "./landing/motion-provider"
 import { LandingNav } from "./landing/landing-nav"
 import { HeroSection } from "./landing/hero-section"
-import { CorridorMarquee } from "./landing/section-primitives"
-import { TelemetryStatsBand } from "./landing/telemetry-stats-band"
-import { ServicesSection } from "./landing/services-section"
-import { TrackingSection } from "./landing/tracking-section"
-import { ProcessSection } from "./landing/process-section"
-import { NetworkSection } from "./landing/network-section"
-import { CareSection } from "./landing/care-section"
+import { OperationalCapabilitiesSection } from "./landing/operational-capabilities-section"
+import { CarrierTrustBand } from "./landing/carrier-trust-band"
 import { BrandStatementSection } from "./landing/brand-statement-section"
-import { FeedbackSection } from "./landing/feedback-section"
-import { FAQSection } from "./landing/faq-section"
+import { TelemetryStatsBand } from "./landing/telemetry-stats-band"
+import { FleetShowcaseSection } from "./landing/fleet-showcase-section"
+import { CorridorCinemaSection } from "./landing/corridor-cinema-section"
+import { HowItWorksSection } from "./landing/how-it-works-section"
+import { TestimonialSection } from "./landing/testimonial-section"
+import { CorridorTariffsSection } from "./landing/corridor-tariffs-section"
+import { DispatchBulletinsSection } from "./landing/dispatch-bulletins-section"
+import { ClosingStorySection } from "./landing/closing-story-section"
+import { FaqSection } from "./landing/faq-section"
+import { ClosingCtaSection } from "./landing/closing-cta-section"
 import { ContactSection } from "./landing/contact-section"
 import { LandingFooter } from "./landing/landing-footer"
 import { SupportChat } from "./support-chat"
 import { BackToTop } from "./landing/back-to-top"
-import ScrollIndex from "@/components/kokonutui/scroll-index"
 
 /**
- * TAC Express: Master Landing Page (Motion System 2.0: Living Logistics)
+ * TAC-XPRESS: Master Landing Page (1:1 Exact Atomist Architecture)
  *
- * Implements "Quiet Infrastructure" with clear editorial hierarchy:
- * Cargo, Visibility, Journey, Delivery, FAQ, and Operations Desk.
- *
- * Motion Engine: Exclusively `motion/react` v14.0.0 with zero GSAP.
+ * Enforces the visual system from the Atomist reference:
+ * 1. Top Announcement Bar & Navbar
+ * 2. Hero Section (Centered headline with amber accent, 4 tabs, central console with ambient glow)
+ * 3. "We trusted with" Gateway Partners Strip
+ * 4. Mission Statement Pullquote Card
+ * 5. "Tracked linehaul" Metrics & Rising Trajectory Wave
+ * 6. "We provide best linehaul" Interactive Mode Accordion & Fleet Equipment
+ * 7. "We build the corridor connection" 16:9 Cinema Banner with Telemetry Modal
+ * 8. "How does it work?" 3-Step Visual Process Grid
+ * 9. "Customers see the direct result" 2-Column Testimonial Card
+ * 10. "Flexible pricing for any scale" Interactive Tariffs Selector with Visual Mode Thumbnails
+ * 11. "Read our latest articles & updates" 3-Card Dispatch Bulletins
+ * 12. "Every shipment moves something forward" Corridor Linehaul Convoy Narrative
+ * 13. "FAQs" 2-Column Accordion Layout
+ * 14. Dark Glowing Closing Action Banner with Corridor Panorama
+ * 15. "Get in touch" Operations Desk & Consignment Booking Console
+ * 16. Directory Footer with Giant TAC-XPRESS Watermark
  */
 export function LogisticsHome() {
   return (
     <MotionProvider>
-      <div className="cargo-public min-h-svh w-full max-w-full overflow-x-clip bg-background text-foreground selection:bg-primary/20 selection:text-foreground">
+      <div className="cargo-public min-h-svh w-full max-w-full overflow-x-clip bg-background text-foreground selection:bg-mn-ochre/20 selection:text-foreground">
         {/* Accessible Skip-to-Content Link */}
         <a
           href="#main-content"
@@ -38,44 +55,57 @@ export function LogisticsHome() {
           Skip to content
         </a>
 
-        {/* Direction-Aware Header */}
+        {/* 1. Announcement Bar & Navbar */}
         <LandingNav />
 
-        {/* Page Chapter Rail: ScrollIndex in overlay mode (fixed right-edge) */}
-        <ScrollIndex
-          scroller="overlay"
-          selector="h2[id], h2"
-        >
-          <main id="main-content" className="relative">
-            {/* Chapter 01: Cargo */}
-            <HeroSection />
+        <main id="main-content" className="relative">
+          {/* 2. Hero Section */}
+          <HeroSection />
 
-            {/* Live High-Contrast Corridor Telemetry Performance Monument */}
-            <TelemetryStatsBand />
+          {/* 3. Verified Operational Capabilities */}
+          <OperationalCapabilitiesSection />
 
-            <ServicesSection />
+          {/* 4. We trusted with */}
+          <CarrierTrustBand />
 
-            {/* Chapter 02: Visibility */}
-            <TrackingSection />
+          {/* 4. Mission Statement */}
+          <BrandStatementSection />
 
-            {/* Chapter 03: Journey */}
-            <ProcessSection />
-            <NetworkSection />
+          {/* 5. Tracked linehaul */}
+          <TelemetryStatsBand />
 
-            {/* Chapter 04: Delivery */}
-            <CareSection />
-            <BrandStatementSection />
+          {/* 6. We provide best linehaul & Fleet Commercial Equipment */}
+          <FleetShowcaseSection />
 
-            {/* Chapter 05: Feedback Signal Loop */}
-            <FeedbackSection />
-            <ContactSection />
+          {/* 7. Corridor Cinema Banner */}
+          <CorridorCinemaSection />
 
-            {/* Utility: Operational Clarity */}
-            <FAQSection />
-          </main>
-        </ScrollIndex>
+          {/* 8. How does it work? */}
+          <HowItWorksSection />
 
-        {/* Utility: Editorial Closing Directory */}
+          {/* 9. Customers see the direct result */}
+          <TestimonialSection />
+
+          {/* 10. Flexible pricing for any scale */}
+          <CorridorTariffsSection />
+
+          {/* 11. Read our latest articles & updates */}
+          <DispatchBulletinsSection />
+
+          {/* 12. Corridor Linehaul Convoy Narrative */}
+          <ClosingStorySection />
+
+          {/* 13. FAQs */}
+          <FaqSection />
+
+          {/* 14. Closing CTA Banner */}
+          <ClosingCtaSection />
+
+          {/* 15. Get in touch */}
+          <ContactSection />
+        </main>
+
+        {/* 16. Directory Footer with Giant Watermark */}
         <LandingFooter />
 
         {/* On-Demand Support Assistant */}

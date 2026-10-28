@@ -1,289 +1,199 @@
 "use client"
 
-import React, { useRef, useState } from "react"
+import React from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useSpring,
-  useReducedMotion,
-} from "motion/react"
-import { ArrowUpRight, Search } from "lucide-react"
+import { ArrowUpRight, Plane } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { ProofStats } from "./section-primitives"
-import { LivingCargoLine } from "./living-cargo-line"
-import { GridPattern } from "@/components/ui/grid-pattern"
-import { BorderBeam } from "@/components/ui/border-beam"
 
-import FlowField from "@/components/kokonutui/flow-field"
-import SplitFlapText from "@/components/kokonutui/split-flap-text"
-import AttractButton from "@/components/kokonutui/attract-button"
-
-import {
-  motionDurations,
-  motionEasings,
-  motionSprings,
-  lineMaskReveal,
-} from "@/lib/motion/motion.theme"
-
-
-/**
- * Hero section delivering the primary commercial value proposition,
- * linehaul metrics, quick quote and tracking CTAs, master logistics visual,
- * and grounded baseline telemetry proof strip (KPI stats + route marquee).
- */
 export function HeroSection() {
-  const router = useRouter()
-  const containerRef = useRef<HTMLDivElement>(null)
-  const shouldReduceMotion = useReducedMotion()
-  const [quickTrackAwb, setQuickTrackAwb] = useState("")
-
-  const handleQuickTrack = () => {
-    const trimmed = quickTrackAwb.trim().toUpperCase()
-    if (!trimmed) {
-      const el = document.getElementById("visibility-chapter")
-      if (el) el.scrollIntoView({ behavior: "smooth" })
-      return
-    }
-    router.push(`/track?awb=${encodeURIComponent(trimmed)}`)
-  }
-
-  // Scroll-linked editorial zoom and parallax on scroll exit
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  })
-
-  // Smooth scroll interpolation via calibrated spring
-  const smoothProgress = useSpring(scrollYProgress, motionSprings.springScroll)
-
-  // Subtle Nordic scroll zoom & vertical translation
-  const imageScale = useTransform(smoothProgress, [0, 1], [1.0, 1.045])
-  const imageY = useTransform(smoothProgress, [0, 1], [0, 14])
-  const headlineY = useTransform(smoothProgress, [0, 1], [0, -14])
-
   return (
     <section
-      ref={containerRef}
-      id="cargo-chapter"
+      id="hero"
       aria-labelledby="hero-heading"
-      className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-between overflow-hidden border-b border-border/80 bg-background text-foreground transition-colors"
+      className="relative w-full border-b border-border bg-background pt-24 sm:pt-28 lg:pt-32 xl:pt-36 pb-10 sm:pb-12 lg:pb-14 overflow-hidden"
     >
-      {/* Background High-Altitude Jet Stream Corridor Flow Field */}
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-15 dark:opacity-25 text-muted-foreground">
-        <FlowField density={0.28} speed={0.55} interactive={false} />
-      </div>
-
-      <GridPattern
-        width={32}
-        height={32}
-        strokeDasharray="4 4"
-        className="opacity-25 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,var(--foreground)_70%,transparent_100%)] z-0"
-      />
-      <div className="relative z-10 mx-auto flex w-full max-w-[1360px] flex-1 items-center px-4 sm:px-6 lg:px-12 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10 lg:pb-12">
-        <div className="grid w-full grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
-          {/* Left Column: Editorial Copy & Chapter Origin */}
-          <motion.div
-            style={{ y: headlineY }}
-            className="flex flex-col lg:col-span-7 xl:col-span-7"
-          >
-
-
-            {/* Headline (fluid display with unclipped typography reveal) */}
-            <h1
-              id="hero-heading"
-              className="text-hero-display text-foreground"
-            >
-              <span className="sr-only">Move cargo. With clarity. </span>
-              <span className="block overflow-hidden py-0.5">
-                <motion.span
-                  className="block font-medium text-foreground lg:whitespace-nowrap"
-                  custom={0}
-                  initial={false}
-                  animate="visible"
-                  variants={lineMaskReveal}
-                >
-                  Delhi to Northeast.
-                </motion.span>
-              </span>
-              <span className="block py-0.5">
-                <SplitFlapText
-                  words={[
-                    "DELIVERED.",
-                    "IMPHAL.",
-                    "GUWAHATI.",
-                    "SHILLONG.",
-                    "DIMAPUR.",
-                    "AIZAWL.",
-                    "AGARTALA.",
-                  ]}
-                  interval={3200}
-                  className="font-mono text-hero-display font-semibold tracking-tight text-primary uppercase"
-                />
-              </span>
-            </h1>
-
-            {/* Supporting Copy & Living Cargo Line */}
-            <div className="mt-5 sm:mt-6 space-y-4">
-              <LivingCargoLine variant="rule" className="w-24 sm:w-32" />
-              <motion.div
-                initial={{ y: 10 }}
-                animate={{ y: 0 }}
-                transition={{
-                  duration: motionDurations.editorial,
-                  delay: 0.26,
-                  ease: motionEasings.editorial,
-                }}
-                className="space-y-4 max-w-[56ch]"
-              >
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 border-l-2 border-primary bg-muted/20 py-1.5 pl-3 pr-2 font-sans text-xs text-muted-foreground">
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="size-2 rounded-none bg-status-delivered motion-safe:animate-pulse motion-reduce:opacity-100" aria-hidden="true" />
-                    <span className="font-semibold text-primary text-xs">Live Gate:</span>
-                  </div>
-                  <div
-                    tabIndex={0}
-                    role="region"
-                    aria-label="Live flight departure board"
-                    className="overflow-x-auto max-w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-                  >
-                    <SplitFlapText
-                      words={[
-                        "6E-6124 DEL-IMF: DEPARTED",
-                        "BCAS GATE 4: CLEAR 100%",
-                        "RAMP SLA: 99.4% ON-TIME",
-                        "AI-889 IMF-DEL: STAGED"
-                      ]}
-                      interval={4200}
-                      className="text-xs font-mono font-semibold text-foreground"
-                    />
-                  </div>
-                </div>
-                <p className="text-base sm:text-lg font-medium text-foreground leading-relaxed tracking-tight text-pretty">
-                  Scheduled air cargo and arterial express linehaul connecting Delhi with Northeast India.
-                </p>
-              </motion.div>
+      <div className="mx-auto w-full max-w-[1240px] px-6 lg:px-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          {/* Left Column: Proposition, Headline, CTAs & Route Scope */}
+          <div className="lg:col-span-6 flex flex-col items-start text-left">
+            {/* Service Context Eyebrow Chip */}
+            <div className="inline-flex items-center gap-2 border border-border bg-card px-2.5 py-0.5 text-xs font-sans text-muted-foreground rounded-none shadow-2xs">
+              <span className="size-1.5 rounded-none bg-mn-ochre" aria-hidden="true" />
+              <span className="font-medium text-foreground">Air Express and Highway Freight</span>
             </div>
 
-            {/* Actions Row with Kokonut UI AttractButton */}
-            <motion.div
-              initial={{ y: 12 }}
-              animate={{ y: 0 }}
-              transition={{
-                duration: motionDurations.reveal,
-                delay: 0.34,
-                ease: motionEasings.editorial,
-              }}
-              className="mt-8 sm:mt-10 flex flex-wrap items-center gap-3 sm:gap-4"
+            {/* Clean Display Headline with Semantic Typographic Emphasis (20% Larger) */}
+            <h1
+              id="hero-heading"
+              className="mt-3.5 text-4xl sm:text-5xl lg:text-[3.35rem] font-bold tracking-tight text-foreground leading-[1.08] text-balance"
             >
-              <AttractButton
-                className="h-11 px-6 rounded-none font-semibold text-sm bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 transition-colors"
-                onClick={() => {
-                  const el = document.getElementById("contact")
-                  if (el) el.scrollIntoView({ behavior: "smooth" })
-                }}
-              >
-                Book a shipment
-                <ArrowUpRight className="size-4 shrink-0" />
-              </AttractButton>
+              Connecting Delhi to Imphal.{" "}
+              <span className="text-primary font-semibold">Moving freight.</span>
+            </h1>
 
+            {/* Clear Concise Value Proposition Subhead */}
+            <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl text-pretty">
+              Dedicated commercial logistics connecting Delhi and Imphal with verified linehaul visibility.
+            </p>
+
+            {/* Dual Conversion Actions */}
+            <div className="mt-5 flex flex-wrap items-center gap-2.5">
+              <Button
+                asChild
+                className="h-10 px-5 rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary-hover transition-colors shadow-2xs active:scale-[0.98]"
+              >
+                <Link href="#contact">
+                  Book Consignment
+                  <ArrowUpRight className="ml-1.5 size-3.5" />
+                </Link>
+              </Button>
               <Button
                 asChild
                 variant="outline"
-                className="h-11 px-5 font-medium tracking-tight hover:bg-accent rounded-none border-border/80 inline-flex items-center"
+                className="h-10 px-5 rounded-none font-medium text-xs border-border bg-card text-foreground hover:bg-muted transition-colors shadow-2xs"
               >
-                <Link href="#visibility-chapter">
-                  <Search className="mr-2 size-3.5" />
-                  Track cargo
-                </Link>
+                <a href="#quick-calculator">
+                  Get an Instant Quote
+                </a>
               </Button>
-            </motion.div>
+            </div>
 
-            {/* Inline Instant Tracking Lookup Bar */}
-            <motion.div
-              initial={{ y: 12 }}
-              animate={{ y: 0 }}
-              transition={{
-                duration: motionDurations.reveal,
-                delay: 0.38,
-                ease: motionEasings.editorial,
-              }}
-              className="mt-6 flex max-w-md items-center h-11 border border-input bg-card p-1 shadow-xs"
-              data-slot="quick-track"
-            >
-              <Search className="ml-2.5 size-4 text-muted-foreground shrink-0" />
-              <input
-                type="text"
-                placeholder="Track AWB (e.g. TAC-2409-18472)..."
-                value={quickTrackAwb}
-                onChange={(e) => setQuickTrackAwb(e.target.value)}
-                className="h-full w-full bg-transparent px-3 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground outline-none"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleQuickTrack()
-                  }
-                }}
-              />
-              <Button
-                size="sm"
-                className="rounded-none bg-primary text-primary-foreground font-sans text-xs px-4 h-9 hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-primary active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleQuickTrack}
-              >
-                Track
-              </Button>
-            </motion.div>
-          </motion.div>
+            {/* Verified Corridor Endpoint Metadata */}
+            <div className="mt-6 pt-4 border-t border-border/80 w-full grid grid-cols-2 sm:grid-cols-3 gap-3 text-left">
+              <div>
+                <div className="text-[10px] font-sans text-muted-foreground">Origin Hub</div>
+                <div className="text-xs sm:text-sm font-semibold text-foreground mt-0.5">
+                  DEL <span className="text-[11px] font-normal text-muted-foreground">New Delhi</span>
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] font-sans text-muted-foreground">Destination Hub</div>
+                <div className="text-xs sm:text-sm font-semibold text-foreground mt-0.5">
+                  IMF <span className="text-[11px] font-normal text-muted-foreground">Imphal</span>
+                </div>
+              </div>
+              <div className="col-span-2 sm:col-span-1">
+                <div className="text-[10px] font-sans text-muted-foreground">Transit Standard</div>
+                <div className="text-[11px] font-medium text-foreground mt-0.5">
+                  Air 24h, road 4 to 5 days
+                </div>
+              </div>
+            </div>
+          </div>
 
-          {/* Right Column: Master Cinematic Visual Container (lg:col-span-5) */}
-          <div className="lg:col-span-5 xl:col-span-5">
-            <div className="relative overflow-hidden border border-border/80 bg-card shadow-sm isolate">
-              <BorderBeam
-                size={80}
-                duration={10}
-                colorFrom="var(--color-primary)"
-                colorTo="transparent"
-                borderWidth={1}
-              />
-
-              {/* Master Cinematic Video Wrapper (4:3) */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted/10">
-                <motion.div
-                  style={
-                    shouldReduceMotion
-                      ? undefined
-                      : { scale: imageScale, y: imageY }
-                  }
-                  className="relative h-full w-full transform-gpu"
-                >
-                  <Image
-                    src="/images/logistics/hero.webp"
-                    alt="TAC Express commercial logistics corridor connecting Delhi and Northeast India"
-                    fill
-                    priority
-                    className="object-cover select-none"
-                    sizes="(min-width: 1280px) 520px, (min-width: 1024px) 42vw, 100vw"
-                  />
-                </motion.div>
+          {/* Right Column: Deliberate Operational Canvas with Docked Corridor Overview */}
+          <div className="lg:col-span-6 w-full">
+            <div className="relative border border-border bg-card shadow-xs overflow-hidden rounded-none">
+              {/* Operational Artwork Representation */}
+              <div className="relative aspect-[16/10] w-full bg-muted overflow-hidden">
+                <Image
+                  src="/images/corridor-ink/hero-console.png"
+                  alt="TAC-XPRESS commercial aircraft and arterial mountain linehaul connecting New Delhi and Imphal"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 620px"
+                  className="object-cover rounded-none"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent pointer-events-none" />
               </div>
 
-              {/* Restrained Architectural Baseline Tag */}
-              <div className="relative z-10 flex items-center justify-between border-t border-border/80 bg-background/95 px-4 py-2.5 font-sans text-xs text-foreground/80">
-                <span className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
-                  <span className="font-medium text-foreground">DEL ⇄ Northeast Linehaul</span>
-                </span>
-                <span className="text-muted-foreground font-medium">Daily Scheduled</span>
+              {/* Compact Docked Corridor Overview Telemetry Card */}
+              <div className="p-3.5 sm:p-4 border-t border-border bg-background">
+                <div className="flex items-center justify-between pb-2 border-b border-border/60">
+                  <div className="flex items-center gap-1.5">
+                    <span className="relative flex size-1.5" aria-hidden="true">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-status-delivered opacity-75 motion-reduce:hidden" />
+                      <span className="relative inline-flex size-1.5 bg-status-delivered rounded-none" />
+                    </span>
+                    <span className="text-[11px] font-semibold text-foreground tracking-tight">CORRIDOR OVERVIEW</span>
+                  </div>
+                  <span className="text-[10px] text-mn-ochre font-medium">Bilateral Route Active</span>
+                </div>
+
+                <div className="grid grid-cols-12 gap-2 pt-2.5 items-center">
+                  {/* Origin Endpoint */}
+                  <div className="col-span-4">
+                    <div className="text-[9px] text-muted-foreground">ORIGIN</div>
+                    <div className="text-sm font-bold text-foreground">DEL</div>
+                    <div className="text-[10px] text-muted-foreground">New Delhi (IGI T4)</div>
+                  </div>
+
+                  {/* Route Vector Distance */}
+                  <div className="col-span-4 flex flex-col items-center justify-center text-center px-1">
+                    <div className="text-[9px] font-sans text-muted-foreground">2,410 km</div>
+                    <div className="relative w-full flex items-center my-0.5">
+                      <div className="h-[1.5px] w-full bg-border" />
+                      <Plane className="size-2.5 text-primary absolute left-1/2 -translate-x-1/2 -translate-y-[1px]" />
+                    </div>
+                    <div className="text-[8.5px] text-muted-foreground">Air + Arterial Road</div>
+                  </div>
+
+                  {/* Destination Endpoint */}
+                  <div className="col-span-4 text-right">
+                    <div className="text-[9px] text-muted-foreground">DESTINATION</div>
+                    <div className="text-sm font-bold text-foreground">IMF</div>
+                    <div className="text-[10px] text-muted-foreground">Imphal (Tulihal)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Compact Minimalistic 15+ Years Service Milestone Stats */}
+        <div className="mt-8 sm:mt-10 pt-5 sm:pt-6 border-t border-border/80">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+            <div className="flex flex-col text-left">
+              <div className="font-mono text-xl sm:text-2xl lg:text-[1.75rem] font-bold tracking-tight text-foreground leading-none">
+                15<span className="text-primary font-sans">+</span> Years
+              </div>
+              <div className="mt-1.5 text-xs font-semibold text-foreground">
+                Continuous Service
+              </div>
+              <div className="text-[11px] text-muted-foreground">
+                Delhi and Imphal since 2011
+              </div>
+            </div>
+
+            <div className="flex flex-col text-left">
+              <div className="font-mono text-xl sm:text-2xl lg:text-[1.75rem] font-bold tracking-tight text-foreground leading-none">
+                500k<span className="text-primary font-sans">+</span>
+              </div>
+              <div className="mt-1.5 text-xs font-semibold text-foreground">
+                Consignments Delivered
+              </div>
+              <div className="text-[11px] text-muted-foreground">
+                Air and highway tonnage
+              </div>
+            </div>
+
+            <div className="flex flex-col text-left">
+              <div className="font-mono text-xl sm:text-2xl lg:text-[1.75rem] font-bold tracking-tight text-foreground leading-none">
+                99.8<span className="text-primary font-sans">%</span>
+              </div>
+              <div className="mt-1.5 text-xs font-semibold text-foreground">
+                SLA Compliance
+              </div>
+              <div className="text-[11px] text-muted-foreground">
+                24h air, 4 to 5 day road
+              </div>
+            </div>
+
+            <div className="flex flex-col text-left">
+              <div className="font-mono text-xl sm:text-2xl lg:text-[1.75rem] font-bold tracking-tight text-foreground leading-none">
+                10,000<span className="text-primary font-sans">+</span>
+              </div>
+              <div className="mt-1.5 text-xs font-semibold text-foreground">
+                Commercial Shippers
+              </div>
+              <div className="text-[11px] text-muted-foreground">
+                Pharma, retail, and trade
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Docked Hero Baseline: Proof Stats (4-column operational KPI metrics) */}
-      <ProofStats className="relative z-10 border-b-0" />
     </section>
   )
 }

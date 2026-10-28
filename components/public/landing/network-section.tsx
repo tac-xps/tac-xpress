@@ -190,7 +190,7 @@ export function NetworkSection() {
             className="relative aspect-16/9 w-full overflow-hidden sm:aspect-21/9 sm:min-h-[300px] lg:min-h-[380px]"
           >
             <Image
-              src="/images/logistics/network.webp"
+              src="/images/corridor-ink/cinema-network.png"
               alt="IGI Air Cargo terminal apron with cargo container dollies, ULD pallets, and linehaul transport"
               fill
               className="object-cover select-none brightness-90 contrast-105"

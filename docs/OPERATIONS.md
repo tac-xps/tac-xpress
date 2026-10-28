@@ -4,6 +4,10 @@
 
 Staff use the dashboard to create and manage shipments, manifests, dispatches, fleet records, invoices, customers, pricing, warehouse updates, and support tickets. Dashboard access requires an `admin` or `staff` session.
 
+## Exclusive Corridor Mandate
+- Tac-Xpress operates exclusively on the New Delhi <-> Imphal (DEL <-> IMF) and Imphal <-> New Delhi (IMF <-> DEL) bilateral corridor.
+- Bookings, dispatches, rate quotes, and flight/linehaul schedules for any other state or destination are strictly prohibited.
+
 ## Reliable operation
 
 - Confirm an AWB, route, customer, and current status before making an update.

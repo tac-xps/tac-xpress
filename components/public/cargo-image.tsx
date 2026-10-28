@@ -4,25 +4,25 @@ import { cn } from "@/lib/utils"
 export type CargoAsset = "hero" | "air" | "surface" | "packing" | "warehouse" | "about"
 const descriptions: Record<CargoAsset, string> = {
   hero:
-    "3D Blender Cycles render of a modern TAC-XPRESS electric freight truck navigating a scenic Himalayan mountain highway pass at golden hour sunrise.",
-  air: "3D Blender architectural render of a regional cargo aircraft and pallet loader at sunset.",
+    "Ink wash brushwork illustration of multi-modal corridor freight transit between New Delhi and Imphal.",
+  air: "Ink wash brushwork illustration of widebody air cargo loading with ULD pallets on the apron.",
   surface:
-    "3D Blender landscape render of a cargo container truck following a mountain highway through green foothills.",
+    "Ink wash brushwork illustration of heavy container linehaul truck navigating the Himalayan mountain pass.",
   packing:
-    "3D Blender still life render of corrugated cartons, protective packing and a cushioned ceramic bowl.",
+    "Ink wash brushwork illustration of reinforced industrial palletized freight with DEL to IMP cargo labels.",
   warehouse:
-    "3D Blender architectural render of an organized cargo warehouse loading bay in warm late afternoon light.",
+    "Ink wash brushwork illustration of modern cross-dock warehouse sortation bay.",
   about:
-    "3D Blender architectural render of a cargo collection and handover hub in Northeast India with scenic hills.",
+    "Ink wash brushwork illustration of Imphal regional cargo hub and distribution terminal.",
 }
 
 const assetPaths: Record<CargoAsset, string> = {
-  hero: "/images/cargo-2026/hero-3d-mountain-pass.webp",
-  air: "/images/cargo-2026/air-3d.webp",
-  surface: "/images/cargo-2026/surface-3d.webp",
-  packing: "/images/cargo-2026/packing-3d.webp",
-  warehouse: "/images/cargo-2026/warehouse-3d.webp",
-  about: "/images/cargo-2026/about-3d.webp",
+  hero: "/images/corridor-ink/hero-console.png",
+  air: "/images/corridor-ink/fleet-air.png",
+  surface: "/images/corridor-ink/fleet-surface.png",
+  packing: "/images/corridor-ink/fleet-packaging.png",
+  warehouse: "/images/corridor-ink/auth-warehouse.png",
+  about: "/images/corridor-ink/fleet-imphal-hub.png",
 }
 
 interface CargoImageProps {

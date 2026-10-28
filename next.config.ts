@@ -70,6 +70,12 @@ const nextConfig: NextConfig = {
       "@radix-ui/react-avatar",
       "@radix-ui/react-checkbox",
       "@radix-ui/react-separator",
+      "@radix-ui/react-slot",
+      "@radix-ui/react-label",
+      "radix-ui",
+      "sonner",
+      "vaul",
+      "@base-ui/react",
     ],
   },
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
@@ -83,7 +89,7 @@ const nextConfig: NextConfig = {
 
   logging: {
     fetches: {
-      fullUrl: false,
+      fullUrl: true,
     },
   },
 

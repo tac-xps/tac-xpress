@@ -13,6 +13,7 @@
     "design:diff": "designmd diff docs/DESIGN.md docs/DESIGN-v2.md",
     "preinstall": "npx only-allow pnpm",
     "dev": "next dev --turbo",
+    "dev:trace": "next dev --turbo --internal-trace",
     "dev:webpack": "next dev --webpack",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",
     "build:safe": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",

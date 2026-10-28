@@ -40,6 +40,7 @@ A task is complete only when all criteria pass:
 
 ## 4. Boundaries (Always Do / Never Do)
 ### Never Do
+- Never route, quote, dispatch, or offer freight services to or from any location outside the New Delhi and Imphal corridor. Tac-Xpress operates exclusively on New Delhi <-> Imphal (DEL <-> IMF) and Imphal <-> New Delhi (IMF <-> DEL). All other states, cities, and transit routes are strictly forbidden.
 - Never use `npm` or `yarn`. Use `pnpm` exclusively.
 - Never create `middleware.ts`. Next.js 16 requires edge logic in `proxy.ts`.
 - Never use the `pages/` directory. Use App Router `app/` exclusively.
@@ -54,6 +55,7 @@ A task is complete only when all criteria pass:
 - Never nest cards inside cards (`bg-card` inside `bg-card`) (Hallmark Floor 4).
 
 ### Always Do
+- Enforce the exclusive New Delhi <-> Imphal (DEL <-> IMF) bilateral route. All services, tracking, quotes, and dispatch operate solely between New Delhi and Imphal.
 - Prefer React Server Components by default. Add `"use client"` only when hooks or browser APIs are needed.
 - Use Shadcn UI primitives from `components/ui` or ReUI components from `components/reui`.
 - Ensure sidebar layout remains sticky with `sticky top-0 h-svh`.

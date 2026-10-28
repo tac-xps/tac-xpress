@@ -165,9 +165,6 @@ export function HeroDispatchConsole({
                     className="border border-border px-3.5 py-2 font-mono text-sm focus:outline-none focus-visible:ring-1 transition-colors bg-surface text-foreground focus:border-primary focus-visible:ring-primary rounded-none"
                   >
                     <option value="imphal">IMF / Imphal (Manipur)</option>
-                    <option value="guwahati">GAU / Guwahati (Assam)</option>
-                    <option value="dimapur">DMU / Dimapur (Nagaland)</option>
-                    <option value="agartala">IXA / Agartala (Tripura)</option>
                   </select>
                 </div>
               </div>

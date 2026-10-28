@@ -717,6 +717,7 @@ button,
 
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
     font-family: var(--font-sans);
     overflow-x: clip;
   }

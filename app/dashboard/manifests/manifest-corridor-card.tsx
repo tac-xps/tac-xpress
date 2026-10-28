@@ -53,8 +53,7 @@ export function ManifestCorridorCard({ form, hubs }: ManifestCorridorCardProps) 
       if (loc.includes("delhi")) return "DEL"
       if (loc.includes("imphal west")) return "IMF-WEST"
       if (loc.includes("imphal")) return "IMF"
-      if (loc.includes("guwahati")) return "GAU"
-      if (loc.includes("kolkata")) return "CCU"
+      if (loc.includes("tulihal") || loc.includes("apron")) return "IMF-APRON"
       return loc.slice(0, 4).toUpperCase()
     }
 

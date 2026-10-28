@@ -12,4 +12,8 @@ The current standard is [DESIGN.md](DESIGN.md); exact Tailark and shadcn adaptat
 | Native confirmation and implicit upload success | Shadcn AlertDialog and explicit saved, failed or retry states. |
 | Customer portal links | Public tracking/contact and a separate staff sign-in entry. |
 
-Keep business behavior explicit while adapting the interface. Preserve unrelated legacy files, use server components for explanatory content, and split large components and state hooks. Verify light/dark themes, 320px overflow, keyboard focus and actual success/failure behavior. An isolated visual fixture does not establish an authenticated operational workflow.
+## Exclusive Corridor Constraint
+- Route: Strictly New Delhi <-> Imphal (DEL <-> IMF) and Imphal <-> New Delhi (IMF <-> DEL).
+- Scope: All other states, cities, and regional destinations are strictly forbidden and decommissioned.
+- Design: Visual-first Nordic Lagom, image-led, low-text, 6 consolidated airy sections on Warm Birch (#F7F6F2) and Soft Limestone (#EFECE6), closing with Deep Nordic Fjord Slate (#18221F).
+
