@@ -46,7 +46,8 @@ const BUMP_DAMPING = 2 * Math.sqrt(BUMP_STIFFNESS) * 0.7
 const BUMP = 0.45
 // Columns rise in a wave from where you grabbed; the far end lags by this share of the whole rise.
 const WAVE = 0.7
-const PADDING = 28
+const PADDING_X = 36
+const PADDING_Y = 22
 const REST_EPSILON = 0.0005
 const LABELS = ["Mon", "", "Wed", "", "Fri", "", ""]
 
@@ -208,11 +209,11 @@ function visibleFaces(
   x0: number,
   z0: number,
   h: number
-): { points: number[][]; tone: number }[] {
+): { points: number[][]; tone: number; isTop: boolean }[] {
   const x1 = x0 + 1 - GAP
   const z1 = z0 + 1 - GAP
   const p = (x: number, y: number, z: number) => project(pose, x, y, z)
-  const faces: { points: number[][]; tone: number }[] = []
+  const faces: { points: number[][]; tone: number; isTop: boolean }[] = []
   const sin = Math.sin(pose.yaw)
   const cos = Math.cos(pose.yaw)
   if (h > 0.02 && pose.pitch > 0.01) {
@@ -220,28 +221,33 @@ function visibleFaces(
       faces.push({
         points: [p(x0, 0, z1), p(x1, 0, z1), p(x1, h, z1), p(x0, h, z1)],
         tone: 0.22,
+        isTop: false,
       })
     } else {
       faces.push({
         points: [p(x0, 0, z0), p(x1, 0, z0), p(x1, h, z0), p(x0, h, z0)],
         tone: 0.22,
+        isTop: false,
       })
     }
     if (sin > 0.001) {
       faces.push({
         points: [p(x1, 0, z0), p(x1, 0, z1), p(x1, h, z1), p(x1, h, z0)],
         tone: 0.38,
+        isTop: false,
       })
     } else if (sin < -0.001) {
       faces.push({
         points: [p(x0, 0, z0), p(x0, 0, z1), p(x0, h, z1), p(x0, h, z0)],
         tone: 0.38,
+        isTop: false,
       })
     }
   }
   faces.push({
     points: [p(x0, h, z0), p(x1, h, z0), p(x1, h, z1), p(x0, h, z1)],
     tone: 0,
+    isTop: true,
   })
   return faces
 }
@@ -279,7 +285,7 @@ const formatMonth = (date: Date) =>
 
 export function ActivityTerrain({
   data = DEFAULT_DATA,
-  endDate = "2026-10-28",
+  endDate = "2026-10-25",
   title = "Corridor Velocity",
   unit = "kg",
   defaultFlat = false,
@@ -295,9 +301,9 @@ export function ActivityTerrain({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const paletteRef = useRef<Palette | null>(null)
   const sim = useRef({
-    yaw: 0,
+    yaw: defaultFlat ? 0 : YAW_TERRAIN,
     yawSpeed: 0,
-    pitch: 0,
+    pitch: defaultFlat ? 0 : PITCH_TERRAIN,
     pitchSpeed: 0,
     pitchTarget: defaultFlat ? 0 : PITCH_TERRAIN,
     bumps: new Float64Array(cells.length),
@@ -366,15 +372,15 @@ export function ActivityTerrain({
       }
     }
     const scale = Math.min(
-      (s.width - PADDING * 2) / (maxX - minX),
-      (s.height - PADDING * 2) / (maxY - minY)
+      (s.width - PADDING_X * 2) / (maxX - minX),
+      (s.height - PADDING_Y * 2) / (maxY - minY)
     )
     return {
       yaw: s.yaw,
       pitch: s.pitch,
       scale,
       cx: s.width / 2 - ((minX + maxX) / 2) * scale,
-      cy: s.height / 2 - ((minY + maxY) / 2) * scale + 6,
+      cy: s.height / 2 - ((minY + maxY) / 2) * scale + (s.pitch > 0.1 ? 6 : 2),
       lift,
     }
   }, [weeks])
@@ -397,32 +403,38 @@ export function ActivityTerrain({
       lift: number,
       palette: Palette
     ) => {
-      const alpha = clamp(1 - lift * 1.6, 0, 1)
-      if (alpha === 0) {
-        return
-      }
+      // Retain legible baseline labels even when elevated in 3D terrain
+      const alpha = clamp(1 - lift * 0.45, 0.45, 1)
       const list = cellsRef.current
       ctx.globalAlpha = alpha
       ctx.fillStyle = palette.text
-      ctx.font = `11px ${palette.font}`
+      ctx.font = `10px ${palette.font}`
       ctx.textBaseline = "middle"
       ctx.textAlign = "left"
-      let month = -1
+
+      let lastMonth = -1
+      let lastCol = -10
       for (const cell of list) {
-        if (cell.row !== 0 && cell.index !== 0) {
+        if (cell.row !== 0) {
           continue
         }
         const m = cell.date.getUTCMonth()
-        if (m !== month && cell.col < weeks - 1) {
-          month = m
-          const [x, y] = project(p, cell.col - weeks / 2, 0, -0.75 - DAYS / 2)
-          ctx.fillText(formatMonth(cell.date), x, y)
+        if (m !== lastMonth) {
+          // Require at least 3 columns buffer to prevent adjacent month jamming (e.g. Apr May)
+          if (cell.col >= 1 && cell.col - lastCol >= 3 && cell.col < weeks - 1) {
+            lastMonth = m
+            lastCol = cell.col
+            const [x, y] = project(p, cell.col - weeks / 2, 0, -0.85 - DAYS / 2)
+            ctx.fillText(formatMonth(cell.date), x, y)
+          }
         }
       }
+
       ctx.textAlign = "right"
       for (let row = 0; row < DAYS; row++) {
         if (LABELS[row]) {
-          const [x, y] = project(p, -0.35 - weeks / 2, 0, row + 0.4 - DAYS / 2)
+          // Generous offset (-0.85) to avoid colliding with column 0
+          const [x, y] = project(p, -0.85 - weeks / 2, 0, row + 0.45 - DAYS / 2)
           ctx.fillText(LABELS[row], x, y)
         }
       }
@@ -447,8 +459,8 @@ export function ActivityTerrain({
     ctx.lineJoin = "round"
     for (const cell of ordered(p)) {
       const h = columnHeight(cell, p.lift)
-      const color =
-        cell.index === s.hovered ? palette.accent : palette.levels[cell.level]
+      const isHovered = cell.index === s.hovered
+      const color = isHovered ? palette.accent : palette.levels[cell.level]
       for (const face of visibleFaces(
         p,
         cell.col - weeks / 2,
@@ -459,9 +471,20 @@ export function ActivityTerrain({
         const fill = shade(color, face.tone)
         ctx.fillStyle = fill
         ctx.fill()
-        ctx.strokeStyle = fill
-        ctx.lineWidth = 0.6
-        ctx.stroke()
+
+        if (isHovered) {
+          ctx.strokeStyle = "rgba(192, 132, 26, 0.95)"
+          ctx.lineWidth = 1.0
+          ctx.stroke()
+        } else if (face.isTop) {
+          ctx.strokeStyle = p.pitch > 0.05 ? shade(color, 0.12) : "rgba(0, 0, 0, 0.08)"
+          ctx.lineWidth = 0.5
+          ctx.stroke()
+        } else {
+          ctx.strokeStyle = fill
+          ctx.lineWidth = 0.5
+          ctx.stroke()
+        }
       }
     }
   }, [columnHeight, drawLabels, ordered, pose, weeks])
@@ -767,7 +790,7 @@ export function ActivityTerrain({
     s.yawSpeed = recent ? vx * DRAG_YAW : 0
     s.pitchSpeed = recent ? vy * DRAG_PITCH : 0
     const projected = s.pitch + s.pitchSpeed * 0.15
-    const nextFlat = projected < PITCH_TERRAIN / 2
+    const nextFlat = projected < 18 * DEG
     setFlat(nextFlat)
     s.pitchTarget = nextFlat ? 0 : PITCH_TERRAIN
     wake()
@@ -810,8 +833,8 @@ export function ActivityTerrain({
     <div
       className={cn(
         "w-full select-none rounded-none border border-border bg-background text-foreground shadow-xs",
-        "[--terrain-0:#e4e4e7] [--terrain-1:#d4d4d8] [--terrain-2:#a1a1aa] [--terrain-3:#71717a] [--terrain-4:#27272a] [--terrain-accent:#c0841a] [--terrain-text:#71717a]",
-        "dark:[--terrain-0:#27272a] dark:[--terrain-1:#3f3f46] dark:[--terrain-2:#52525b] dark:[--terrain-3:#71717a] dark:[--terrain-4:#d4d4d8] dark:[--terrain-accent:#d97706] dark:[--terrain-text:#a1a1aa]",
+        "[--terrain-0:#e2e8f0] [--terrain-1:#94d2bd] [--terrain-2:#3d8b74] [--terrain-3:#1b634c] [--terrain-4:#0a382c] [--terrain-accent:#c0841a] [--terrain-text:#475569]",
+        "dark:[--terrain-0:#1e293b] dark:[--terrain-1:#164e63] dark:[--terrain-2:#0d9488] dark:[--terrain-3:#14b8a6] dark:[--terrain-4:#5eead4] dark:[--terrain-accent:#fbbf24] dark:[--terrain-text:#94a3b8]",
         className
       )}
     >
@@ -829,7 +852,7 @@ export function ActivityTerrain({
           {(
             [
               ["Flat Matrix", true],
-              ["3D Terrain", false],
+              ["3D Topography", false],
             ] as const
           ).map(([name, value]) => (
             <button
@@ -853,7 +876,7 @@ export function ActivityTerrain({
       <canvas
         aria-label={`${title}: ${total.toLocaleString("en-IN")} ${unit} over ${weeks} weeks. Use arrow keys to inspect daily dispatch.`}
         className={cn(
-          "block h-64 sm:h-72 w-full touch-pan-y rounded-none outline-none focus-visible:ring-1 focus-visible:ring-ring",
+          "block h-56 sm:h-64 lg:h-70 w-full touch-pan-y rounded-none outline-none focus-visible:ring-1 focus-visible:ring-ring",
           dragging ? "cursor-grabbing" : "cursor-grab"
         )}
         onBlur={() => {
@@ -873,11 +896,16 @@ export function ActivityTerrain({
         tabIndex={0}
       />
 
-      <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-t border-border/70 text-[11px] font-sans text-muted-foreground bg-muted/20">
-        <span className="text-[10px] text-muted-foreground font-mono">
-          Drag to orbit 3D terrain • Click or arrow keys to inspect
-        </span>
-        <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-5 py-2.5 border-t border-border/70 text-[11px] font-sans text-muted-foreground bg-muted/20">
+        <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
+          <span className="inline-block size-1.5 bg-mn-ochre rounded-none shrink-0" aria-hidden="true" />
+          <span>
+            {flat
+              ? "2D Density Matrix | Click cell or use arrow keys to inspect daily dispatch"
+              : "3D Linehaul Topography | Drag to orbit corridor terrain | Click to inspect"}
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
           <span className="text-[10px] text-muted-foreground">Less</span>
           {[0, 1, 2, 3, 4].map((level) => (
             <span

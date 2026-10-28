@@ -72,7 +72,7 @@ export function TelemetryStatsBand() {
         <div className="mt-8 sm:mt-10 border border-border bg-card p-6 sm:p-8 lg:p-10 text-left rounded-none shadow-xs">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left Column: Volume Stat Monument & Corridor Credentials */}
-            <div className="lg:col-span-5 flex flex-col justify-between h-full">
+            <div className="lg:col-span-5 xl:col-span-4 flex flex-col justify-between h-full">
               <div>
                 <div className="inline-flex items-center gap-2 border border-border bg-background px-2.5 py-0.5 text-[11px] font-sans text-muted-foreground rounded-none shadow-2xs mb-3">
                   <TrendingUp className="size-3.5 text-primary" />
@@ -108,10 +108,11 @@ export function TelemetryStatsBand() {
             </div>
 
             {/* Right Column: 3D Topographic Activity Terrain */}
-            <div className="lg:col-span-7 w-full">
+            <div className="lg:col-span-7 xl:col-span-8 w-full">
               <ActivityTerrain
                 title="26-Week Corridor Linehaul Topography"
                 unit="kg"
+                endDate="2026-10-25"
                 defaultFlat={false}
               />
             </div>
