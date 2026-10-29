@@ -19,7 +19,11 @@ for (const name of ["AUTH_SECRET", "CRON_SECRET", "INVOICE_PDF_SIGNING_SECRET", 
 for (const name of ["E2E_TEST_BYPASS_ENABLED", "NEXT_PUBLIC_E2E_TEST_BYPASS_ENABLED", "PLAYWRIGHT_TEST"]) {
   if (process.env[name] === "true") errors.push(`${name} must be disabled in production.`)
 }
-if (process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://ujyellrhwhqjmfponhuz.supabase.co") errors.push("Supabase URL does not match the approved tac-xpress project.")
+const approvedSupabaseUrls = [
+  "https://ujyellrhwhqjmfponhuz.supabase.co",
+  "https://skkappqeaxsdygwrbqni.supabase.co",
+]
+if (!approvedSupabaseUrls.includes(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "")) errors.push("Supabase URL does not match the approved tac-xpress project.")
 if (process.env.WHATSAPP_ENABLED !== "true") errors.push("WhatsApp delivery is disabled; invoice delivery acceptance is incomplete.")
 for (const name of ["WPBOX_API_TOKEN", "WPBOX_USER_ID", "WHATSAPP_APP_SECRET", "WHATSAPP_VERIFY_TOKEN"]) {
   if (!process.env[name]?.trim()) errors.push(`${name} is required for WhatsApp invoice delivery and callbacks.`)

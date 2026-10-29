@@ -117,6 +117,7 @@ const nextConfig: NextConfig = {
       "style-src 'self' 'unsafe-inline' https:",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data: https:",
+      "media-src 'self' blob: https:",
       "connect-src 'self' https: wss:",
       "worker-src 'self' blob:",
       "object-src 'none'",
@@ -171,6 +172,24 @@ const nextConfig: NextConfig = {
           {
             key: "X-Frame-Options",
             value: "SAMEORIGIN",
+          },
+        ],
+      },
+      {
+        source: "/video/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },
