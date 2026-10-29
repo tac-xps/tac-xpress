@@ -14,53 +14,53 @@ export function PaymentReconciliation({ doc }: PaymentReconciliationProps) {
   const isPartiallyPaid = status === "partially_paid"
 
   return (
-    <section className="invoice-section my-1 grid grid-cols-4 gap-2 border border-[#e2dedc] bg-[#f7f5f3]/40 p-1.5 text-[8.5px]">
+    <section className="invoice-section my-1 grid grid-cols-4 gap-2 border border-print-border bg-print-paper-subtle/40 p-1.5 text-[8.5px]">
       {/* 1. Total Bill Amount */}
-      <div className="flex flex-col border-r border-[#e2dedc] pr-2">
-        <span className="font-mono text-[7px] font-bold uppercase tracking-wider text-neutral-500">
+      <div className="flex flex-col border-r border-print-border pr-2">
+        <span className="font-mono text-[7px] font-bold uppercase tracking-wider text-print-muted">
           TOTAL INVOICE VALUE
         </span>
-        <span className="font-mono text-[11px] font-bold text-neutral-800 mt-0.5">
+        <span className="font-mono text-[11px] font-bold text-print-ink mt-0.5">
           {formatMoney(financials.totalInvoiceValue)}
         </span>
-        <span className="font-mono text-[7px] text-neutral-400">Inclusive of all taxes</span>
+        <span className="font-mono text-[7px] text-print-muted">Inclusive of all taxes</span>
       </div>
 
       {/* 2. Advance / Amount Received */}
-      <div className="flex flex-col border-r border-[#e2dedc] pr-2">
-        <span className="font-mono text-[7.5px] font-bold uppercase tracking-wider text-neutral-500">
+      <div className="flex flex-col border-r border-print-border pr-2">
+        <span className="font-mono text-[7.5px] font-bold uppercase tracking-wider text-print-muted">
           ADVANCE / RECEIVED
         </span>
-        <span className="font-mono text-[11px] font-bold text-neutral-700 mt-0.5">
+        <span className="font-mono text-[11px] font-bold text-print-muted mt-0.5">
           {formatMoney(financials.advancePaid)}
         </span>
-        <span className="font-mono text-[7px] text-neutral-400">
-          Mode: <strong className="text-neutral-600">{paymentMode || "CASH"}</strong>
+        <span className="font-mono text-[7px] text-print-muted">
+          Mode: <strong className="text-print-muted">{paymentMode || "CASH"}</strong>
         </span>
       </div>
 
       {/* 3. Hero Balance Due */}
-      <div className="flex flex-col border-r border-[#e2dedc] pr-2">
-        <span className="font-mono text-[7.5px] font-bold uppercase tracking-wider text-neutral-500">
+      <div className="flex flex-col border-r border-print-border pr-2">
+        <span className="font-mono text-[7.5px] font-bold uppercase tracking-wider text-print-muted">
           NET BALANCE DUE
         </span>
         <div className="flex items-baseline gap-1 mt-0.5">
           <span
             className={`font-mono text-xs font-black ${
               isPaid
-                ? "text-emerald-700"
+                ? "text-success"
                 : financials.balanceDue.paise > 0
-                ? "text-[#191716]"
-                : "text-neutral-700"
+                ? "text-print-ink"
+                : "text-print-muted"
             }`}
           >
             {formatMoney(financials.balanceDue)}
           </span>
           {isPaid && (
-            <span className="font-mono text-[7px] font-bold text-emerald-600">✓ ZERO DUE</span>
+            <span className="font-mono text-[7px] font-bold text-success">✓ ZERO DUE</span>
           )}
         </div>
-        <span className="font-mono text-[7px] text-neutral-400">
+        <span className="font-mono text-[7px] text-print-muted">
           {isPaid
             ? "Settled in full"
             : isPartiallyPaid
@@ -71,16 +71,16 @@ export function PaymentReconciliation({ doc }: PaymentReconciliationProps) {
 
       {/* 4. Payment Status Badge */}
       <div className="flex flex-col items-center justify-center pl-1">
-        <span className="font-mono text-[7px] font-bold uppercase tracking-wider text-neutral-400 mb-1">
+        <span className="font-mono text-[7px] font-bold uppercase tracking-wider text-print-muted mb-1">
           SETTLEMENT STATUS
         </span>
         <span
           className={`px-2 py-0.5 font-mono text-[8px] font-bold uppercase tracking-widest border rounded-none ${
             isPaid
-              ? "border-emerald-600 bg-emerald-50 text-emerald-800"
+              ? "border-success bg-success-wash text-success"
               : isPartiallyPaid
-              ? "border-amber-600 bg-amber-50 text-amber-800"
-              : "border-neutral-400 bg-neutral-100 text-neutral-800"
+              ? "border-warning bg-warning-wash text-warning"
+              : "border-print-border bg-print-paper-subtle text-print-ink"
           }`}
         >
           {isPaid ? "PAID IN FULL" : isPartiallyPaid ? "PARTIALLY PAID" : "PAYMENT PENDING"}

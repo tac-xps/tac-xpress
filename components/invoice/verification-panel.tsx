@@ -23,7 +23,7 @@ export function VerificationPanel({
   const { triggerScan } = useScannerContext()
 
   return (
-    <footer className="invoice-section mt-auto pt-1.5 border-t border-[#191716] flex flex-col gap-1">
+    <footer className="invoice-section mt-auto pt-1.5 border-t border-print-ink flex flex-col gap-1">
       <div className="flex items-end justify-between gap-4">
         {/* Dual QRs / Seals */}
         <div className="flex items-center gap-4">
@@ -40,19 +40,19 @@ export function VerificationPanel({
               }
             }}
             title="Scan with terminal or click to open live telemetry dossier"
-            className="flex items-center gap-2 cursor-pointer group hover:bg-neutral-100/60 p-1 -m-1 transition-colors select-none print:m-0 print:p-0 print:cursor-default print:hover:bg-transparent"
+            className="flex items-center gap-2 cursor-pointer group hover:bg-print-paper-subtle p-1 -m-1 transition-colors select-none print:m-0 print:p-0 print:cursor-default print:hover:bg-transparent"
           >
-            <div className="size-[20mm] border border-[#191716] p-0.5 bg-white shrink-0 group-hover:border-primary transition-colors print:group-hover:border-[#191716]">
+            <div className="size-[20mm] border border-print-ink p-0.5 bg-print-paper shrink-0 group-hover:border-primary transition-colors print:group-hover:border-print-ink">
               <QRCode data={verification.trackingUrl} className="size-full" />
             </div>
             <div className="flex flex-col text-[7px] font-mono leading-tight">
-              <span className="font-bold uppercase text-[#191716] group-hover:text-primary transition-colors print:group-hover:text-[#191716]">
+              <span className="font-bold uppercase text-print-ink group-hover:text-primary transition-colors print:group-hover:text-print-ink">
                 LIVE AWB TRACKING
               </span>
-              <span className="text-neutral-500">
+              <span className="text-print-muted">
                 Scan or click for milestone telemetry &amp; dossier
               </span>
-              <span className="text-[6.5px] text-neutral-400 mt-0.5 font-bold">
+              <span className="text-[6.5px] text-print-muted mt-0.5 font-bold">
                 AWB: {shipment.awbNumber}
               </span>
             </div>
@@ -60,32 +60,32 @@ export function VerificationPanel({
 
           {/* 2. Either Dynamic UPI Pay QR or PAID IN FULL Official Seal */}
           {!isPaid && upiPayload ? (
-            <div data-invoice-qr="upi" className="flex items-center gap-2 border-l border-[#e2dedc] pl-4">
-              <div className="size-[20mm] border border-[#191716] p-0.5 bg-white shrink-0">
+            <div data-invoice-qr="upi" className="flex items-center gap-2 border-l border-print-border pl-4">
+              <div className="size-[20mm] border border-print-ink p-0.5 bg-print-paper shrink-0">
                 <QRCode data={upiPayload} className="size-full" />
               </div>
               <div className="flex flex-col text-[7px] font-mono leading-tight">
-                <span className="font-bold uppercase text-[#191716]">INSTANT UPI SETTLE</span>
-                <span className="text-neutral-500">Scan with GPay / PhonePe / Paytm</span>
-                <span className="font-bold text-neutral-800 mt-0.5">
+                <span className="font-bold uppercase text-print-ink">INSTANT UPI SETTLE</span>
+                <span className="text-print-muted">Scan with GPay / PhonePe / Paytm</span>
+                <span className="font-bold text-print-ink mt-0.5">
                   Due: {formatMoney(financials.balanceDue)}
                 </span>
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2 border-l border-[#e2dedc] pl-4">
-              <div className="flex flex-col items-center justify-center border-2 border-emerald-700 bg-emerald-50/50 p-1.5 rounded-none w-28 text-center">
-                <span className="font-mono text-[6.5px] font-bold tracking-widest text-emerald-800 uppercase">
+            <div className="flex items-center gap-2 border-l border-print-border pl-4">
+              <div className="flex flex-col items-center justify-center border-2 border-success bg-success-wash p-1.5 rounded-none w-28 text-center">
+                <span className="font-mono text-[6.5px] font-bold tracking-widest text-success uppercase">
                   OFFICIAL RECEIPT
                 </span>
-                <span className="font-heading font-black text-[10px] tracking-wider text-emerald-900 leading-tight my-0.5">
+                <span className="font-heading font-black text-[10px] tracking-wider text-success leading-tight my-0.5">
                   PAID IN FULL
                 </span>
-                <span className="font-mono text-[6.5px] text-emerald-700">
+                <span className="font-mono text-[6.5px] text-success">
                   {commercial.invoiceDate} • AUTH
                 </span>
               </div>
-              <div className="flex flex-col text-[7px] font-mono text-neutral-500 leading-tight">
+              <div className="flex flex-col text-[7px] font-mono text-print-muted leading-tight">
                 <span>Payment Verified</span>
                 <span>Zero Balance Pending</span>
               </div>
@@ -94,21 +94,21 @@ export function VerificationPanel({
         </div>
 
         {/* 3. Amazon Logistics Inspired Signatory Box */}
-        <div className="w-44 border border-[#191716] bg-[#f7f5f3]/40 p-1.5 text-center flex flex-col justify-between h-[21mm]">
-          <span className="text-[7px] font-bold uppercase tracking-wider text-neutral-600">
+        <div className="w-44 border border-print-ink bg-print-paper-subtle/40 p-1.5 text-center flex flex-col justify-between h-[21mm]">
+          <span className="text-[7px] font-bold uppercase tracking-wider text-print-muted">
             For {supplier.legalName}
           </span>
-          <div className="font-serif italic text-[11px] text-neutral-600 my-auto">
+          <div className="font-serif italic text-[11px] text-print-muted my-auto">
             Authorized Signatory
           </div>
-          <div className="border-t border-[#e2dedc] pt-0.5 text-[6.5px] font-mono text-neutral-400">
+          <div className="border-t border-print-border pt-0.5 text-[6.5px] font-mono text-print-muted">
             Computer Generated Tax Invoice
           </div>
         </div>
       </div>
 
       {/* Footnote Bar: ISO compliance & Page X of Y */}
-      <div className="border-t border-[#e2dedc] pt-1 flex items-center justify-between text-[7px] font-mono text-neutral-400">
+      <div className="border-t border-print-border pt-1 flex items-center justify-between text-[7px] font-mono text-print-muted">
         <span>TAC-XPRESS LOGISTICS NETWORK • ISO 9001:2015 CERTIFIED FREIGHT OPERATIONS</span>
         <span>
           PAGE {pageNumber} OF {totalPages}

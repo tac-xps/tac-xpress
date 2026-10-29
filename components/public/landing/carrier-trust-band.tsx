@@ -44,7 +44,7 @@ export function CarrierTrustBand() {
           id="trust-heading"
           className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl"
         >
-          We trusted <span className="text-mn-ochre">with</span>
+          Commercial gateway infrastructure
         </h2>
         <p className="mt-2 text-xs font-sans text-muted-foreground max-w-md mx-auto">
           Verified commercial aviation and gateway terminal infrastructure on DEL ⇄ IMF.
@@ -63,7 +63,7 @@ export function CarrierTrustBand() {
                 <span className="text-sm font-sans font-medium text-foreground">
                   {carrier.name}
                 </span>
-                <span className="mt-1 text-[11px] font-sans text-muted-foreground">
+                <span className="mt-1 text-xs font-sans text-muted-foreground">
                   {carrier.role}
                 </span>
               </div>

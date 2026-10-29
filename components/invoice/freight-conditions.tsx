@@ -12,12 +12,12 @@ export function FreightConditions({ doc }: FreightConditionsProps) {
   const isAir = serviceMode === "express_air"
 
   return (
-    <section className="invoice-section my-1.5 flex flex-col border-t border-[#e2dedc] pt-1.5 text-[7.5px] leading-tight text-neutral-600">
+    <section className="invoice-section my-1.5 flex flex-col border-t border-print-border pt-1.5 text-[7.5px] leading-tight text-print-muted">
       <div className="flex items-center justify-between mb-1">
-        <span className="font-heading text-[8px] font-bold uppercase tracking-wider text-[#191716]">
+        <span className="font-heading text-[8px] font-bold uppercase tracking-wider text-print-ink">
           CONDITIONS OF CARRIAGE &amp; STATUTORY DECLARATION (AIR &amp; SURFACE)
         </span>
-        <span className="font-mono text-[7px] text-neutral-400">
+        <span className="font-mono text-[7px] text-print-muted">
           Statutory GTA Framework • Updated Oct 2026
         </span>
       </div>
@@ -27,16 +27,16 @@ export function FreightConditions({ doc }: FreightConditionsProps) {
         <div
           className={`p-1.5 rounded-none border transition-colors ${
             isAir
-              ? "border-[#191716] bg-[#f7f5f3] text-neutral-800"
-              : "border-[#e2dedc] bg-white text-neutral-500 opacity-80"
+              ? "border-print-ink bg-print-paper-subtle text-print-ink"
+              : "border-print-border bg-print-paper text-print-muted opacity-80"
           }`}
         >
           <div className="flex items-center justify-between mb-0.5">
-            <span className="font-heading font-bold text-[8px] uppercase tracking-wide text-[#191716]">
+            <span className="font-heading font-bold text-[8px] uppercase tracking-wide text-print-ink">
               1. EXPRESS AIR CARGO (IATA / CARRIAGE BY AIR ACT)
             </span>
             {isAir && (
-              <span className="border border-[#191716] bg-[#191716] px-1 py-0.2 font-mono text-[6.5px] font-bold uppercase text-white">
+              <span className="border border-print-ink bg-print-ink px-1 py-0.2 font-mono text-[6.5px] font-bold uppercase text-print-paper">
                 ACTIVE SERVICE
               </span>
             )}
@@ -55,16 +55,16 @@ export function FreightConditions({ doc }: FreightConditionsProps) {
         <div
           className={`p-1.5 rounded-none border transition-colors ${
             !isAir
-              ? "border-[#191716] bg-[#f7f5f3] text-neutral-800"
-              : "border-[#e2dedc] bg-white text-neutral-500 opacity-80"
+              ? "border-print-ink bg-print-paper-subtle text-print-ink"
+              : "border-print-border bg-print-paper text-print-muted opacity-80"
           }`}
         >
           <div className="flex items-center justify-between mb-0.5">
-            <span className="font-heading font-bold text-[8px] uppercase tracking-wide text-[#191716]">
+            <span className="font-heading font-bold text-[8px] uppercase tracking-wide text-print-ink">
               2. SURFACE LINEHAUL FREIGHT (CARRIAGE BY ROAD ACT, 2007)
             </span>
             {!isAir && (
-              <span className="border border-[#191716] bg-[#191716] px-1 py-0.2 font-mono text-[6.5px] font-bold uppercase text-white">
+              <span className="border border-print-ink bg-print-ink px-1 py-0.2 font-mono text-[6.5px] font-bold uppercase text-print-paper">
                 ACTIVE SERVICE
               </span>
             )}
@@ -79,10 +79,10 @@ export function FreightConditions({ doc }: FreightConditionsProps) {
       </div>
 
       {/* General Terms Footer */}
-      <div className="mt-1 flex flex-wrap items-center justify-between gap-1 border-t border-[#e2dedc] pt-1 text-[7px] text-neutral-500">
+      <div className="mt-1 flex flex-wrap items-center justify-between gap-1 border-t border-print-border pt-1 text-[7px] text-print-muted">
         <span>
           <strong>General:</strong> GTA service under SAC 9965. GST reverse charge:{" "}
-          <strong className="text-black">No</strong>. E-way bill compliance verified.
+          <strong className="text-print-ink">No</strong>. E-way bill compliance verified.
         </span>
         <span>
           <strong>Jurisdiction:</strong> Disputes subject exclusively to competent courts in Delhi / Imphal.
@@ -93,7 +93,7 @@ export function FreightConditions({ doc }: FreightConditionsProps) {
             href="https://tacservice.in/terms"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline font-mono text-neutral-700"
+            className="underline font-mono text-print-muted"
           >
             tacservice.in/terms
           </a>

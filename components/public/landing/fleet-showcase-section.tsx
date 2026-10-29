@@ -147,7 +147,7 @@ export function FleetShowcaseSection() {
             id="fleet-heading"
             className="text-2xl font-medium tracking-tight text-foreground sm:text-4xl"
           >
-            We provide best <span className="text-mn-ochre">linehaul</span>
+            Dedicated corridor linehaul
           </h2>
           <p className="mt-2 text-xs font-sans text-muted-foreground">
             Calibrated transport modes for the New Delhi and Imphal bilateral corridor.
@@ -172,7 +172,7 @@ export function FleetShowcaseSection() {
           </div>
 
           {/* Right: Interactive Feature Items (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col gap-3">
+          <div className="lg:col-span-5 flex flex-col gap-3" aria-label="Corridor linehaul modes and infrastructure">
             {FEATURES.map((item) => {
               const isActive = item.id === activeId
               const Icon = item.icon
@@ -180,33 +180,43 @@ export function FleetShowcaseSection() {
               return (
                 <div
                   key={item.id}
-                  onClick={() => setActiveId(item.id)}
                   className={cn(
-                    "cursor-pointer border p-5 rounded-none transition-colors",
+                    "border p-5 rounded-none transition-colors",
                     isActive
                       ? "border-foreground bg-card text-foreground"
                       : "border-border bg-muted/20 text-muted-foreground hover:border-foreground/30 hover:text-foreground"
                   )}
                 >
-                  <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    id={`fleet-tab-${item.id}`}
+                    aria-expanded={isActive}
+                    aria-controls={`fleet-panel-${item.id}`}
+                    onClick={() => setActiveId(item.id)}
+                    className="flex w-full items-center justify-between text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground rounded-none cursor-pointer"
+                  >
                     <div className="flex items-center gap-3">
-                      <Icon className={cn("size-4 shrink-0", isActive ? "text-mn-ochre" : "text-muted-foreground")} />
+                      <Icon className={cn("size-4 shrink-0", isActive ? "text-primary" : "text-muted-foreground")} />
                       <h3 className="text-sm sm:text-base font-medium text-foreground">
                         {item.title}
                       </h3>
                     </div>
                     <ArrowUpRight className={cn("size-4 transition-colors shrink-0", isActive ? "text-foreground" : "text-muted-foreground")} />
-                  </div>
+                  </button>
 
                   {isActive && (
-                    <div className="mt-4 pt-4 border-t border-border space-y-3">
+                    <div
+                      id={`fleet-panel-${item.id}`}
+                      aria-labelledby={`fleet-tab-${item.id}`}
+                      className="mt-4 pt-4 border-t border-border space-y-3"
+                    >
                       <p className="text-xs text-muted-foreground leading-relaxed">
                         {item.desc}
                       </p>
                       <div className="space-y-1.5 pt-1">
                         {item.bullets.map((b) => (
                           <div key={b} className="flex items-center gap-2 text-xs font-sans text-foreground">
-                            <Check className="size-3.5 text-mn-ochre shrink-0" />
+                            <Check className="size-3.5 text-primary shrink-0" />
                             <span>{b}</span>
                           </div>
                         ))}
@@ -214,7 +224,7 @@ export function FleetShowcaseSection() {
                       <div className="pt-2">
                         <Link
                           href={item.href}
-                          className="inline-flex items-center gap-1 text-xs font-sans font-semibold text-foreground hover:text-mn-ochre transition-colors"
+                          className="inline-flex items-center gap-1 text-xs font-sans font-semibold text-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
                         >
                           Inspect specifications
                           <ArrowUpRight className="size-3" />
@@ -232,7 +242,7 @@ export function FleetShowcaseSection() {
         <div className="mt-20 border-t border-border pt-16">
           <div className="text-center max-w-xl mx-auto mb-12">
             <h3 className="text-xl font-medium tracking-tight text-foreground sm:text-2xl">
-              Corridor <span className="text-mn-ochre">Fleet Equipment</span>
+              Corridor Fleet Equipment
             </h3>
             <p className="mt-2 text-xs font-sans text-muted-foreground">
               Dedicated vehicles engineered for the 2,450 km New Delhi ⇄ Imphal arterial passage and valley final-mile.
@@ -257,7 +267,7 @@ export function FleetShowcaseSection() {
                   </div>
                   <div className="flex items-center justify-between text-xs font-sans text-muted-foreground mb-1">
                     <span className="font-semibold text-foreground">{vehicle.category}</span>
-                    <span className="font-mono text-mn-ochre text-[11px]">{vehicle.model}</span>
+                    <span className="font-mono text-muted-foreground text-[11px]">{vehicle.model}</span>
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed mt-2 font-sans">
                     {vehicle.role}

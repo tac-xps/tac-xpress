@@ -46,7 +46,7 @@ import { BackToTop } from "./landing/back-to-top"
 export function LogisticsHome() {
   return (
     <MotionProvider>
-      <div className="cargo-public min-h-svh w-full max-w-full overflow-x-clip bg-background text-foreground selection:bg-mn-ochre/20 selection:text-foreground">
+      <div className="cargo-public min-h-svh w-full max-w-full overflow-x-clip bg-background text-foreground selection:bg-primary/20 selection:text-foreground">
         {/* Accessible Skip-to-Content Link */}
         <a
           href="#main-content"

@@ -81,9 +81,8 @@ const iconTileVariants = cva(
        * Luma and Rhea take the gentler quarter ratio; Maia stays at a third.
        */
       radius: {
-        default:
-          "[--icon-tile-radius:min(var(--radius-md),calc(var(--icon-tile-size)/3))]",
-        full: "[--icon-tile-radius:calc(infinity*1px)]",
+        default: "rounded-none [--icon-tile-radius:0px]",
+        full: "rounded-none [--icon-tile-radius:0px]",
       },
     },
     defaultVariants: {

@@ -8,7 +8,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Card } from "@/components/ui/card"
 
 const faqItems = [
   {
@@ -69,7 +68,7 @@ export function FaqSection() {
           </p>
         </div>
 
-        <Card className="mt-10 sm:mt-12 p-2 sm:p-3 rounded-none border border-border shadow-xs bg-card">
+        <div className="mt-10 sm:mt-12 p-2 sm:p-3 rounded-none border border-border shadow-xs bg-card">
           <Accordion type="single" collapsible className="w-full">
             {faqItems.map((item) => (
               <AccordionItem
@@ -88,7 +87,7 @@ export function FaqSection() {
               </AccordionItem>
             ))}
           </Accordion>
-        </Card>
+        </div>
 
         <p className="text-muted-foreground mt-8 text-center text-xs sm:text-sm">
           Still have questions?{" "}

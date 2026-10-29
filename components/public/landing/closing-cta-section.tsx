@@ -4,7 +4,6 @@ import React from "react"
 import Link from "next/link"
 import { ArrowRight, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 
 const benefits = [
   "Guaranteed commercial airside custody at DEL and IMF",
@@ -20,10 +19,10 @@ export function ClosingCtaSection() {
       className="bg-background @container py-20 sm:py-24 border-b border-border"
     >
       <div className="mx-auto max-w-4xl px-6 lg:px-8">
-        <Card className="@xl:grid-cols-2 sm:grid-cols-2 grid gap-8 p-6 md:p-10 rounded-none border border-border shadow-xs bg-card">
-          <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 border border-border bg-card rounded-none shadow-xs divide-y sm:divide-y-0 sm:divide-x divide-border">
+          <div className="p-6 md:p-10">
             <h2 className="text-balance text-2xl sm:text-3xl font-medium tracking-tight text-foreground">
-              We build the linehaul of <span className="text-mn-ochre">DEL ⇄ IMF</span>
+              Direct bilateral linehaul: <span className="text-primary font-semibold">DEL ⇄ IMF</span>
             </h2>
             <p className="text-muted-foreground mt-3 text-balance text-xs sm:text-sm leading-relaxed">
               Dedicated commercial air express and arterial surface linehaul connecting New Delhi and Imphal with verified chain-of-custody.
@@ -40,7 +39,7 @@ export function ClosingCtaSection() {
               ))}
             </ul>
           </div>
-          <div className="bg-muted/40 flex flex-col justify-center rounded-none border border-border p-6 sm:p-8">
+          <div className="bg-muted/20 flex flex-col justify-center p-6 md:p-10">
             <p className="text-xs font-medium text-muted-foreground">Starting tariff</p>
             <p className="mt-1 font-mono text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
               ₹58<span className="text-muted-foreground text-base sm:text-lg font-normal">/kg</span>
@@ -50,7 +49,7 @@ export function ClosingCtaSection() {
             </p>
             <Button
               asChild
-              className="mt-6 gap-2 h-10 rounded-none font-medium text-xs bg-foreground text-background hover:bg-foreground/90 transition-colors w-full"
+              className="mt-6 gap-2 h-10 rounded-none font-medium text-xs bg-foreground text-background hover:bg-foreground/90 transition-colors w-full cursor-pointer"
             >
               <Link href="#contact">
                 Book Consignment
@@ -66,7 +65,7 @@ export function ClosingCtaSection() {
               </a>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
     </section>
   )

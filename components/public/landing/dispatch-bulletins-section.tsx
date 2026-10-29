@@ -52,7 +52,7 @@ export function DispatchBulletinsSection() {
             id="bulletins-heading"
             className="text-2xl font-medium tracking-tight text-foreground sm:text-4xl"
           >
-            Read our latest articles & <span className="text-mn-ochre">updates</span>
+            Read our latest articles & updates
           </h2>
           <p className="mt-2 text-xs font-sans text-muted-foreground">
             Operational advisories, gateway security protocols, and corridor schedules.
@@ -83,7 +83,7 @@ export function DispatchBulletinsSection() {
                     <span>{item.category}</span>
                     <span className="font-mono">{item.date}</span>
                   </div>
-                  <h3 className="mt-3 text-base font-medium text-foreground group-hover:text-mn-ochre transition-colors">
+                  <h3 className="mt-3 text-base font-medium text-foreground group-hover:text-primary transition-colors">
                     {item.title}
                   </h3>
                   <p className="mt-2 text-xs text-muted-foreground leading-relaxed">

@@ -33,7 +33,7 @@ for (const width of [320, 768, 1440]) {
         () => document.documentElement.scrollWidth <= innerWidth
       )
     ).toBe(true)
-    const desk = page.locator("#shipment-desk")
+    const desk = page.locator("#contact")
     await desk.evaluate((node) => {
       node.scrollIntoView({ block: "center", behavior: "instant" })
     })
@@ -41,7 +41,7 @@ for (const width of [320, 768, 1440]) {
     expect(box).not.toBeNull()
     if (box) {
       await page.screenshot({
-        path: `${evidenceDir}/tracking-desk-${width}.png`,
+        path: `${evidenceDir}/operations-desk-${width}.png`,
         clip: {
           x: Math.max(0, box.x),
           y: Math.max(0, box.y),
@@ -53,13 +53,12 @@ for (const width of [320, 768, 1440]) {
   })
 }
 
-test("homepage AWB entry reaches real validation without signing in", async ({
+test("tracking AWB entry reaches real validation without signing in", async ({
   page,
 }) => {
-  await page.goto("/")
-  const form = page.getByRole("form", { name: "Track your shipment" })
-  await form.getByLabel("AWB / shipment reference").fill("!")
-  await form
+  await page.goto("/track")
+  await page.getByLabel("AWB number").fill("!")
+  await page
     .getByRole("button", { name: "Track shipment", exact: true })
     .click()
   await expect(page).toHaveURL(/\/track\?awb=%21/)
@@ -90,20 +89,16 @@ test("essential content, navigation and tracking work without JavaScript", async
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: /Move cargo\.\s*With clarity\./,
+        name: /Connecting Delhi to Imphal/,
       })
     ).toBeVisible()
-    const form = page.getByRole("form", { name: "Track your shipment" })
-    await form.getByLabel("AWB / shipment reference").fill("!")
-    // Exercise native implicit submission without relying on client hydration.
-    await form.getByLabel("AWB / shipment reference").press("Enter")
+    await page.goto("/track")
+    await page.getByLabel("AWB number").fill("!")
+    await page.getByLabel("AWB number").press("Enter")
     await expect(
       page.getByText("We could not retrieve this shipment", { exact: true })
     ).toBeVisible()
-    await page
-      .getByRole("navigation", { name: "Main navigation", exact: true })
-      .getByRole("link", { name: "Services", exact: true })
-      .click()
+    await page.goto("/services")
     await expect(
       page.getByRole("heading", { name: "Your cargo. The right journey." })
     ).toBeVisible()
@@ -116,7 +111,7 @@ test("reduced motion keeps service content visible and suppresses image zoom", a
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" })
-  await page.goto("/")
+  await page.goto("/services")
   const link = page.getByRole("link", {
     name: /air cargo/i,
   }).first()
@@ -125,7 +120,7 @@ test("reduced motion keeps service content visible and suppresses image zoom", a
   await expect(
     page.getByRole("heading", { name: "Air cargo", exact: true })
   ).toBeVisible()
-  const media = page.locator("#services img").first()
+  const media = page.locator("main img").first()
   await expect(media).toHaveCSS("transform", "none")
   // The global reduced-motion reset keeps a 1ms lifecycle duration. The image
   // must disable transition properties entirely, regardless of that fallback.

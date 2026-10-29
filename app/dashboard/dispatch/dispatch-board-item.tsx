@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/reui/badge"
 import { CreateDispatchDialog } from "./create-dispatch-dialog"
 import { ShipmentDetailDialog } from "@/app/dashboard/shipments/shipment-detail-dialog"
 import type { Shipment } from "@/lib/db/schema"
@@ -29,14 +29,15 @@ export function DispatchBoardItem({
         >
           {item.id}
         </button>
-        <Badge variant="outline">{item.type}</Badge>
+        <Badge variant="outline" size="sm">{item.type}</Badge>
       </div>
       <p className="mt-3 text-sm font-medium">{item.route}</p>
       {item.legInfo && (
         <div className="mt-2 flex items-center gap-1.5 text-xs font-medium text-primary">
           <Badge
-            variant="outline"
-            className="h-4 border-primary/30 px-1.5 py-0 font-mono text-xs text-primary"
+            variant="primary-light"
+            size="sm"
+            className="font-mono text-xs"
           >
             Leg {item.legInfo.legNumber}/{item.legInfo.totalLegs}
           </Badge>

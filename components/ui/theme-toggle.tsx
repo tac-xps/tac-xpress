@@ -34,7 +34,7 @@ export function ThemeToggle({ className }: { className?: string }) {
         "size-8.5 border border-border/80 bg-card hover:bg-muted text-foreground transition-colors duration-150 rounded-none flex items-center justify-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring shadow-2xs active:scale-95 cursor-pointer",
         className
       )}
-      aria-label="Toggle visual theme"
+      aria-label="Toggle color theme"
     />
   )
 }

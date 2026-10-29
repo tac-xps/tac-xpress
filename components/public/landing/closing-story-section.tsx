@@ -2,26 +2,31 @@
 
 import React from "react"
 import Image from "next/image"
-import { Quote } from "lucide-react"
+import { ShieldCheck, Plane, Truck } from "lucide-react"
+import { Badge } from "@/components/reui/badge"
+import { IconTile } from "@/components/reui/icon-tile"
 
-const TESTIMONIALS = [
+const CORRIDOR_COMMITMENTS = [
   {
-    name: "Rajesh K.",
-    org: "LogiPrime Express",
-    route: "DEL ⇄ IMF Route",
-    quote: "Under 24 hours from Delhi to Imphal. Reliable milestone tracking at both airport gates.",
+    icon: Plane,
+    title: "Commercial Belly-Hold Space",
+    metric: "24h Transit SLA",
+    desc: "Guaranteed commercial aircraft belly space departing daily from IGI Terminal Gate 4 directly into Tulihal Apron.",
+    route: "DEL ➔ IMF Air Express",
   },
   {
-    name: "Priya S.",
-    org: "NovaChem Supplies",
-    route: "DEL ⇄ IMF Route",
-    quote: "Daily commercial belly-hold capacity with zero transshipment delays for our medical consignments.",
+    icon: Truck,
+    title: "Dedicated Arterial Convoy",
+    metric: "4-5 Days Transit SLA",
+    desc: "Sealed high-cube container trucks navigating the 2,450 km national highway corridor with continuous digital GPS seals.",
+    route: "DEL ⇄ IMF Surface Linehaul",
   },
   {
-    name: "Arun M.",
-    org: "FreshNE Logistics",
-    route: "IMF ⇄ DEL Route",
-    quote: "Statutory AWB compliance and barcode gate scan verification at both terminals.",
+    icon: ShieldCheck,
+    title: "Statutory Tax & Barcode Custody",
+    metric: "100% E-Way Compliant",
+    desc: "Automated GST e-waybill verification attached directly to digital AWB dockets with optical barcode scan records at each gate.",
+    route: "Statutory Documentation",
   },
 ]
 
@@ -40,7 +45,7 @@ export function ClosingStorySection() {
               id="story-heading"
               className="text-2xl font-medium tracking-tight text-foreground sm:text-4xl"
             >
-              Every shipment moves <span className="text-mn-ochre">something forward</span>
+              Every shipment moves something forward
             </h2>
             <p className="mt-2 text-xs font-sans text-muted-foreground max-w-lg mx-auto">
               Committed bilateral logistics between the national capital and Manipur across 2,450 km.
@@ -50,7 +55,7 @@ export function ClosingStorySection() {
           <div className="relative mx-auto aspect-[16/9] w-full max-w-5xl overflow-hidden border border-border bg-card rounded-none shadow-sm">
             <Image
               src="/images/corridor-ink/story-convoy.png"
-              alt="TAC-XPRESS linehaul convoy navigating the Himalayan mountain pass to Imphal"
+              alt="TAC-XPRESS linehaul convoy navigating the mountain arterial corridor to Imphal"
               fill
               sizes="(max-width: 1200px) 100vw, 1100px"
               className="object-cover rounded-none"
@@ -62,36 +67,44 @@ export function ClosingStorySection() {
         <div className="mx-auto max-w-5xl">
           <div className="mb-6 flex items-center justify-between">
             <h3 className="text-lg font-medium tracking-tight text-foreground">
-              Trusted by corridor operators
+              Verified operational linehaul standards
             </h3>
-            <span className="font-sans text-xs font-medium text-mn-ochre">
-              Verified DEL ⇄ IMF Consignees
-            </span>
+            <Badge variant="primary-light" size="sm">
+              DEL ⇄ IMF Bilateral Corridor
+            </Badge>
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {TESTIMONIALS.map((item) => (
-              <div
-                key={item.name}
-                className="flex flex-col justify-between border border-border bg-card p-6 rounded-none shadow-xs"
-              >
-                <div>
-                  <Quote className="size-5 text-mn-ochre mb-3" />
-                  <p className="text-xs sm:text-sm font-normal text-foreground leading-relaxed">
-                    &ldquo;{item.quote}&rdquo;
-                  </p>
-                </div>
-                <div className="mt-6 border-t border-border pt-4 font-sans text-xs flex items-center justify-between">
+            {CORRIDOR_COMMITMENTS.map((item) => {
+              const Icon = item.icon
+              return (
+                <div
+                  key={item.title}
+                  className="flex flex-col justify-between border border-border bg-card p-6 rounded-none shadow-xs"
+                >
                   <div>
-                    <div className="font-semibold text-foreground">{item.name}</div>
-                    <div className="text-muted-foreground text-[11px]">{item.org}</div>
+                    <IconTile variant="soft" size="lg" className="rounded-none mb-3">
+                      <Icon className="size-5 text-primary" aria-hidden="true" />
+                    </IconTile>
+                    <div className="text-xs font-sans font-semibold text-foreground">
+                      {item.metric}
+                    </div>
+                    <h4 className="mt-1 text-sm font-semibold text-foreground">
+                      {item.title}
+                    </h4>
+                    <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                      {item.desc}
+                    </p>
                   </div>
-                  <span className="font-sans text-[11px] text-mn-ochre font-medium">
-                    {item.route}
-                  </span>
+                  <div className="mt-6 border-t border-border pt-4 font-sans text-xs flex items-center justify-between">
+                    <span className="text-muted-foreground">Standard Route</span>
+                    <span className="font-mono text-xs text-foreground font-medium">
+                      {item.route}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>

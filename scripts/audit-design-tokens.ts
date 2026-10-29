@@ -22,11 +22,8 @@ import { join, relative } from "node:path"
 const TARGET_DIRS = ["app", "components", "hooks", "lib"]
 
 const EXEMPT_PATTERNS = [
-  /components[\\/]invoice[\\/]/,
   /components[\\/]documents[\\/]/,
   /components[\\/]kokonutui[\\/]/,
-  /components[\\/]v2[\\/]/,
-  /app[\\/]v2[\\/]/,
   /app[\\/]actions[\\/]email-notifications\.ts/,
   /app[\\/]api[\\/]manifests[\\/].*[\\/]print[\\/]route\.ts/,
   /app[\\/]sentry-example-page[\\/]/,

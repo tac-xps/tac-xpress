@@ -167,6 +167,30 @@ function buildCells(data: number[], endDate: string) {
   })
 }
 
+function parseColorToRgb(value: string, fallback: Rgb): Rgb {
+  if (!value) return fallback
+  if (value.startsWith("#")) {
+    return hexToRgb(value)
+  }
+  if (typeof document !== "undefined") {
+    try {
+      const ctx = document.createElement("canvas").getContext("2d")
+      if (ctx) {
+        ctx.fillStyle = value
+        const computed = ctx.fillStyle
+        if (computed.startsWith("#")) return hexToRgb(computed)
+        const m = computed.match(/\d+/g)
+        if (m && m.length >= 3) {
+          return [Number(m[0]), Number(m[1]), Number(m[2])]
+        }
+      }
+    } catch {
+      return fallback
+    }
+  }
+  return fallback
+}
+
 function hexToRgb(value: string): Rgb {
   const hex = value.trim().replace("#", "")
   const n = Number.parseInt(
@@ -184,13 +208,13 @@ function shade([r, g, b]: Rgb, amount: number) {
 
 export const NORDIC_PINE_PALETTE_LIGHT: Palette = {
   levels: [
-    [226, 232, 240], // Level 0: #e2e8f0 (subtle quiet stone baseline)
-    [148, 210, 189], // Level 1: #94d2bd (soft pine mineral)
-    [61, 139, 116],  // Level 2: #3d8b74 (medium corridor pine)
-    [27, 99, 76],    // Level 3: #1b634c (deep bilateral linehaul pine)
-    [10, 56, 44],    // Level 4: #0a382c (peak surge nocturnal pine)
+    [238, 242, 241], // Level 0: subtle paper tint baseline
+    [180, 212, 206], // Level 1: pale corridor teal
+    [125, 180, 172], // Level 2: medium corridor teal
+    [72, 148, 138],  // Level 3: rich linehaul teal
+    [30, 115, 104],  // Level 4: vibrant primary corridor teal
   ],
-  accent: [192, 132, 26], // #c0841a (warm arterial ochre)
+  accent: [30, 115, 104], // Primary corridor teal
   text: "#475569",
   font: "sans-serif",
 }
@@ -203,7 +227,7 @@ export const NORDIC_PINE_PALETTE_DARK: Palette = {
     [20, 184, 166],  // Level 3: #14b8a6 (teal-500)
     [94, 234, 212],  // Level 4: #5eead4 (luminous peak emerald)
   ],
-  accent: [251, 191, 36], // #fbbf24 (luminous amber ochre)
+  accent: [94, 234, 212], // #5eead4 (luminous teal)
   text: "#94a3b8",
   font: "sans-serif",
 }
@@ -220,10 +244,10 @@ function readPalette(node: HTMLElement): Palette {
 
   const levels: Rgb[] = [0, 1, 2, 3, 4].map((l) => {
     const val = read(`--terrain-${l}`)
-    return val ? hexToRgb(val) : base.levels[l]
+    return parseColorToRgb(val, base.levels[l])
   })
   const accentVal = read("--terrain-accent")
-  const accent = accentVal ? hexToRgb(accentVal) : base.accent
+  const accent = parseColorToRgb(accentVal, base.accent)
   const textVal = read("--terrain-text")
   const text = textVal || base.text
 
@@ -879,8 +903,6 @@ export function ActivityTerrain({
     <div
       className={cn(
         "w-full select-none rounded-none border border-border bg-background text-foreground shadow-xs",
-        "[--terrain-0:#e2e8f0] [--terrain-1:#94d2bd] [--terrain-2:#3d8b74] [--terrain-3:#1b634c] [--terrain-4:#0a382c] [--terrain-accent:#c0841a] [--terrain-text:#475569]",
-        "dark:[--terrain-0:#1e293b] dark:[--terrain-1:#164e63] dark:[--terrain-2:#0d9488] dark:[--terrain-3:#14b8a6] dark:[--terrain-4:#5eead4] dark:[--terrain-accent:#fbbf24] dark:[--terrain-text:#94a3b8]",
         className
       )}
     >
@@ -942,9 +964,9 @@ export function ActivityTerrain({
         tabIndex={0}
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-5 py-2.5 border-t border-border/70 text-[11px] font-sans text-muted-foreground bg-muted/20">
-        <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
-          <span className="inline-block size-1.5 bg-mn-ochre rounded-none shrink-0" aria-hidden="true" />
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-5 py-2.5 border-t border-border/70 text-xs font-sans text-muted-foreground bg-muted/20">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
+          <span className="inline-block size-1.5 bg-primary rounded-none shrink-0" aria-hidden="true" />
           <span>
             {flat
               ? "2D Density Matrix | Click cell or use arrow keys to inspect daily dispatch"
@@ -952,15 +974,15 @@ export function ActivityTerrain({
           </span>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          <span className="text-[10px] text-muted-foreground">Less</span>
+          <span className="text-xs text-muted-foreground">Less</span>
           {[0, 1, 2, 3, 4].map((level) => (
             <span
               className="size-2 rounded-none border border-border/60"
               key={level}
-              style={{ background: `var(--terrain-${level})` }}
+              style={{ background: `var(--terrain-${level}, rgb(${NORDIC_PINE_PALETTE_LIGHT.levels[level].join(",")}))` }}
             />
           ))}
-          <span className="text-[10px] text-muted-foreground">More</span>
+          <span className="text-xs text-muted-foreground">More</span>
         </div>
       </div>
     </div>

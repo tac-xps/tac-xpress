@@ -73,6 +73,28 @@ function htmlToPlainText(content?: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Email Palette Tokens (for maximum client compatibility without CSS variables)
+// ---------------------------------------------------------------------------
+const EMAIL_TOKENS = {
+  bgApp: "#f5f5f5",
+  cardBg: "#ffffff",
+  cardBorder: "#e5e7eb",
+  headerBg: "#1a1a1a",
+  headerText: "#ffffff",
+  textHeading: "#111827",
+  textBody: "#374151",
+  textMuted: "#6b7280",
+  textSubtle: "#9ca3af",
+  borderSubtle: "#f3f4f6",
+  primary: "#1a1a1a",
+  accentIndigo: "#6366f1",
+  accentIndigoWash: "#f5f3ff",
+  accentSuccess: "#10b981",
+  accentSuccessWash: "#f0fdf4",
+  accentDestructive: "#dc2626",
+} as const
+
 // HTML email templates (inline CSS for compatibility)
 // ---------------------------------------------------------------------------
 function buildEmailContent(
@@ -93,21 +115,21 @@ function buildEmailContent(
 <!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:32px 0;">
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${EMAIL_TOKENS.bgApp};">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:${EMAIL_TOKENS.bgApp};padding:32px 0;">
     <tr><td align="center">
-      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e5e7eb;max-width:560px;width:100%;">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:${EMAIL_TOKENS.cardBg};border:1px solid ${EMAIL_TOKENS.cardBorder};max-width:560px;width:100%;">
         <!-- Header -->
-        <tr><td style="padding:20px 24px;border-bottom:2px solid #1a1a1a;background:#1a1a1a;">
-          <span style="color:#ffffff;font-size:14px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">TAC-XPRESS</span>
-          <span style="color:#6b7280;font-size:11px;margin-left:8px;">Logistics Support</span>
+        <tr><td style="padding:20px 24px;border-bottom:2px solid ${EMAIL_TOKENS.headerBg};background:${EMAIL_TOKENS.headerBg};">
+          <span style="color:${EMAIL_TOKENS.headerText};font-size:14px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">TAC-XPRESS</span>
+          <span style="color:${EMAIL_TOKENS.textMuted};font-size:11px;margin-left:8px;">Logistics Support</span>
         </td></tr>
         <!-- Body -->
         <tr><td style="padding:28px 24px;">
           ${content}
-          <hr style="border:none;border-top:1px solid #f3f4f6;margin:24px 0;" />
-          <p style="color:#9ca3af;font-size:11px;margin:0;">
-            If you have questions, reply to this email or visit <a href="${contactUrl}" style="color:#6366f1;">our contact page</a>.<br />
+          <hr style="border:none;border-top:1px solid ${EMAIL_TOKENS.borderSubtle};margin:24px 0;" />
+          <p style="color:${EMAIL_TOKENS.textSubtle};font-size:11px;margin:0;">
+            If you have questions, reply to this email or visit <a href="${contactUrl}" style="color:${EMAIL_TOKENS.accentIndigo};">our contact page</a>.<br />
             This is an automated message from TAC-XPRESS (${supportEmail})
           </p>
         </td></tr>
@@ -118,51 +140,51 @@ function buildEmailContent(
  </html>`
 
   const btn = (url: string, text: string) =>
-    `<a href="${url}" style="display:inline-block;background:#1a1a1a;color:#ffffff;text-decoration:none;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:10px 20px;margin-top:16px;">${text}</a>`
+    `<a href="${url}" style="display:inline-block;background:${EMAIL_TOKENS.primary};color:${EMAIL_TOKENS.headerText};text-decoration:none;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:10px 20px;margin-top:16px;">${text}</a>`
 
   const templates: Record<NotificationType, { html: string; text: string }> = {
     ticket_created: {
       html: base(`
-        <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 8px;">We've received your ticket ${ticketLabel}</h2>
-        <p style="color:#374151;font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
-        <p style="color:#6b7280;font-size:14px;margin:0 0 16px;">Our support team will review your request and follow up by email.</p>
+        <h2 style="font-size:18px;font-weight:700;color:${EMAIL_TOKENS.textHeading};margin:0 0 8px;">We've received your ticket ${ticketLabel}</h2>
+        <p style="color:${EMAIL_TOKENS.textBody};font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
+        <p style="color:${EMAIL_TOKENS.textMuted};font-size:14px;margin:0 0 16px;">Our support team will review your request and follow up by email.</p>
         ${btn(contactUrl, "Contact Support")}
       `),
       text: `TAC-XPRESS: We received your ticket ${ticketLabel}.\nSubject: ${subject}\nOur support team will review your request.\n\nView: ${contactUrl}`,
     },
     ai_replied: {
       html: base(`
-        <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 8px;">Update on your ticket ${ticketLabel}</h2>
-        <p style="color:#374151;font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
-        <blockquote style="border-left:3px solid #6366f1;padding:12px 16px;background:#f5f3ff;color:#374151;font-size:14px;margin:0 0 16px;">${safeBody}</blockquote>
-        <p style="color:#6b7280;font-size:13px;margin:0 0 4px;">Need to add more information? Contact support and include your ticket number.</p>
+        <h2 style="font-size:18px;font-weight:700;color:${EMAIL_TOKENS.textHeading};margin:0 0 8px;">Update on your ticket ${ticketLabel}</h2>
+        <p style="color:${EMAIL_TOKENS.textBody};font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
+        <blockquote style="border-left:3px solid ${EMAIL_TOKENS.accentIndigo};padding:12px 16px;background:${EMAIL_TOKENS.accentIndigoWash};color:${EMAIL_TOKENS.textBody};font-size:14px;margin:0 0 16px;">${safeBody}</blockquote>
+        <p style="color:${EMAIL_TOKENS.textMuted};font-size:13px;margin:0 0 4px;">Need to add more information? Contact support and include your ticket number.</p>
         ${btn(contactUrl, "Contact support")}
       `),
       text: `Update on ${subject} ${ticketLabel}:\n\n${plainBody}\n\nReply: ${contactUrl}`,
     },
     agent_replied: {
       html: base(`
-        <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 8px;">A support agent responded to ${ticketLabel}</h2>
-        <p style="color:#374151;font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
-        <blockquote style="border-left:3px solid #10b981;padding:12px 16px;background:#f0fdf4;color:#374151;font-size:14px;margin:0 0 16px;">${safeBody}</blockquote>
+        <h2 style="font-size:18px;font-weight:700;color:${EMAIL_TOKENS.textHeading};margin:0 0 8px;">A support agent responded to ${ticketLabel}</h2>
+        <p style="color:${EMAIL_TOKENS.textBody};font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
+        <blockquote style="border-left:3px solid ${EMAIL_TOKENS.accentSuccess};padding:12px 16px;background:${EMAIL_TOKENS.accentSuccessWash};color:${EMAIL_TOKENS.textBody};font-size:14px;margin:0 0 16px;">${safeBody}</blockquote>
         ${btn(contactUrl, "Reply Here")}
       `),
       text: `Agent response on ${subject} ${ticketLabel}:\n\n${plainBody}\n\nReply: ${contactUrl}`,
     },
     sla_breach: {
       html: base(`
-        <h2 style="font-size:18px;font-weight:700;color:#dc2626;margin:0 0 8px;">⚠️ Urgent: Your ticket has been escalated ${ticketLabel}</h2>
-        <p style="color:#374151;font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
-        <p style="color:#6b7280;font-size:14px;margin:0 0 16px;">We've escalated your ticket to our senior team due to SLA requirements. Expect an update very shortly.</p>
+        <h2 style="font-size:18px;font-weight:700;color:${EMAIL_TOKENS.accentDestructive};margin:0 0 8px;">⚠️ Urgent: Your ticket has been escalated ${ticketLabel}</h2>
+        <p style="color:${EMAIL_TOKENS.textBody};font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
+        <p style="color:${EMAIL_TOKENS.textMuted};font-size:14px;margin:0 0 16px;">We've escalated your ticket to our senior team due to SLA requirements. Expect an update very shortly.</p>
         ${btn(contactUrl, "Contact Support")}
       `),
       text: `URGENT: Your ticket ${subject} ${ticketLabel} has been escalated. We'll update you soon.\n\nView: ${contactUrl}`,
     },
     resolved: {
       html: base(`
-        <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 8px;">Ticket Resolved ✓ ${ticketLabel}</h2>
-        <p style="color:#374151;font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
-        <p style="color:#6b7280;font-size:14px;margin:0 0 16px;">Your ticket has been marked as resolved. If you need further help, please open a new ticket.</p>
+        <h2 style="font-size:18px;font-weight:700;color:${EMAIL_TOKENS.textHeading};margin:0 0 8px;">Ticket Resolved ✓ ${ticketLabel}</h2>
+        <p style="color:${EMAIL_TOKENS.textBody};font-size:14px;margin:0 0 12px;"><strong>Subject:</strong> ${safeSubject}</p>
+        <p style="color:${EMAIL_TOKENS.textMuted};font-size:14px;margin:0 0 16px;">Your ticket has been marked as resolved. If you need further help, please open a new ticket.</p>
         ${btn(contactUrl, "Contact support")}
       `),
       text: `Resolved: ${subject} ${ticketLabel}.\nContact support: ${contactUrl}`,

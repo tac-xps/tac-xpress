@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useSpring } from "motion/react"
@@ -21,6 +21,19 @@ export function LandingNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("#features")
   const [isScrolled, setIsScrolled] = useState(false)
+  const mobileButtonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobileMenuOpen(false)
+        mobileButtonRef.current?.focus()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [mobileMenuOpen])
 
   const { scrollYProgress, scrollY } = useScroll()
   const smoothProgress = useSpring(scrollYProgress, {
@@ -102,7 +115,7 @@ export function LandingNav() {
             aria-label="TAC-XPRESS home"
             className="group flex items-center gap-2.5 focus-visible:outline-none"
           >
-            <div className="relative size-3.5 bg-mn-ochre rounded-none overflow-hidden transition-transform duration-200 group-hover:scale-105 active:scale-95 shadow-2xs">
+            <div className="relative size-3.5 bg-primary rounded-none overflow-hidden transition-transform duration-200 group-hover:scale-105 active:scale-95 shadow-2xs">
               <span
                 aria-hidden="true"
                 className="absolute inset-y-0 -inset-x-2 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full transition-transform duration-700 ease-in-out group-hover:translate-x-full motion-reduce:hidden"
@@ -140,11 +153,12 @@ export function LandingNav() {
 
         {/* Mobile: Morphing Hamburger-to-X Button */}
         <button
+          ref={mobileButtonRef}
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="flex md:hidden size-9 items-center justify-center border border-border/80 bg-card hover:bg-muted text-foreground transition-colors rounded-none focus-visible:outline-none active:scale-95"
+          className="flex md:hidden size-11 items-center justify-center border border-border/80 bg-card hover:bg-muted text-foreground transition-colors rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground active:scale-95 cursor-pointer"
           aria-expanded={mobileMenuOpen}
-          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+          aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
         >
           <div className="flex flex-col justify-between size-4">
             <span
@@ -182,10 +196,13 @@ export function LandingNav() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="md:hidden overflow-hidden border-b border-border bg-background px-6 py-6 shadow-sm"
           >
             <motion.nav

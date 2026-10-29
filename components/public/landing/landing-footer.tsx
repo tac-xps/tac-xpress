@@ -45,7 +45,7 @@ export function LandingFooter() {
           {/* Brand Info */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="size-4 bg-mn-ochre rounded-none" />
+              <div className="size-4 bg-primary rounded-none" />
               <span className="font-mono text-base font-bold tracking-tight text-foreground">
                 TAC-XPRESS
               </span>
@@ -95,9 +95,22 @@ export function LandingFooter() {
         {/* Giant Watermark Logo Spanning Across Bottom (Exact Atomist Signature) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none mt-12 select-none text-center font-mono text-[14vw] font-black leading-none tracking-tighter text-foreground/[0.04] whitespace-nowrap overflow-hidden"
+          className="pointer-events-none mt-12 select-none overflow-hidden"
         >
-          TAC-XPRESS
+          <svg
+            viewBox="0 0 1200 160"
+            className="w-full h-auto max-h-[16vw] fill-foreground/[0.04]"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <text
+              x="50%"
+              y="75%"
+              textAnchor="middle"
+              className="font-mono font-black text-[150px] tracking-tighter"
+            >
+              TAC-XPRESS
+            </text>
+          </svg>
         </div>
       </div>
     </footer>

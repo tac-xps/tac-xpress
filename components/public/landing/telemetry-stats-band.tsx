@@ -14,7 +14,7 @@ export function TelemetryStatsBand() {
       <div className="mx-auto w-full max-w-[1240px] px-6 lg:px-12 text-center">
         {/* Eyebrow Context Chip */}
         <div className="inline-flex items-center gap-2 border border-border bg-card px-2.5 py-0.5 text-xs font-sans text-muted-foreground rounded-none shadow-2xs mb-3">
-          <span className="size-1.5 rounded-none bg-mn-ochre" aria-hidden="true" />
+          <span className="size-1.5 rounded-none bg-primary" aria-hidden="true" />
           <span className="font-medium text-foreground">Corridor Telemetry & Linehaul Volume</span>
         </div>
 

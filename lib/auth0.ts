@@ -5,13 +5,18 @@ const auth0Secret =
   process.env.AUTH_SECRET ||
   "0000000000000000000000000000000000000000000000000000000000000000"
 
+const isProd = process.env.NODE_ENV === "production"
+const domain = process.env.AUTH0_DOMAIN || (isProd ? "" : "dev-mydyvbfsq8sjrz6j.jp.auth0.com")
+const clientId = process.env.AUTH0_CLIENT_ID || (isProd ? "" : "EtEfOLGDBkQoZC0v3WZneyyQGh0JwKgL")
+
 export const isAuth0Configured = Boolean(
-  process.env.AUTH0_SECRET || (process.env.AUTH_SECRET && process.env.NODE_ENV !== "production")
+  (process.env.AUTH0_DOMAIN && process.env.AUTH0_CLIENT_ID && process.env.AUTH0_SECRET) ||
+    (!isProd && (process.env.AUTH_SECRET || process.env.AUTH0_SECRET))
 )
 
 export const auth0 = new Auth0Client({
-  domain: process.env.AUTH0_DOMAIN || "dev-mydyvbfsq8sjrz6j.jp.auth0.com",
-  clientId: process.env.AUTH0_CLIENT_ID || "EtEfOLGDBkQoZC0v3WZneyyQGh0JwKgL",
+  domain,
+  clientId,
   clientSecret: process.env.AUTH0_CLIENT_SECRET,
   secret: auth0Secret,
   appBaseUrl: process.env.APP_BASE_URL || process.env.AUTH0_BASE_URL || "http://localhost:3000",

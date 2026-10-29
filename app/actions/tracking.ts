@@ -88,7 +88,7 @@ export async function trackAwb(formData: FormData) {
       return { error: "AWB not found or no public updates are available yet." }
     }
     const validEvents = rows.filter(r => r.event && r.event.id)
-    const displayStatus = validEvents.length > 0 ? validEvents[0].event!.status : "pending"
+    const displayStatus = validEvents[0]?.event?.status ?? "pending"
 
     let legProgress = null
     // Only disclose leg progress if public tracking events are present and all in-transit/completed legs are published

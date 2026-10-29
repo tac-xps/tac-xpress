@@ -3,6 +3,8 @@
 import React from "react"
 import Image from "next/image"
 import { LayoutGrid, Compass, Barcode } from "lucide-react"
+import { Badge } from "@/components/reui/badge"
+import { IconTile } from "@/components/reui/icon-tile"
 
 const STEPS = [
   {
@@ -45,7 +47,7 @@ export function HowItWorksSection() {
             id="how-heading"
             className="text-2xl font-medium tracking-tight text-foreground sm:text-4xl"
           >
-            How does it <span className="text-mn-ochre">work?</span>
+            How does it work?
           </h2>
           <p className="mt-2 text-xs font-sans text-muted-foreground">
             Predictable three-stage freight execution tailored exclusively for New Delhi and Imphal.
@@ -71,20 +73,24 @@ export function HowItWorksSection() {
                       sizes="(max-width: 768px) 100vw, 400px"
                       className="object-cover rounded-none"
                     />
-                    <div className="absolute top-2.5 left-2.5 border border-border/80 bg-background/90 px-2 py-0.5 text-[10px] font-sans font-medium text-foreground">
-                      STAGE 0{idx + 1}
+                    <div className="absolute top-2.5 left-2.5">
+                      <Badge variant="outline" size="sm" className="bg-background/95 font-mono">
+                        Stage 0{idx + 1}
+                      </Badge>
                     </div>
-                    <div className="absolute bottom-2.5 right-2.5 border border-border/80 bg-background/90 px-2 py-0.5 text-[10px] font-sans font-medium text-mn-ochre">
-                      {step.badge}
+                    <div className="absolute bottom-2.5 right-2.5">
+                      <Badge variant="primary-light" size="sm" className="font-medium">
+                        {step.badge}
+                      </Badge>
                     </div>
                   </div>
 
                   {/* Header with Icon and Title */}
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="flex size-9 items-center justify-center border border-border bg-muted/40 rounded-none shrink-0">
-                      <Icon className="size-4 text-foreground" />
-                    </div>
-                    <h3 className="text-base font-medium text-foreground">
+                    <IconTile variant="outline" size="sm" className="rounded-none shrink-0 bg-muted/40">
+                      <Icon className="size-4 text-foreground" aria-hidden="true" />
+                    </IconTile>
+                    <h3 className="text-base font-semibold tracking-tight text-foreground">
                       {step.title}
                     </h3>
                   </div>
@@ -95,7 +101,7 @@ export function HowItWorksSection() {
                   </p>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-border flex items-center justify-between text-[11px] font-sans text-muted-foreground">
+                <div className="mt-6 pt-4 border-t border-border flex items-center justify-between text-xs font-sans text-muted-foreground">
                   <span>Corridor Route: DEL ⇄ IMF</span>
                   <span className="font-semibold text-foreground">Direct Handover</span>
                 </div>

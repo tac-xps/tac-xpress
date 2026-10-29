@@ -203,7 +203,7 @@ export function MorphicNavbar({
                 }
                 aria-hidden="true"
               >
-                <span className="absolute bottom-0 inset-x-2.5 h-[2px] bg-primary dark:bg-mn-ochre rounded-none transition-colors duration-200" />
+                <span className="absolute bottom-0 inset-x-2.5 h-[2px] bg-primary rounded-none transition-colors duration-200" />
               </motion.div>
             )}
 

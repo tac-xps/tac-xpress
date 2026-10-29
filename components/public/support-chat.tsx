@@ -68,7 +68,7 @@ export function SupportChat() {
                   whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
                   whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
                   transition={{ duration: 0.15 }}
-                  className="relative aspect-square size-12 sm:size-14 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground p-0 shadow-lg hover:shadow-xl flex items-center justify-center border border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all cursor-pointer"
+                  className="relative aspect-square size-12 sm:size-14 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground p-0 shadow-lg hover:shadow-xl flex items-center justify-center border border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors cursor-pointer"
                   aria-label="Open AI assistant"
                 >
                   <span className="absolute top-2.5 right-2.5 flex size-2">
@@ -83,7 +83,7 @@ export function SupportChat() {
             <TooltipContent
               side="left"
               sideOffset={12}
-              className="rounded-none bg-popover text-popover-foreground border px-3 py-1.5 font-mono text-xs uppercase tracking-wider shadow-md"
+              className="rounded-none bg-popover text-popover-foreground border px-3 py-1.5 font-sans text-xs font-medium shadow-md"
             >
               Ask a question
             </TooltipContent>

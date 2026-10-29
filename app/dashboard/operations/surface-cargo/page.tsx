@@ -18,7 +18,7 @@ export default async function SurfaceCargoPage({
   await requireStaffPage()
   const page = parsePage((await searchParams).page)
 
-  // shortcut: 100 recent shipments for live telemetry to prevent OOM, upgrade to dedicated aggregate pipeline under higher volume
+  // shortcut: 100 recent shipments queried for live telemetry to prevent memory spikes. Fix condition: active surface shipment volume exceeds 1,000 active records.
   const rows = await db.query.shipments.findMany({
     where: (s, { isNull, and, inArray }) =>
       and(
@@ -41,7 +41,7 @@ export default async function SurfaceCargoPage({
       icon={<TruckIcon className="size-8 text-status-delivered" />}
       iconBg="bg-status-delivered/10"
       heading="Surface Cargo Operations"
-      description="Monitor line-haul road movements, highway corridor transit (NH-27, NH-29, AH-1), and standard ocean freight consignments."
+      description="Monitor linehaul road movements, highway corridor transit (NH-27, NH-29, AH-1), and arterial truck consignments on the DEL ⇄ IMF corridor."
       tableTitle="Active Surface Shipments"
       pathname="/dashboard/operations/surface-cargo"
       kpiCards={[

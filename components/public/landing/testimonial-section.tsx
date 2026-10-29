@@ -17,7 +17,7 @@ export function TestimonialSection() {
             id="testimonials-heading"
             className="text-2xl font-medium tracking-tight text-foreground sm:text-4xl"
           >
-            Customers see the direct <span className="text-mn-ochre">result</span>
+            Customers see the direct result
           </h2>
           <p className="mt-2 text-xs font-sans text-muted-foreground">
             Verified freight operators moving commercial consignments between New Delhi and Imphal.

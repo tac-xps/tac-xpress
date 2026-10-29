@@ -18,7 +18,7 @@ export default async function AirCargoPage({
   await requireStaffPage()
   const page = parsePage((await searchParams).page)
 
-  // shortcut: 100 recent shipments for live telemetry to prevent OOM, upgrade to dedicated aggregate pipeline under higher volume
+  // shortcut: 100 recent shipments queried for live telemetry to prevent memory spikes. Fix condition: active shipment telemetry volume exceeds 1,000 active records.
   const rows = await db.query.shipments.findMany({
     where: (s, { isNull, and, eq }) =>
       and(isNull(s.deletedAt), eq(s.serviceType, "express_air")),
@@ -38,7 +38,7 @@ export default async function AirCargoPage({
       icon={<PlaneIcon className="size-8 text-primary" />}
       iconBg="bg-primary/10"
       heading="Air Cargo Operations"
-      description="Monitor high-priority express air shipments across IATA corridors (DEL-GAU, CCU-IMF, GAU-IXA) with standard 1:5000 volumetric divisor."
+      description="Monitor high-priority express air shipments across the New Delhi and Imphal corridor (DEL ⇄ IMF) with standard 1:5000 volumetric divisor."
       tableTitle="Active Air Shipments"
       pathname="/dashboard/operations/air-cargo"
       kpiCards={[

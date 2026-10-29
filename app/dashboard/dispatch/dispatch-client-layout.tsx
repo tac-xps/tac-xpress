@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/reui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -107,7 +107,7 @@ export function DispatchClientLayout({
                 <CardHeader>
                   <div className="flex items-center justify-between gap-3">
                     <CardTitle>{column.name}</CardTitle>
-                    <Badge variant="secondary">
+                    <Badge variant="outline" size="sm">
                       {items.filter((item) => item.column === column.id).length}
                     </Badge>
                   </div>

@@ -5,6 +5,27 @@ import { NextResponse } from "next/server"
 import { format } from "date-fns"
 import { requireDashboardApi } from "@/lib/auth/guards"
 import { escapeHtml } from "@/lib/server/escape-html"
+
+const MANIFEST_PRINT_TOKENS = {
+  ink: "#191716",
+  paper: "#ffffff",
+  paperSubtle: "#f7f5f3",
+  border: "#e2dedc",
+  muted: "#66615e",
+  statusDraftBg: "#f7f5f3",
+  statusDraftText: "#66615e",
+  statusFinalizedBg: "#d1fae5",
+  statusFinalizedText: "#065f46",
+  statusPendingBg: "#fef3c7",
+  statusPendingText: "#92400e",
+  statusTransitBg: "#dbeafe",
+  statusTransitText: "#1e40af",
+  statusDeliveredBg: "#d1fae5",
+  statusDeliveredText: "#065f46",
+  statusDelayedBg: "#fee2e2",
+  statusDelayedText: "#991b1b",
+} as const
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -46,37 +67,37 @@ export async function GET(
   <title>Manifest ${escapeHtml(manifest.referenceId)}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12px; color: #111; background: #fff; padding: 24px; }
-    .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 16px; margin-bottom: 20px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12px; color: ${MANIFEST_PRINT_TOKENS.ink}; background: ${MANIFEST_PRINT_TOKENS.paper}; padding: 24px; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid ${MANIFEST_PRINT_TOKENS.ink}; padding-bottom: 16px; margin-bottom: 20px; }
     .company { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-    .doc-title { font-size: 14px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+    .doc-title { font-size: 14px; font-weight: 700; color: ${MANIFEST_PRINT_TOKENS.muted}; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
     .ref { font-size: 20px; font-weight: 800; font-family: monospace; }
-    .meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; padding: 16px; background: #f8f8f8; border: 1px solid #e0e0e0; }
-    .meta-item label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 4px; }
+    .meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; padding: 16px; background: ${MANIFEST_PRINT_TOKENS.paperSubtle}; border: 1px solid ${MANIFEST_PRINT_TOKENS.border}; }
+    .meta-item label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: ${MANIFEST_PRINT_TOKENS.muted}; margin-bottom: 4px; }
     .meta-item span { font-size: 13px; font-weight: 600; }
     .status { display: inline-block; padding: 2px 8px; border-radius: 0; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-    .status-draft { background: #f0f0f0; color: #666; }
-    .status-finalized { background: #d1fae5; color: #065f46; }
+    .status-draft { background: #f0f0f0; color: ${MANIFEST_PRINT_TOKENS.muted}; }
+    .status-finalized { background: ${MANIFEST_PRINT_TOKENS.statusFinalizedBg}; color: ${MANIFEST_PRINT_TOKENS.statusFinalizedText}; }
     table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-    thead tr { background: #111; color: #fff; }
+    thead tr { background: ${MANIFEST_PRINT_TOKENS.ink}; color: ${MANIFEST_PRINT_TOKENS.paper}; }
     th { padding: 8px 10px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
-    td { padding: 8px 10px; border-bottom: 1px solid #e8e8e8; font-size: 11px; vertical-align: top; }
-    tr:nth-child(even) td { background: #fafafa; }
+    td { padding: 8px 10px; border-bottom: 1px solid ${MANIFEST_PRINT_TOKENS.border}; font-size: 11px; vertical-align: top; }
+    tr:nth-child(even) td { background: ${MANIFEST_PRINT_TOKENS.paperSubtle}; }
     .awb { font-family: monospace; font-weight: 700; font-size: 12px; }
-    .route { color: #555; }
+    .route { color: ${MANIFEST_PRINT_TOKENS.muted}; }
     .weight { font-family: monospace; text-align: right; }
     .status-pill { padding: 2px 6px; border-radius: 0; font-size: 9px; font-weight: 700; text-transform: uppercase; }
-    .pending { background: #fef3c7; color: #92400e; }
-    .in_transit { background: #dbeafe; color: #1e40af; }
-    .delivered { background: #d1fae5; color: #065f46; }
-    .delayed { background: #fee2e2; color: #991b1b; }
-    .summary { display: flex; justify-content: flex-end; gap: 32px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #e0e0e0; }
+    .pending { background: ${MANIFEST_PRINT_TOKENS.statusPendingBg}; color: ${MANIFEST_PRINT_TOKENS.statusPendingText}; }
+    .in_transit { background: ${MANIFEST_PRINT_TOKENS.statusTransitBg}; color: ${MANIFEST_PRINT_TOKENS.statusTransitText}; }
+    .delivered { background: ${MANIFEST_PRINT_TOKENS.statusFinalizedBg}; color: ${MANIFEST_PRINT_TOKENS.statusFinalizedText}; }
+    .delayed { background: ${MANIFEST_PRINT_TOKENS.statusDelayedBg}; color: ${MANIFEST_PRINT_TOKENS.statusDelayedText}; }
+    .summary { display: flex; justify-content: flex-end; gap: 32px; margin-top: 20px; padding-top: 16px; border-top: 1px solid ${MANIFEST_PRINT_TOKENS.border}; }
     .summary-item { text-align: right; }
-    .summary-item label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #666; }
+    .summary-item label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: ${MANIFEST_PRINT_TOKENS.muted}; }
     .summary-item span { font-size: 18px; font-weight: 800; }
-    .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #ccc; display: flex; justify-content: space-between; color: #888; font-size: 10px; }
-    .sig-box { width: 200px; border-bottom: 1px solid #ccc; padding-bottom: 40px; margin-top: 40px; }
-    .sig-label { font-size: 10px; color: #888; margin-top: 6px; }
+    .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid ${MANIFEST_PRINT_TOKENS.border}; display: flex; justify-content: space-between; color: ${MANIFEST_PRINT_TOKENS.muted}; font-size: 10px; }
+    .sig-box { width: 200px; border-bottom: 1px solid ${MANIFEST_PRINT_TOKENS.border}; padding-bottom: 40px; margin-top: 40px; }
+    .sig-label { font-size: 10px; color: ${MANIFEST_PRINT_TOKENS.muted}; margin-top: 6px; }
     .sigs { display: flex; gap: 60px; margin-top: 24px; }
     @media print {
       body { padding: 0; }

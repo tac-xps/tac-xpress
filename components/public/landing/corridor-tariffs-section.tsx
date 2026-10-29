@@ -7,6 +7,8 @@ import { ArrowUpRight, Check, Plane, Truck, ShieldAlert } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { calculateFreightPricing, calculateGstPaise } from "@/lib/stem/freight"
+import { Badge } from "@/components/reui/badge"
+import { IconTile } from "@/components/reui/icon-tile"
 
 interface PricingPlan {
   id: "air" | "surface" | "charter"
@@ -136,7 +138,7 @@ export function CorridorTariffsSection() {
             id="pricing-heading"
             className="text-2xl font-medium tracking-tight text-foreground sm:text-4xl"
           >
-            Flexible pricing for any <span className="text-mn-ochre">scale</span>
+            Flexible pricing for any scale
           </h2>
           <p className="mt-2 text-xs font-sans text-muted-foreground">
             Direct rate schedules between New Delhi and Imphal with statutory GST compliance.
@@ -168,7 +170,13 @@ export function CorridorTariffsSection() {
                   )}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={cn("size-4 shrink-0", isSelected ? "text-mn-ochre" : "text-muted-foreground")} />
+                    <IconTile
+                      variant={isSelected ? "solid" : "outline"}
+                      size="sm"
+                      className="rounded-none shrink-0"
+                    >
+                      <Icon className="size-3.5" aria-hidden="true" />
+                    </IconTile>
                     <div>
                       <div className="text-sm font-medium text-foreground">{plan.name}</div>
                       <div className="text-xs text-muted-foreground font-sans">{plan.sla}</div>
@@ -187,9 +195,9 @@ export function CorridorTariffsSection() {
                 <span className="text-xs font-semibold text-foreground font-sans">
                   Quick Rate Estimator
                 </span>
-                <span className="text-[11px] text-muted-foreground">
+                <Badge variant="primary-light" size="sm">
                   18% GST itemized
-                </span>
+                </Badge>
               </div>
 
               <div className="space-y-3">
@@ -203,7 +211,7 @@ export function CorridorTariffsSection() {
                       max={2000}
                       value={calcWeight}
                       onChange={(e) => setCalcWeight(Math.max(1, Number(e.target.value) || 1))}
-                      className="w-16 h-7 text-right bg-background border border-border px-1.5 text-xs font-mono font-bold text-foreground rounded-none"
+                      className="w-20 min-h-[40px] text-right bg-background border border-border px-2 text-sm font-mono font-bold text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
                     />
                     <span className="text-xs text-muted-foreground">kg</span>
                   </div>
@@ -211,21 +219,21 @@ export function CorridorTariffsSection() {
 
                 {calculation ? (
                   <div className="pt-2 border-t border-border/70 space-y-1.5 text-xs">
-                    <div className="flex justify-between text-muted-foreground text-[11px]">
+                    <div className="flex justify-between text-muted-foreground text-xs">
                       <span>Base freight ({calculation.chargedWeight} kg):</span>
                       <span className="font-mono text-foreground">{formatInr(calculation.pricing.baseFreightPaise)}</span>
                     </div>
-                    <div className="flex justify-between text-muted-foreground text-[11px]">
+                    <div className="flex justify-between text-muted-foreground text-xs">
                       <span>Fuel surcharge (10%):</span>
                       <span className="font-mono text-foreground">{formatInr(calculation.pricing.fuelSurchargePaise)}</span>
                     </div>
-                    <div className="flex justify-between text-muted-foreground text-[11px]">
+                    <div className="flex justify-between text-muted-foreground text-xs">
                       <span>Statutory GST (18%):</span>
                       <span className="font-mono text-foreground">{formatInr(calculation.gst.totalTaxPaise)}</span>
                     </div>
                     <div className="flex justify-between font-bold text-foreground pt-1.5 border-t border-border/50 text-xs">
                       <span>Total Estimated Tariff:</span>
-                      <span className="font-mono text-sm text-mn-ochre">{formatInr(calculation.gst.totalPaise)}</span>
+                      <span className="font-mono text-sm text-foreground font-bold">{formatInr(calculation.gst.totalPaise)}</span>
                     </div>
                   </div>
                 ) : (
@@ -252,18 +260,23 @@ export function CorridorTariffsSection() {
 
               <div className="flex items-center justify-between border-b border-border pb-4">
                 <div>
-                  <h3 className="text-xl font-medium text-foreground">
-                    {activePlan.name}
-                  </h3>
-                  <div className="text-xs text-muted-foreground font-sans mt-0.5">
-                    {activePlan.minWeight} / {activePlan.sla}
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-medium text-foreground">
+                      {activePlan.name}
+                    </h3>
+                    <Badge variant="outline" size="sm" className="font-mono text-xs">
+                      {activePlan.sla}
+                    </Badge>
+                  </div>
+                  <div className="text-xs text-muted-foreground font-sans mt-1">
+                    {activePlan.minWeight}
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="font-mono text-3xl font-bold tracking-tight text-foreground">
                     {activePlan.rate}
                   </div>
-                  <div className="text-[11px] font-sans text-muted-foreground">
+                  <div className="text-xs font-sans text-muted-foreground">
                     {activePlan.subRate}
                   </div>
                 </div>
@@ -276,7 +289,7 @@ export function CorridorTariffsSection() {
               <div className="mt-6 space-y-2.5">
                 {activePlan.features.map((feat) => (
                   <div key={feat} className="flex items-center gap-2.5 text-xs font-sans text-foreground">
-                    <Check className="size-3.5 text-mn-ochre shrink-0" />
+                    <Check className="size-3.5 text-primary shrink-0" />
                     <span>{feat}</span>
                   </div>
                 ))}

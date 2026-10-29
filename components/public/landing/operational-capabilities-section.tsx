@@ -100,14 +100,18 @@ export function OperationalCapabilitiesSection() {
         </div>
 
         {/* 4 Feature Selector Tab Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-1.5 mb-6">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 mb-6" role="tablist" aria-label="Corridor operational capabilities">
           {CAPABILITY_TABS.map((tab) => (
             <button
               key={tab.id}
               type="button"
+              role="tab"
+              id={`capability-tab-${tab.id}`}
+              aria-selected={activeTab === tab.id}
+              aria-controls={`capability-panel-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "px-4 py-1.5 text-xs font-sans rounded-none transition-colors border shadow-2xs",
+                "px-4 py-1.5 text-xs font-sans rounded-none transition-colors border shadow-2xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground cursor-pointer",
                 activeTab === tab.id
                   ? "border-foreground bg-foreground text-background font-semibold"
                   : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -119,19 +123,24 @@ export function OperationalCapabilitiesSection() {
         </div>
 
         {/* Central Console Showcase */}
-        <div className="relative mx-auto w-full max-w-5xl border border-border bg-card shadow-sm overflow-hidden rounded-none text-left">
+        <div
+          id={`capability-panel-${currentTab.id}`}
+          role="tabpanel"
+          aria-labelledby={`capability-tab-${currentTab.id}`}
+          className="relative mx-auto w-full max-w-5xl border border-border bg-card shadow-sm overflow-hidden rounded-none text-left"
+        >
           {/* Console Cockpit Top Bar */}
           <div className="flex flex-wrap items-center justify-between border-b border-border bg-muted/40 px-4 py-2.5 text-xs font-sans text-muted-foreground">
             <div className="flex items-center gap-2">
-              <Radio className="size-3.5 text-mn-ochre motion-safe:animate-pulse" />
+              <Radio className="size-3.5 text-primary motion-safe:animate-pulse" />
               <span className="font-semibold text-foreground text-xs">
                 {currentTab.flight}
               </span>
             </div>
-            <div className="flex items-center gap-3 text-[11px]">
+            <div className="flex items-center gap-3 text-xs">
               <span>{currentTab.originGate}</span>
               <span>{currentTab.destApron}</span>
-              <span className="font-sans text-mn-ochre font-medium">
+              <span className="font-sans text-primary font-medium">
                 {currentTab.payload}
               </span>
             </div>
@@ -158,7 +167,7 @@ export function OperationalCapabilitiesSection() {
                   type="button"
                   onClick={() => setMode("AIR")}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 border text-xs font-sans rounded-none transition-colors",
+                    "flex-1 flex items-center justify-center gap-1.5 min-h-[44px] py-2 px-3 border text-xs font-sans rounded-none transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",
                     mode === "AIR"
                       ? "border-foreground bg-foreground text-background font-medium"
                       : "border-border text-muted-foreground hover:bg-muted"
@@ -171,7 +180,7 @@ export function OperationalCapabilitiesSection() {
                   type="button"
                   onClick={() => setMode("SURFACE")}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 border text-xs font-sans rounded-none transition-colors",
+                    "flex-1 flex items-center justify-center gap-1.5 min-h-[44px] py-2 px-3 border text-xs font-sans rounded-none transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",
                     mode === "SURFACE"
                       ? "border-foreground bg-foreground text-background font-medium"
                       : "border-border text-muted-foreground hover:bg-muted"
@@ -183,7 +192,7 @@ export function OperationalCapabilitiesSection() {
               </div>
 
               {/* Weight Selector */}
-              <div className="sm:col-span-4 flex items-center justify-between border border-border px-3 py-1.5 text-xs font-sans">
+              <div className="sm:col-span-4 flex items-center justify-between border border-border px-3 py-1.5 text-xs font-sans min-h-[44px]">
                 <span className="text-muted-foreground">Weight:</span>
                 <div className="flex gap-1.5">
                   {[10, 30, 50, 100].map((kg) => (
@@ -192,7 +201,7 @@ export function OperationalCapabilitiesSection() {
                       type="button"
                       onClick={() => setWeightKg(kg)}
                       className={cn(
-                        "px-2 py-0.5 text-[11px] font-sans rounded-none transition-colors",
+                        "px-2.5 py-1.5 min-h-[32px] text-xs font-sans rounded-none transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",
                         weightKg === kg
                           ? "bg-foreground text-background font-semibold"
                           : "text-muted-foreground hover:text-foreground"
@@ -207,14 +216,14 @@ export function OperationalCapabilitiesSection() {
               {/* Result & Action */}
               <div className="sm:col-span-4 flex items-center justify-between gap-3">
                 <div>
-                  <div className="text-[10px] text-muted-foreground font-sans">Est. Tariff + 18% GST</div>
+                  <div className="text-xs text-muted-foreground font-sans">Est. Tariff + 18% GST</div>
                   <div className="text-base font-mono font-bold text-foreground">
                     ₹{totalInr.toLocaleString("en-IN")}
                   </div>
                 </div>
                 <Button
                   asChild
-                  className="h-8.5 px-4 rounded-none font-medium text-xs bg-mn-ochre text-foreground hover:bg-mn-ochre/90 shadow-2xs"
+                  className="min-h-[44px] sm:min-h-0 sm:h-9 px-4 rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-2xs"
                 >
                   <Link href={`/contact?mode=${mode}&weight=${weightKg}&origin=DEL&dest=IMF`}>
                     Book Route

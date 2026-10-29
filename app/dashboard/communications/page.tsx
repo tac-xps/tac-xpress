@@ -48,7 +48,7 @@ export default async function CommunicationsPage({
       })
       .from(messageOutbound)
       .where(and(failedOnly ? eq(messageOutbound.status, "failed") : undefined))
-      // shortcut: 50 recent outbound messages for fast staff review, upgrade to paginated query when volume exceeds 500/day
+      // shortcut: 50 recent outbound messages queried for fast staff review. Fix condition: daily outbound message volume exceeds 500/day.
       .limit(50),
     db
       .select({

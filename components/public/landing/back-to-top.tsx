@@ -50,6 +50,7 @@ export function BackToTop() {
             <TooltipTrigger asChild>
               <motion.button
                 key="back-to-top-fab"
+                type="button"
                 onClick={scrollToTop}
                 aria-label="Back to top"
                 initial={

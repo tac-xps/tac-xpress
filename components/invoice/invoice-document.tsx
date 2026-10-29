@@ -28,7 +28,7 @@ export function InvoiceDocument({ doc }: InvoiceDocumentProps) {
       {/* ── PAGE 1: PRIMARY TAX INVOICE ── */}
       <article
         data-invoice-document="page-1"
-        className="invoice-page mx-auto box-border flex min-h-[297mm] w-[210mm] shrink-0 flex-col justify-between bg-white p-[6mm] sm:p-[7mm] font-sans text-xs leading-normal text-[#191716] shadow-sm [print-color-adjust:exact] print:shadow-none select-none print:m-0"
+        className="invoice-page mx-auto box-border flex min-h-[297mm] w-[210mm] shrink-0 flex-col justify-between bg-print-paper p-[6mm] sm:p-[7mm] font-sans text-xs leading-normal text-print-ink shadow-sm [print-color-adjust:exact] print:shadow-none select-none print:m-0"
         aria-label={`Tax Invoice ${doc.commercial.invoiceNumber} for AWB ${doc.shipment.awbNumber}`}
       >
         <div className="flex flex-col">
