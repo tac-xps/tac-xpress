@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import * as Sentry from "@sentry/nextjs"
+import posthog from "posthog-js"
 import { Button } from "@/components/ui/button"
 import { AlertCircle, RefreshCw } from "lucide-react"
 
@@ -14,6 +15,7 @@ export default function ShipmentsError({
 }) {
   useEffect(() => {
     Sentry.captureException(error, { tags: { area: "dashboard_shipments" } })
+    posthog.captureException(error, { digest: error.digest })
   }, [error])
 
   return (

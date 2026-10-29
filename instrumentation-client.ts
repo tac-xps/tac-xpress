@@ -3,6 +3,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs"
+import posthog from "posthog-js"
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -33,5 +34,26 @@ Sentry.init({
   // Environment & release tagging
   environment: process.env.NODE_ENV ?? "development",
 })
+
+// PostHog loads here, before hydration, so an error boundary that mounts on
+// the first render can send its exception. A provider effect runs too late.
+if (process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_HOST) {
+  const isDev = process.env.NODE_ENV === "development"
+
+  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+    api_host: isDev ? process.env.NEXT_PUBLIC_POSTHOG_HOST : "/ingest",
+    ui_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+    person_profiles: "identified_only",
+    capture_pageview: false,
+    capture_pageleave: true,
+    autocapture: !isDev,
+    disable_session_recording: isDev,
+    advanced_disable_decide: isDev && process.env.NEXT_PUBLIC_POSTHOG_DEV !== "true",
+  })
+
+  posthog.onSessionId((sessionId) => {
+    Sentry.setTag("posthog_session_id", sessionId)
+  })
+}
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart
