@@ -99,16 +99,13 @@ export function OperationalCapabilitiesSection() {
           </p>
         </div>
 
-        {/* 4 Feature Selector Tab Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-1.5 mb-6" role="tablist" aria-label="Corridor operational capabilities">
+        {/* 4 Feature Selector Action Buttons */}
+        <div className="flex flex-wrap items-center justify-center gap-1.5 mb-6" aria-label="Corridor operational capabilities">
           {CAPABILITY_TABS.map((tab) => (
             <button
               key={tab.id}
               type="button"
-              role="tab"
-              id={`capability-tab-${tab.id}`}
-              aria-selected={activeTab === tab.id}
-              aria-controls={`capability-panel-${tab.id}`}
+              aria-pressed={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
                 "px-4 py-1.5 text-xs font-sans rounded-none transition-colors border shadow-2xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground cursor-pointer",
@@ -124,9 +121,7 @@ export function OperationalCapabilitiesSection() {
 
         {/* Central Console Showcase */}
         <div
-          id={`capability-panel-${currentTab.id}`}
-          role="tabpanel"
-          aria-labelledby={`capability-tab-${currentTab.id}`}
+          id="capability-console-panel"
           className="relative mx-auto w-full max-w-5xl border border-border bg-card shadow-sm overflow-hidden rounded-none text-left"
         >
           {/* Console Cockpit Top Bar */}
@@ -165,6 +160,7 @@ export function OperationalCapabilitiesSection() {
               <div className="sm:col-span-4 flex gap-2">
                 <button
                   type="button"
+                  aria-pressed={mode === "AIR"}
                   onClick={() => setMode("AIR")}
                   className={cn(
                     "flex-1 flex items-center justify-center gap-1.5 min-h-[44px] py-2 px-3 border text-xs font-sans rounded-none transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",
@@ -178,6 +174,7 @@ export function OperationalCapabilitiesSection() {
                 </button>
                 <button
                   type="button"
+                  aria-pressed={mode === "SURFACE"}
                   onClick={() => setMode("SURFACE")}
                   className={cn(
                     "flex-1 flex items-center justify-center gap-1.5 min-h-[44px] py-2 px-3 border text-xs font-sans rounded-none transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",
@@ -199,6 +196,7 @@ export function OperationalCapabilitiesSection() {
                     <button
                       key={kg}
                       type="button"
+                      aria-pressed={weightKg === kg}
                       onClick={() => setWeightKg(kg)}
                       className={cn(
                         "px-2.5 py-1.5 min-h-[32px] text-xs font-sans rounded-none transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground",

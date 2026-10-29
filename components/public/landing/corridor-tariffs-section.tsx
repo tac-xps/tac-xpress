@@ -156,6 +156,7 @@ export function CorridorTariffsSection() {
                 <button
                   key={plan.id}
                   type="button"
+                  aria-pressed={isSelected}
                   onClick={() => {
                     setSelectedPlanId(plan.id)
                     if (calcWeight < plan.minWeightKg) {
@@ -211,7 +212,7 @@ export function CorridorTariffsSection() {
                       max={2000}
                       value={calcWeight}
                       onChange={(e) => setCalcWeight(Math.max(1, Number(e.target.value) || 1))}
-                      className="w-20 min-h-[40px] text-right bg-background border border-border px-2 text-sm font-mono font-bold text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
+                      className="w-20 min-h-[40px] text-right bg-background border border-border px-2 text-base sm:text-sm font-mono font-bold text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
                     />
                     <span className="text-xs text-muted-foreground">kg</span>
                   </div>

@@ -69,7 +69,7 @@ const FEATURES: FeatureItem[] = [
     bullets: [
       "EPAL euro-pallet foundation with ratchet tie-down straps",
       "Shock and moisture protection for sensitive cargo",
-      "Corridor-specific DEL -> IMP AWB routing tags",
+      "Corridor-specific DEL ➔ IMF AWB routing tags",
     ],
     href: "/shipping-guide",
     icon: Package,
@@ -267,14 +267,14 @@ export function FleetShowcaseSection() {
                   </div>
                   <div className="flex items-center justify-between text-xs font-sans text-muted-foreground mb-1">
                     <span className="font-semibold text-foreground">{vehicle.category}</span>
-                    <span className="font-mono text-muted-foreground text-[11px]">{vehicle.model}</span>
+                    <span className="font-mono text-muted-foreground text-xs">{vehicle.model}</span>
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed mt-2 font-sans">
                     {vehicle.role}
                   </p>
                 </div>
 
-                <div className="mt-5 pt-3 border-t border-border flex items-center justify-between text-[11px] font-sans text-muted-foreground">
+                <div className="mt-5 pt-3 border-t border-border flex items-center justify-between text-xs font-sans text-muted-foreground">
                   <span>Capacity: {vehicle.capacity}</span>
                   <span className="font-medium text-foreground">{vehicle.corridor}</span>
                 </div>

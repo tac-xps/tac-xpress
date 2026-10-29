@@ -54,7 +54,7 @@ export function TestimonialSection() {
                     Logistics Director, LogiPrime Express
                   </div>
                 </div>
-                <div className="border border-border bg-muted/40 px-2.5 py-1 text-[11px] font-sans font-medium text-foreground">
+                <div className="border border-border bg-muted/40 px-2.5 py-1 text-xs font-sans font-medium text-foreground">
                   DEL ⇄ IMF Route
                 </div>
               </div>

@@ -60,14 +60,14 @@ export function ContactSection() {
         const errorMsg =
           typeof res.error === "object" && "_form" in res.error && Array.isArray(res.error._form)
             ? res.error._form[0]
-            : "Could not save your request. Please verify your details or call our dispatch desk directly."
+            : "Unable to save booking request. Verify your details or call our dispatch desk directly."
         setSubmitError(errorMsg)
       } else if (res?.success) {
         setTicketId(res.ticketId ?? null)
         setSubmitted(true)
       }
     } catch {
-      setSubmitError("Network exception occurred while connecting to terminal dispatch. Please call our 24/7 gate desk.")
+      setSubmitError("Network exception occurred connecting to terminal dispatch. Call our 24/7 gate desk directly.")
     } finally {
       setIsSubmitting(false)
     }
@@ -141,7 +141,7 @@ export function ContactSection() {
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-border/80 text-[11px] font-sans text-muted-foreground">
+              <div className="mt-8 pt-6 border-t border-border/80 text-xs font-sans text-muted-foreground">
                 <div className="flex items-center gap-1.5 text-foreground font-medium mb-1">
                   <Check className="size-3.5 text-primary" />
                   <span>Guaranteed belly-hold response in 15 mins</span>
@@ -221,7 +221,7 @@ export function ContactSection() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="e.g. Rajesh Kumar (Consignor)"
-                      className="h-10 w-full border border-border bg-background px-3 text-xs text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
+                      className="h-10 w-full border border-border bg-background px-3 text-base sm:text-xs text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
                     />
                   </div>
 
@@ -237,7 +237,7 @@ export function ContactSection() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="rajesh@company.in"
-                        className="h-10 w-full border border-border bg-background px-3 text-xs text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
+                        className="h-10 w-full border border-border bg-background px-3 text-base sm:text-xs text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
                       />
                     </div>
 
@@ -251,7 +251,7 @@ export function ContactSection() {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="+91 98765 43210"
-                        className="h-10 w-full border border-border bg-background px-3 text-xs text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
+                        className="h-10 w-full border border-border bg-background px-3 text-base sm:text-xs text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
                       />
                     </div>
                   </div>
@@ -265,7 +265,7 @@ export function ContactSection() {
                         id="contact-mode"
                         value={formData.mode}
                         onChange={(e) => setFormData({ ...formData, mode: e.target.value })}
-                        className="h-10 w-full border border-border bg-background px-3 text-xs text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
+                        className="h-10 w-full border border-border bg-background px-3 text-base sm:text-xs text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
                       >
                         <option value="AIR">Air Express (24h)</option>
                         <option value="SURFACE">Surface Linehaul (4 to 5 days)</option>
@@ -281,7 +281,7 @@ export function ContactSection() {
                         id="contact-origin"
                         value={formData.origin}
                         onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                        className="h-10 w-full border border-border bg-background px-3 text-xs text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
+                        className="h-10 w-full border border-border bg-background px-3 text-base sm:text-xs text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
                       >
                         <option value="DEL">New Delhi ➔ Imphal</option>
                         <option value="IMF">Imphal ➔ New Delhi</option>
@@ -299,7 +299,7 @@ export function ContactSection() {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder="e.g. 50 kg medical supplies, ready for departure from Delhi hub"
-                      className="w-full border border-border bg-background p-3 text-xs text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
+                      className="w-full border border-border bg-background p-3 text-base sm:text-xs text-foreground rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
                     />
                   </div>
 

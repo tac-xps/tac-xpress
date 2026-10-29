@@ -66,7 +66,7 @@ export function SupportChat() {
               <SheetTrigger asChild>
                 <MotionButton
                   whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
-                  whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+                  whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
                   transition={{ duration: 0.15 }}
                   className="relative aspect-square size-12 sm:size-14 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground p-0 shadow-lg hover:shadow-xl flex items-center justify-center border border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors cursor-pointer"
                   aria-label="Open AI assistant"

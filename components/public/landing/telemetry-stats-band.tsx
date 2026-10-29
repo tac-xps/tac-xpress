@@ -31,38 +31,38 @@ export function TelemetryStatsBand() {
 
         {/* Top 3 Stat Columns */}
         <div className="mt-10 sm:mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3 border-b border-border/80 pb-10 sm:pb-12 text-left">
-          <div className="border-l-2 border-foreground pl-4 sm:pl-5">
+          <div className="border-s-2 border-foreground ps-4 sm:ps-5">
             <div className="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
               150,000<span className="text-primary font-sans">+</span>
             </div>
             <div className="mt-1 text-xs font-semibold text-foreground">
               Kilograms linehaul moved monthly
             </div>
-            <div className="mt-0.5 text-[11px] text-muted-foreground">
+            <div className="mt-0.5 text-xs text-muted-foreground">
               Dedicated commercial belly-hold flight allocations
             </div>
           </div>
 
-          <div className="border-l-2 border-foreground pl-4 sm:pl-5">
+          <div className="border-s-2 border-foreground ps-4 sm:ps-5">
             <div className="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
               40,000<span className="text-primary font-sans">+</span>
             </div>
             <div className="mt-1 text-xs font-semibold text-foreground">
               Statutory barcode scans verified
             </div>
-            <div className="mt-0.5 text-[11px] text-muted-foreground">
+            <div className="mt-0.5 text-xs text-muted-foreground">
               Optical barcode sortation at IGI Gate 4 and Tulihal Apron
             </div>
           </div>
 
-          <div className="border-l-2 border-foreground pl-4 sm:pl-5">
+          <div className="border-s-2 border-foreground ps-4 sm:ps-5">
             <div className="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
               99.8<span className="text-primary font-sans">%</span>
             </div>
             <div className="mt-1 text-xs font-semibold text-foreground">
               On-time corridor SLA compliance
             </div>
-            <div className="mt-0.5 text-[11px] text-muted-foreground">
+            <div className="mt-0.5 text-xs text-muted-foreground">
               Strict delivery execution on 24h air and 4 to 5 day road legs
             </div>
           </div>
@@ -74,7 +74,7 @@ export function TelemetryStatsBand() {
             {/* Left Column: Volume Stat Monument & Corridor Credentials */}
             <div className="lg:col-span-5 xl:col-span-4 flex flex-col justify-between h-full">
               <div>
-                <div className="inline-flex items-center gap-2 border border-border bg-background px-2.5 py-0.5 text-[11px] font-sans text-muted-foreground rounded-none shadow-2xs mb-3">
+                <div className="inline-flex items-center gap-2 border border-border bg-background px-2.5 py-0.5 text-xs font-sans text-muted-foreground rounded-none shadow-2xs mb-3">
                   <TrendingUp className="size-3.5 text-primary" />
                   <span className="font-semibold text-foreground">+14.2% QoQ Growth</span>
                 </div>
@@ -98,7 +98,7 @@ export function TelemetryStatsBand() {
                     <ShieldCheck className="size-4 text-primary" />
                     Continuous Airside Custody
                   </span>
-                  <span className="text-[11px] font-semibold text-foreground">BCAS Verified</span>
+                  <span className="text-xs font-semibold text-foreground">BCAS Verified</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Corridor Scope</span>

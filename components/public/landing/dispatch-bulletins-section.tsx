@@ -65,7 +65,8 @@ export function DispatchBulletinsSection() {
             <Link
               key={item.id}
               href={item.href}
-              className="group flex flex-col border border-border bg-card hover:border-foreground/40 rounded-none transition-colors"
+              aria-label={`Read operational advisory: ${item.title}`}
+              className="group flex flex-col border border-border bg-card hover:border-foreground/40 rounded-none transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
             >
               <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
                 <Image

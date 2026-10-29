@@ -113,9 +113,9 @@ export function LandingNav() {
           <Link
             href="/"
             aria-label="TAC-XPRESS home"
-            className="group flex items-center gap-2.5 focus-visible:outline-none"
+            className="group flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
           >
-            <div className="relative size-3.5 bg-primary rounded-none overflow-hidden transition-transform duration-200 group-hover:scale-105 active:scale-95 shadow-2xs">
+            <div className="relative size-3.5 bg-primary rounded-none overflow-hidden transition-transform duration-200 group-hover:scale-105 active:scale-[0.96] shadow-2xs">
               <span
                 aria-hidden="true"
                 className="absolute inset-y-0 -inset-x-2 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full transition-transform duration-700 ease-in-out group-hover:translate-x-full motion-reduce:hidden"
@@ -142,7 +142,7 @@ export function LandingNav() {
           <ThemeToggle />
           <Button
             asChild
-            className="group relative h-8.5 px-4 rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary-hover transition-colors duration-150 active:scale-[0.98] shadow-2xs overflow-hidden"
+            className="group relative h-8.5 px-4 rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary-hover transition-colors duration-150 active:scale-[0.96] shadow-2xs overflow-hidden"
           >
             <a href="#contact" onClick={(e) => scrollToSection(e, "#contact")}>
               <span>Book Consignment</span>
@@ -156,7 +156,7 @@ export function LandingNav() {
           ref={mobileButtonRef}
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="flex md:hidden size-11 items-center justify-center border border-border/80 bg-card hover:bg-muted text-foreground transition-colors rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground active:scale-95 cursor-pointer"
+          className="flex md:hidden size-11 items-center justify-center border border-border/80 bg-card hover:bg-muted text-foreground transition-colors rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground active:scale-[0.96] cursor-pointer"
           aria-expanded={mobileMenuOpen}
           aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
         >
@@ -228,7 +228,7 @@ export function LandingNav() {
                     }}
                     transition={{ duration: 0.18, ease: "easeOut" }}
                     className={cn(
-                      "flex items-center justify-between border-l-2 py-2 px-3 text-sm font-sans transition-colors rounded-none",
+                      "flex items-center justify-between border-s-2 py-2 px-3 text-sm font-sans transition-colors rounded-none",
                       isActive
                         ? "border-primary bg-muted/60 font-semibold text-foreground"
                         : "border-transparent text-muted-foreground hover:border-border hover:bg-muted/30 hover:text-foreground"

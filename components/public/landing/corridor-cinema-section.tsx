@@ -53,7 +53,7 @@ export function CorridorCinemaSection() {
               type="button"
               onClick={() => setIsPlaying(true)}
               aria-label="Inspect corridor operational linehaul video"
-              className="flex size-16 sm:size-20 items-center justify-center rounded-none bg-background text-foreground border border-border transition-transform active:scale-95 shadow-sm"
+              className="flex size-16 sm:size-20 items-center justify-center rounded-none bg-background text-foreground border border-border transition-transform active:scale-[0.96] shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
             >
               <Play className="ml-1 size-6 sm:size-8 fill-foreground text-foreground" />
             </button>

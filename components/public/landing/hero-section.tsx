@@ -1,13 +1,23 @@
 "use client"
 
-import React, { useCallback, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { ArrowUpRight, Pause, Plane, Play, ShieldCheck } from "lucide-react"
+import { useReducedMotion } from "motion/react"
 import { Button } from "@/components/ui/button"
 
 export function HeroSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [isPlaying, setIsPlaying] = useState(true)
+  const shouldReduceMotion = useReducedMotion()
+  const [isPlaying, setIsPlaying] = useState(!shouldReduceMotion)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    if (shouldReduceMotion) {
+      video.pause()
+    }
+  }, [shouldReduceMotion])
 
   const togglePlayback = useCallback(() => {
     const video = videoRef.current
@@ -55,7 +65,7 @@ export function HeroSection() {
             <div className="mt-5 flex flex-wrap items-center gap-2.5">
               <Button
                 asChild
-                className="h-10 px-5 rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary-hover transition-colors shadow-2xs active:scale-[0.98]"
+                className="h-10 px-5 rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary-hover transition-colors shadow-2xs active:scale-[0.96]"
               >
                 <Link href="#contact">
                   Book Consignment
@@ -103,7 +113,7 @@ export function HeroSection() {
               <div className="relative aspect-[16/10] w-full bg-muted overflow-hidden">
                 <video
                   ref={videoRef}
-                  autoPlay
+                  autoPlay={!shouldReduceMotion}
                   loop
                   muted
                   playsInline
