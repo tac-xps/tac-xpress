@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import * as Sentry from "@sentry/nextjs"
+import posthog from "posthog-js"
 import { Button } from "@/components/ui/button"
 
 export default function ShipmentDetailError({
@@ -13,6 +14,7 @@ export default function ShipmentDetailError({
 }) {
   useEffect(() => {
     Sentry.captureException(error)
+    posthog.captureException(error, { digest: error.digest })
   }, [error])
 
   return (
