@@ -16,6 +16,8 @@ const dbUrl = process.env.DATABASE_URL
 
 const isValid = (url?: string) => url && !url.includes("fill-in")
 
+export const isDatabaseConfigured = Boolean(isValid(poolerUrl) || isValid(dbUrl))
+
 const connectionString =
   (isValid(poolerUrl) ? poolerUrl : undefined) ||
   (isValid(dbUrl) ? dbUrl : undefined) ||
