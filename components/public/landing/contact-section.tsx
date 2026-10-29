@@ -41,7 +41,7 @@ export function ContactSection() {
       const routeName = formData.origin === "DEL" ? "DEL to IMF (New Delhi to Imphal)" : "IMF to DEL (Imphal to New Delhi)"
       const modeName = formData.mode === "AIR" ? "Express Air (24h SLA)" : formData.mode === "SURFACE" ? "Surface Linehaul (4 to 5 days SLA)" : "Dedicated Charter"
 
-      payload.set("category", "booking")
+      payload.set("category", "shipment")
       payload.set("subject", `[Consignment Booking] ${formData.mode} on ${formData.origin === "DEL" ? "DEL -> IMF" : "IMF -> DEL"} (${formData.name.trim()})`)
 
       const detailsMessage = [
