@@ -30,41 +30,6 @@ const nextConfig: NextConfig = {
         destination: "/dashboard",
         permanent: true,
       },
-      {
-        source: "/services",
-        destination: "/#services",
-        permanent: true,
-      },
-      {
-        source: "/services/:path*",
-        destination: "/#services",
-        permanent: true,
-      },
-      {
-        source: "/shipping-guide",
-        destination: "/#method",
-        permanent: true,
-      },
-      {
-        source: "/about",
-        destination: "/#about",
-        permanent: true,
-      },
-      {
-        source: "/contact",
-        destination: "/#contact",
-        permanent: true,
-      },
-      {
-        source: "/feedback",
-        destination: "/#feedback",
-        permanent: false,
-      },
-      {
-        source: "/track",
-        destination: "/?tracking=open",
-        permanent: false,
-      },
     ]
   },
   async rewrites() {

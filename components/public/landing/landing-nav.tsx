@@ -1,19 +1,10 @@
 "use client"
 
-import { useEffect, useState, type MouseEvent } from "react"
+import { useEffect, useState, useRef, type MouseEvent } from "react"
 import Link from "next/link"
-import { ArrowUpRight, Menu, Search } from "lucide-react"
-import { motion, useScroll } from "motion/react"
+import { ArrowUpRight, Search } from "lucide-react"
+import { motion, AnimatePresence, useScroll } from "motion/react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/reui/badge"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
 import { MorphicNavbar, type NavItem } from "@/components/kokonutui/morphic-navbar"
 import { Logo } from "@/components/logo"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
@@ -45,7 +36,20 @@ export function LandingNav() {
   })
   const [activeSection, setActiveSection] = useState("#features")
   const [isScrolled, setIsScrolled] = useState(false)
+  const mobileButtonRef = useRef<HTMLButtonElement>(null)
   const { scrollYProgress, scrollY } = useScroll()
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobileMenuOpen(false)
+        mobileButtonRef.current?.focus()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [mobileMenuOpen])
 
   useEffect(() => {
     const handleTrackEvent = () => setTrackingModalOpen(true)
@@ -115,6 +119,7 @@ export function LandingNav() {
     const target = document.getElementById(href.slice(1))
     if (target) {
       target.scrollIntoView({
+        block: "start",
         behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
           ? "instant"
           : "smooth",
@@ -128,7 +133,7 @@ export function LandingNav() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 h-[72px] w-full border-b transition-all duration-200",
+        "sticky top-0 z-50 h-[72px] w-full border-b transition-colors duration-200",
         isScrolled
           ? "border-border/80 bg-background/90 backdrop-blur-md shadow-2xs"
           : "border-border/60 bg-background/80 backdrop-blur-sm"
@@ -172,7 +177,7 @@ export function LandingNav() {
           <Button
             asChild
             size="sm"
-            className="rounded-none text-xs h-9 px-4 gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-150 shadow-xs hover:shadow-sm active:scale-[0.98]"
+            className="rounded-none text-xs h-9 px-4 gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors duration-150 shadow-xs hover:shadow-sm active:scale-[0.98]"
           >
             <a
               href="#contact"
@@ -184,145 +189,133 @@ export function LandingNav() {
           </Button>
         </div>
 
-        {/* Mobile Navigation Trigger & Drawer */}
-        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <div className="flex items-center gap-2 lg:hidden">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="rounded-none text-xs h-8 px-2.5"
-              onClick={() => setTrackingModalOpen(true)}
-            >
-              Track
-            </Button>
-            <SheetTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon-lg"
-                className="lg:hidden rounded-none"
-                aria-label="Open navigation"
-              >
-                <Menu className="size-4" aria-hidden="true" />
-              </Button>
-            </SheetTrigger>
-          </div>
-          <SheetContent className="cargo-public flex flex-col justify-between p-0 rounded-none sm:max-w-md">
-            <div>
-              <SheetHeader className="border-b border-border/80 px-5 py-4">
-                <div className="flex items-center justify-between">
-                  <Logo className="text-foreground" />
-                  <Badge variant="primary-light" size="xs" className="rounded-none font-mono">
-                    EXPRESS LINEHAUL
-                  </Badge>
-                </div>
-                <SheetTitle className="sr-only">Corridor Navigation</SheetTitle>
-                <SheetDescription className="text-xs text-muted-foreground mt-1">
-                  Air and surface cargo between New Delhi and Imphal.
-                </SheetDescription>
-              </SheetHeader>
-
-              {/* Corridor Route Telemetry Header */}
-              <div className="border-b border-border/60 bg-muted/30 px-5 py-2.5 text-xs">
-                <div className="flex items-center justify-between text-muted-foreground">
-                  <span>Route</span>
-                  <span className="text-xs font-medium text-foreground">DEL (IGI/Okhla) ⇄ IMF (Bir Tikendrajit)</span>
-                </div>
-                <div className="flex items-center justify-between text-muted-foreground mt-1">
-                  <span>Transit SLA</span>
-                  <span className="text-xs font-medium text-foreground">Air 24-48h | Surface 4-7d</span>
-                </div>
-              </div>
-
-              {/* Mobile In-Page Route Links */}
-              <nav
-                aria-label="Mobile corridor navigation"
-                className="flex flex-col py-2"
-              >
-                {Object.entries(LANDING_NAV_ITEMS).map(([href, item], index) => {
-                  const isActive = activeSection === href
-                  const padIndex = String(index + 1).padStart(2, "0")
-                  return (
-                    <a
-                      key={href}
-                      href={href}
-                      onClick={(event) => scrollToSection(event, href)}
-                      aria-current={isActive ? "location" : undefined}
-                      className={cn(
-                        "flex items-center justify-between px-5 py-3.5 text-sm transition-colors border-s-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-                        isActive
-                          ? "border-primary bg-primary/[0.06] text-foreground font-semibold"
-                          : "border-transparent text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="font-mono text-xs text-muted-foreground/60 tabular-nums">
-                          {padIndex}
-                        </span>
-                        <span>{item.name}</span>
-                      </div>
-                      <ArrowUpRight
-                        className={cn(
-                          "size-3.5 transition-colors",
-                          isActive ? "text-primary" : "text-muted-foreground/40"
-                        )}
-                        aria-hidden="true"
-                      />
-                    </a>
-                  )
-                })}
-              </nav>
+        {/* Mobile Navigation Trigger */}
+        <div className="flex items-center gap-2 lg:hidden">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="rounded-none text-xs h-8 px-2.5"
+            onClick={() => setTrackingModalOpen(true)}
+          >
+            Track
+          </Button>
+          <button
+            ref={mobileButtonRef}
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="flex size-10 items-center justify-center border border-border/80 bg-card hover:bg-muted text-foreground transition-colors rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground active:scale-[0.96] cursor-pointer"
+            aria-expanded={mobileMenuOpen}
+            aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
+          >
+            <div className="flex flex-col justify-between size-4">
+              <span
+                className={cn(
+                  "h-0.5 w-full bg-foreground transition-transform duration-200 ease-out origin-center",
+                  mobileMenuOpen && "translate-y-[7px] rotate-45"
+                )}
+              />
+              <span
+                className={cn(
+                  "h-0.5 w-full bg-foreground transition-opacity duration-150 ease-out",
+                  mobileMenuOpen && "opacity-0"
+                )}
+              />
+              <span
+                className={cn(
+                  "h-0.5 w-full bg-foreground transition-transform duration-200 ease-out origin-center",
+                  mobileMenuOpen && "-translate-y-[7px] -rotate-45"
+                )}
+              />
             </div>
-
-            {/* Mobile Sheet Footer Actions */}
-            <div className="border-t border-border/80 p-5 space-y-3 bg-background">
-              <div className="flex items-center justify-between py-1 text-sm">
-                <span className="text-xs text-muted-foreground font-medium">Appearance</span>
-                <ThemeToggle />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full rounded-none text-xs h-10"
-                  onClick={() => {
-                    setMobileMenuOpen(false)
-                    setTrackingModalOpen(true)
-                  }}
-                >
-                  <Search className="size-3.5 mr-1.5" aria-hidden="true" />
-                  Track Consignment
-                </Button>
-                <Button
-                  asChild
-                  className="w-full rounded-none text-xs h-10"
-                >
-                  <a
-                    href="#contact"
-                    onClick={(event) => scrollToSection(event, "#contact")}
-                  >
-                    Book Freight
-                    <ArrowUpRight className="size-3.5 ml-1" aria-hidden="true" />
-                  </a>
-                </Button>
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
+          </button>
+        </div>
       </div>
 
-      {/* Top Scroll Progress Line */}
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-px overflow-hidden bg-border/20"
-        aria-hidden="true"
-      >
+      {/* Corridor Transit Scroll Progress Micro-Rail */}
+      <div className="absolute bottom-0 inset-x-0 h-[1.5px] bg-border/20 overflow-hidden pointer-events-none">
         <motion.div
-          className="h-full origin-left bg-primary"
+          className="h-full bg-primary origin-left"
           style={{ scaleX: scrollYProgress }}
+          aria-hidden="true"
         />
       </div>
+
+      {/* Mobile Drawer with Staggered Transition */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:hidden overflow-hidden border-b border-border bg-background px-6 py-6 shadow-sm"
+          >
+            <motion.nav
+              initial="closed"
+              animate="open"
+              exit="closed"
+              variants={{
+                open: { transition: { staggerChildren: 0.04, delayChildren: 0.03 } },
+                closed: { transition: { staggerChildren: 0.02, staggerDirection: -1 } },
+              }}
+              className="flex flex-col gap-2.5"
+            >
+              {Object.entries(LANDING_NAV_ITEMS).map(([href, item]) => {
+                const isActive = activeSection === href
+                return (
+                  <motion.a
+                    key={href}
+                    href={href}
+                    onClick={(e) => scrollToSection(e, href)}
+                    variants={{
+                      open: { opacity: 1, x: 0 },
+                      closed: { opacity: 0, x: -8 },
+                    }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    className={cn(
+                      "flex items-center justify-between border-s-2 py-2 px-3 text-sm font-sans transition-colors rounded-none",
+                      isActive
+                        ? "border-primary bg-muted/60 font-semibold text-foreground"
+                        : "border-transparent text-muted-foreground hover:border-border hover:bg-muted/30 hover:text-foreground"
+                    )}
+                  >
+                    <span>{item.name}</span>
+                    {isActive && (
+                      <span className="size-1.5 bg-primary rounded-none" aria-hidden="true" />
+                    )}
+                  </motion.a>
+                )
+              })}
+              <div className="flex items-center justify-between border-t border-border/80 pt-3 mt-1">
+                <span className="text-xs font-sans text-muted-foreground">Theme Appearance</span>
+                <ThemeToggle />
+              </div>
+              <motion.div
+                variants={{
+                  open: { opacity: 1, y: 0 },
+                  closed: { opacity: 0, y: 8 },
+                }}
+                transition={{ duration: 0.2 }}
+                className="pt-2"
+              >
+                <Button
+                  asChild
+                  className="h-9 w-full rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-2xs"
+                >
+                  <a href="#contact" onClick={(e) => scrollToSection(e, "#contact")}>
+                    Book Consignment
+                    <ArrowUpRight className="ml-1.5 size-3.5" />
+                  </a>
+                </Button>
+              </motion.div>
+            </motion.nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <TrackShipmentModal
         open={trackingModalOpen}

@@ -1383,7 +1383,10 @@ button,
 
 @media (prefers-reduced-motion: reduce) {
   .cargo-nav,
+  main img,
   #services img,
+  .cargo-page-media img,
+  .cargo-media img,
   .cargo-service-media img {
     transition: none;
     transform: none;
