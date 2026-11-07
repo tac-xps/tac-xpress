@@ -88,14 +88,16 @@ const columns: ColumnDef<CustomerData>[] = [
 export function CustomerDataTable({
   data,
   pageCount,
+  bordered = true,
 }: {
   data: CustomerData[]
   pageCount: number
+  bordered?: boolean
 }) {
   const { table } = useDataTable({
     data,
     columns,
     pageCount,
   })
-  return <DataTable table={table} columnsLength={columns.length} />
+  return <DataTable table={table} columnsLength={columns.length} bordered={bordered} />
 }

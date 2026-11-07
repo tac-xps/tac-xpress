@@ -321,7 +321,7 @@ export function TheCargoLine({ className, variant = "hero" }: TheCargoLineProps)
 
 /** Verifiable operational capabilities shown in the proof strip */
 export const PROOF_CLAIMS = [
-  { label: "15+ Years Linehaul", detail: "Delhi ⇄ Northeast corridor", colorClass: "text-primary" },
+  { label: "15+ Years Linehaul", detail: "Delhi ⇄ Imphal corridor", colorClass: "text-primary" },
   { label: "Optical Gate Audit", detail: "Physical barcode scan trails", colorClass: "text-info" },
   { label: "Statutory Carriage", detail: "Air Waybills & GST e-way bills", colorClass: "text-status-delivered" },
   { label: "Dedicated Dispatch", detail: "Direct operations desk routing", colorClass: "text-status-pending" },
@@ -338,12 +338,12 @@ export const CORRIDOR_MARQUEE_ITEMS = [
     tag: "Belly-Hold Linehaul",
   },
   {
-    corridor: "New Delhi to Northeast",
+    corridor: "DEL to IMF",
     tag: "Arterial Highway Fleet",
   },
   {
-    corridor: "Northeast to Imphal",
-    tag: "Regional Station Delivery",
+    corridor: "IMF to DEL",
+    tag: "Express Surface Linehaul",
   },
 ]
 

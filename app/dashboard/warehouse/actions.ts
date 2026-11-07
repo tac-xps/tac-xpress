@@ -35,10 +35,7 @@ export const scanShipmentAction = authActionClient
           .select()
           .from(shipments)
           .where(
-            and(
-              eq(shipments.awbNumber, awbNumber),
-              isNull(shipments.deletedAt)
-            )
+            and(eq(shipments.awbNumber, awbNumber), isNull(shipments.deletedAt))
           )
           .limit(1)
           .for("update")
@@ -59,15 +56,7 @@ export const scanShipmentAction = authActionClient
           }
         }
 
-        const newStatus =
-          shipment.status === "pending" ? "in-transit" : shipment.status
-
-        if (shipment.status !== newStatus) {
-          await tx
-            .update(shipments)
-            .set({ status: newStatus })
-            .where(eq(shipments.id, shipment.id))
-        }
+        const newStatus = shipment.status
 
         await tx.insert(trackingEvents).values({
           shipmentId: shipment.id,
@@ -202,6 +191,11 @@ export async function getWarehouseAuditDiscrepanciesAction(): Promise<{
       Sentry.captureException(auditErr, {
         tags: { area: "warehouse-audit-log-query" },
       })
+      return {
+        success: false,
+        error: "Failed to load the complete warehouse audit. Try again.",
+        data: [],
+      }
     }
 
     return {
@@ -259,8 +253,7 @@ export async function verifyAwbForAuditAction(awbNumber: string): Promise<{
         `)
         const alreadyPending =
           existingUnreg.length > 0 &&
-          existingUnreg[0].action ===
-            "warehouse_audit_discrepancy_unregistered"
+          existingUnreg[0].action === "warehouse_audit_discrepancy_unregistered"
 
         if (!alreadyPending) {
           await logAudit({
@@ -474,7 +467,8 @@ export async function reconcileWarehouseDiscrepanciesAction(
             status: shipment.status,
             location: "Warehouse Hub",
             description:
-              reason || "Warehouse floor audit discrepancy reconciled by staff.",
+              reason ||
+              "Warehouse floor audit discrepancy reconciled by staff.",
             loggedBy: session.user.id,
             isPublic: false,
           })

@@ -1,6 +1,6 @@
 "use client"
 import { z } from "zod"
-import { SearchSelect } from "./search-select"
+import { SearchSelect, type SearchSelectTriggerProps } from "./search-select"
 import { useRecordLookup } from "./use-record-lookup"
 const schema = z.object({
   id: z.string(),
@@ -11,12 +11,13 @@ export function HubCombobox({
   value,
   onSelect,
   disabled,
-}: {
+  ...triggerProps
+}: SearchSelectTriggerProps & {
   value?: string
   onSelect: (id: string) => void
   disabled?: boolean
 }) {
-  const { records, loading, error, setQuery } = useRecordLookup(
+  const { records, loading, error, setQuery, retry } = useRecordLookup(
     "/api/hubs",
     schema,
     value,
@@ -24,6 +25,7 @@ export function HubCombobox({
   )
   return (
     <SearchSelect
+      {...triggerProps}
       value={value}
       label="Find a hub"
       disabled={disabled}
@@ -36,6 +38,7 @@ export function HubCombobox({
       onSearch={setQuery}
       loading={loading}
       error={error}
+      onRetry={retry}
     />
   )
 }

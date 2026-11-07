@@ -14,37 +14,37 @@ const faqItems = [
     id: "item-1",
     question: "Do I need an account to book or track a shipment?",
     answer:
-      "No account required. Anyone can schedule dispatches and track consignments publicly using a 10-digit Air Waybill (AWB) number.",
+      "No account required. Contact our team to request a booking, or use your AWB number to view published shipment updates.",
   },
   {
     id: "item-2",
     question: "How fast is transit between Delhi and Imphal?",
     answer:
-      "Air Cargo lands within 24 hours via scheduled commercial flight belly-hold. Surface Linehaul arrives within 4 to 5 days via dedicated arterial highway trucks.",
+      "Ask our team to confirm the delivery window for your shipment before booking. Timing depends on the selected service and acceptance.",
   },
   {
     id: "item-3",
     question: "How are freight rates calculated?",
     answer:
-      "Tariffs use chargeable weight (max of actual gross weight and volumetric weight: L × W × H cm ÷ 5000), plus 10% fuel surcharge and statutory 18% GST itemized on invoices.",
+      "Our team confirms the chargeable weight, rate, applicable surcharges, and tax in your quote. Share the weight and dimensions.",
   },
   {
     id: "item-4",
     question: "Can I dispatch freight from Imphal to New Delhi?",
     answer:
-      "Yes. Tac-Xpress operates daily return schedules from Imphal (IMF) to New Delhi (DEL) with full statutory documentation and optical barcode tracking.",
+      "Yes. TAC-XPRESS serves New Delhi (DEL) and Imphal (IMF) in both directions. Confirm shipment acceptance and timing with our team.",
   },
   {
     id: "item-5",
     question: "What security screening standards are applied?",
     answer:
-      "All cargo undergoes 100% BCAS regulated security screening and X-ray clearance at IGI Airport Gate 4 and Tulihal Airport prior to apron loading.",
+      "Describe the contents and any special handling needs before booking. Our team will confirm the acceptance and screening requirements.",
   },
   {
     id: "item-6",
     question: "What statutory GST documents do I need to prepare?",
     answer:
-      "Commercial consignments valued over ₹50,000 require an active GST e-waybill. Tac-Xpress automatically verifies and attaches digital e-waybills to your AWB docket.",
+      "Ask our team which invoice, identification, and transport documents your consignment needs before handover.",
   },
 ]
 
@@ -64,7 +64,7 @@ export function FaqSection() {
             Frequently Asked Questions
           </h2>
           <p className="text-muted-foreground mx-auto mt-4 max-w-md text-balance text-xs sm:text-sm leading-relaxed">
-            Find clear answers regarding bilateral transit schedules, gateway custody protocols, and statutory documentation.
+            Prepare your shipment details and confirm the service before handover.
           </p>
         </div>
 

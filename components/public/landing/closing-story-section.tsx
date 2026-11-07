@@ -3,40 +3,27 @@
 import React from "react"
 import Image from "next/image"
 import { ShieldCheck, Plane, Truck } from "lucide-react"
+import { motion, useReducedMotion } from "motion/react"
 import { Badge } from "@/components/reui/badge"
 import { IconTile } from "@/components/reui/icon-tile"
+import { cn } from "@/lib/utils"
 
 const CORRIDOR_COMMITMENTS = [
-  {
-    icon: Plane,
-    title: "Commercial Belly-Hold Space",
-    metric: "24h Transit SLA",
-    desc: "Guaranteed commercial aircraft belly space departing daily from IGI Terminal Gate 4 directly into Tulihal Apron.",
-    route: "DEL ➔ IMF Air Express",
-  },
-  {
-    icon: Truck,
-    title: "Dedicated Arterial Convoy",
-    metric: "4-5 Days Transit SLA",
-    desc: "Sealed high-cube container trucks navigating the 2,450 km national highway corridor with continuous digital GPS seals.",
-    route: "DEL ⇄ IMF Surface Linehaul",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Statutory Tax & Barcode Custody",
-    metric: "100% E-Way Compliant",
-    desc: "Automated GST e-waybill verification attached directly to digital AWB dockets with optical barcode scan records at each gate.",
-    route: "Statutory Documentation",
-  },
+  { icon: Plane, title: "Air cargo", metric: "Confirm the delivery window", desc: "Discuss acceptance, timing, and charges for your air cargo before booking.", route: "DEL to IMF, or IMF to DEL" },
+  { icon: Truck, title: "Surface cargo", metric: "Share the cargo dimensions", desc: "Provide the weight and external dimensions so our team can review the shipment.", route: "DEL to IMF, or IMF to DEL" },
+  { icon: ShieldCheck, title: "Shipment documents", metric: "Prepare before handover", desc: "Ask our team which documents your consignment requires and retain your issued AWB.", route: "Booking and handover" },
 ]
 
 export function ClosingStorySection() {
+  const shouldReduceMotion = useReducedMotion()
+
   return (
     <section
-      id="story"
+      id="about"
       aria-labelledby="story-heading"
       className="w-full border-b border-border bg-background py-20 lg:py-28"
     >
+      <div id="story" className="scroll-mt-20" />
       <div className="mx-auto w-full max-w-[1320px] px-6 lg:px-12">
         {/* Wide 16:9 Corridor Linehaul Convoy Image */}
         <div className="mb-16 text-center">
@@ -48,28 +35,29 @@ export function ClosingStorySection() {
               Every shipment moves something forward
             </h2>
             <p className="mt-2 text-xs font-sans text-muted-foreground max-w-lg mx-auto">
-              Committed bilateral logistics between the national capital and Manipur across 2,450 km.
+              Air and surface cargo exclusively between New Delhi and Imphal.
             </p>
           </div>
 
-          <div className="relative mx-auto aspect-[16/9] w-full max-w-5xl overflow-hidden border border-border bg-card rounded-none shadow-sm">
+          <div className="group relative mx-auto aspect-[16/9] w-full max-w-5xl overflow-hidden border border-border bg-card rounded-none shadow-sm">
             <Image
-              src="/images/corridor-ink/story-convoy.png"
-              alt="TAC-XPRESS linehaul convoy navigating the mountain arterial corridor to Imphal"
+              src="/images/new-assets/story-convoy.png"
+              alt="Illustration of surface cargo between New Delhi and Imphal"
               fill
               sizes="(max-width: 1200px) 100vw, 1100px"
-              className="object-cover rounded-none"
+              className={cn(
+                "object-cover rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                !shouldReduceMotion && "group-hover:scale-[1.02]"
+              )}
             />
           </div>
         </div>
-
-        {/* 3-Card Visual Consignee Verification Strip */}
         <div className="mx-auto max-w-5xl">
           <div className="mb-6 flex items-center justify-between">
             <h3 className="text-lg font-medium tracking-tight text-foreground">
-              Verified operational linehaul standards
+              Confirm the details before booking
             </h3>
-            <Badge variant="primary-light" size="sm">
+            <Badge variant="primary-light">
               DEL ⇄ IMF Bilateral Corridor
             </Badge>
           </div>
@@ -78,9 +66,11 @@ export function ClosingStorySection() {
             {CORRIDOR_COMMITMENTS.map((item) => {
               const Icon = item.icon
               return (
-                <div
+                <motion.div
                   key={item.title}
-                  className="flex flex-col justify-between border border-border bg-card p-6 rounded-none shadow-xs"
+                  whileHover={shouldReduceMotion ? undefined : { y: -3 }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex flex-col justify-between border border-border bg-card p-6 rounded-none shadow-xs transition-colors hover:border-foreground/40"
                 >
                   <div>
                     <IconTile variant="soft" size="lg" className="rounded-none mb-3">
@@ -102,7 +92,7 @@ export function ClosingStorySection() {
                       {item.route}
                     </span>
                   </div>
-                </div>
+                </motion.div>
               )
             })}
           </div>

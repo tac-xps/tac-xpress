@@ -1,6 +1,6 @@
 "use client"
 import { z } from "zod"
-import { SearchSelect } from "./search-select"
+import { SearchSelect, type SearchSelectTriggerProps } from "./search-select"
 import { useRecordLookup } from "./use-record-lookup"
 const customerSchema = z.object({
   id: z.string(),
@@ -17,14 +17,15 @@ export function CustomerCombobox({
   value,
   onSelect,
   disabled,
-}: {
+  ...triggerProps
+}: SearchSelectTriggerProps & {
   value?: string
   onSelect: (customer: CustomerMin) => void
   disabled?: boolean
 }) {
   const isValidId = !!value && z.string().uuid().safeParse(value).success
 
-  const { records, loading, error, setQuery } = useRecordLookup(
+  const { records, loading, error, setQuery, retry } = useRecordLookup(
     "/api/customers",
     customerSchema,
     isValidId ? value : undefined,
@@ -32,6 +33,7 @@ export function CustomerCombobox({
   )
   return (
     <SearchSelect
+      {...triggerProps}
       value={isValidId ? value : undefined}
       displayValue={!isValidId && value ? value : undefined}
       options={records.map((item) => ({
@@ -48,6 +50,7 @@ export function CustomerCombobox({
       onSearch={setQuery}
       loading={loading}
       error={error}
+      onRetry={retry}
     />
   )
 }

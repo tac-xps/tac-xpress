@@ -41,7 +41,6 @@ export function PageIntro({
         }
       >
         <div>
-          <p className="text-eyebrow mb-5 text-muted-foreground">{eyebrow}</p>
           <h1 className="text-section max-w-3xl">{title}</h1>
           <p className="text-lead mt-6 max-w-2xl">
             {description}

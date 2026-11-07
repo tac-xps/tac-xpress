@@ -125,7 +125,11 @@ export const createTrackingEventAction = authActionClient
 
         if (!currentShipment) throw new Error("Shipment not found")
 
-        // Removed state machine validation to allow manual override of status
+        if (status !== currentShipment.status) {
+          throw new Error(
+            "Use dispatch and handover controls to change cargo status"
+          )
+        }
 
         // 1. Insert the tracking event
         await tx.insert(trackingEvents).values({
@@ -154,14 +158,18 @@ export const createTrackingEventAction = authActionClient
           after: { status, location, description, isPublic },
         })
 
-        await capturePostHogEvent("shipment_status_updated", ctx.session.user.id, {
-          shipment_id: shipmentId,
-          awb_number: currentShipment.awbNumber,
-          old_status: currentShipment.status,
-          new_status: status,
-          is_public: isPublic,
-          location,
-        })
+        await capturePostHogEvent(
+          "shipment_status_updated",
+          ctx.session.user.id,
+          {
+            shipment_id: shipmentId,
+            awb_number: currentShipment.awbNumber,
+            old_status: currentShipment.status,
+            new_status: status,
+            is_public: isPublic,
+            location,
+          }
+        )
       })
 
       revalidatePath("/dashboard/shipments")
@@ -271,7 +279,10 @@ export const getShipmentDetailsAction = authActionClient
       const shipment = await db.query.shipments.findFirst({
         where: id
           ? and(eq(shipments.id, id), isNull(shipments.deletedAt))
-          : and(eq(shipments.awbNumber, awbNumber!), isNull(shipments.deletedAt)),
+          : and(
+              eq(shipments.awbNumber, awbNumber!),
+              isNull(shipments.deletedAt)
+            ),
         with: {
           customer: true,
           invoice: true,

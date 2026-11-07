@@ -28,6 +28,7 @@ interface AnimatedThemeTogglerProps
   theme?: "light" | "dark"
   /** Called on toggle. Pair with `theme` for controlled usage. */
   onThemeChange?: (theme: "light" | "dark") => void
+  iconClassName?: string
 }
 
 function polygonCollapsed(point: string, vertexCount: number): string {
@@ -153,6 +154,7 @@ function getThemeTransitionClipPaths(
 
 export const AnimatedThemeToggler = ({
   className,
+  iconClassName,
   duration = 400,
   variant,
   fromCenter = false,
@@ -324,7 +326,11 @@ export const AnimatedThemeToggler = ({
       className={cn(className)}
       {...props}
     >
-      {isDark ? <Sun /> : <Moon />}
+      {isDark ? (
+        <Sun className={cn("size-3.5 shrink-0 transition-transform duration-200", iconClassName)} />
+      ) : (
+        <Moon className={cn("size-3.5 shrink-0 transition-transform duration-200", iconClassName)} />
+      )}
       <span className="sr-only">Toggle theme</span>
     </button>
   )

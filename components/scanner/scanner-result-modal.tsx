@@ -12,20 +12,8 @@ import { ModalRoutingParties } from "./modal-routing-parties"
 import { ModalCargoDetails } from "./modal-cargo-details"
 import { ModalFinancials } from "./modal-financials"
 import { ModalTimeline } from "./modal-timeline"
-import {
-  Package,
-  Truck,
-  CheckCircle2,
-  ExternalLink,
-  QrCode,
-  Loader2,
-} from "lucide-react"
-import { useTransition } from "react"
-import {
-  updateScannedShipmentStatus,
-  type ScannedShipment,
-} from "@/app/actions/scanner-actions"
-import { toast } from "sonner"
+import { Package, ExternalLink, QrCode } from "lucide-react"
+import type { ScannedShipment } from "@/app/actions/scanner-actions"
 import Link from "next/link"
 
 interface ScannerResultModalProps {
@@ -39,44 +27,23 @@ export function ScannerResultModal({
   isOpen,
   onClose,
   shipmentData,
-  onStatusUpdate,
 }: ScannerResultModalProps) {
-  const [isPending, startTransition] = useTransition()
-
   if (!shipmentData) return null
-
-  const handleUpdateStatus = (
-    status: "pending" | "in-transit" | "delivered",
-    location: string,
-    desc: string
-  ) => {
-    startTransition(async () => {
-      const result = await updateScannedShipmentStatus(
-        shipmentData.id,
-        status,
-        location,
-        desc
-      )
-      if (result.success) {
-        toast.success(`Shipment status updated to ${status}`)
-        onStatusUpdate()
-      } else {
-        toast.error(result.error || "Failed to update shipment status")
-      }
-    })
-  }
+  const activeLoad = shipmentData.manifestItems[0]?.manifest
+  const handoverPath =
+    activeLoad?.legType === "line_haul"
+      ? "/dashboard/manifests"
+      : "/dashboard/dispatch?view=runs"
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent
-        className="w-[96vw] sm:max-w-4xl lg:max-w-6xl max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden bg-background text-foreground shadow-2xl border border-border rounded-none"
-      >
+      <DialogContent className="flex max-h-[90vh] w-[96vw] flex-col gap-0 overflow-hidden rounded-none border border-border bg-background p-0 text-foreground shadow-2xl sm:max-w-4xl lg:max-w-6xl">
         {/* Modal Header */}
-        <div className="border-b bg-card px-5 py-4 sm:px-6 sm:py-5 pr-14 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
+        <div className="flex shrink-0 flex-col gap-3 border-b bg-card px-5 py-4 pr-14 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
           <div className="space-y-1">
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <Package className="size-5 text-primary shrink-0" />
-              <DialogTitle className="font-mono text-xl sm:text-2xl font-black tracking-tight text-foreground uppercase">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <Package className="size-5 shrink-0 text-primary" />
+              <DialogTitle className="font-mono text-xl font-black tracking-tight text-foreground uppercase sm:text-2xl">
                 {shipmentData.awbNumber}
               </DialogTitle>
               <StatusBadge
@@ -84,9 +51,10 @@ export function ScannerResultModal({
                 pulse={shipmentData.status === "in-transit"}
               />
             </div>
-            <DialogDescription className="font-mono text-xs text-muted-foreground flex items-center gap-2 flex-wrap">
+            <DialogDescription className="flex flex-wrap items-center gap-2 font-mono text-xs text-muted-foreground">
               <span>
-                Dossier: <span className="text-foreground">{shipmentData.id}</span>
+                Dossier:{" "}
+                <span className="text-foreground">{shipmentData.id}</span>
               </span>
               <span>•</span>
               <span>Scanned via Scanner Terminal</span>
@@ -94,48 +62,14 @@ export function ScannerResultModal({
           </div>
 
           {/* Action Toolbar */}
-          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
-            {shipmentData.status === "pending" && (
-              <Button
-                size="sm"
-                className="rounded-none font-semibold text-xs"
-                disabled={isPending}
-                onClick={() =>
-                  handleUpdateStatus(
-                    "in-transit",
-                    "Warehouse Sorting Facility",
-                    "Manifest scanned and inbound to transit corridor"
-                  )
-                }
-              >
-                {isPending ? (
-                  <Loader2 className="size-3.5 mr-1.5 animate-spin" />
-                ) : (
-                  <Truck className="size-3.5 mr-1.5" />
-                )}
-                Mark In-Transit
-              </Button>
-            )}
-
-            {shipmentData.status === "in-transit" && (
-              <Button
-                size="sm"
-                className="rounded-none font-semibold text-xs bg-status-delivered hover:bg-status-delivered/90 text-primary-foreground"
-                disabled={isPending}
-                onClick={() =>
-                  handleUpdateStatus(
-                    "delivered",
-                    shipmentData.destination || "Destination Hub",
-                    "Delivered to consignee and verified"
-                  )
-                }
-              >
-                {isPending ? (
-                  <Loader2 className="size-3.5 mr-1.5 animate-spin" />
-                ) : (
-                  <CheckCircle2 className="size-3.5 mr-1.5" />
-                )}
-                Mark Delivered
+          <div className="flex shrink-0 flex-wrap items-center gap-2 sm:flex-nowrap">
+            {shipmentData.status !== "delivered" && (
+              <Button asChild size="sm">
+                <Link href={handoverPath} onClick={onClose}>
+                  {shipmentData.status === "pending"
+                    ? "Open dispatch controls"
+                    : "Record cargo handover"}
+                </Link>
               </Button>
             )}
 
@@ -146,7 +80,7 @@ export function ScannerResultModal({
               className="rounded-none text-xs"
             >
               <Link href={`/dashboard/shipments/${shipmentData.id}`}>
-                <ExternalLink className="size-3.5 mr-1.5" />
+                <ExternalLink className="mr-1.5 size-3.5" />
                 Full Dossier
               </Link>
             </Button>
@@ -154,10 +88,10 @@ export function ScannerResultModal({
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-muted/10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="flex-1 overflow-y-auto bg-muted/10 p-4 sm:p-6">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
             {/* Left Column: Routing & Financials */}
-            <div className="space-y-5 flex flex-col">
+            <div className="flex flex-col space-y-5">
               <ModalRoutingParties shipment={shipmentData} />
               <ModalFinancials
                 shipmentId={shipmentData.id}
@@ -166,7 +100,7 @@ export function ScannerResultModal({
             </div>
 
             {/* Right Column: Cargo Details & Scan History */}
-            <div className="space-y-5 flex flex-col">
+            <div className="flex flex-col space-y-5">
               <ModalCargoDetails shipment={shipmentData} />
               <ModalTimeline events={shipmentData.trackingEvents} />
             </div>
@@ -174,7 +108,7 @@ export function ScannerResultModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="border-t bg-card px-5 py-3 sm:px-6 flex items-center justify-between text-xs text-muted-foreground shrink-0">
+        <div className="flex shrink-0 items-center justify-between border-t bg-card px-5 py-3 text-xs text-muted-foreground sm:px-6">
           <div className="flex items-center gap-1.5 font-mono text-xs">
             <QrCode className="size-3.5 text-primary" />
             <span>TAC-XPRESS SCANNER ENGINE</span>
@@ -183,7 +117,7 @@ export function ScannerResultModal({
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="rounded-none text-xs font-mono h-8 px-3"
+            className="h-8 rounded-none px-3 font-mono text-xs"
           >
             Close Dossier
           </Button>

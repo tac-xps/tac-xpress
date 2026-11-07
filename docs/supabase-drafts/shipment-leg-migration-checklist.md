@@ -1,6 +1,8 @@
 # Manifest handoff migration checklist
 
-**Status: preflight passed on staging; migration draft staged.** The executable draft is located at `supabase/migrations/20261022000000_manifest_leg_handoffs.sql`.
+**Status as of 2026-11-03: applied to the configured project, staging acceptance incomplete.**
+Supabase MCP recorded `20261102153718_manifest_leg_handoffs.sql` on `ujyellrhwhqjmfponhuz`.
+Local statements match the hosted ledger. The older checklist below describes another target and is historical evidence only.
 
 ## Local contract
 
@@ -12,7 +14,7 @@
 - Tracking, assignment, shipment status, and audit changes commit in one transaction.
 - The UI supports handoffs per AWB. It does not split or partially receive pieces within one AWB.
 
-## Staging verification checklist
+## Historical staging checklist, not current release proof
 
 1. [x] Read the target Supabase project reference from `.env.local` (`skkappqeaxsdygwrbqni`).
 2. [x] Confirm connected database project status (`ACTIVE_HEALTHY`).

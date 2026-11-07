@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { isValidLogisticsPhone } from "@/lib/validation/phone"
+import { freightRouteSchema } from "@/lib/schemas/freight-route"
 
 const requiredPhone = z
   .string()
@@ -12,11 +13,9 @@ const optionalPhone = z
   .refine(isValidLogisticsPhone, "Enter a valid phone number")
   .optional()
 
-export const invoiceWizardSchema = z.object({
+export const invoiceWizardSchema = freightRouteSchema.safeExtend({
   requestId: z.string().uuid().optional(),
   serviceType: z.enum(["express_air", "standard_ocean", "road_freight"]),
-  origin: z.string().min(1, "Origin is required"),
-  destination: z.string().min(1, "Destination is required"),
   originState: z.string().default(""),
   destinationState: z.string().default(""),
   consignorName: z.string().min(3, "Name must be at least 3 characters"),

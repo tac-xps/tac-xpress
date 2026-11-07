@@ -211,7 +211,7 @@ export default async function ManifestsPage({
   const allManifests = manifestRows
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 md:gap-8">
+    <div className="flex min-w-0 flex-col gap-6 md:gap-8">
       <PageHeader
         title="Manifests"
         description="Plan hub-to-hub loads, confirm assignments and finalize departure records."
@@ -238,7 +238,7 @@ export default async function ManifestsPage({
           placeholder="Manifest reference or hub name"
         />
         <CardContent className="p-0">
-          <ManifestClientTable manifests={allManifests} pageCount={pageCount} />
+          <ManifestClientTable manifests={allManifests} pageCount={pageCount} bordered={false} />
         </CardContent>
       </Card>
     </div>

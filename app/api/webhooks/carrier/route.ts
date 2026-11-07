@@ -1,13 +1,10 @@
 import crypto from "node:crypto"
 import * as Sentry from "@sentry/nextjs"
 import { NextRequest, NextResponse } from "next/server"
-import { Resend } from "resend"
 import { z } from "zod"
-import { eq } from "drizzle-orm"
-
+import { and, eq, isNull } from "drizzle-orm"
 import { db } from "@/lib/db"
-import { shipments, trackingEvents, users } from "@/lib/db/schema"
-import { logAudit } from "@/lib/audit"
+import { shipments } from "@/lib/db/schema"
 
 const carrierUpdateSchema = z.object({
   awbNumber: z
@@ -25,129 +22,84 @@ const carrierUpdateSchema = z.object({
     .optional(),
 })
 
-const NEXT_STATUS = {
-  pending: "in-transit",
-  "in-transit": "delivered",
-  delivered: null,
-} as const
-
-function verifySignature(rawBody: string, signature: string, secret: string) {
-  const expected = Buffer.from(
-    crypto.createHmac("sha256", secret).update(rawBody).digest("hex"),
-    "utf8"
-  )
-  const actual = Buffer.from(signature, "utf8")
-  return (
-    expected.length === actual.length &&
-    crypto.timingSafeEqual(expected, actual)
-  )
-}
-
 export async function POST(request: NextRequest) {
-  const rawBody = await request.text()
   const signature = request.headers.get("x-carrier-signature")
   const secret = process.env.CARRIER_WEBHOOK_SECRET
-
-  if (!secret || !signature || !verifySignature(rawBody, signature, secret)) {
+  if (!secret || !signature || !/^[a-f0-9]{64}$/i.test(signature)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-
+  if (!request.body || Number(request.headers.get("content-length")) > 64_000) {
+    return NextResponse.json(
+      { error: "Payload too large or missing" },
+      { status: 413 }
+    )
+  }
   try {
+    const reader = request.body.getReader()
+    const chunks: Uint8Array[] = []
+    let length = 0
+    try {
+      while (true) {
+        const { value, done } = await reader.read()
+        if (done) break
+        length += value.byteLength
+        if (length > 64_000) {
+          await reader.cancel()
+          return NextResponse.json(
+            { error: "Payload too large" },
+            { status: 413 }
+          )
+        }
+        chunks.push(value)
+      }
+    } finally {
+      reader.releaseLock()
+    }
+    const rawBody = Buffer.concat(chunks)
+    const expected = crypto
+      .createHmac("sha256", secret)
+      .update(rawBody)
+      .digest()
+    if (!crypto.timingSafeEqual(expected, Buffer.from(signature, "hex"))) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     let body: unknown
     try {
-      body = JSON.parse(rawBody)
+      body = JSON.parse(rawBody.toString("utf8"))
     } catch {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 })
     }
-
     const parsed = carrierUpdateSchema.safeParse(body)
-    if (!parsed.success) {
+    if (!parsed.success)
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 })
-    }
-
     const [shipment] = await db
-      .select()
+      .select({ id: shipments.id, status: shipments.status })
       .from(shipments)
-      .where(eq(shipments.awbNumber, parsed.data.awbNumber.toUpperCase()))
+      .where(
+        and(
+          eq(shipments.awbNumber, parsed.data.awbNumber.toUpperCase()),
+          isNull(shipments.deletedAt)
+        )
+      )
       .limit(1)
-
-    if (!shipment) {
+    if (!shipment)
       return NextResponse.json({ error: "Shipment not found" }, { status: 404 })
-    }
-
     if (shipment.status === parsed.data.status) {
       return NextResponse.json({ success: true, duplicate: true })
     }
-
-    if (NEXT_STATUS[shipment.status] !== parsed.data.status) {
-      return NextResponse.json(
-        { error: "Invalid status transition" },
-        { status: 409 }
-      )
-    }
-
-    const now = new Date()
-    const [createdEvent] = await db.transaction(async (tx) => {
-      const events = await tx
-        .insert(trackingEvents)
-        .values({
-          shipmentId: shipment.id,
-          status: parsed.data.status,
-          location: parsed.data.payload?.location || "Carrier network",
-          description:
-            parsed.data.payload?.description || "Status updated by carrier",
-          createdAt: now,
-        })
-        .returning({ id: trackingEvents.id })
-
-      await tx
-        .update(shipments)
-        .set({ status: parsed.data.status, updatedAt: now })
-        .where(eq(shipments.id, shipment.id))
-
-      return events
-    })
-
-    if (!createdEvent) {
-      throw new Error("Carrier update did not create a tracking event")
-    }
-
-    await logAudit({
-      action: "carrier_status_update",
-      entity: "shipments",
-      entityId: shipment.id,
-      before: { status: shipment.status },
-      after: { status: parsed.data.status },
-      metadata: { eventId: createdEvent.id },
-    })
-
-    if (shipment.customerId && process.env.RESEND_API_KEY) {
-      const [customer] = await db
-        .select({ email: users.email })
-        .from(users)
-        .where(eq(users.id, shipment.customerId))
-        .limit(1)
-
-      if (customer?.email) {
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "")
-        const resend = new Resend(process.env.RESEND_API_KEY)
-        await resend.emails.send({
-          from:
-            process.env.RESEND_FROM_EMAIL ||
-            "Tac-Xpress <updates@tac-xpress.app>",
-          to: [customer.email],
-          subject: `Shipment update: ${shipment.awbNumber}`,
-          html: `<p>Your shipment <strong>${shipment.awbNumber}</strong> is now <strong>${parsed.data.status}</strong>.</p>${appUrl ? `<p><a href="${appUrl}/track?awb=${encodeURIComponent(shipment.awbNumber)}">View tracking</a></p>` : ""}`,
-        })
-      }
-    }
-
-    return NextResponse.json({ success: true, eventId: createdEvent.id })
+    // Carrier payloads lack the actor, finalized leg, and custody evidence required for a handoff.
+    return NextResponse.json(
+      {
+        error:
+          "Record shipment movements through verified Operations handoffs. Carrier status changes are not supported.",
+      },
+      { status: 409 }
+    )
   } catch (error) {
     Sentry.captureException(error, { tags: { area: "carrier_webhook" } })
     return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
+      { error: "Carrier processing unavailable" },
+      { status: 503 }
     )
   }
 }

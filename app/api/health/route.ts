@@ -81,18 +81,16 @@ export async function GET(request: NextRequest) {
   }
 
   const whatsappConfig = getWhatsAppConfig()
-  const isWhatsAppConfigured =
-    !!whatsappConfig.relayToken &&
-    !!whatsappConfig.appSecret &&
-    !!whatsappConfig.verifyToken
-
   healthChecks.services.whatsapp = {
-    status: isWhatsAppConfigured ? "configured" : "unconfigured",
+    status: whatsappConfig.outboundConfigured ? "configured" : "unconfigured",
     enabled: whatsappConfig.enabled,
     relayBaseUrl: whatsappConfig.relayBaseUrl,
+    metaWebhook: whatsappConfig.metaWebhookConfigured
+      ? "configured"
+      : "unconfigured",
   }
 
-  if (whatsappConfig.enabled && !isWhatsAppConfigured) {
+  if (whatsappConfig.enabled && !whatsappConfig.outboundConfigured) {
     healthChecks.status = "degraded"
   }
 

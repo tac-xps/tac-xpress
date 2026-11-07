@@ -18,6 +18,7 @@ export function useRecordLookup<T>(
   const [records, setRecords] = useState<T[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [attempt, setAttempt] = useState(0)
   useEffect(() => {
     if (!enabled) return
     const controller = new AbortController()
@@ -58,6 +59,12 @@ export function useRecordLookup<T>(
       window.clearTimeout(timer)
       controller.abort()
     }
-  }, [endpoint, schema, query, selectedId, enabled])
-  return { records, loading, error, setQuery }
+  }, [endpoint, schema, query, selectedId, enabled, attempt])
+  return {
+    records,
+    loading,
+    error,
+    setQuery,
+    retry: () => setAttempt((value) => value + 1),
+  }
 }

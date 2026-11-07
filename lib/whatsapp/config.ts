@@ -35,13 +35,20 @@ export const WHATSAPP_TEMPLATES: Record<
 }
 
 export function getWhatsAppConfig() {
+  const relayToken = process.env.WPBOX_API_TOKEN?.trim() || null
+  const userId = process.env.WPBOX_USER_ID?.trim() || null
+  const appSecret = process.env.WHATSAPP_APP_SECRET?.trim() || null
+  const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN?.trim() || null
+
   return {
     enabled: process.env.WHATSAPP_ENABLED === "true",
-    relayToken: process.env.WPBOX_API_TOKEN?.trim() || null,
-    userId: process.env.WPBOX_USER_ID?.trim() || null,
+    relayToken,
+    userId,
     relayBaseUrl: process.env.WPBOX_BASE_URL?.trim() || DEFAULT_WPBOX_BASE_URL,
-    appSecret: process.env.WHATSAPP_APP_SECRET?.trim() || null,
-    verifyToken: process.env.WHATSAPP_VERIFY_TOKEN?.trim() || null,
+    appSecret,
+    verifyToken,
+    outboundConfigured: Boolean(relayToken && userId),
+    metaWebhookConfigured: Boolean(appSecret && verifyToken),
   }
 }
 

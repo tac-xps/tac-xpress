@@ -90,7 +90,10 @@ function handleAuthenticatedRequest(req: AuthenticatedRequest) {
     return NextResponse.redirect(new URL("/dashboard", req.nextUrl))
   }
 
-  if (isLoggedIn && pathname === "/signin") {
+  if (
+    isLoggedIn && pathname === "/signin" &&
+    req.nextUrl.searchParams.get("reason") !== "staff-only"
+  ) {
     if (userRole === "admin" || userRole === "staff") {
       return NextResponse.redirect(new URL("/dashboard", req.nextUrl))
     }
@@ -107,8 +110,6 @@ function handleAuthenticatedRequest(req: AuthenticatedRequest) {
 const authMiddleware = auth(
   handleAuthenticatedRequest
 ) as unknown as NextMiddleware
-
-
 
 function isSensitiveRequest(request: NextRequest) {
   return (
@@ -136,7 +137,9 @@ async function enforceRequestProtection(request: NextRequest) {
   const actionRequest =
     request.method === "POST" && request.headers.has("next-action")
   try {
-    const decision = await (actionRequest ? protectionActionLimiter : protectionAj).protect(request)
+    const decision = await (
+      actionRequest ? protectionActionLimiter : protectionAj
+    ).protect(request)
     if (decision.isDenied()) {
       const rateLimited = decision.reason.isRateLimit()
       return NextResponse.json(
@@ -154,11 +157,16 @@ async function enforceRequestProtection(request: NextRequest) {
     // silently bypass protection for private records or mutations either.
     if (
       decision.isErrored() ||
-      decision.results.some((result: { conclusion?: string }) => result.conclusion === "ERROR")
+      decision.results.some(
+        (result: { conclusion?: string }) => result.conclusion === "ERROR"
+      )
     ) {
       const reasonObj = decision.reason as { message?: unknown } | undefined
       const resultMessage = decision.results
-        .map((r: { reason?: unknown }) => (r.reason as { message?: unknown } | undefined)?.message)
+        .map(
+          (r: { reason?: unknown }) =>
+            (r.reason as { message?: unknown } | undefined)?.message
+        )
         .filter(Boolean)
         .join(" ")
       const reasonMessage = [
@@ -174,7 +182,7 @@ async function enforceRequestProtection(request: NextRequest) {
 
       Sentry.captureMessage(
         isTransientTimeout
-          ? "Request protection timed out (failing open for legitimate traffic)"
+          ? "Request protection timed out"
           : "Request protection could not complete",
         {
           level: isTransientTimeout ? "warning" : "error",
@@ -187,11 +195,6 @@ async function enforceRequestProtection(request: NextRequest) {
         }
       )
 
-      // Network latency timeouts fail open with warning so legitimate users aren't locked out of the dashboard
-      if (isTransientTimeout) {
-        return null
-      }
-
       if (isSensitiveRequest(request)) return protectionUnavailable()
     }
   } catch (error) {
@@ -202,15 +205,14 @@ async function enforceRequestProtection(request: NextRequest) {
       errorMsg.includes("timeout")
 
     if (isTransientTimeout) {
-      Sentry.captureMessage("Request protection network timed out (failing open)", {
+      Sentry.captureMessage("Request protection network timed out", {
         level: "warning",
         tags: { area: "request_protection" },
         extra: { error: errorMsg },
       })
-      return null
+    } else {
+      Sentry.captureException(error, { tags: { area: "request_protection" } })
     }
-
-    Sentry.captureException(error, { tags: { area: "request_protection" } })
     if (isSensitiveRequest(request)) return protectionUnavailable()
   }
 }
@@ -232,7 +234,8 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
   // Auth0 OAuth Handler (/auth/login, /auth/logout, /auth/profile, or /auth/callback with code)
   if (
     request.nextUrl.pathname.startsWith("/auth/") &&
-    (request.nextUrl.pathname !== "/auth/callback" || request.nextUrl.searchParams.has("code"))
+    (request.nextUrl.pathname !== "/auth/callback" ||
+      request.nextUrl.searchParams.has("code"))
   ) {
     const { auth0 } = await import("@/lib/auth0")
     return await auth0.middleware(request)
@@ -302,4 +305,3 @@ export const config = {
     "/((?!api/auth|api/cron|api/webhooks|api/public|api/chat|ingest|_next/static|_next/image|favicon.ico|monitoring|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|woff|woff2|ttf|eot|webmanifest|json|map)$).*)",
   ],
 }
-

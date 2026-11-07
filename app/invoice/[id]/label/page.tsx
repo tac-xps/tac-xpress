@@ -32,7 +32,7 @@ export default async function ShippingLabelPage({ params }: { params: Promise<{ 
         <PrintButton />
       </div>
       <div
-        className="max-w-full overflow-x-auto rounded-none shadow-xl transition-transform sm:scale-125 md:scale-150 origin-top mt-4 mb-24 print:m-0 print:transform-none print:shadow-none"
+        className="max-w-full overflow-x-auto rounded-none border border-border bg-card shadow-sm transition-transform sm:scale-125 md:scale-150 origin-top mt-4 mb-24 print:m-0 print:border-none print:transform-none print:shadow-none"
         role="region"
         aria-label="4 by 3 inch thermal shipping label print preview"
         tabIndex={0}

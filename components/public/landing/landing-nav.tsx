@@ -1,27 +1,43 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react"
+import { useEffect, useState, useRef, type MouseEvent } from "react"
 import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
-import { motion, AnimatePresence, useScroll, useSpring } from "motion/react"
+import { ArrowUpRight, Search } from "lucide-react"
+import { motion, AnimatePresence, useScroll } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { MorphicNavbar, type NavItem } from "@/components/kokonutui/morphic-navbar"
+import { Logo } from "@/components/logo"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { TrackShipmentModal } from "@/components/public/track-shipment-modal"
 import { cn } from "@/lib/utils"
 
 const LANDING_NAV_ITEMS: Record<string, NavItem> = {
   "#features": { name: "Features" },
+  "#services": { name: "Services" },
   "#method": { name: "Method" },
-  "#customers": { name: "Customers" },
   "#pricing": { name: "Pricing" },
-  "#company": { name: "Company" },
+  "#about": { name: "About" },
 }
 
 export function LandingNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [trackingModalOpen, setTrackingModalOpen] = useState(() => {
+    if (typeof window === "undefined") return false
+    const params = new URLSearchParams(window.location.search)
+    return Boolean(
+      params.get("tracking") === "open" ||
+      params.get("track") === "open" ||
+      params.get("awb")
+    )
+  })
+  const [queryAwb] = useState(() => {
+    if (typeof window === "undefined") return ""
+    return new URLSearchParams(window.location.search).get("awb") || ""
+  })
   const [activeSection, setActiveSection] = useState("#features")
   const [isScrolled, setIsScrolled] = useState(false)
   const mobileButtonRef = useRef<HTMLButtonElement>(null)
+  const { scrollYProgress, scrollY } = useScroll()
 
   useEffect(() => {
     if (!mobileMenuOpen) return
@@ -35,66 +51,82 @@ export function LandingNav() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [mobileMenuOpen])
 
-  const { scrollYProgress, scrollY } = useScroll()
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 300,
-    damping: 35,
-    restDelta: 0.001,
-  })
+  useEffect(() => {
+    const handleTrackEvent = () => setTrackingModalOpen(true)
+    window.addEventListener("tac-track-open", handleTrackEvent)
+    return () => window.removeEventListener("tac-track-open", handleTrackEvent)
+  }, [])
+
+  useEffect(
+    () => scrollY.on("change", (latest) => setIsScrolled(latest > 12)),
+    [scrollY]
+  )
 
   useEffect(() => {
-    return scrollY.on("change", (latest) => {
-      setIsScrolled(latest > 12)
-    })
-  }, [scrollY])
+    const desktop = window.matchMedia("(min-width: 1024px)")
+    const closeOnDesktop = () => {
+      if (desktop.matches) setMobileMenuOpen(false)
+    }
+    desktop.addEventListener("change", closeOnDesktop)
+    return () => desktop.removeEventListener("change", closeOnDesktop)
+  }, [])
 
   useEffect(() => {
-    const sectionIds = ["hero", "features", "method", "customers", "pricing", "company"]
+    if (typeof IntersectionObserver === "undefined") return
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find visible intersecting sections
-        const visible = entries.filter((e) => e.isIntersecting)
-        if (visible.length > 0) {
-          const topEntry = visible[0]
-          if (topEntry.target.id === "hero") {
+        const visible = entries.find((entry) => entry.isIntersecting)
+        if (visible) {
+          const targetId = visible.target.id
+          if (targetId === "hero") {
             setActiveSection("#features")
+          } else if (targetId === "fleet" || targetId === "services") {
+            setActiveSection("#services")
+          } else if (targetId === "shipping-guide" || targetId === "method") {
+            setActiveSection("#method")
+          } else if (targetId === "story" || targetId === "about") {
+            setActiveSection("#about")
           } else {
-            setActiveSection(`#${topEntry.target.id}`)
+            setActiveSection(`#${targetId}`)
           }
         }
       },
-      {
-        rootMargin: "-15% 0px -55% 0px",
-        threshold: [0, 0.25],
-      }
+      { rootMargin: "-15% 0px -55% 0px", threshold: [0, 0.25] }
     )
-
-    for (const id of sectionIds) {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
+    for (const id of [
+      "hero",
+      "features",
+      "services",
+      "fleet",
+      "method",
+      "shipping-guide",
+      "pricing",
+      "about",
+      "story",
+    ]) {
+      const section = document.getElementById(id)
+      if (section) observer.observe(section)
     }
-
-    const handleScroll = () => {
-      if (window.scrollY < 200) {
-        setActiveSection("#features")
-      }
-    }
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    handleScroll()
-
-    return () => {
-      observer.disconnect()
-      window.removeEventListener("scroll", handleScroll)
-    }
+    return () => observer.disconnect()
   }, [])
 
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault()
+  const scrollToSection = (
+    event: MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    event.preventDefault()
     setMobileMenuOpen(false)
-    const id = href.replace("#", "")
-    const el = document.getElementById(id)
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" })
+    const target = document.getElementById(href.slice(1))
+    if (target) {
+      target.scrollIntoView({
+        block: "start",
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+      })
+      if (window.location.hash !== href) {
+        window.history.pushState(null, "", href)
+      }
     }
   }
 
@@ -103,32 +135,24 @@ export function LandingNav() {
       className={cn(
         "sticky top-0 z-50 h-[72px] w-full border-b transition-colors duration-200",
         isScrolled
-          ? "border-border bg-background shadow-xs"
-          : "border-border/60 bg-background"
+          ? "border-border/80 bg-background/90 backdrop-blur-md shadow-2xs"
+          : "border-border/60 bg-background/80 backdrop-blur-sm"
       )}
     >
-      <div className="mx-auto flex h-full w-full max-w-[1320px] items-center justify-between px-6 lg:px-12">
-        {/* Left: Minimalist Brand Identity */}
-        <div className="flex items-center shrink-0">
+      <div className="mx-auto flex h-full w-full max-w-[1320px] items-center justify-between px-4 sm:px-6 lg:px-12">
+        {/* Brand identity */}
+        <div className="flex items-center">
           <Link
             href="/"
             aria-label="TAC-XPRESS home"
-            className="group flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
+            className="flex items-center rounded-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
-            <div className="relative size-3.5 bg-primary rounded-none overflow-hidden transition-transform duration-200 group-hover:scale-105 active:scale-[0.96] shadow-2xs">
-              <span
-                aria-hidden="true"
-                className="absolute inset-y-0 -inset-x-2 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full transition-transform duration-700 ease-in-out group-hover:translate-x-full motion-reduce:hidden"
-              />
-            </div>
-            <span className="font-sans text-sm font-bold tracking-tight text-foreground transition-colors group-hover:text-foreground">
-              TAC-XPRESS
-            </span>
+            <Logo className="text-foreground" />
           </Link>
         </div>
 
-        {/* Center: Shared Layout Motion Navigation */}
-        <div className="hidden md:flex flex-1 justify-center max-w-xl">
+        {/* Morphic Navigation Centered Track */}
+        <div className="hidden max-w-xl flex-1 justify-center lg:flex">
           <MorphicNavbar
             items={LANDING_NAV_ITEMS}
             defaultPath={activeSection}
@@ -137,57 +161,82 @@ export function LandingNav() {
           />
         </div>
 
-        {/* Right: Tactical Action CTA & Star Theme Toggle */}
-        <div className="hidden md:flex items-center gap-3 shrink-0">
+        {/* Desktop Action Cluster */}
+        <div className="hidden items-center gap-2 lg:flex">
           <ThemeToggle />
           <Button
-            asChild
-            className="group relative h-8.5 px-4 rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary-hover transition-colors duration-150 active:scale-[0.96] shadow-2xs overflow-hidden"
+            type="button"
+            variant="outline"
+            size="sm"
+            className="rounded-none text-xs h-9 px-3.5 gap-1.5 border-border/80 hover:bg-muted/70 hover:border-border text-foreground/85 hover:text-foreground transition-colors duration-150 shadow-2xs"
+            onClick={() => setTrackingModalOpen(true)}
           >
-            <a href="#contact" onClick={(e) => scrollToSection(e, "#contact")}>
+            <Search className="size-3.5 text-muted-foreground" aria-hidden="true" />
+            <span>Track a shipment</span>
+          </Button>
+          <Button
+            asChild
+            size="sm"
+            className="rounded-none text-xs h-9 px-4 gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors duration-150 shadow-xs hover:shadow-sm active:scale-[0.98]"
+          >
+            <a
+              href="#contact"
+              onClick={(event) => scrollToSection(event, "#contact")}
+            >
               <span>Book Consignment</span>
-              <ArrowUpRight className="ml-1.5 size-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <ArrowUpRight className="size-3.5" aria-hidden="true" />
             </a>
           </Button>
         </div>
 
-        {/* Mobile: Morphing Hamburger-to-X Button */}
-        <button
-          ref={mobileButtonRef}
-          type="button"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="flex md:hidden size-11 items-center justify-center border border-border/80 bg-card hover:bg-muted text-foreground transition-colors rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground active:scale-[0.96] cursor-pointer"
-          aria-expanded={mobileMenuOpen}
-          aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
-        >
-          <div className="flex flex-col justify-between size-4">
-            <span
-              className={cn(
-                "h-0.5 w-full bg-foreground transition-transform duration-200 ease-out origin-center",
-                mobileMenuOpen && "translate-y-[7px] rotate-45"
-              )}
-            />
-            <span
-              className={cn(
-                "h-0.5 w-full bg-foreground transition-opacity duration-150 ease-out",
-                mobileMenuOpen && "opacity-0"
-              )}
-            />
-            <span
-              className={cn(
-                "h-0.5 w-full bg-foreground transition-transform duration-200 ease-out origin-center",
-                mobileMenuOpen && "-translate-y-[7px] -rotate-45"
-              )}
-            />
-          </div>
-        </button>
+        {/* Mobile Navigation Trigger */}
+        <div className="flex items-center gap-2 lg:hidden">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="rounded-none text-xs min-h-11 h-11 px-3"
+            onClick={() => setTrackingModalOpen(true)}
+          >
+            Track
+          </Button>
+          <button
+            ref={mobileButtonRef}
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="flex size-11 items-center justify-center border border-border/80 bg-card hover:bg-muted text-foreground transition-colors rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground active:scale-[0.96] cursor-pointer"
+            aria-expanded={mobileMenuOpen}
+            aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
+          >
+            <div className="flex flex-col justify-between size-4">
+              <span
+                className={cn(
+                  "h-0.5 w-full bg-foreground transition-transform duration-200 ease-out origin-center",
+                  mobileMenuOpen && "translate-y-[7px] rotate-45"
+                )}
+              />
+              <span
+                className={cn(
+                  "h-0.5 w-full bg-foreground transition-opacity duration-150 ease-out",
+                  mobileMenuOpen && "opacity-0"
+                )}
+              />
+              <span
+                className={cn(
+                  "h-0.5 w-full bg-foreground transition-transform duration-200 ease-out origin-center",
+                  mobileMenuOpen && "-translate-y-[7px] -rotate-45"
+                )}
+              />
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Corridor Transit Scroll Progress Micro-Rail */}
       <div className="absolute bottom-0 inset-x-0 h-[1.5px] bg-border/20 overflow-hidden pointer-events-none">
         <motion.div
           className="h-full bg-primary origin-left"
-          style={{ scaleX: smoothProgress }}
+          style={{ scaleX: scrollYProgress }}
           aria-hidden="true"
         />
       </div>
@@ -203,7 +252,7 @@ export function LandingNav() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="md:hidden overflow-hidden border-b border-border bg-background px-6 py-6 shadow-sm"
+            className="lg:hidden overflow-hidden border-b border-border bg-background px-6 py-6 shadow-sm"
           >
             <motion.nav
               initial="closed"
@@ -255,7 +304,7 @@ export function LandingNav() {
               >
                 <Button
                   asChild
-                  className="h-9 w-full rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary-hover transition-colors shadow-2xs"
+                  className="h-9 w-full rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-2xs"
                 >
                   <a href="#contact" onClick={(e) => scrollToSection(e, "#contact")}>
                     Book Consignment
@@ -267,6 +316,12 @@ export function LandingNav() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <TrackShipmentModal
+        open={trackingModalOpen}
+        onOpenChange={setTrackingModalOpen}
+        initialAwb={queryAwb}
+      />
     </header>
   )
 }

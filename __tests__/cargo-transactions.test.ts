@@ -42,7 +42,24 @@ vi.mock("@sentry/nextjs", () => ({
   startSpan: (_options: unknown, callback: () => unknown) => callback(),
 }))
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
+vi.mock("@/lib/auth/page-access", () => ({ requireStaffPage: vi.fn() }))
+vi.mock("@/app/dashboard/dispatch/dispatch-client-layout", () => ({
+  DispatchClientLayout: () => null,
+}))
+vi.mock("@/app/driver/delivery/delivery-client", () => ({
+  DeliveryClient: () => null,
+}))
 vi.mock("@/lib/auth/guards", () => ({
+  requireDashboardAction: async () => ({
+    ok: true,
+    session: {
+      user: {
+        id: "11111111-1111-4111-8111-111111111111",
+        email: "staff@example.test",
+        role: "admin",
+      },
+    },
+  }),
   requireDashboardSession: async () => ({
     user: {
       id: "11111111-1111-4111-8111-111111111111",
@@ -90,6 +107,11 @@ import {
   updateDispatchRunAction,
   deleteDispatchRunAction,
 } from "@/app/dashboard/dispatch/actions"
+import { completeDeliveryAction } from "@/app/driver/delivery/[id]/actions"
+import DispatchPage from "@/app/dashboard/dispatch/page"
+import DriverDeliveryPage from "@/app/driver/delivery/page"
+import { getWarehouseAuditDiscrepanciesAction } from "@/app/dashboard/warehouse/actions"
+import { scanShipmentAction as scanWarehouseShipmentAction } from "@/app/dashboard/warehouse/actions"
 import { logAuditInTransaction } from "@/lib/audit"
 import {
   createStoredInvoice,
@@ -103,6 +125,23 @@ import { fleetTelemetryStore } from "@/lib/fleet-telemetry-store"
 import { claimJob, finishJob } from "@/lib/jobs/store"
 import { recordDeliveryReceipt } from "@/lib/whatsapp/delivery-status"
 import { updateScannedShipmentStatus } from "@/app/actions/scanner-actions"
+import { normalizeInvoiceDomain } from "@/lib/documents/invoice/engine/domain-normalizer"
+import {
+  getCustomerLedgerAction,
+  createCustomerAction,
+} from "@/app/dashboard/customers/actions"
+import {
+  createStaffAction,
+  updateStaffAction,
+} from "@/app/dashboard/staff/actions"
+import { createVehicleAction } from "@/app/dashboard/fleet/actions"
+import { createHubAction } from "@/app/dashboard/hubs/actions"
+import { createPricingRuleAction } from "@/app/dashboard/pricing/actions"
+import {
+  createTicketAction,
+  deleteTicketAction,
+} from "@/app/dashboard/messages/actions"
+import { deleteFeedbackAction } from "@/app/dashboard/feedback/actions"
 
 const staffId = "11111111-1111-4111-8111-111111111111"
 const customerId = "22222222-2222-4222-8222-222222222222"
@@ -113,13 +152,16 @@ const destinationHubId = "66666666-6666-4666-8666-666666666666"
 const invoiceActor = { id: staffId, email: "staff@example.test" }
 const cargo = {
   origin: "Delhi",
-  destination: "Mumbai",
+  destination: "Imphal",
   serviceType: "express_air" as const,
   weightKg: 1,
 }
 const quote = (value: string) => `'${value.replaceAll("'", "''")}'`
 
 beforeAll(async () => {
+  await client.exec(
+    "create schema auth; create table auth.users (id uuid primary key, email text unique)"
+  )
   state.db = database
   const dialect = new PgDialect()
   for (const value of [
@@ -161,6 +203,8 @@ beforeAll(async () => {
     schema.ticketReplies,
     schema.whatsappSubscribers,
     schema.messageOutbound,
+    schema.pricingRules,
+    schema.feedback,
   ]) {
     const config = getTableConfig(table)
     const columns = config.columns.map((column) => {
@@ -193,13 +237,13 @@ beforeAll(async () => {
   )
   await client.exec(
     await readFile(
-      new URL("../supabase/migrations/0010_audit_log.sql", import.meta.url),
+      new URL("../supabase/migrations-archive/pre-20261103/0010_audit_log.sql", import.meta.url),
       "utf8"
     )
   )
   const hardening = await readFile(
     new URL(
-      "../supabase/migrations/0019_enterprise_hardening.sql",
+      "../supabase/migrations-archive/pre-20261103/0019_enterprise_hardening.sql",
       import.meta.url
     ),
     "utf8"
@@ -229,6 +273,7 @@ beforeAll(async () => {
 }, 30_000)
 
 beforeEach(async () => {
+  await client.exec("truncate auth.users, pricing_rules, feedback")
   await client.exec(
     "alter table audit_log drop constraint if exists test_audit_failure"
   )
@@ -252,7 +297,7 @@ beforeEach(async () => {
   })
   await database.insert(schema.hubs).values([
     { id: originHubId, name: "Delhi hub", location: "Delhi" },
-    { id: destinationHubId, name: "Mumbai hub", location: "Mumbai" },
+    { id: destinationHubId, name: "Imphal hub", location: "Imphal" },
   ])
 })
 
@@ -276,7 +321,222 @@ async function seedShipment(awbNumber = "TEST-AWB") {
   return shipment
 }
 
+describe("dashboard business mutations against PostgreSQL", () => {
+  const staffEmail = "new.staff@example.test"
+  const provisionedId = "99999999-9999-4999-8999-999999999999"
+  const staffInput = {
+    name: "New Staff",
+    email: staffEmail,
+    phone: "919876543212",
+    role: "staff" as const,
+  }
+  it("requires an existing authentication identity before granting staff access", async () => {
+    expect(await createStaffAction(staffInput)).toMatchObject({
+      success: false,
+      error: expect.stringContaining("Supabase Auth"),
+    })
+    expect(
+      await database.query.users.findFirst({
+        where: eq(schema.users.email, staffEmail),
+      })
+    ).toBeUndefined()
+    await client.query("insert into auth.users (id,email) values ($1,$2)", [
+      provisionedId,
+      staffEmail,
+    ])
+    expect(await createStaffAction(staffInput)).toMatchObject({
+      success: true,
+      staff: { id: provisionedId },
+    })
+    const updatedStaff = {
+      ...staffInput,
+      id: provisionedId,
+      email: "updated.staff@example.test",
+    }
+    expect(await updateStaffAction(updatedStaff)).toMatchObject({
+      success: false,
+    })
+    await client.query("update auth.users set email=$1 where id=$2", [
+      updatedStaff.email,
+      provisionedId,
+    ])
+    expect(await updateStaffAction(updatedStaff)).toMatchObject({
+      success: true,
+    })
+  })
+  it("rejects restoring a staff record linked to a different authentication identity", async () => {
+    await client.query("insert into auth.users (id,email) values ($1,$2)", [
+      provisionedId,
+      staffEmail,
+    ])
+    await database
+      .update(schema.users)
+      .set({ email: staffEmail, role: "staff", deletedAt: new Date() })
+      .where(eq(schema.users.id, customerId))
+    expect(await createStaffAction(staffInput)).toMatchObject({
+      success: false,
+      error: expect.stringContaining("identities"),
+    })
+    expect(
+      (
+        await database.query.users.findFirst({
+          where: eq(schema.users.id, customerId),
+        })
+      )?.deletedAt
+    ).not.toBeNull()
+    expect(
+      await database.query.users.findFirst({
+        where: eq(schema.users.id, provisionedId),
+      })
+    ).toBeUndefined()
+  })
+  it("rolls directory, pricing and support creation back when their audit insert fails", async () => {
+    await client.query("insert into auth.users (id,email) values ($1,$2)", [
+      provisionedId,
+      staffEmail,
+    ])
+    await failAudits()
+    expect(await createStaffAction(staffInput)).toMatchObject({
+      success: false,
+    })
+    expect(
+      await createCustomerAction({
+        name: "New Customer",
+        email: "new.customer@example.test",
+        phone: "919876543213",
+      })
+    ).toMatchObject({ success: false })
+    expect(
+      await createVehicleAction({
+        registrationNumber: "NEW-VEHICLE",
+        capacityKg: 100,
+        status: "active",
+      })
+    ).toMatchObject({ success: false })
+    expect(
+      await createHubAction({
+        name: "New Delhi Hub",
+        location: "New Delhi",
+        type: "warehouse",
+      })
+    ).toMatchObject({ success: false })
+    expect(
+      await createPricingRuleAction({
+        origin: "New Delhi",
+        destination: "Imphal",
+        serviceType: "express_air",
+        basePrice: 100,
+        pricePerKg: 10,
+      })
+    ).toMatchObject({ success: false })
+    expect(
+      await createTicketAction({
+        subject: "Synthetic request",
+        description: "Synthetic test",
+      })
+    ).toMatchObject({ success: false })
+    expect(
+      await database.query.users.findFirst({
+        where: eq(schema.users.email, staffEmail),
+      })
+    ).toBeUndefined()
+    expect(
+      await database.query.users.findFirst({
+        where: eq(schema.users.email, "new.customer@example.test"),
+      })
+    ).toBeUndefined()
+    expect(await database.select().from(schema.vehicles)).toHaveLength(1)
+    expect(await database.select().from(schema.hubs)).toHaveLength(2)
+    expect(await database.select().from(schema.pricingRules)).toHaveLength(0)
+    expect(await database.select().from(schema.tickets)).toHaveLength(0)
+  })
+  it("keeps support and feedback records when delete auditing fails", async () => {
+    const [ticket] = await database
+      .insert(schema.tickets)
+      .values({
+        subject: "Synthetic request",
+        description: "Synthetic test",
+        source: "dashboard",
+        status: "open",
+      })
+      .returning()
+    const [feedback] = await database
+      .insert(schema.feedback)
+      .values({
+        name: "Synthetic customer",
+        email: "test@example.test",
+        message: "Synthetic feedback",
+      })
+      .returning()
+    await failAudits()
+    expect(await deleteTicketAction({ id: ticket.id })).toMatchObject({
+      success: false,
+    })
+    expect(await deleteFeedbackAction({ id: feedback.id })).toMatchObject({
+      success: false,
+    })
+    expect(await database.select().from(schema.tickets)).toHaveLength(1)
+    expect(await database.select().from(schema.feedback)).toHaveLength(1)
+  })
+})
+
 describe("invoice persistence uses real PostgreSQL transactions", () => {
+  it("keeps void invoices in history without counting them as customer debt", async () => {
+    const shipment = await seedShipment()
+    const first = await createStoredInvoice(shipment.id, 10000, invoiceActor)
+    await voidStoredInvoice(first.id, invoiceActor)
+    await createStoredInvoice(shipment.id, 20000, invoiceActor)
+    const ledger = await getCustomerLedgerAction({ id: customerId })
+    expect(ledger).toHaveProperty("invoices.length", 2)
+    expect(ledger).toMatchObject({
+      totals: {
+        totalBilled: 20000,
+        totalAdvance: 0,
+        totalDue: 20000,
+        totalCount: 2,
+      },
+    })
+  })
+  it("updates printed charges while preserving historical snapshot identity", async () => {
+    const shipment = await seedShipment()
+    const invoice = await createStoredInvoice(shipment.id, 10000, invoiceActor)
+    const snapshot = normalizeInvoiceDomain(invoice, shipment, {
+      appOrigin: "http://localhost:3000",
+    })
+    snapshot.commercial.supplier = {
+      ...snapshot.commercial.supplier,
+      name: "Historical supplier",
+    }
+    snapshot.commercial.billTo = {
+      ...snapshot.commercial.billTo,
+      name: "Historical sender",
+    }
+    await database
+      .update(schema.invoices)
+      .set({ documentSnapshot: snapshot })
+      .where(eq(schema.invoices.id, invoice.id))
+    await database
+      .update(schema.shipments)
+      .set({ consignorName: "Later directory name" })
+      .where(eq(schema.shipments.id, shipment.id))
+
+    const edited = await updateStoredInvoice(
+      invoice.id,
+      { freightCharge: 20000, gstRate: 18 },
+      invoiceActor
+    )
+    const printed = normalizeInvoiceDomain(edited, shipment, {
+      appOrigin: "http://localhost:3000",
+    })
+    expect(printed.commercial.financials.totalInvoiceValue.paise).toBe(
+      edited.amount
+    )
+    expect(printed.commercial.financials.totalInvoiceValue.paise).toBe(23600)
+    expect(printed.commercial.billTo.name).toBe("Historical sender")
+    expect(printed.commercial.supplier.name).toBe("Historical supplier")
+    expect(printed.shipment).toEqual(snapshot.shipment)
+    expect(printed.routing).toEqual(snapshot.routing)
+  })
   it("reuses an existing active invoice when creation is retried", async () => {
     const shipment = await seedShipment()
     const first = await createStoredInvoice(shipment.id, 10000, invoiceActor)
@@ -530,13 +790,13 @@ async function shipmentState(id: string) {
 }
 
 describe("cargo transactions against embedded PostgreSQL", () => {
-  it("rolls back scanner status and its event when the audit fails, then permits a safe retry", async () => {
+  it("rolls back scanner observations on audit failure without changing cargo status", async () => {
     const shipment = await seedShipment()
     await failAudits()
     expect(
       await updateScannedShipmentStatus(
         shipment.id,
-        "in-transit",
+        "pending",
         "Delhi hub",
         "Loaded for departure"
       )
@@ -549,12 +809,12 @@ describe("cargo transactions against embedded PostgreSQL", () => {
     expect(
       await updateScannedShipmentStatus(
         shipment.id,
-        "in-transit",
+        "pending",
         "Delhi hub",
         "Loaded for departure"
       )
     ).toMatchObject({ success: true })
-    expect((await shipmentState(shipment.id))?.status).toBe("in-transit")
+    expect((await shipmentState(shipment.id))?.status).toBe("pending")
     expect(await database.select().from(schema.trackingEvents)).toMatchObject([
       { loggedBy: staffId, isPublic: false },
     ])
@@ -571,6 +831,357 @@ describe("cargo transactions against embedded PostgreSQL", () => {
     ).toMatchObject({ success: false })
     expect(await database.select().from(schema.trackingEvents)).toHaveLength(1)
   })
+  it("rejects reversed cargo directions and overloaded manifests", async () => {
+    const shipment = await seedShipment()
+    await database
+      .update(schema.shipments)
+      .set({ weightKg: 2 })
+      .where(eq(schema.shipments.id, shipment.id))
+    expect(
+      await createManifestAction({
+        originHubId: destinationHubId,
+        destinationHubId: originHubId,
+        driverId,
+        vehicleId,
+        shipmentIds: [shipment.id],
+      })
+    ).toMatchObject({
+      success: false,
+      error: "Every shipment must follow the selected manifest direction",
+    })
+    await database
+      .update(schema.vehicles)
+      .set({ capacityKg: 1 })
+      .where(eq(schema.vehicles.id, vehicleId))
+    expect(
+      await createManifestAction({
+        originHubId,
+        destinationHubId,
+        driverId,
+        vehicleId,
+        shipmentIds: [shipment.id],
+      })
+    ).toMatchObject({
+      success: false,
+      error: "Selected cargo exceeds the vehicle payload capacity",
+    })
+    expect(await database.select().from(schema.manifests)).toHaveLength(0)
+  })
+
+  it("rejects dispatch cargo outside the corridor or moving in opposite directions", async () => {
+    const first = await seedShipment()
+    const second = await seedShipment("REVERSED-DISPATCH")
+    await database
+      .update(schema.shipments)
+      .set({ origin: "Imphal", destination: "New Delhi" })
+      .where(eq(schema.shipments.id, second.id))
+    expect(
+      await createDispatchRunAction({
+        driverId,
+        vehicleId,
+        runType: "pickup",
+        shipmentIds: [first.id, second.id],
+      })
+    ).toMatchObject({
+      success: false,
+      error: "Every shipment must follow the selected manifest direction",
+    })
+    await database
+      .update(schema.shipments)
+      .set({ origin: "Outside corridor" })
+      .where(eq(schema.shipments.id, first.id))
+    expect(
+      await createDispatchRunAction({
+        driverId,
+        vehicleId,
+        runType: "pickup",
+        shipmentIds: [first.id],
+      })
+    ).toMatchObject({
+      success: false,
+      error: "Choose opposite New Delhi and Imphal hub locations",
+    })
+    expect(await database.select().from(schema.manifests)).toHaveLength(0)
+  })
+
+  it("rechecks aggregate payload during concurrent scans and before finalization", async () => {
+    const first = await seedShipment()
+    const second = await seedShipment("SECOND-SCAN")
+    const third = await seedShipment("THIRD-SCAN")
+    await database
+      .update(schema.shipments)
+      .set({ weightKg: 600 })
+      .where(eq(schema.shipments.id, second.id))
+    await database
+      .update(schema.shipments)
+      .set({ weightKg: 600 })
+      .where(eq(schema.shipments.id, third.id))
+    const manifest = await seedLoad(first.id, "MAN-CAPACITY")
+    const results = await Promise.all(
+      [second, third].map((shipment) =>
+        scanShipmentAction({
+          manifestId: manifest.id,
+          awbNumber: shipment.awbNumber,
+        })
+      )
+    )
+    expect(results).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ success: true }),
+        expect.objectContaining({ success: false }),
+      ])
+    )
+    expect(await database.select().from(schema.manifestItems)).toHaveLength(2)
+    await database
+      .update(schema.vehicles)
+      .set({ capacityKg: 500 })
+      .where(eq(schema.vehicles.id, vehicleId))
+    expect(
+      await updateManifestAction({ id: manifest.id, status: "finalized" })
+    ).toMatchObject({
+      success: false,
+      error: "Selected cargo exceeds the vehicle payload capacity",
+    })
+    expect((await database.query.manifests.findFirst())?.status).toBe("draft")
+    expect((await shipmentState(first.id))?.status).toBe("pending")
+  })
+
+  it("rejects overloaded dispatch creation and departure after a capacity reduction", async () => {
+    const shipment = await seedShipment()
+    await database
+      .update(schema.shipments)
+      .set({ weightKg: 2 })
+      .where(eq(schema.shipments.id, shipment.id))
+    await database
+      .update(schema.vehicles)
+      .set({ capacityKg: 1 })
+      .where(eq(schema.vehicles.id, vehicleId))
+    expect(
+      await createDispatchRunAction({
+        driverId,
+        vehicleId,
+        runType: "pickup",
+        shipmentIds: [shipment.id],
+      })
+    ).toMatchObject({
+      success: false,
+      error: "Selected cargo exceeds the vehicle payload capacity",
+    })
+    const manifest = await seedLoad(shipment.id, "PU-CAPACITY")
+    expect(await startDispatchRunAction({ id: manifest.id })).toMatchObject({
+      success: false,
+    })
+    expect((await database.query.manifests.findFirst())?.status).toBe("draft")
+    expect((await shipmentState(shipment.id))?.status).toBe("pending")
+  })
+
+  it("queries eligible dispatch cargo before paging and searches older bookings", async () => {
+    const oldest = await seedShipment("OLDEST-AVAILABLE")
+    await database
+      .update(schema.shipments)
+      .set({ createdAt: new Date("2000-01-01") })
+      .where(eq(schema.shipments.id, oldest.id))
+    const assigned = await seedShipment("ASSIGNED-BLOCKER")
+    const manifest = await seedLoad(assigned.id, "MAN-QUEUE")
+    const rows = await database
+      .insert(schema.shipments)
+      .values(
+        Array.from({ length: 101 }, (_, i) => ({
+          ...cargo,
+          customerId,
+          awbNumber: "ASSIGNED-" + i,
+        }))
+      )
+      .returning({ id: schema.shipments.id })
+    await database.insert(schema.manifestItems).values(
+      rows.map((row) => ({
+        shipmentId: row.id,
+        manifestId: manifest.id,
+        isActive: true,
+      }))
+    )
+    const page = await DispatchPage({ searchParams: Promise.resolve({}) })
+    expect(page.props.children.props.pendingShipments).toMatchObject([
+      { awbNumber: oldest.awbNumber },
+    ])
+    expect(page.props.children.props.queueHasNext).toBe(false)
+    await database.insert(schema.shipments).values(
+      Array.from({ length: 26 }, (_, i) => ({
+        ...cargo,
+        customerId,
+        awbNumber: "AVAILABLE-" + i,
+      }))
+    )
+    const next = await DispatchPage({
+      searchParams: Promise.resolve({ page: "2" }),
+    })
+    expect(next.props.children.props.pendingShipments).toHaveLength(2)
+    const search = await DispatchPage({
+      searchParams: Promise.resolve({ q: "OLDEST-AVAILABLE" }),
+    })
+    expect(search.props.children.props.pendingShipments).toMatchObject([
+      { awbNumber: oldest.awbNumber },
+    ])
+  })
+
+  it("loads requested older delivery manifests and never substitutes unassigned shipments", async () => {
+    const shipment = await seedShipment()
+    const empty = await DriverDeliveryPage({
+      searchParams: Promise.resolve({}),
+    })
+    expect(empty.props.shipments).toEqual([])
+    const old = await seedLoad(shipment.id, "DL-OLDER", "finalized", "delivery")
+    await database
+      .update(schema.manifests)
+      .set({ createdAt: new Date("2000-01-01") })
+      .where(eq(schema.manifests.id, old.id))
+    await database.insert(schema.manifests).values(
+      Array.from({ length: 21 }, (_, i) => ({
+        referenceId: "DL-RECENT-" + i,
+        legType: "delivery" as const,
+        status: "finalized" as const,
+      }))
+    )
+    const page = await DriverDeliveryPage({
+      searchParams: Promise.resolve({ manifestId: old.id }),
+    })
+    expect(page.props.activeManifest?.id).toBe(old.id)
+    expect(page.props.shipments).toMatchObject([{ id: shipment.id }])
+    expect(page.props.manifests).toHaveLength(21)
+  })
+
+  it("fails the warehouse audit when the unregistered discrepancy source is unavailable", async () => {
+    await client.exec("alter table audit_log rename to hidden_audit_log")
+    try {
+      expect(await getWarehouseAuditDiscrepanciesAction()).toMatchObject({
+        success: false,
+        data: [],
+        error: "Failed to load the complete warehouse audit. Try again.",
+      })
+    } finally {
+      await client.exec("alter table hidden_audit_log rename to audit_log")
+    }
+  })
+
+  it("keeps warehouse intake eligible for its first load", async () => {
+    const shipment = await seedShipment()
+    expect(
+      await scanWarehouseShipmentAction({ awbNumber: shipment.awbNumber })
+    ).toMatchObject({ success: true })
+    expect((await shipmentState(shipment.id))?.status).toBe("pending")
+    expect(
+      await database.select().from(schema.manifestItemHandoffs)
+    ).toHaveLength(0)
+    expect(
+      await createManifestAction({
+        originHubId,
+        destinationHubId,
+        driverId,
+        vehicleId,
+        shipmentIds: [shipment.id],
+      })
+    ).toMatchObject({ success: true })
+  })
+
+  it("rejects manual tracking delivery and reopening of completed cargo", async () => {
+    const shipment = await seedShipment()
+    await expect(
+      createTrackingEventAction({
+        shipmentId: shipment.id,
+        status: "delivered",
+        location: "Imphal",
+        description: "Manual delivery",
+      })
+    ).rejects.toThrow("Use dispatch and handover")
+    await database
+      .update(schema.shipments)
+      .set({ status: "delivered" })
+      .where(eq(schema.shipments.id, shipment.id))
+    await expect(
+      createTrackingEventAction({
+        shipmentId: shipment.id,
+        status: "pending",
+        location: "New Delhi",
+        description: "Manual reset",
+      })
+    ).rejects.toThrow("Use dispatch and handover")
+    expect((await shipmentState(shipment.id))?.status).toBe("delivered")
+    expect(await database.select().from(schema.trackingEvents)).toHaveLength(0)
+  })
+
+  it("rejects driver completion of pending or line-haul cargo", async () => {
+    const shipment = await seedShipment()
+    const request = {
+      shipmentId: shipment.id,
+      signatureDataUrl:
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAUCAYAAAD/Rn+7AAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAQ0lEQVRIie3QwQkAIAwEwe2/6bMABYU8XDED+eR1LJEjckSOyJEXBwLT3cLy2QPPdcGqLljVBf8saELkiByR4/aAnQGnjt68vTE5NwAAAABJRU5ErkJggg==",
+    }
+    expect(await completeDeliveryAction(request)).toMatchObject({
+      success: false,
+    })
+    await seedLoad(shipment.id, "MAN-DRIVER", "finalized")
+    await database
+      .update(schema.shipments)
+      .set({ status: "in-transit" })
+      .where(eq(schema.shipments.id, shipment.id))
+    expect(await completeDeliveryAction(request)).toMatchObject({
+      success: false,
+    })
+    expect((await shipmentState(shipment.id))?.status).toBe("in-transit")
+    expect(
+      await database.select().from(schema.manifestItemHandoffs)
+    ).toHaveLength(0)
+  })
+
+  it("commits driver signature, receipt, assignment release and audit together, and retries once", async () => {
+    const shipment = await seedShipment()
+    await createStoredInvoice(shipment.id, 10000, invoiceActor)
+    await seedLoad(shipment.id, "DL-DRIVER", "finalized", "delivery")
+    await database
+      .update(schema.shipments)
+      .set({ status: "in-transit" })
+      .where(eq(schema.shipments.id, shipment.id))
+    const request = {
+      shipmentId: shipment.id,
+      signatureDataUrl:
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAUCAYAAAD/Rn+7AAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAQ0lEQVRIie3QwQkAIAwEwe2/6bMABYU8XDED+eR1LJEjckSOyJEXBwLT3cLy2QPPdcGqLljVBf8saELkiByR4/aAnQGnjt68vTE5NwAAAABJRU5ErkJggg==",
+    }
+    await failAudits()
+    expect(await completeDeliveryAction(request)).toMatchObject({
+      success: false,
+    })
+    expect((await shipmentState(shipment.id))?.status).toBe("in-transit")
+    expect((await database.query.manifestItems.findFirst())?.isActive).toBe(
+      true
+    )
+    expect((await database.query.invoices.findFirst())?.signatureUrl).toBeNull()
+    expect(
+      await database.select().from(schema.manifestItemHandoffs)
+    ).toHaveLength(0)
+    await client.exec(
+      "alter table audit_log drop constraint test_audit_failure"
+    )
+    expect(await completeDeliveryAction(request)).toMatchObject({
+      success: true,
+      delivered: true,
+    })
+    expect((await shipmentState(shipment.id))?.status).toBe("delivered")
+    expect((await database.query.manifestItems.findFirst())?.isActive).toBe(
+      false
+    )
+    expect((await database.query.invoices.findFirst())?.signatureUrl).toBe(
+      request.signatureDataUrl
+    )
+    expect(await completeDeliveryAction(request)).toMatchObject({
+      success: true,
+      alreadyReceived: true,
+    })
+    expect(
+      await database.select().from(schema.manifestItemHandoffs)
+    ).toHaveLength(1)
+    expect(await database.select().from(schema.trackingEvents)).toHaveLength(1)
+  })
+
   it("records pickup, line-haul and delivery receipts without skipping cargo states", async () => {
     const shipment = await seedShipment()
     expect(
@@ -927,9 +1538,9 @@ describe("cargo transactions against embedded PostgreSQL", () => {
     await expect(
       createTrackingEventAction({
         shipmentId: shipment.id,
-        status: "delivered",
-        location: "Mumbai",
-        description: "Delivered",
+        status: "pending",
+        location: "New Delhi",
+        description: "Cargo details checked",
       })
     ).rejects.toThrow()
     await expect(

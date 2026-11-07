@@ -26,6 +26,10 @@ export function useCreateManifestForm(
 
   const { executeAsync, isExecuting } = useAction(createManifestAction, {
     onSuccess: ({ data }) => {
+      if (!data?.success) {
+        toast.error(data?.error || "Failed to create manifest")
+        return
+      }
       if (data?.whatsAppDispatched) {
         toast.success("Manifest created & WhatsApp dispatched to driver")
       } else {
@@ -59,7 +63,10 @@ export function useCreateManifestForm(
     )
   }, [shipments, searchQuery])
 
-  const totalPages = Math.max(1, Math.ceil(filteredShipments.length / itemsPerPage))
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredShipments.length / itemsPerPage)
+  )
   const safeCurrentPage = Math.min(currentPage, totalPages)
 
   const paginatedShipments = useMemo(() => {
@@ -125,7 +132,10 @@ export function useCreateManifestForm(
     }
   }
 
-  const watchedShipmentIds = useWatch({ control: form.control, name: "shipmentIds" })
+  const watchedShipmentIds = useWatch({
+    control: form.control,
+    name: "shipmentIds",
+  })
   const selectedShipmentIds = watchedShipmentIds || []
   const selectedCount = selectedShipmentIds.length
 

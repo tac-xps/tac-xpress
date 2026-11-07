@@ -26,57 +26,57 @@ function oklchToLuminance(L: number, C: number, H: number): number {
   return 0.2126729 * rLin + 0.7151522 * gLin + 0.072175 * bLin
 }
 
-describe("Nordic Mineral — Nocturne Obsidian & Luminous Nordic Teal Semantic Contrast Matrix", () => {
-  // ── Light Theme Tokens (Radix Slate H 256 & Radix Teal H 180) ──
-  const yCloud = oklchToLuminance(0.982, 0.002, 256)
-  const yPaper = oklchToLuminance(0.993, 0.002, 256)
-  const yMist = oklchToLuminance(0.936, 0.006, 256)
-  const yStone = oklchToLuminance(0.889, 0.010, 256)
-  const yStoneStrong = oklchToLuminance(0.601, 0.020, 256)
-  const yInk = oklchToLuminance(0.256, 0.011, 264)
-  const ySlate = oklchToLuminance(0.498, 0.018, 256)
-  const yWhite = oklchToLuminance(0.993, 0.002, 256)
+describe("Aerospace Linehaul & Obsidian Jewel Semantic Contrast Matrix", () => {
+  // ── Light Theme Tokens (Alpine Titanium H 240/245 & Linehaul Cobalt H 240) ──
+  const yCloud = oklchToLuminance(0.985, 0.003, 240)
+  const yPaper = oklchToLuminance(0.998, 0.001, 240)
+  const yMist = oklchToLuminance(0.958, 0.005, 240)
+  const yStone = oklchToLuminance(0.895, 0.007, 240)
+  const yStoneStrong = oklchToLuminance(0.560, 0.020, 240)
+  const yInk = oklchToLuminance(0.180, 0.010, 245)
+  const ySlate = oklchToLuminance(0.420, 0.018, 245)
+  const yWhite = oklchToLuminance(0.998, 0.001, 240)
 
-  const yTeal = oklchToLuminance(0.461, 0.146, 180)
-  const yTealHover = oklchToLuminance(0.414, 0.150, 180)
-  const yTealWash = oklchToLuminance(0.954, 0.044, 180)
+  const yTeal = oklchToLuminance(0.450, 0.145, 240)
+  const yTealHover = oklchToLuminance(0.390, 0.150, 240)
+  const yTealWash = oklchToLuminance(0.955, 0.022, 240)
 
-  const yFjord = oklchToLuminance(0.500, 0.075, 215)
-  const yFjordWash = oklchToLuminance(0.945, 0.018, 215)
+  const yFjord = oklchToLuminance(0.480, 0.100, 215)
+  const yFjordWash = oklchToLuminance(0.950, 0.020, 215)
 
-  const yMoss = oklchToLuminance(0.490, 0.060, 138)
-  const yMossWash = oklchToLuminance(0.940, 0.016, 138)
+  const yMoss = oklchToLuminance(0.460, 0.105, 155)
+  const yMossWash = oklchToLuminance(0.948, 0.025, 155)
 
-  const yOchre = oklchToLuminance(0.530, 0.105, 68)
-  const yOchreWash = oklchToLuminance(0.952, 0.026, 78)
+  const yOchre = oklchToLuminance(0.520, 0.125, 72)
+  const yOchreWash = oklchToLuminance(0.955, 0.030, 75)
 
-  const yClay = oklchToLuminance(0.500, 0.110, 32)
-  const yClayWash = oklchToLuminance(0.950, 0.016, 35)
+  const yClay = oklchToLuminance(0.500, 0.140, 28)
+  const yClayWash = oklchToLuminance(0.952, 0.025, 28)
 
-  // ── Dark Theme Tokens (Nocturne Obsidian H 255 & Luminous Teal H 178) ──
-  const yBasaltBg = oklchToLuminance(0.125, 0.007, 255)
-  const yBasaltSurface = oklchToLuminance(0.150, 0.008, 255)
-  const yBasaltCard = oklchToLuminance(0.180, 0.010, 255)
-  const yBasaltPopover = oklchToLuminance(0.220, 0.012, 255)
-  const yBasaltBorderStrong = oklchToLuminance(0.500, 0.015, 255)
-  const yBasaltFg = oklchToLuminance(0.982, 0.002, 256)
-  const yBasaltMutedFg = oklchToLuminance(0.740, 0.016, 256)
+  // ── Dark Theme Tokens (Tactical Carbon H 245 & Aviation Cobalt H 240) ──
+  const yBasaltBg = oklchToLuminance(0.125, 0.010, 245)
+  const yBasaltSurface = oklchToLuminance(0.155, 0.012, 245)
+  const yBasaltCard = oklchToLuminance(0.185, 0.014, 245)
+  const yBasaltPopover = oklchToLuminance(0.220, 0.015, 245)
+  const yBasaltBorderStrong = oklchToLuminance(0.520, 0.018, 245)
+  const yBasaltFg = oklchToLuminance(0.970, 0.003, 245)
+  const yBasaltMutedFg = oklchToLuminance(0.720, 0.014, 245)
 
-  const yBasaltPrimary = oklchToLuminance(0.680, 0.135, 178)
-  const yBasaltPrimaryFg = oklchToLuminance(0.125, 0.007, 255)
-  const yBasaltTealWash = oklchToLuminance(0.220, 0.025, 180)
+  const yBasaltPrimary = oklchToLuminance(0.680, 0.125, 240)
+  const yBasaltPrimaryFg = oklchToLuminance(0.110, 0.010, 245)
+  const yBasaltTealWash = oklchToLuminance(0.200, 0.030, 240)
 
-  const yBasaltFjord = oklchToLuminance(0.740, 0.065, 215)
-  const yBasaltFjordWash = oklchToLuminance(0.230, 0.020, 215)
+  const yBasaltFjord = oklchToLuminance(0.740, 0.080, 215)
+  const yBasaltFjordWash = oklchToLuminance(0.225, 0.025, 215)
 
-  const yBasaltMoss = oklchToLuminance(0.740, 0.065, 138)
-  const yBasaltMossWash = oklchToLuminance(0.230, 0.020, 138)
+  const yBasaltMoss = oklchToLuminance(0.750, 0.090, 155)
+  const yBasaltMossWash = oklchToLuminance(0.225, 0.028, 155)
 
-  const yBasaltOchre = oklchToLuminance(0.760, 0.090, 72)
-  const yBasaltOchreWash = oklchToLuminance(0.230, 0.025, 72)
+  const yBasaltOchre = oklchToLuminance(0.780, 0.110, 75)
+  const yBasaltOchreWash = oklchToLuminance(0.230, 0.035, 75)
 
-  const yBasaltClay = oklchToLuminance(0.730, 0.095, 32)
-  const yBasaltClayWash = oklchToLuminance(0.230, 0.025, 32)
+  const yBasaltClay = oklchToLuminance(0.740, 0.120, 28)
+  const yBasaltClayWash = oklchToLuminance(0.225, 0.032, 28)
 
   describe("Light Theme: Contractual WCAG 2.2 Compliance", () => {
     it("ensures primary text meets AAA on Cloud canvas and Paper card", () => {

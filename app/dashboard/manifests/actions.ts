@@ -25,6 +25,11 @@ import {
 import { and, desc, eq, inArray, isNull, like, sql } from "drizzle-orm"
 import { logAuditInTransaction } from "@/lib/audit"
 import { messageDriverAction } from "@/app/dashboard/dispatch/whatsapp-actions"
+import {
+  assertLoadCapacity,
+  assertManifestRoute,
+} from "@/lib/shipments/load-rules"
+import { recordManifestItemHandoff } from "@/lib/shipments/record-handoff"
 import { canAllocateShipmentToLeg } from "@/lib/shipments/manifest-leg-rules"
 
 export const createManifestAction = authActionClient
@@ -42,6 +47,11 @@ export const createManifestAction = authActionClient
 
     try {
       const createdManifest = await db.transaction(async (tx) => {
+        await tx
+          .select({ id: vehicles.id })
+          .from(vehicles)
+          .where(eq(vehicles.id, vehicleId))
+          .for("update")
         const [originHub, destinationHub, vehicle, driver] = await Promise.all([
           tx.query.hubs.findFirst({
             where: and(eq(hubs.id, originHubId), isNull(hubs.deletedAt)),
@@ -75,7 +85,13 @@ export const createManifestAction = authActionClient
         }
 
         const eligibleShipments = await tx
-          .select({ id: shipments.id, status: shipments.status })
+          .select({
+            id: shipments.id,
+            status: shipments.status,
+            origin: shipments.origin,
+            destination: shipments.destination,
+            weightKg: shipments.weightKg,
+          })
           .from(shipments)
           .where(
             and(
@@ -90,6 +106,9 @@ export const createManifestAction = authActionClient
         if (eligibleShipments.length !== shipmentIds.length) {
           throw new Error("One or more shipments are no longer available")
         }
+
+        assertManifestRoute(eligibleShipments, originHub, destinationHub)
+        assertLoadCapacity(eligibleShipments, vehicle.capacityKg)
 
         const existingAssignments = await tx
           .select({ shipmentId: manifestItems.shipmentId })
@@ -257,6 +276,27 @@ export const scanShipmentAction = authActionClient
           manifest.legType !== "line_haul"
         )
           throw new Error("Only a draft manifest can accept shipments")
+        if (
+          !manifest.vehicleId ||
+          !manifest.originHubId ||
+          !manifest.destinationHubId
+        )
+          throw new Error(
+            "Complete the manifest assignments before adding cargo"
+          )
+        const [vehicle] = await tx
+          .select()
+          .from(vehicles)
+          .where(eq(vehicles.id, manifest.vehicleId))
+          .for("update")
+        const [origin, destination] = await Promise.all([
+          tx.query.hubs.findFirst({ where: eq(hubs.id, manifest.originHubId) }),
+          tx.query.hubs.findFirst({
+            where: eq(hubs.id, manifest.destinationHubId),
+          }),
+        ])
+        if (!vehicle || !origin || !destination)
+          throw new Error("Manifest assignments are unavailable")
         const [record] = await tx
           .select()
           .from(shipments)
@@ -299,6 +339,24 @@ export const scanShipmentAction = authActionClient
             "In-transit cargo needs a recorded handover before entering another load"
           )
         }
+        const assigned = await tx
+          .select({
+            origin: shipments.origin,
+            destination: shipments.destination,
+            weightKg: shipments.weightKg,
+          })
+          .from(shipments)
+          .innerJoin(manifestItems, eq(manifestItems.shipmentId, shipments.id))
+          .where(
+            and(
+              eq(manifestItems.manifestId, manifestId),
+              eq(manifestItems.isActive, true)
+            )
+          )
+          .orderBy(shipments.id)
+          .for("update")
+        assertManifestRoute([...assigned, record], origin, destination)
+        assertLoadCapacity([...assigned, record], vehicle.capacityKg)
         const [{ total }] = await tx
           .select({ total: sql<number>`count(*)::integer` })
           .from(manifestItems)
@@ -360,6 +418,12 @@ export const updateManifestAction = authActionClient
           )
         }
         const assignments = { ...current, ...updateData }
+        if (assignments.vehicleId)
+          await tx
+            .select({ id: vehicles.id })
+            .from(vehicles)
+            .where(eq(vehicles.id, assignments.vehicleId))
+            .for("update")
         const [origin, destination, vehicle, driver] = await Promise.all([
           assignments.originHubId
             ? tx.query.hubs.findFirst({
@@ -403,6 +467,23 @@ export const updateManifestAction = authActionClient
         if (origin.id === destination.id)
           throw new Error("Origin and destination hubs must be different")
 
+        const cargoIds = current.items
+          .filter((item) => item.isActive)
+          .map((item) => item.shipmentId)
+        const loadCargo = cargoIds.length
+          ? await tx
+              .select({
+                origin: shipments.origin,
+                destination: shipments.destination,
+                weightKg: shipments.weightKg,
+              })
+              .from(shipments)
+              .where(inArray(shipments.id, cargoIds))
+              .orderBy(shipments.id)
+              .for("update")
+          : []
+        assertManifestRoute(loadCargo, origin, destination)
+        assertLoadCapacity(loadCargo, vehicle.capacityKg)
         if (updateData.status === "finalized") {
           if (
             !assignments.originHubId ||
@@ -521,150 +602,10 @@ export const recordManifestItemHandoffAction = authActionClient
   .schema(recordManifestHandoffSchema)
   .action(async ({ parsedInput, ctx }) => {
     try {
-      const result = await db.transaction(async (tx) => {
-        const [manifest] = await tx
-          .select()
-          .from(manifests)
-          .where(eq(manifests.id, parsedInput.manifestId))
-          .for("update")
-        if (!manifest || manifest.status !== "finalized") {
-          throw new Error("Only a started load can record a handover")
-        }
-
-        const [item] = await tx
-          .select()
-          .from(manifestItems)
-          .where(
-            and(
-              eq(manifestItems.id, parsedInput.manifestItemId),
-              eq(manifestItems.manifestId, manifest.id)
-            )
-          )
-          .for("update")
-        if (!item) throw new Error("Shipment is not part of this load")
-
-        const [shipment] = await tx
-          .select()
-          .from(shipments)
-          .where(eq(shipments.id, item.shipmentId))
-          .for("update")
-        if (!shipment || shipment.deletedAt) {
-          throw new Error("Shipment is not available")
-        }
-
-        const [sameEvent] = await tx
-          .select()
-          .from(manifestItemHandoffs)
-          .where(eq(manifestItemHandoffs.eventKey, parsedInput.eventKey))
-          .limit(1)
-        if (sameEvent) {
-          if (
-            sameEvent.manifestItemId === item.id &&
-            sameEvent.outcome === parsedInput.outcome
-          ) {
-            return { success: true, duplicate: true }
-          }
-          throw new Error("This handover request key was already used")
-        }
-
-        if (parsedInput.outcome === "received") {
-          const [existingReceipt] = await tx
-            .select({ id: manifestItemHandoffs.id })
-            .from(manifestItemHandoffs)
-            .where(
-              and(
-                eq(manifestItemHandoffs.manifestItemId, item.id),
-                eq(manifestItemHandoffs.outcome, "received")
-              )
-            )
-            .limit(1)
-          if (existingReceipt) {
-            return { success: true, alreadyReceived: true }
-          }
-          if (!item.isActive || shipment.status !== "in-transit") {
-            throw new Error("Only active in-transit cargo can be received")
-          }
-        } else if (!item.isActive || shipment.status !== "in-transit") {
-          throw new Error(
-            "Only active in-transit cargo can record an exception"
-          )
-        }
-
-        const [handoff] = await tx
-          .insert(manifestItemHandoffs)
-          .values({
-            manifestItemId: item.id,
-            outcome: parsedInput.outcome,
-            location: parsedInput.location,
-            receivingParty: parsedInput.receivingParty || null,
-            receivedBy: ctx.session.user.id,
-            eventKey: parsedInput.eventKey,
-            notes: parsedInput.notes || null,
-          })
-          .returning()
-
-        let delivered = false
-        if (parsedInput.outcome === "received") {
-          const [released] = await tx
-            .update(manifestItems)
-            .set({ isActive: false })
-            .where(
-              and(
-                eq(manifestItems.id, item.id),
-                eq(manifestItems.isActive, true)
-              )
-            )
-            .returning({ id: manifestItems.id })
-          if (!released) throw new Error("Shipment assignment already changed")
-
-          delivered = manifest.legType === "delivery"
-          if (delivered) {
-            await tx
-              .update(shipments)
-              .set({ status: "delivered", updatedAt: new Date() })
-              .where(eq(shipments.id, shipment.id))
-          }
-        }
-
-        await tx.insert(trackingEvents).values({
-          shipmentId: shipment.id,
-          status: delivered ? "delivered" : "in-transit",
-          location: parsedInput.location,
-          description:
-            parsedInput.outcome === "exception"
-              ? `An operational exception was recorded for ${manifest.referenceId}.`
-              : delivered
-                ? `Delivery was received for ${manifest.referenceId}.`
-                : `Cargo handover was received for ${manifest.referenceId}.`,
-          loggedBy: ctx.session.user.id,
-          isPublic: parsedInput.outcome === "received",
-          notes: parsedInput.notes || null,
-        })
-
-        await logAuditInTransaction(tx, {
-          userId: ctx.session.user.id,
-          userEmail: ctx.session.user.email || "unknown",
-          action:
-            parsedInput.outcome === "received"
-              ? "manifest_item_received"
-              : "manifest_item_exception",
-          entity: "manifest_item_handoffs",
-          entityId: handoff.id,
-          before: {
-            shipmentStatus: shipment.status,
-            assignmentActive: item.isActive,
-          },
-          after: {
-            outcome: handoff.outcome,
-            location: handoff.location,
-            receivingParty: handoff.receivingParty,
-            shipmentStatus: delivered ? "delivered" : shipment.status,
-            assignmentActive: parsedInput.outcome !== "received",
-          },
-        })
-
-        return { success: true, delivered }
-      })
+      const result = await recordManifestItemHandoff(
+        parsedInput,
+        ctx.session.user
+      )
 
       revalidatePath("/dashboard/dispatch")
       revalidatePath("/dashboard/manifests")

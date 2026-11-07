@@ -2,8 +2,8 @@
 
 import React, { useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import { ArrowUpRight, Plane, Truck, ShieldCheck, Check, Package, Building2 } from "lucide-react"
+import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import { cn } from "@/lib/utils"
 
 interface FeatureItem {
@@ -14,80 +14,16 @@ interface FeatureItem {
   alt: string
   bullets: string[]
   href: string
+  linkLabel: string
   icon: React.ElementType
 }
 
 const FEATURES: FeatureItem[] = [
-  {
-    id: "air",
-    title: "Express Air Cargo (24h SLA)",
-    desc: "Commercial belly-hold capacity allocated daily across scheduled flights between IGI Terminal Gate 4 and Tulihal Domestic Apron.",
-    image: "/images/corridor-ink/fleet-air.png",
-    alt: "Air express cargo dispatch and telemetry console",
-    bullets: [
-      "Direct airside custody and BCAS security screening",
-      "Priority ramp turnaround at New Delhi and Imphal",
-      "Statutory 18% GST tax invoice breakdown",
-    ],
-    href: "/services/air-cargo",
-    icon: Plane,
-  },
-  {
-    id: "surface",
-    title: "Surface Linehaul (4-5 Days SLA)",
-    desc: "Dedicated sealed multi-ton arterial transport trucks traversing the 2,450 km highway corridor with continuous GPS surveillance.",
-    image: "/images/corridor-ink/fleet-surface.png",
-    alt: "Surface linehaul arterial fleet tracking console",
-    bullets: [
-      "Zero intermediate transshipment hubs",
-      "Digital electronic seal tamper detection",
-      "Scheduled bi-weekly convoys DEL ⇄ IMF",
-    ],
-    href: "/services/surface-cargo",
-    icon: Truck,
-  },
-  {
-    id: "secure",
-    title: "Secure High-Value Freight",
-    desc: "Specialized custody and airside escort for high-value electronics, pharmaceuticals, and sensitive commercial consignments.",
-    image: "/images/corridor-ink/fleet-secure.png",
-    alt: "Secure freight custody monitoring console",
-    bullets: [
-      "Dedicated airside custody escort at both terminals",
-      "Tamper-evident physical containment",
-      "Direct operations manager supervision",
-    ],
-    href: "/shipping-guide",
-    icon: ShieldCheck,
-  },
-  {
-    id: "packaging",
-    title: "Industrial Packaging & Crating",
-    desc: "Heavy-duty reinforced EPAL wooden pallets, corner edge protectors, waterproof stretch wrap, and statutory AWB labeling.",
-    image: "/images/corridor-ink/fleet-packaging.png",
-    alt: "Industrial EPAL pallet packaging and cargo crating console",
-    bullets: [
-      "EPAL euro-pallet foundation with ratchet tie-down straps",
-      "Shock and moisture protection for sensitive cargo",
-      "Corridor-specific DEL ➔ IMF AWB routing tags",
-    ],
-    href: "/shipping-guide",
-    icon: Package,
-  },
-  {
-    id: "hub",
-    title: "Imphal Regional Cargo Terminal",
-    desc: "Dedicated 5-bay cross-dock distribution facility in Imphal valley managing local dispatch, staging, and last-mile allocation.",
-    image: "/images/corridor-ink/fleet-imphal-hub.png",
-    alt: "Imphal regional cargo hub and terminal distribution console",
-    bullets: [
-      "Direct Tulihal apron intake and offloading",
-      "5 dedicated sorting bays and secure staging area",
-      "Final-mile distribution fleet staging",
-    ],
-    href: "/about",
-    icon: Building2,
-  },
+  { id: "air", title: "Air cargo", desc: "Discuss air cargo between New Delhi and Imphal in either direction.", image: "/images/new-assets/fleet-air.png", alt: "Illustration of air cargo", bullets: ["Confirm acceptance before booking", "Agree a delivery window", "Prepare shipment documents"], href: "#contact", linkLabel: "Book consignment", icon: Plane },
+  { id: "surface", title: "Surface cargo", desc: "Discuss road freight between New Delhi and Imphal in either direction.", image: "/images/new-assets/fleet-surface.png", alt: "Illustration of surface cargo", bullets: ["Share the weight and dimensions", "Confirm collection and delivery", "Request a confirmed quote"], href: "#contact", linkLabel: "Book consignment", icon: Truck },
+  { id: "secure", title: "Special handling", desc: "Describe valuable or sensitive contents before booking so our team can review acceptance.", image: "/images/new-assets/fleet-secure.png", alt: "Illustration of cargo handling", bullets: ["Declare the contents", "Explain handling requirements", "Confirm acceptance with our team"], href: "#method", linkLabel: "View custody method", icon: ShieldCheck },
+  { id: "packaging", title: "Packaging guidance", desc: "Prepare the contents, weight, dimensions, and packaging details before handover.", image: "/images/new-assets/fleet-packaging.png", alt: "Illustration of packaged cargo", bullets: ["Describe the packaging", "Record the external dimensions", "Prepare the address details"], href: "#method", linkLabel: "View custody method", icon: Package },
+  { id: "hub", title: "Corridor enquiries", desc: "Contact our team to confirm collection and handover arrangements in New Delhi or Imphal.", image: "/images/new-assets/fleet-imphal-hub.png", alt: "Illustration of a cargo facility", bullets: ["Confirm the handover location", "Agree a collection window", "Keep your booking reference"], href: "#contact", linkLabel: "Contact operations desk", icon: Building2 },
 ]
 
 interface FleetVehicle {
@@ -101,47 +37,24 @@ interface FleetVehicle {
 }
 
 const FLEET_VEHICLES: FleetVehicle[] = [
-  {
-    category: "Heavy Commercial (HCV)",
-    model: "32 FT Multi-Axle Container",
-    capacity: "15 to 20 MT payload",
-    role: "High-cube sealed arterial container trucks with GPS tracking and electronic security locks for full-truckload linehaul.",
-    image: "/images/corridor-ink/vehicle-hcv.png",
-    alt: "32 FT heavy commercial multi-axle freight truck for arterial linehaul",
-    corridor: "DEL ⇄ IMF Linehaul",
-  },
-  {
-    category: "Medium Commercial (MCV)",
-    model: "Tata LPT 1212 (20-24 FT)",
-    capacity: "7 to 9 MT payload",
-    role: "Dedicated regional transit rigid container trucks optimized for hill-road navigation through the Manipur mountain pass.",
-    image: "/images/corridor-ink/vehicle-mcv.png",
-    alt: "Medium commercial rigid container truck Tata LPT 1212",
-    corridor: "DEL ⇄ IMF Arterial",
-  },
-  {
-    category: "Light Commercial (LCV)",
-    model: "Final-Mile Delivery Van",
-    capacity: "1.5 to 2.5 MT payload",
-    role: "Closed container final-mile delivery vans with roll-up shutter doors for rapid urban pickup and drop in Delhi NCR & Imphal.",
-    image: "/images/corridor-ink/vehicle-lcv.png",
-    alt: "Light commercial final-mile delivery van",
-    corridor: "Local Hub Delivery",
-  },
+  { category: "Vehicle illustration", model: "Heavy cargo vehicle", capacity: "Confirm capacity before booking", role: "Discuss vehicle requirements with our team when requesting surface cargo.", image: "/images/new-assets/vehicle-hcv.png", alt: "Illustration of a heavy cargo vehicle", corridor: "New Delhi and Imphal" },
+  { category: "Vehicle illustration", model: "Medium cargo vehicle", capacity: "Confirm capacity before booking", role: "Share the shipment dimensions so our team can review the transport requirements.", image: "/images/new-assets/vehicle-mcv.png", alt: "Illustration of a medium cargo vehicle", corridor: "New Delhi and Imphal" },
+  { category: "Vehicle illustration", model: "Cargo delivery van", capacity: "Confirm availability before booking", role: "Confirm collection and delivery arrangements with our team.", image: "/images/new-assets/vehicle-lcv.png", alt: "Illustration of a cargo van", corridor: "New Delhi and Imphal" },
 ]
 
 export function FleetShowcaseSection() {
   const [activeId, setActiveId] = useState<FeatureItem["id"]>("air")
   const activeFeature = FEATURES.find((f) => f.id === activeId) ?? FEATURES[0]
+  const shouldReduceMotion = useReducedMotion()
 
   return (
     <section
-      id="fleet"
+      id="services"
       aria-labelledby="fleet-heading"
       className="w-full border-b border-border bg-background py-20 lg:py-28"
     >
+      <div id="fleet" className="scroll-mt-20" />
       <div className="mx-auto w-full max-w-[1320px] px-6 lg:px-12">
-        {/* Exact Atomist Heading format */}
         <div className="text-center max-w-xl mx-auto mb-16">
           <h2
             id="fleet-heading"
@@ -153,25 +66,37 @@ export function FleetShowcaseSection() {
             Calibrated transport modes for the New Delhi and Imphal bilateral corridor.
           </p>
         </div>
-
-        {/* 2-Column Exact Atomist Layout: Left Console Image, Right Interactive Feature List */}
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-14">
-          {/* Left: Console Visual (7 cols) */}
+          {/* Left: Console Visual with Cross-Fade and Micro-Zoom */}
           <div className="relative lg:col-span-7">
-            <div className="relative border border-border bg-card p-2 rounded-none shadow-sm">
+            <div className="relative border border-border bg-card p-2 rounded-none shadow-sm group">
               <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
-                <Image
-                  src={activeFeature.image}
-                  alt={activeFeature.alt}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 680px"
-                  className="object-cover rounded-none transition-opacity duration-300"
-                />
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={activeFeature.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative h-full w-full"
+                  >
+                    <Image
+                      src={activeFeature.image}
+                      alt={activeFeature.alt}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 680px"
+                      className={cn(
+                        "object-cover rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                        !shouldReduceMotion && "group-hover:scale-[1.02]"
+                      )}
+                    />
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
           </div>
 
-          {/* Right: Interactive Feature Items (5 cols) */}
+          {/* Right: Interactive Feature Items with Micro-Transitions */}
           <div className="lg:col-span-5 flex flex-col gap-3" aria-label="Corridor linehaul modes and infrastructure">
             {FEATURES.map((item) => {
               const isActive = item.id === activeId
@@ -183,8 +108,8 @@ export function FleetShowcaseSection() {
                   className={cn(
                     "border p-5 rounded-none transition-colors",
                     isActive
-                      ? "border-foreground bg-card text-foreground"
-                      : "border-border bg-muted/20 text-muted-foreground hover:border-foreground/30 hover:text-foreground"
+                      ? "border-primary bg-card text-foreground shadow-xs"
+                      : "border-border bg-muted/20 text-muted-foreground hover:border-border-strong hover:text-foreground"
                   )}
                 >
                   <button
@@ -204,34 +129,42 @@ export function FleetShowcaseSection() {
                     <ArrowUpRight className={cn("size-4 transition-colors shrink-0", isActive ? "text-foreground" : "text-muted-foreground")} />
                   </button>
 
-                  {isActive && (
-                    <div
-                      id={`fleet-panel-${item.id}`}
-                      aria-labelledby={`fleet-tab-${item.id}`}
-                      className="mt-4 pt-4 border-t border-border space-y-3"
-                    >
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        {item.desc}
-                      </p>
-                      <div className="space-y-1.5 pt-1">
-                        {item.bullets.map((b) => (
-                          <div key={b} className="flex items-center gap-2 text-xs font-sans text-foreground">
-                            <Check className="size-3.5 text-primary shrink-0" />
-                            <span>{b}</span>
+                  <AnimatePresence initial={false}>
+                    {isActive && (
+                      <motion.div
+                        id={`fleet-panel-${item.id}`}
+                        aria-labelledby={`fleet-tab-${item.id}`}
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-4 pt-4 border-t border-border space-y-3">
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            {item.desc}
+                          </p>
+                          <div className="space-y-1.5 pt-1">
+                            {item.bullets.map((b) => (
+                              <div key={b} className="flex items-center gap-2 text-xs font-sans text-foreground">
+                                <Check className="size-3.5 text-primary shrink-0" />
+                                <span>{b}</span>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                      <div className="pt-2">
-                        <Link
-                          href={item.href}
-                          className="inline-flex items-center gap-1 text-xs font-sans font-semibold text-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
-                        >
-                          Inspect specifications
-                          <ArrowUpRight className="size-3" />
-                        </Link>
-                      </div>
-                    </div>
-                  )}
+                          <div className="pt-2">
+                            <a
+                              href={item.href}
+                              className="inline-flex items-center gap-1 text-xs font-sans font-semibold text-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
+                            >
+                              {item.linkLabel}
+                              <ArrowUpRight className="size-3" />
+                            </a>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )
             })}
@@ -242,18 +175,20 @@ export function FleetShowcaseSection() {
         <div className="mt-20 border-t border-border pt-16">
           <div className="text-center max-w-xl mx-auto mb-12">
             <h3 className="text-xl font-medium tracking-tight text-foreground sm:text-2xl">
-              Corridor Fleet Equipment
+              Vehicle illustrations
             </h3>
             <p className="mt-2 text-xs font-sans text-muted-foreground">
-              Dedicated vehicles engineered for the 2,450 km New Delhi ⇄ Imphal arterial passage and valley final-mile.
+              Vehicle illustrations explain possible transport requirements. Confirm availability and capacity with our team.
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {FLEET_VEHICLES.map((vehicle) => (
-              <div
-                key={vehicle.category}
-                className="border border-border bg-card p-5 rounded-none flex flex-col justify-between shadow-xs transition-colors hover:border-foreground/40"
+              <motion.div
+                key={vehicle.model}
+                whileHover={shouldReduceMotion ? undefined : { y: -3 }}
+                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                className="group border border-border bg-card p-5 rounded-none flex flex-col justify-between shadow-xs transition-colors hover:border-foreground/40"
               >
                 <div>
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-background border border-border/60 mb-4 rounded-none">
@@ -262,7 +197,10 @@ export function FleetShowcaseSection() {
                       alt={vehicle.alt}
                       fill
                       sizes="(max-width: 768px) 100vw, 400px"
-                      className="object-contain p-2 rounded-none"
+                      className={cn(
+                        "object-contain p-2 rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                        !shouldReduceMotion && "group-hover:scale-[1.04]"
+                      )}
                     />
                   </div>
                   <div className="flex items-center justify-between text-xs font-sans text-muted-foreground mb-1">
@@ -278,7 +216,7 @@ export function FleetShowcaseSection() {
                   <span>Capacity: {vehicle.capacity}</span>
                   <span className="font-medium text-foreground">{vehicle.corridor}</span>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

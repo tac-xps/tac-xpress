@@ -81,12 +81,12 @@ const columns = (canVoid: boolean): ColumnDef<InvoiceData>[] => [
   { id: "delivery", header: "WhatsApp", cell: ({ row }) => <Badge variant={row.original.whatsappStatus === "failed" ? "destructive" : "outline"}>{row.original.whatsappStatus === "sent" ? "Provider accepted" : row.original.whatsappStatus === "failed" ? "Needs review" : "Not sent"}</Badge> },
   { id: "actions", header: "Actions", cell: ({ row }) => <InvoiceTableActions invoice={row.original} canVoid={canVoid} /> },
 ]
-export function InvoiceDataTable({ data, canVoid = false, pageCount }: { data: InvoiceData[]; canVoid?: boolean, pageCount: number }) {
+export function InvoiceDataTable({ data, canVoid = false, pageCount, bordered = true }: { data: InvoiceData[]; canVoid?: boolean, pageCount: number; bordered?: boolean }) {
   const tableColumns = columns(canVoid)
   const { table } = useDataTable({
     data,
     columns: tableColumns,
     pageCount,
   })
-  return <DataTable table={table} columnsLength={tableColumns.length} />
+  return <DataTable table={table} columnsLength={tableColumns.length} bordered={bordered} />
 }

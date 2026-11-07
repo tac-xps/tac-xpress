@@ -30,7 +30,7 @@ function displayDate(value?: string) {
 
 // ── Inner dialog body (reused) ──────────────────────────────────────────────
 
-function TrackingDialogBody({ result }: { result: TrackingResult }) {
+export function TrackingDialogBody({ result }: { result: TrackingResult }) {
   return (
     <div className="flex flex-col">
       {/* Header */}
@@ -214,16 +214,6 @@ function TrackingDialogBody({ result }: { result: TrackingResult }) {
             update.
           </p>
         )}
-
-        {/* Link to full track page */}
-        <div className="mt-8 border-t pt-6">
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/track?awb=${result.awb_number}`}>
-              Open full tracking page
-              <ArrowUpRight className="ml-1.5 size-3.5" />
-            </Link>
-          </Button>
-        </div>
       </div>
     </div>
   )
@@ -374,7 +364,7 @@ export function TrackDialogForm({
               className="w-full px-4 py-3 font-mono text-sm border focus:outline-none focus-visible:ring-1 transition-colors bg-surface text-foreground placeholder:text-muted-foreground border-border focus:border-primary focus-visible:ring-primary uppercase"
             />
             <p className="mt-2 text-xs font-mono text-muted-foreground">
-              Direct lookup for New Delhi ↔ Northeast India consignments.
+              Direct lookup for New Delhi ↔ Imphal consignments.
             </p>
           </div>
           <div className="flex flex-col gap-3 pt-3 sm:flex-row sm:items-center sm:justify-end border-t border-border">
@@ -408,12 +398,13 @@ export function TrackDialogForm({
               <p className="mt-2 text-sm text-muted-foreground">
                 Check the number on your receipt or{" "}
                 <Link
-                  href="/#support"
+                  href="/contact"
                   className="underline hover:text-foreground"
                   onClick={() => setOpen(false)}
                 >
                   contact support
                 </Link>
+    
                 .
               </p>
             </div>

@@ -19,6 +19,7 @@ export function DeliveryDetails({
   const router = useRouter()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
+  const [hasDrawn, setHasDrawn] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Simple canvas drawing
@@ -29,8 +30,14 @@ export function DeliveryDetails({
     const ctx = canvasRef.current?.getContext("2d")
     if (ctx) {
       ctx.beginPath()
-      // Note: Coordinates need offset adjustment in a real app
-      // For this demo we'll use a simplified approach
+      const canvas = canvasRef.current
+      if (!canvas) return
+      const rect = canvas.getBoundingClientRect()
+      const point = "touches" in e ? e.touches[0] : e
+      ctx.moveTo(
+        ((point.clientX - rect.left) * canvas.width) / rect.width,
+        ((point.clientY - rect.top) * canvas.height) / rect.height
+      )
     }
   }
 
@@ -53,7 +60,11 @@ export function DeliveryDetails({
       ctx.lineWidth = 2
       ctx.lineCap = "round"
       ctx.strokeStyle = "black"
-      ctx.lineTo(x, y)
+      ctx.lineTo(
+        (x * canvas.width) / rect.width,
+        (y * canvas.height) / rect.height
+      )
+      setHasDrawn(true)
       ctx.stroke()
     }
   }
@@ -63,6 +74,7 @@ export function DeliveryDetails({
   }
 
   const clearSignature = () => {
+    setHasDrawn(false)
     const canvas = canvasRef.current
     if (canvas) {
       const ctx = canvas.getContext("2d")
@@ -72,9 +84,10 @@ export function DeliveryDetails({
 
   const handleComplete = async () => {
     const canvas = canvasRef.current
-    if (!canvas) return
-
-    // To check if empty: simple heuristic, but we'll assume they signed if they click complete
+    if (!canvas || !hasDrawn) {
+      toast.error("Draw the consignee signature before completing delivery")
+      return
+    }
     const signatureDataUrl = canvas.toDataURL("image/png")
 
     setIsSubmitting(true)
@@ -87,7 +100,11 @@ export function DeliveryDetails({
       toast.success("Delivery status updated successfully")
       router.push("/driver")
     } else {
-      toast.error("Failed to complete delivery")
+      toast.error(
+        result?.data?.error ||
+          result?.serverError ||
+          "Failed to complete delivery"
+      )
       setIsSubmitting(false)
     }
   }
@@ -134,6 +151,7 @@ export function DeliveryDetails({
         <CardContent className="space-y-4">
           <div className="relative overflow-hidden rounded-none border bg-background">
             <canvas
+              aria-label="Consignee signature"
               ref={canvasRef}
               width={400}
               height={200}
@@ -161,7 +179,9 @@ export function DeliveryDetails({
           <Button
             className="h-9 w-full text-sm"
             onClick={handleComplete}
-            disabled={isSubmitting || shipment.status === "delivered"}
+            disabled={
+              isSubmitting || !hasDrawn || shipment.status === "delivered"
+            }
           >
             {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
             {shipment.status === "delivered"

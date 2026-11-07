@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ExternalLink, LayoutTemplate } from "lucide-react"
+import { ExternalLink } from "lucide-react"
 import {
   containsPattern,
   parseRecordQuery,
@@ -120,26 +120,10 @@ export default async function FeedbackPage({
         title="Customer Feedback"
         description="Monitor real-time sentiment telemetry, inspect customer testimonials, and respond to operational friction."
       >
-        <Button
-          variant="outline"
-          size="sm"
-          asChild
-          className="h-8 gap-1.5 text-xs font-mono"
-        >
+        <Button variant="outline" asChild>
           <Link href="/feedback" target="_blank" rel="noopener noreferrer">
             <ExternalLink className="size-3.5" />
-            Public Form
-          </Link>
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          asChild
-          className="h-8 gap-1.5 text-xs font-mono"
-        >
-          <Link href="/#feedback" target="_blank" rel="noopener noreferrer">
-            <LayoutTemplate className="size-3.5 text-primary" />
-            Landing Section
+            Public form
           </Link>
         </Button>
       </PageHeader>
@@ -153,7 +137,7 @@ export default async function FeedbackPage({
           general: generalAll,
         }}
       />
-      
+
       <div className="rounded-none border bg-card overflow-hidden">
         <TableToolbar
           pathname="/dashboard/feedback"

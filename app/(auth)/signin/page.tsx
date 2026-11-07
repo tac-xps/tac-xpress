@@ -24,7 +24,7 @@ export default async function SignInPage({
         />
         <div className="cargo-hero-shade" aria-hidden="true" />
         <Link href="/" aria-label="TAC-XPRESS home">
-          <Logo className="h-7" />
+          <Logo className="text-foreground text-xl" iconClassName="size-9 text-primary" />
         </Link>
         <div className="hidden max-w-lg flex-col gap-6 lg:flex">
           <div className="inline-flex items-center gap-2 border border-border/80 bg-muted/40 px-3 py-1 font-mono text-xs uppercase tracking-wider text-foreground font-semibold rounded-none self-start">
@@ -43,7 +43,7 @@ export default async function SignInPage({
             </p>
             <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-muted-foreground">
               <span className="border border-border/70 bg-muted/30 px-2 py-0.5 text-xs rounded-none">
-                DEL ⇄ IMF / GAU
+                DEL ⇄ IMF
               </span>
               <span className="border border-border/70 bg-muted/30 px-2 py-0.5 text-xs rounded-none">
                 RESTRICTED ACCESS
@@ -59,7 +59,7 @@ export default async function SignInPage({
           </div>
         </div>
         <p className="hidden font-mono text-xs text-muted-foreground lg:block">
-          Corridor: New Delhi ⇄ Northeast India
+          Corridor: New Delhi ⇄ Imphal
         </p>
       </section>
       <section className="relative flex flex-col items-center justify-center p-6 py-16 sm:p-12">
@@ -67,6 +67,11 @@ export default async function SignInPage({
           <ThemeSwitcher />
         </div>
         <div className="flex w-full max-w-sm flex-col gap-8">
+          <div className="flex items-center justify-between lg:hidden">
+            <Link href="/" aria-label="TAC-XPRESS home">
+              <Logo className="text-foreground" iconClassName="size-7 text-primary" />
+            </Link>
+          </div>
           {reason === "staff-only" && (
             <Alert>
               <LockKeyhole />

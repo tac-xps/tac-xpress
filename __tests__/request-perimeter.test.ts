@@ -56,6 +56,25 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllEnvs())
 
 describe("request perimeter failures", () => {
+  it.each(["/dashboard", "/api/documents", "/contact"])(
+    "blocks protection timeouts for a private request or mutation at %s",
+    async (path) => {
+      mocks.protect.mockRejectedValue(new Error("deadline_exceeded: timed out"))
+      const response = await proxy(request(path, "POST"), event)
+      expect(response?.status).toBe(503)
+      expect(mocks.downstream).not.toHaveBeenCalled()
+    }
+  )
+  it("blocks a timeout decision for private data but keeps public pages available", async () => {
+    mocks.protect.mockResolvedValue({
+      ...decision({ error: true }),
+      reason: { message: "timeout", isRateLimit: () => false },
+    })
+    expect((await proxy(request("/dashboard"), event))?.status).toBe(503)
+    expect(mocks.downstream).not.toHaveBeenCalled()
+    expect((await proxy(request("/services"), event))?.status).toBe(200)
+    expect(mocks.downstream).toHaveBeenCalledOnce()
+  })
   it.each([
     "/api/hubs",
     "/dashboard",

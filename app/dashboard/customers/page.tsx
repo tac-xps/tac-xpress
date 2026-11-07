@@ -66,7 +66,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       </PageHeader>
       <section aria-label="Customer records" className="min-w-0 overflow-hidden rounded-none border bg-card">
         <TableToolbar pathname="/dashboard/customers" query={query.q} sort={query.sort} order={query.order} placeholder="Name, email, phone or city" />
-        <CustomerDataTable data={data} pageCount={pageCount} />
+        <CustomerDataTable data={data} pageCount={pageCount} bordered={false} />
       </section>
     </div>
   )

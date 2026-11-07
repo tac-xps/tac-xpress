@@ -5,10 +5,10 @@ import { requireDashboardSession } from "@/lib/auth/guards"
 import { verifyDocumentToken } from "./document-token"
 
 export async function requireStaffPage() {
-  return requireDashboardSession().catch(() => redirect("/signin"))
+  return requireDashboardSession().catch(() => redirect("/signin?reason=staff-only"))
 }
 export async function requireAdminPage() {
-  return requireDashboardSession(["admin"]).catch(() => redirect("/signin"))
+  return requireDashboardSession(["admin"]).catch(() => redirect("/signin?reason=staff-only"))
 }
 export async function requireDocumentPage(id: string) {
   const requestHeaders = await headers()

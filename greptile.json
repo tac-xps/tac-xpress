@@ -1,6 +1,6 @@
 {
-  "strictness": 2,
-  "commentTypes": ["logic", "syntax", "style"],
+  "strictness": 3,
+  "commentTypes": ["logic", "syntax", "style", "security", "performance"],
   "autoReview": ["open", "push", "rebase"],
   "reviewDrafts": false,
   "ignorePatterns": [
@@ -14,13 +14,18 @@
     "playwright-report/**",
     "artifacts/**",
     "scratch/**",
+    "docs/audit-evidence/**",
+    ".playwright-cli/**",
     "supabase/.temp/**",
     "*.lock",
     "pnpm-lock.yaml"
   ],
   "excludeAuthors": [
     "dependabot[bot]",
-    "github-actions[bot]"
+    "renovate[bot]",
+    "pre-commit-ci[bot]",
+    "github-actions[bot]",
+    "allcontributors[bot]"
   ],
   "disabledLabels": [
     "skip-review",
@@ -28,9 +33,28 @@
     "dependencies"
   ],
   "summarySettings": {
+    "updateDescription": true,
     "prSummary": true,
     "confidenceScore": true,
     "issueTable": true,
     "sequenceDiagram": true
-  }
+  },
+  "statusChecks": {
+    "enabled": true,
+    "requiredConfidence": 5,
+    "postStatusComments": true
+  },
+  "autoApprove": {
+    "enabled": true,
+    "minConfidence": 5,
+    "maxRisk": "medium"
+  },
+  "customInstructions": [
+    "Enforce universal 0px straight-line geometry: all cards, badges, buttons, and containers must use rounded-none exclusively. Rounded corners are strictly forbidden.",
+    "Enforce bilateral corridor boundary: Tac-Xpress operates exclusively on the New Delhi <-> Imphal (DEL <-> IMF) corridor. All other cities/routes are invalid.",
+    "Enforce freight STEM purity: all dimensional weight, fuel surcharge, and GST formulas in lib/stem/ must remain pure functions without side effects.",
+    "Prohibit em dashes: never write em dashes (—) in UI text, placeholders, or error messages.",
+    "Enforce Ponytail standard: prioritize minimal surgical diffs and zero speculative abstractions or wrapper sprawl.",
+    "Enforce TypeScript strictness: prohibit any, unvalidated as Type casts, and non-null ! assertions."
+  ]
 }

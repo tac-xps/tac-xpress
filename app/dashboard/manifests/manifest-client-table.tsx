@@ -104,14 +104,16 @@ const columns: ColumnDef<ManifestRow>[] = [
 export function ManifestClientTable({
   manifests,
   pageCount,
+  bordered = true,
 }: {
   manifests: ManifestRow[]
   pageCount: number
+  bordered?: boolean
 }) {
   const { table } = useDataTable({
     data: manifests,
     columns,
     pageCount,
   })
-  return <DataTable table={table} columnsLength={columns.length} />
+  return <DataTable table={table} columnsLength={columns.length} bordered={bordered} />
 }

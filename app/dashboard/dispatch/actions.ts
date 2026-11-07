@@ -17,6 +17,10 @@ import { authActionClient } from "@/lib/safe-action"
 import { logAuditInTransaction } from "@/lib/audit"
 import { and, eq, inArray, isNull } from "drizzle-orm"
 import { capturePostHogEvent } from "@/lib/posthog-server"
+import {
+  assertLoadCapacity,
+  assertDispatchRoute,
+} from "@/lib/shipments/load-rules"
 import { canAllocateShipmentToLeg } from "@/lib/shipments/manifest-leg-rules"
 
 import {
@@ -56,6 +60,11 @@ export const startDispatchRunAction = authActionClient
         if (manifest.items.length === 0)
           throw new Error("Dispatch run is empty")
         const shipmentIds = manifest.items.map((item) => item.shipmentId)
+        await tx
+          .select({ id: vehicles.id })
+          .from(vehicles)
+          .where(eq(vehicles.id, manifest.vehicleId))
+          .for("update")
         const [driver, vehicle] = await Promise.all([
           tx.query.drivers.findFirst({
             where: and(
@@ -89,6 +98,8 @@ export const startDispatchRunAction = authActionClient
             "All run shipments must still have active assignments"
           )
 
+        assertLoadCapacity(locked, vehicle.capacityKg)
+        assertDispatchRoute(locked)
         const receivedRows = await tx
           .select({ shipmentId: manifestItems.shipmentId })
           .from(manifestItemHandoffs)
@@ -187,6 +198,11 @@ export const createDispatchRunAction = authActionClient
       const referenceId = `${prefix}${crypto.randomUUID().slice(0, 8).toUpperCase()}`
 
       await db.transaction(async (tx) => {
+        await tx
+          .select({ id: vehicles.id })
+          .from(vehicles)
+          .where(eq(vehicles.id, vehicleId))
+          .for("update")
         const [driver, vehicle] = await Promise.all([
           tx.query.drivers.findFirst({
             where: and(
@@ -217,6 +233,8 @@ export const createDispatchRunAction = authActionClient
         ) {
           throw new Error("Select available shipments")
         }
+        assertLoadCapacity(eligible, vehicle.capacityKg)
+        assertDispatchRoute(eligible)
         const assigned = await tx.query.manifestItems.findFirst({
           where: and(
             inArray(manifestItems.shipmentId, shipmentIds),
@@ -322,6 +340,12 @@ export const updateDispatchRunAction = authActionClient
           throw new Error("A started dispatch run cannot be edited")
         }
         const assignments = { ...before, ...updateData }
+        if (assignments.vehicleId)
+          await tx
+            .select({ id: vehicles.id })
+            .from(vehicles)
+            .where(eq(vehicles.id, assignments.vehicleId))
+            .for("update")
         const [driver, vehicle] = await Promise.all([
           assignments.driverId
             ? tx.query.drivers.findFirst({
@@ -344,6 +368,24 @@ export const updateDispatchRunAction = authActionClient
         ])
         if (!driver || !vehicle)
           throw new Error("Choose an active driver and vehicle")
+        const cargo = await tx
+          .select({
+            weightKg: shipments.weightKg,
+            origin: shipments.origin,
+            destination: shipments.destination,
+          })
+          .from(shipments)
+          .innerJoin(manifestItems, eq(manifestItems.shipmentId, shipments.id))
+          .where(
+            and(
+              eq(manifestItems.manifestId, id),
+              eq(manifestItems.isActive, true)
+            )
+          )
+          .orderBy(shipments.id)
+          .for("update")
+        assertLoadCapacity(cargo, vehicle.capacityKg)
+        assertDispatchRoute(cargo)
         const [updated] = await tx
           .update(manifests)
           .set(updateData)

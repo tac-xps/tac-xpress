@@ -21,6 +21,12 @@ function request(body = JSON.stringify(payload), signature?: string) {
 }
 beforeEach(() => { vi.clearAllMocks(); state.secret = "webhook-test-secret"; state.token = "verification-test-token"; state.inbound.mockResolvedValue({}); state.receipt.mockResolvedValue(undefined) })
 describe("WhatsApp webhook boundary", () => {
+  it("keeps inbound processing closed without the Meta signing secret", async () => {
+    state.secret = ""
+    expect((await POST(request(undefined, "sha256=" + "0".repeat(64)))).status).toBe(503)
+    expect(state.inbound).not.toHaveBeenCalled()
+    expect(state.receipt).not.toHaveBeenCalled()
+  })
   it("requires configured verification and handles Unicode tokens without a crash", async () => {
     state.token = ""
     expect((await GET(new Request("https://example.test?hub.mode=subscribe"))).status).toBe(403)

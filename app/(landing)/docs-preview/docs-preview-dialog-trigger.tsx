@@ -18,31 +18,31 @@ export function DocsPreviewDialogTrigger({
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button
+          type="button"
           variant="outline"
           size="sm"
-          className="gap-1.5 text-xs bg-card shadow-sm"
           onClick={() => {
             setTab("invoice")
             setOpen(true)
           }}
         >
           <Eye className="size-3.5" />
-          <span>View Invoice (Pop-up Dialog)</span>
+          <span>Preview invoice</span>
         </Button>
 
         <Button
+          type="button"
           variant="outline"
           size="sm"
-          className="gap-1.5 text-xs bg-card shadow-sm"
           onClick={() => {
             setTab("label")
             setOpen(true)
           }}
         >
           <Tag className="size-3.5" />
-          <span>View Label (Pop-up Dialog)</span>
+          <span>Preview label</span>
         </Button>
       </div>
 

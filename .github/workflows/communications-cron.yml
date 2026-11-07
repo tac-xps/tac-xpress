@@ -1,7 +1,7 @@
-name: Communications Worker Cron
+name: Operations Recovery Cron
 on:
   schedule:
-    # Run every 15 minutes to recover any pending communications jobs on Vercel Hobby deployments
+    # Recover communications and check service deadlines every 15 minutes.
     - cron: "*/15 * * * *"
   workflow_dispatch:
 
@@ -10,12 +10,42 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      APP_URL: ${{ vars.APP_URL || 'https://tac-xpress-tac-xps.vercel.app' }}
+      APP_URL: ${{ vars.APP_URL || 'https://tac-xpress-five.vercel.app' }}
       CRON_SECRET: ${{ secrets.CRON_SECRET }}
     steps:
+      - name: Validate scheduler configuration
+        run: |
+          test -n "$CRON_SECRET" || { echo "CRON_SECRET is not configured." >&2; exit 1; }
+          case "$APP_URL" in https://*) ;; *) echo "APP_URL must use HTTPS." >&2; exit 1;; esac
       - name: Trigger Communications Recovery
         if: env.APP_URL != '' && env.CRON_SECRET != ''
         run: |
-          curl -fsSL -X GET "$APP_URL/api/cron/communications" \
+          status=$(curl -fsS --max-time 90 --proto '=https' -X GET "$APP_URL/api/cron/communications" \
             -H "Authorization: Bearer $CRON_SECRET" \
-            -H "User-Agent: GitHub-Actions-Cron"
+            -H "User-Agent: GitHub-Actions-Cron" \
+            -o "$RUNNER_TEMP/communications.json" -w '%{http_code}')
+          test "$status" = "200" || { echo "Unexpected communications HTTP status: $status" >&2; exit 1; }
+          python3 - "$RUNNER_TEMP/communications.json" <<'PY'
+          import json, sys
+          with open(sys.argv[1]) as response:
+              payload = json.load(response)
+          assert type(payload.get("processed")) is int and payload["processed"] >= 0, "Invalid communications response"
+          assert type(payload.get("dlqDepth")) is int and payload["dlqDepth"] >= 0, "Invalid DLQ response"
+          print("Communications response verified")
+          PY
+      - name: Trigger SLA Checks
+        if: always() && env.APP_URL != '' && env.CRON_SECRET != ''
+        run: |
+          status=$(curl -fsS --max-time 90 --proto '=https' -X GET "$APP_URL/api/cron/sla-check" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "User-Agent: GitHub-Actions-Cron" \
+            -o "$RUNNER_TEMP/sla.json" -w '%{http_code}')
+          test "$status" = "200" || { echo "Unexpected SLA HTTP status: $status" >&2; exit 1; }
+          python3 - "$RUNNER_TEMP/sla.json" <<'PY'
+          import json, sys
+          with open(sys.argv[1]) as response:
+              payload = json.load(response)
+          assert payload.get("success") is True, "Invalid SLA response"
+          assert type(payload.get("processed")) is int and payload["processed"] >= 0, "Invalid SLA count"
+          print("SLA response verified")
+          PY

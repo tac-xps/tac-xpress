@@ -6,10 +6,10 @@ import { ArrowRight, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const benefits = [
-  "Guaranteed commercial airside custody at DEL and IMF",
-  "Daily scheduled departures with zero transshipment",
-  "Statutory 18% GST e-waybill reconciliation",
-  "Real-time optical barcode tracking at each gate",
+  "Confirm cargo acceptance before booking",
+  "Agree the collection and delivery window",
+  "Prepare the required shipment documents",
+  "Track published shipment updates with your AWB",
 ]
 
 export function ClosingCtaSection() {
@@ -25,7 +25,7 @@ export function ClosingCtaSection() {
               Direct bilateral linehaul: <span className="text-primary font-semibold">DEL ⇄ IMF</span>
             </h2>
             <p className="text-muted-foreground mt-3 text-balance text-xs sm:text-sm leading-relaxed">
-              Dedicated commercial air express and arterial surface linehaul connecting New Delhi and Imphal with verified chain-of-custody.
+              Dedicated commercial air express and arterial surface linehaul connecting New Delhi and Imphal in both directions.
             </p>
             <ul className="mt-6 space-y-2.5">
               {benefits.map((benefit, index) => (
@@ -40,16 +40,16 @@ export function ClosingCtaSection() {
             </ul>
           </div>
           <div className="bg-muted/20 flex flex-col justify-center p-6 md:p-10">
-            <p className="text-xs font-medium text-muted-foreground">Starting tariff</p>
-            <p className="mt-1 font-mono text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              ₹58<span className="text-muted-foreground text-base sm:text-lg font-normal">/kg</span>
+            <p className="text-xs font-medium text-muted-foreground">Request a quote</p>
+            <p className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              Confirm your rate
             </p>
             <p className="text-muted-foreground mt-1.5 text-xs leading-normal">
-              Surface linehaul rate (excl. 18% GST). Air Express available at ₹125/kg.
+              Send the weight, dimensions, contents, and direction of travel for a confirmed quote.
             </p>
             <Button
               asChild
-              className="mt-6 gap-2 h-10 rounded-none font-medium text-xs bg-foreground text-background hover:bg-foreground/90 transition-colors w-full cursor-pointer"
+              className="mt-6 gap-2 h-10 rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary-hover transition-colors shadow-2xs w-full cursor-pointer"
             >
               <Link href="#contact">
                 Book Consignment
@@ -61,7 +61,7 @@ export function ClosingCtaSection() {
                 href="#pricing"
                 className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
               >
-                Calculate instant tariff quote
+                Calculate with your quoted rate
               </a>
             </div>
           </div>

@@ -34,6 +34,16 @@ type AuditInput = {
   createdAt?: string
 }
 
+function redactPassword(record: Record<string, unknown> | null | undefined) {
+  if (!record) return null
+  return Object.fromEntries(
+    Object.entries(record).map(([key, value]) => [
+      key,
+      key === "password" ? "[REDACTED]" : value,
+    ])
+  )
+}
+
 function auditPayload({
   action,
   entity,
@@ -56,8 +66,8 @@ function auditPayload({
     entity_id: effectiveEntityId,
     resource_id: effectiveResourceId,
     metadata: metadata ?? null,
-    before: before ?? null,
-    after: after ?? null,
+    before: redactPassword(before),
+    after: redactPassword(after),
     created_at: createdAt ?? new Date().toISOString(),
   }
 }

@@ -97,6 +97,28 @@ export function TicketForm({
         if (!form.getValues("subject")) {
           form.setValue("subject", "Customer Service Feedback")
         }
+      } else {
+        const awbParam = params.get("awb")
+        const originParam = params.get("origin")
+        const destParam = params.get("dest")
+        const modeParam = params.get("mode")
+        const subjectParam = params.get("subject")
+
+        if (awbParam) {
+          form.setValue("category", "shipment")
+          form.setValue("related_awb", awbParam)
+          if (!form.getValues("subject")) {
+            form.setValue("subject", "Inquiry regarding AWB " + awbParam)
+          }
+        } else if (originParam && destParam) {
+          form.setValue("category", "shipment")
+          if (!form.getValues("subject")) {
+            const modeSuffix = modeParam ? " (" + modeParam + ")" : ""
+            form.setValue("subject", "Quote: " + originParam + " to " + destParam + modeSuffix)
+          }
+        } else if (subjectParam && !form.getValues("subject")) {
+          form.setValue("subject", subjectParam)
+        }
       }
     }
   }, [form])

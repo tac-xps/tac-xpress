@@ -4,7 +4,7 @@ import Link from "next/link"
 import type { DashboardStats } from "@/lib/dashboard-metrics"
 import { AnimatedCounter } from "@/components/ui/animated-counter"
 import { motion, useReducedMotion } from "motion/react"
-import { staggerContainer, staggerItem, microGestures } from "@/lib/animations"
+import { staggerContainer, staggerItem } from "@/lib/animations"
 import { Package, Plane, Truck, ArrowLeftRight } from "lucide-react"
 
 export function OverviewMetrics({ stats }: { stats: DashboardStats }) {
@@ -40,11 +40,11 @@ export function OverviewMetrics({ stats }: { stats: DashboardStats }) {
   return (
     <section
       aria-label="All-time operational totals"
-      className="overflow-hidden rounded-none border border-border/80 bg-card shadow-xs transition-shadow duration-200 hover:shadow-sm"
+      className="overflow-hidden rounded-none border border-border/80 bg-card shadow-xs"
     >
       <div className="border-b border-border/80 bg-muted/30 px-5 py-2.5 text-xs text-muted-foreground flex items-center justify-between">
         <span>All-time totals · excludes deleted shipments</span>
-        <span className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground/70">
+        <span className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
           <span className="size-1.5 rounded-none bg-status-delivered" />
           Live
         </span>
@@ -61,7 +61,6 @@ export function OverviewMetrics({ stats }: { stats: DashboardStats }) {
             <motion.div
               key={metric.label}
               variants={staggerItem}
-              whileHover={shouldReduceMotion ? {} : microGestures.hoverLift}
               className="group px-1 lg:border-l lg:px-6 lg:first:border-0 lg:first:pl-0 transition-colors"
             >
               <dt className="text-sm text-muted-foreground flex items-center gap-2">

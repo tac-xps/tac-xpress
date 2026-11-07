@@ -7,7 +7,7 @@ export interface BackgroundJob {
   id: string
   kind: JobKind
   dedupe_key: string
-  payload: { ticketId: string }
+  payload: { ticketId: string; notificationType?: "sla_breach" }
   attempts: number
   lease_token: string
   created_at: Date

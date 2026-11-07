@@ -49,6 +49,8 @@ const nextConfig: NextConfig = {
     ]
   },
   experimental: {
+    cpus: 2,
+    turbopackFileSystemCacheForDev: false,
     serverComponentsHmrCache: true,
     optimizePackageImports: [
       "lucide-react",
@@ -78,9 +80,12 @@ const nextConfig: NextConfig = {
       "@base-ui/react",
     ],
   },
-  serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
+  serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core", "puppeteer"],
   outputFileTracingIncludes: {
-    "/api/documents/download": ["./node_modules/@sparticuz/chromium/bin/**/*", "./node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**/*"],
+    "/api/documents/download": [
+      "./node_modules/@sparticuz/chromium/bin/**/*",
+      "./node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**/*",
+    ],
     "/api/public/invoice-pdf": [
       "./node_modules/@sparticuz/chromium/bin/**/*",
       "./node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**/*",
@@ -101,10 +106,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "www.thiings.co" },
       {
         protocol: "https",
-        hostname: (
+        hostname:
           process.env.NEXT_PUBLIC_VERCEL_BLOB_HOSTNAME ??
-          "your-project.public.blob.vercel-storage.com"
-        ),
+          "your-project.public.blob.vercel-storage.com",
       },
     ],
   },

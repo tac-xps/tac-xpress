@@ -30,7 +30,6 @@ import {
   type ReactNode,
   useEffect,
   useId,
-  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -45,8 +44,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
 import { cn } from "@/lib/utils";
 
-const EASE_OUT = [0.23, 1, 0.32, 1] as const;
-const EASE_OUT_CSS = "ease-[cubic-bezier(0.23,1,0.32,1)]";
+const EASE_OUT = [0.22, 1, 0.36, 1] as const;
+const EASE_OUT_CSS = "ease-[cubic-bezier(0.22,1,0.36,1)]";
 const WWW = /^www\./;
 
 export interface SearchTool {
@@ -283,7 +282,7 @@ function SourceAvatar({
       aria-hidden="true"
       className={cn(
         "flex shrink-0 items-center justify-center overflow-hidden rounded-none font-semibold text-white [&_img]:size-full [&_svg]:size-3",
-        size === "md" ? "size-6 text-[11px]" : "size-5 text-[10px]",
+        size === "md" ? "size-6 text-xs" : "size-5 text-xs",
         ring
           ? "ring-2 ring-zinc-100 dark:ring-zinc-800"
           : "ring-1 ring-black/5 dark:ring-white/15"
@@ -312,12 +311,11 @@ function SourceStack({ sources }: { sources: SearchSource[] }) {
       <AnimatePresence initial={false} mode="popLayout">
         {shown.map((source, i) => (
           <motion.span
-            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+            animate={{ opacity: 1, x: 0 }}
             className={cn(i > 0 && "-ml-1")}
             exit={{ opacity: 0, transition: { duration: 0.1 } }}
-            initial={{ opacity: 0, x: -6, filter: "blur(2px)" }}
+            initial={{ opacity: 0, x: -6 }}
             key={source.domain}
-            layout="position"
             transition={{ duration: 0.2, ease: EASE_OUT }}
           >
             <SourceAvatar ring source={source} />
@@ -333,54 +331,40 @@ function SourceStack({ sources }: { sources: SearchSource[] }) {
  * (Change, Sources) share it so the bands read as one piece.
  */
 const frameKey = cn(
-  "flex h-6 shrink-0 items-center gap-1.5 rounded-none bg-white px-2 font-medium text-[11px] text-black shadow-[0_1px_1px_rgb(0_0_0/0.04)] outline-hidden ring-1 ring-black/[0.08]",
-  "transition-[background-color,box-shadow] duration-150",
+  "flex h-6 shrink-0 items-center gap-1.5 rounded-none bg-background px-2 font-medium text-xs text-foreground outline-hidden ring-1 ring-border",
+  "transition-colors duration-150",
   EASE_OUT_CSS,
-  "hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-black/20",
-  "dark:bg-zinc-800 dark:text-white dark:shadow-none dark:ring-white/10 dark:focus-visible:ring-white/30 dark:hover:bg-zinc-700"
+  "hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
 );
 
 /** The sources open as a second card in the frame, under the first. */
 function SourceList({ id, sources }: { id: string; sources: SearchSource[] }) {
   return (
     <motion.div
-      animate={{ height: "auto", opacity: 1 }}
+      animate={{ opacity: 1 }}
       className="overflow-hidden"
-      exit={{ height: 0, opacity: 0 }}
+      exit={{ opacity: 0 }}
       id={id}
-      initial={{ height: 0, opacity: 0 }}
-      transition={{ duration: 0.25, ease: EASE_OUT }}
+      initial={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: EASE_OUT }}
     >
       <ol className="max-h-60 overflow-y-auto rounded-none bg-white py-1 shadow-[0_1px_2px_rgb(0_0_0/0.04)] ring-1 ring-black/[0.08] dark:bg-zinc-900 dark:ring-white/10">
         {sources.map((source, i) => (
-          <motion.li
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            className={cn(
-              "mx-1 flex h-9 items-center gap-2.5 rounded-none px-2.5 text-xs",
-              "transition-colors duration-150",
-              EASE_OUT_CSS,
-              "hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
-            )}
-            initial={{ opacity: 0, y: 4, filter: "blur(2px)" }}
+          <li
+            className="mx-1 flex h-9 items-center gap-2.5 rounded-none px-2.5 text-xs transition-colors duration-150 hover:bg-muted"
             key={source.domain}
-            // A short cascade, capped so a long list doesn't drag.
-            transition={{
-              duration: 0.2,
-              ease: EASE_OUT,
-              delay: Math.min(i, 8) * 0.03,
-            }}
           >
             <SourceAvatar size="md" source={source} />
-            <span className="min-w-0 flex-1 truncate text-black/80 dark:text-white/80">
+            <span className="min-w-0 flex-1 truncate text-foreground">
               {source.title}
             </span>
-            <span className="hidden shrink-0 text-black/40 sm:block dark:text-white/40">
+            <span className="hidden shrink-0 text-muted-foreground sm:block">
               {source.domain}
             </span>
-            <span className="w-5 shrink-0 text-right text-[11px] text-black/30 tabular-nums dark:text-white/30">
+            <span className="w-5 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
               {i + 1}
             </span>
-          </motion.li>
+          </li>
         ))}
       </ol>
     </motion.div>
@@ -447,21 +431,21 @@ function Trace({
         <span className="relative min-w-0 flex-1">
           <AnimatePresence initial={false} mode="popLayout">
             <motion.span
-              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+              animate={{ opacity: 1,  y: 0 }}
               className={cn(
                 "block truncate",
                 finished
-                  ? "text-black/60 dark:text-white/60"
-                  : "text-black/45 dark:text-white/45"
+                  ? "text-muted-foreground"
+                  : "text-muted-foreground"
               )}
-              exit={{ opacity: 0, filter: "blur(2px)", y: -6 }}
-              initial={{ opacity: 0, filter: "blur(2px)", y: 6 }}
+              exit={{ opacity: 0,  y: -6 }}
+              initial={{ opacity: 0,  y: 6 }}
               key={label}
               transition={{ duration: 0.2, ease: EASE_OUT }}
             >
               {label}
               {phase === "working" && sources.length > 0 && (
-                <span className="text-black/35 tabular-nums dark:text-white/35">
+                <span className="text-muted-foreground tabular-nums">
                   {" "}
                   · {sources.length}
                 </span>
@@ -469,17 +453,17 @@ function Trace({
             </motion.span>
           </AnimatePresence>
         </span>
-        <span className="shrink-0 text-black/35 tabular-nums dark:text-white/35">
+        <span className="shrink-0 text-muted-foreground tabular-nums">
           {seconds(elapsed)}
         </span>
         <AnimatePresence initial={false}>
           {canOpen && (
             <motion.button
-              animate={{ opacity: 1, filter: "blur(0px)" }}
+              animate={{ opacity: 1 }}
               aria-controls={listId}
               aria-expanded={expanded}
               className={frameKey}
-              initial={{ opacity: 0, filter: "blur(2px)" }}
+              initial={{ opacity: 0 }}
               onClick={onToggle}
               transition={{ duration: 0.2, ease: EASE_OUT }}
               type="button"
@@ -506,37 +490,16 @@ function Trace({
 }
 
 const ghostButton = cn(
-  "flex h-8 shrink-0 items-center gap-1.5 rounded-none px-2.5 text-black/70 text-xs outline-hidden dark:text-white/70",
-  "transition-[background-color,color] duration-150",
+  "flex h-8 shrink-0 items-center gap-1.5 rounded-none px-2.5 text-muted-foreground text-xs outline-hidden",
+  "transition-colors duration-150",
   EASE_OUT_CSS,
   "hover:bg-black/[0.04] hover:text-black dark:hover:bg-white/[0.06] dark:hover:text-white",
   "data-[state=open]:bg-black/[0.05] data-[state=open]:text-black dark:data-[state=open]:bg-white/[0.08] dark:data-[state=open]:text-white",
-  "focus-visible:ring-2 focus-visible:ring-black/15 dark:focus-visible:ring-white/20"
+  "focus-visible:ring-2 focus-visible:ring-ring"
 );
 
 const menuPanel =
-  "origin-(--radix-dropdown-menu-content-transform-origin) rounded-none border-black/10 p-1 shadow-[0_8px_24px_-8px_rgb(0_0_0/0.18)] dark:border-white/10 dark:bg-zinc-900";
-
-/**
- * Width of what an element holds, so its wrapper can animate to it rather
- * than snap when a label changes.
- */
-function useContentWidth<T extends HTMLElement>() {
-  const ref = useRef<T>(null);
-  const [width, setWidth] = useState<number | "auto">("auto");
-  useLayoutEffect(() => {
-    const node = ref.current;
-    if (!node) {
-      return;
-    }
-    const observer = new ResizeObserver(([entry]) => {
-      setWidth(entry.borderBoxSize[0].inlineSize);
-    });
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-  return [ref, width] as const;
-}
+  "origin-(--radix-dropdown-menu-content-transform-origin)";
 
 /** Runs left as dots, so a metered tool reads at a glance. */
 function RunsLeft({ left, limit }: { left: number; limit: number }) {
@@ -580,7 +543,6 @@ function ToolPill({
   onSelect: (id: string | null) => void;
   onCloseAutoFocus: (event: Event) => void;
 }) {
-  const [innerRef, width] = useContentWidth<HTMLSpanElement>();
 
   const Icon = tool?.icon ?? Settings2;
   const label = tool?.label ?? "Tools";
@@ -603,12 +565,11 @@ function ToolPill({
 
   return (
     <motion.div
-      animate={{ width }}
       className="h-8 min-w-0 shrink-0 overflow-hidden rounded-none"
       style={{ "--tool": tool?.color ?? "currentColor" } as React.CSSProperties}
-      transition={{ duration: 0.25, ease: EASE_OUT }}
+      transition={{ duration: 0.2, ease: EASE_OUT }}
     >
-      <span className="flex h-full w-max items-center" ref={innerRef}>
+      <span className="flex h-full w-max items-center">
         <DropdownMenu modal={false} onOpenChange={onOpenChange} open={open}>
           <DropdownMenuTrigger asChild>
             <button
@@ -617,25 +578,25 @@ function ToolPill({
                 // A plain ghost control, like the model picker: no outline,
                 // just the tool's coloured icon and its name.
                 "group flex h-8 items-center gap-1.5 rounded-none pr-2 pl-2.5 text-xs outline-hidden",
-                "transition-[background-color,color] duration-150",
+                "transition-colors duration-150",
                 EASE_OUT_CSS,
-                "focus-visible:ring-2 focus-visible:ring-black/15 dark:focus-visible:ring-white/20",
-                "hover:bg-black/5 hover:text-black data-[state=open]:bg-black/5 data-[state=open]:text-black dark:data-[state=open]:bg-white/10 dark:data-[state=open]:text-white dark:hover:bg-white/10 dark:hover:text-white",
+                "focus-visible:ring-2 focus-visible:ring-ring",
+                "hover:bg-muted hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground",
                 tool
-                  ? "font-medium text-black/80 dark:text-white/85"
-                  : "text-black/70 dark:text-white/70"
+                  ? "font-medium text-foreground"
+                  : "text-muted-foreground"
               )}
               type="button"
             >
               <span className="relative inline-grid size-4 shrink-0 place-items-center">
                 <AnimatePresence initial={false} mode="popLayout">
                   <motion.span
-                    animate={{ opacity: 1, filter: "blur(0px)", rotate: 0 }}
+                    animate={{ opacity: 1,  rotate: 0 }}
                     className="col-start-1 row-start-1 text-(--tool)"
-                    exit={{ opacity: 0, filter: "blur(2px)", rotate: 30 }}
-                    initial={{ opacity: 0, filter: "blur(2px)", rotate: -30 }}
+                    exit={{ opacity: 0,  rotate: 30 }}
+                    initial={{ opacity: 0,  rotate: -30 }}
                     key={tool?.id ?? "tools"}
-                    transition={{ duration: 0.18, ease: EASE_OUT }}
+                    transition={{ duration: 0.2, ease: EASE_OUT }}
                   >
                     <Icon aria-hidden="true" className="size-4" />
                   </motion.span>
@@ -644,12 +605,12 @@ function ToolPill({
               <span className="relative inline-grid">
                 <AnimatePresence initial={false} mode="popLayout">
                   <motion.span
-                    animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                    animate={{ opacity: 1,  y: 0 }}
                     className="col-start-1 row-start-1 max-w-[4rem] truncate whitespace-nowrap sm:max-w-none"
-                    exit={{ opacity: 0, filter: "blur(2px)", y: -4 }}
-                    initial={{ opacity: 0, filter: "blur(2px)", y: 4 }}
+                    exit={{ opacity: 0,  y: -4 }}
+                    initial={{ opacity: 0,  y: 4 }}
                     key={label}
-                    transition={{ duration: 0.18, ease: EASE_OUT }}
+                    transition={{ duration: 0.2, ease: EASE_OUT }}
                   >
                     {label}
                   </motion.span>
@@ -674,7 +635,7 @@ function ToolPill({
             side="bottom"
             sideOffset={8}
           >
-            <div className="flex items-center justify-between px-2 pt-1.5 pb-1 text-[11px] text-black/40 dark:text-white/40">
+            <div className="flex items-center justify-between px-2 pt-1.5 pb-1 text-xs text-muted-foreground">
               <span>Tools</span>
               <span>Press 1–{tools.length}</span>
             </div>
@@ -688,7 +649,7 @@ function ToolPill({
                   checked={isSelected}
                   className={cn(
                     "group/item flex items-center gap-2.5 rounded-none px-2 py-1.5 [&>span:first-child]:hidden",
-                    "focus:bg-black/[0.04] dark:focus:bg-white/[0.06]"
+                    "focus:bg-accent"
                   )}
                   disabled={spent}
                   key={item.id}
@@ -711,8 +672,8 @@ function ToolPill({
                         className={cn(
                           "truncate text-xs",
                           isSelected
-                            ? "text-black dark:text-white"
-                            : "text-black/75 dark:text-white/75"
+                            ? "text-foreground"
+                            : "text-foreground"
                         )}
                       >
                         {item.label}
@@ -722,7 +683,7 @@ function ToolPill({
                       )}
                     </span>
                     {item.hint && (
-                      <span className="block truncate text-[11px] text-black/40 dark:text-white/40">
+                      <span className="block truncate text-xs text-muted-foreground">
                         {spent ? "None left today" : item.hint}
                       </span>
                     )}
@@ -730,11 +691,11 @@ function ToolPill({
                   {isSelected ? (
                     <Check
                       aria-hidden="true"
-                      className="size-3.5 shrink-0 text-black dark:text-white"
+                      className="size-3.5 shrink-0 text-foreground"
                       strokeWidth={2.25}
                     />
                   ) : (
-                    <kbd className="w-3.5 shrink-0 text-center font-sans text-[11px] text-black/30 tabular-nums dark:text-white/30">
+                    <kbd className="w-3.5 shrink-0 text-center font-sans text-xs text-muted-foreground tabular-nums">
                       {i + 1}
                     </kbd>
                   )}
@@ -746,23 +707,22 @@ function ToolPill({
         <AnimatePresence initial={false} mode="popLayout">
           {tool && (
             <motion.button
-              animate={{ opacity: 1, filter: "blur(0px)" }}
+              animate={{ opacity: 1 }}
               aria-label={`Remove ${tool.label}`}
               className={cn(
                 "flex size-6 shrink-0 items-center justify-center rounded-none text-black/40 outline-hidden dark:text-white/45",
-                "transition-[background-color,color] duration-150",
+                "transition-colors duration-150",
                 EASE_OUT_CSS,
                 "hover:bg-black/[0.06] hover:text-black dark:hover:bg-white/10 dark:hover:text-white",
-                "focus-visible:ring-2 focus-visible:ring-black/15 dark:focus-visible:ring-white/20"
+                "focus-visible:ring-2 focus-visible:ring-ring"
               )}
               exit={{
                 opacity: 0,
-                filter: "blur(2px)",
                 transition: { duration: 0.1 },
               }}
-              initial={{ opacity: 0, filter: "blur(2px)" }}
+              initial={{ opacity: 0 }}
               onClick={() => onSelect(null)}
-              transition={{ duration: 0.18, ease: EASE_OUT }}
+              transition={{ duration: 0.2, ease: EASE_OUT }}
               type="button"
             >
               <X aria-hidden="true" className="size-3.5" />
@@ -797,10 +757,10 @@ function ModelMenu({
           <span className="relative inline-grid">
             <AnimatePresence initial={false} mode="popLayout">
               <motion.span
-                animate={{ opacity: 1, filter: "blur(0px)" }}
+                animate={{ opacity: 1 }}
                 className="col-start-1 row-start-1 whitespace-nowrap"
-                exit={{ opacity: 0, filter: "blur(2px)" }}
-                initial={{ opacity: 0, filter: "blur(2px)" }}
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
                 key={selected}
                 transition={{ duration: 0.15, ease: EASE_OUT }}
               >
@@ -831,7 +791,7 @@ function ModelMenu({
             className={cn(
               "flex h-8 items-center gap-2 rounded-none px-2 text-xs",
               model === selected
-                ? "text-black dark:text-white"
+                ? "text-foreground"
                 : "text-black/55 dark:text-white/55"
             )}
             key={model}
@@ -855,18 +815,17 @@ function ModelMenu({
 function FileChip({ file, onRemove }: { file: File; onRemove: () => void }) {
   return (
     <motion.li
-      animate={{ opacity: 1, filter: "blur(0px)" }}
-      className="flex h-8 max-w-48 items-center gap-1.5 rounded-none bg-black/[0.04] pr-1 pl-2 text-black/70 text-xs dark:bg-white/[0.07] dark:text-white/70"
-      exit={{ opacity: 0, filter: "blur(2px)", transition: { duration: 0.1 } }}
-      initial={{ opacity: 0, filter: "blur(2px)" }}
-      layout="position"
-      transition={{ duration: 0.18, ease: EASE_OUT }}
+      animate={{ opacity: 1 }}
+      className="flex h-8 max-w-48 items-center gap-1.5 rounded-none bg-muted pr-1 pl-2 text-muted-foreground text-xs"
+      exit={{ opacity: 0,  transition: { duration: 0.1 } }}
+      initial={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: EASE_OUT }}
     >
       <FileText aria-hidden="true" className="size-3.5 shrink-0" />
       <span className="truncate">{file.name}</span>
       <button
         aria-label={`Remove ${file.name}`}
-        className="flex size-6 shrink-0 items-center justify-center rounded-none text-black/40 outline-hidden transition-colors duration-150 hover:bg-black/[0.06] hover:text-black focus-visible:ring-2 focus-visible:ring-black/15 dark:text-white/40 dark:focus-visible:ring-white/20 dark:hover:bg-white/10 dark:hover:text-white"
+        className="flex size-6 shrink-0 items-center justify-center rounded-none text-muted-foreground outline-hidden transition-colors duration-150 hover:bg-muted/80 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
         onClick={onRemove}
         type="button"
       >
@@ -878,7 +837,7 @@ function FileChip({ file, onRemove }: { file: File; onRemove: () => void }) {
 
 /**
  * The band on the frame above the card, as in AI Input Selector: says what
- * the picked tool will do, and swaps with a short blur when the tool does.
+ * the picked tool will do, and updates when the selected tool changes.
  */
 function ToolHeader({
   tool,
@@ -894,9 +853,9 @@ function ToolHeader({
     ? (tool.hint ?? tool.label)
     : "No tool picked, the model answers on its own";
   const swap = {
-    animate: { opacity: 1, filter: "blur(0px)", y: 0 },
-    exit: { opacity: 0, filter: "blur(2px)", y: -6 },
-    initial: { opacity: 0, filter: "blur(2px)", y: 6 },
+    animate: { opacity: 1,  y: 0 },
+    exit: { opacity: 0,  y: -6 },
+    initial: { opacity: 0,  y: 6 },
     transition: { duration: 0.2, ease: EASE_OUT },
   };
   return (
@@ -918,14 +877,14 @@ function ToolHeader({
               aria-hidden="true"
               className={cn(
                 "size-3.5 shrink-0",
-                tool ? "text-(--tool)" : "text-black/40 dark:text-white/40"
+                tool ? "text-(--tool)" : "text-muted-foreground"
               )}
             />
-            <span className="truncate text-black/60 dark:text-white/60">
+            <span className="truncate text-muted-foreground">
               {text}
             </span>
             {left !== undefined && tool?.limit !== undefined && (
-              <span className="flex shrink-0 items-center gap-1.5 text-black/40 tabular-nums dark:text-white/40">
+              <span className="flex shrink-0 items-center gap-1.5 text-muted-foreground tabular-nums">
                 <RunsLeft left={left} limit={tool.limit} />
                 {left} left
               </span>
@@ -939,7 +898,7 @@ function ToolHeader({
         type="button"
       >
         {tool ? "Change" : "Pick a tool"}
-        <kbd className="flex size-4 items-center justify-center rounded-none bg-black/[0.05] font-normal font-sans text-[10px] text-black/50 dark:bg-white/10 dark:text-white/50">
+        <kbd className="flex size-4 items-center justify-center rounded-none bg-muted font-normal font-sans text-xs text-muted-foreground">
           /
         </kbd>
       </button>
@@ -958,7 +917,6 @@ function SendStopButton({
   onSubmit: () => void;
   onStop: () => void;
 }) {
-  const [innerRef, width] = useContentWidth<HTMLSpanElement>();
   const live = running || canSubmit;
   // A worded key rather than an arrow: "Ask" with the return glyph, which
   // turns into "Stop" while a run is going. Only the face swaps; the key
@@ -966,35 +924,33 @@ function SendStopButton({
   const face = running ? "stop" : "ask";
   return (
     <motion.button
-      animate={{ width }}
       aria-label={running ? "Stop" : "Send question"}
       className={cn(
         "h-8 shrink-0 overflow-hidden rounded-none",
-        "transition-[background-color,color,box-shadow] duration-150",
+        "transition-colors duration-150",
         EASE_OUT_CSS,
-        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-black/20 dark:focus-visible:ring-white/30",
+        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
         live
-          ? "bg-zinc-900 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.12)] hover:bg-zinc-800 dark:bg-white dark:text-black dark:shadow-none dark:hover:bg-zinc-200"
-          : "bg-black/5 text-black/35 dark:bg-white/10 dark:text-white/35"
+          ? "bg-primary text-primary-foreground hover:bg-primary-hover shadow-2xs"
+          : "bg-muted text-muted-foreground"
       )}
       disabled={!live}
       onClick={running ? onStop : onSubmit}
       transition={{ duration: 0.2, ease: EASE_OUT }}
       type="button"
     >
-      <span className="flex h-full w-max items-center" ref={innerRef}>
+      <span className="flex h-full w-max items-center">
         <AnimatePresence initial={false} mode="popLayout">
           <motion.span
-            animate={{ opacity: 1, filter: "blur(0px)" }}
+            animate={{ opacity: 1 }}
             className="flex h-8 items-center gap-1.5 px-2 font-medium text-xs sm:pr-2 sm:pl-3"
             exit={{
               opacity: 0,
-              filter: "blur(2px)",
-              transition: { duration: 0.08 },
+              transition: { duration: 0.1 },
             }}
-            initial={{ opacity: 0, filter: "blur(2px)" }}
+            initial={{ opacity: 0 }}
             key={face}
-            transition={{ duration: 0.16, ease: EASE_OUT }}
+            transition={{ duration: 0.2, ease: EASE_OUT }}
           >
             {face === "stop" ? (
               <>
@@ -1169,7 +1125,7 @@ export default function AI_Input_Search({
       <div className={cn("mx-auto w-full max-w-lg py-4", className)}>
         {/* biome-ignore lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents lint/a11y/noNoninteractiveElementInteractions: pointer-only shortcut; the textarea and buttons inside are keyboard reachable */}
         <div
-          className="relative w-full cursor-text rounded-none bg-black/[0.04] p-1 text-left dark:bg-white/[0.04]"
+          className="relative w-full cursor-text rounded-none bg-muted p-1 text-left"
           onClick={(e) => handleContainerClick(e.target)}
         >
           <ToolHeader
@@ -1180,18 +1136,18 @@ export default function AI_Input_Search({
           {/* Card on a soft frame, as in AI Prompt; the trace opens in the frame. */}
           <div
             className={cn(
-              "flex flex-col rounded-none bg-white ring-1 ring-black/[0.08] dark:bg-zinc-900 dark:ring-white/10",
+              "flex flex-col rounded-none bg-background ring-1 ring-border",
               "shadow-[0_1px_2px_rgb(0_0_0/0.04),0_6px_20px_-10px_rgb(0_0_0/0.12)]",
-              "transition-shadow duration-150 has-[textarea:focus-visible]:ring-black/20 dark:has-[textarea:focus-visible]:ring-white/25"
+              "has-[textarea:focus-visible]:ring-ring"
             )}
           >
             <AnimatePresence initial={false}>
               {files.length > 0 && (
                 <motion.div
-                  animate={{ height: "auto", opacity: 1 }}
+                  animate={{ opacity: 1 }}
                   className="overflow-hidden"
-                  exit={{ height: 0, opacity: 0 }}
-                  initial={{ height: 0, opacity: 0 }}
+                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0 }}
                   transition={{ duration: 0.2, ease: EASE_OUT }}
                 >
                   <ul
@@ -1257,8 +1213,8 @@ export default function AI_Input_Search({
                   <button
                     aria-label="Attach files"
                     className={cn(
-                      "flex size-8 shrink-0 items-center justify-center rounded-none text-black/60 outline-hidden ring-1 ring-black/10 dark:text-white/60 dark:ring-white/15",
-                      "transition-[background-color,color] duration-150",
+                      "flex size-8 shrink-0 items-center justify-center rounded-none text-muted-foreground outline-hidden ring-1 ring-black/10 dark:ring-white/15",
+                      "transition-colors duration-150",
                       EASE_OUT_CSS,
                       "hover:bg-black/5 hover:text-black dark:hover:bg-white/10 dark:hover:text-white",
                       "focus-visible:ring-2 focus-visible:ring-black/20 dark:focus-visible:ring-white/25"
@@ -1320,10 +1276,10 @@ export default function AI_Input_Search({
           <AnimatePresence initial={false}>
             {phase !== "idle" && (
               <motion.div
-                animate={{ height: "auto", opacity: 1 }}
+                animate={{ opacity: 1 }}
                 className="overflow-hidden"
-                exit={{ height: 0, opacity: 0 }}
-                initial={{ height: 0, opacity: 0 }}
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
                 transition={{ duration: 0.2, ease: EASE_OUT }}
               >
                 <div>

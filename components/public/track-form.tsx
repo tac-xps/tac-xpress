@@ -120,7 +120,7 @@ export function TrackForm({ variant = "inline", className, ...props }: TrackForm
             className="w-full px-4 py-3 font-mono text-sm border focus:outline-none focus-visible:ring-1 transition-colors bg-surface text-foreground placeholder:text-muted-foreground border-border focus:border-primary focus-visible:ring-primary uppercase rounded-none"
           />
           <p className="mt-2 text-xs font-mono text-muted-foreground">
-            Direct lookup for New Delhi ↔ Northeast India consignments.
+            Direct lookup for New Delhi ↔ Imphal consignments.
           </p>
         </div>
 

@@ -175,7 +175,7 @@ export async function ShipmentRegister({
           order={query.order}
           placeholder="AWB, route or contact name"
         />
-        <ShipmentsDataTable data={data} pageCount={pageCount} />
+        <ShipmentsDataTable data={data} pageCount={pageCount} bordered={false} />
       </section>
     </div>
   )

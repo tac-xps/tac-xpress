@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { isValidLogisticsPhone } from "@/lib/validation/phone"
+import { freightRouteSchema } from "@/lib/schemas/freight-route"
 
 const optionalPhone = z
   .string()
@@ -7,10 +8,8 @@ const optionalPhone = z
   .refine(isValidLogisticsPhone, "Enter a valid phone number")
   .optional()
 
-export const createShipmentSchema = z.object({
+export const createShipmentSchema = freightRouteSchema.safeExtend({
   customerId: z.string().uuid(),
-  origin: z.string().min(1, "Origin is required"),
-  destination: z.string().min(1, "Destination is required"),
   serviceType: z.enum(["express_air", "standard_ocean", "road_freight"]),
   weightKg: z.number().min(0.001, "Weight must be greater than 0").max(100000),
   consignorName: z.string().optional(),
@@ -50,10 +49,8 @@ export const createTrackingEventSchema = z.object({
   isPublic: z.boolean().optional(),
 })
 
-export const updateShipmentSchema = z.object({
+export const updateShipmentSchema = freightRouteSchema.safeExtend({
   id: z.string().uuid(),
-  origin: z.string().min(1, "Origin is required"),
-  destination: z.string().min(1, "Destination is required"),
   serviceType: z.enum(["express_air", "standard_ocean", "road_freight"]),
   weightKg: z.number().min(0.001, "Weight must be greater than 0").max(100000),
   edd: z.coerce.date().optional(),

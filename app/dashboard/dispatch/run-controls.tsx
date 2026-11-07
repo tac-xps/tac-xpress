@@ -239,7 +239,7 @@ export function RunControls({ run }: { run: HandoffRun }) {
                   Shipment to receive
                 </Label>
                 <Select
-                  value={selectedItemId || undefined}
+                  value={selectedItemId}
                   onValueChange={selectItem}
                   disabled={pending}
                 >

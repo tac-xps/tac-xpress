@@ -31,7 +31,7 @@ export function DataTable<TData>({
   bordered = true,
 }: DataTableProps<TData>) {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <DataTableToolbar
         table={table}
         searchKey={searchKey}
@@ -39,8 +39,8 @@ export function DataTable<TData>({
       />
       <div
         className={cn(
-          "overflow-hidden bg-card",
-          bordered && "rounded-none border border-border/80 shadow-xs"
+          "overflow-hidden",
+          bordered && "rounded-none border border-border/80 bg-card shadow-xs"
         )}
       >
         <Table>

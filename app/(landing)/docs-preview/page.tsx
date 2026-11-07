@@ -126,19 +126,19 @@ export default function DocsPreviewPage() {
                 TAC-XPRESS Document Design Studio
               </h1>
               <p className="text-sm text-muted-foreground">
-                Amazon ATS / Easy Ship styled 4&quot; × 6&quot; Thermal Shipping Label and A4 GST Tax Invoice
+                4&quot; × 3&quot; shipping label and A4 GST tax invoice. Synthetic preview records only.
               </p>
             </div>
-            <div className="flex items-center gap-2 font-mono text-xs">
-              <span className="rounded bg-foreground px-2.5 py-1 text-background font-bold">
+            <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
+              <span className="rounded-none bg-muted px-2.5 py-1 text-foreground border border-border font-bold">
                 DELHI HUB: 110003 (Origin)
               </span>
               <span>&#8594;</span>
-              <span className="rounded bg-primary px-2.5 py-1 text-primary-foreground font-bold">
+              <span className="rounded-none bg-primary px-2.5 py-1 text-primary-foreground font-bold">
                 SINGJAMEI HUB: 795008 (Destination)
               </span>
             </div>
-            <div className="w-full pt-2 flex items-center justify-between border-t border-border">
+            <div className="w-full pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-border">
               <span className="text-xs font-medium text-muted-foreground">
                 Pop-up Dialog Previews:
               </span>
@@ -153,29 +153,29 @@ export default function DocsPreviewPage() {
         {/* Studio Grid: Label on Left, Invoice on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: 4x3 Thermal Label (4:3 Aspect Ratio) */}
-          <section className="lg:col-span-4 flex flex-col items-center gap-4">
-            <div className="w-full flex items-center justify-between">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
+          <section className="lg:col-span-4 min-w-0 flex flex-col gap-4">
+            <div className="w-full flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-sm font-semibold text-foreground">
                 1. Thermal Shipping Label (4&quot; × 3&quot; Landscape)
               </h2>
-              <span className="text-[11px] font-mono text-muted-foreground">4:3 Aspect • 203/300 DPI</span>
+              <span className="text-xs font-mono text-muted-foreground">4:3 Aspect • 203/300 DPI</span>
             </div>
 
-            <div className="rounded-none border border-border bg-card p-4 shadow-md">
-              <ShippingLabel shipment={labelShipment} />
+            <div role="region" aria-label="Shipping label preview" tabIndex={0} className="w-full overflow-x-auto border border-border bg-card p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <div className="w-max"><ShippingLabel shipment={labelShipment} /></div>
             </div>
           </section>
 
           {/* Right Column: A4 GST Tax Invoice */}
-          <section className="lg:col-span-8 flex flex-col items-center gap-4">
-            <div className="w-full flex items-center justify-between">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
+          <section className="lg:col-span-8 min-w-0 flex flex-col gap-4">
+            <div className="w-full flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-sm font-semibold text-foreground">
                 2. Tax Invoice (A4 GST Triplicate)
               </h2>
-              <span className="text-[11px] font-mono text-muted-foreground">210mm × 297mm</span>
+              <span className="text-xs font-mono text-muted-foreground">210mm × 297mm</span>
             </div>
 
-            <div className="w-full overflow-x-auto rounded-none border border-border bg-card p-4 shadow-md">
+            <div role="region" aria-label="Tax invoice preview" tabIndex={0} className="w-full overflow-x-auto border border-border bg-card p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <InvoiceDocument
                 invoice={mockInvoice}
                 shipment={mockShipment}

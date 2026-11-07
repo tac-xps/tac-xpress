@@ -30,9 +30,15 @@ import {
 
 export type DiscrepancyItem = DiscrepancyRecord
 
-export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string }) {
+export function WarehouseAuditTable({
+  newScannedAwb,
+}: {
+  newScannedAwb?: string
+}) {
   const [items, setItems] = useState<DiscrepancyItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [reload, setReload] = useState(0)
   const [isResolving, setIsResolving] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const lastProcessedAwbRef = useRef<string | null>(null)
@@ -41,7 +47,17 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
     let active = true
     async function loadDiscrepancies() {
       setIsLoading(true)
-      const res = await getWarehouseAuditDiscrepanciesAction()
+      setLoadError(null)
+      let res
+      try {
+        res = await getWarehouseAuditDiscrepanciesAction()
+      } catch {
+        res = {
+          success: false,
+          error: "Warehouse audit is unavailable. Try again.",
+          data: [],
+        }
+      }
       if (active) {
         if (res.success && res.data) {
           setItems((prev) => {
@@ -49,6 +65,10 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
             const freshScans = prev.filter((item) => !fetchedAwbs.has(item.awb))
             return [...freshScans, ...res.data]
           })
+        } else {
+          setLoadError(
+            res.error || "Failed to load the complete warehouse audit"
+          )
         }
         setIsLoading(false)
       }
@@ -57,7 +77,7 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
     return () => {
       active = false
     }
-  }, [])
+  }, [reload])
 
   useEffect(() => {
     if (!newScannedAwb || newScannedAwb === lastProcessedAwbRef.current) return
@@ -72,7 +92,8 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
 
       if (res.isDiscrepancy && res.discrepancy) {
         setItems((prev) => {
-          if (prev.some((item) => item.awb === res.discrepancy!.awb)) return prev
+          if (prev.some((item) => item.awb === res.discrepancy!.awb))
+            return prev
           return [res.discrepancy!, ...prev]
         })
         toast.warning(res.message || `Discrepancy flagged for AWB ${awb}`)
@@ -127,7 +148,9 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
       )
     )
 
-    toast.success(`Successfully reconciled ${selectedIds.length} consignment(s)`)
+    toast.success(
+      `Successfully reconciled ${selectedIds.length} consignment(s)`
+    )
     setSelectedIds([])
   }
 
@@ -171,7 +194,8 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
             <CardTitle>Discrepancy Reconciliation</CardTitle>
           </div>
           <CardDescription className="mt-1">
-            Reconcile physical inventory scans against expected manifests and hub bin locations.
+            Reconcile physical inventory scans against expected manifests and
+            hub bin locations.
           </CardDescription>
         </div>
 
@@ -181,7 +205,12 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
             variant="default"
             size="sm"
             onClick={handleBatchResolve}
-            disabled={selectedIds.length === 0 || isResolving}
+            disabled={
+              selectedIds.length === 0 ||
+              isResolving ||
+              !!loadError ||
+              isLoading
+            }
             className="font-medium"
           >
             {isResolving ? (
@@ -220,8 +249,23 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
                 <TableRow>
                   <TableCell colSpan={7} className="h-32 text-center">
                     <div className="flex flex-col items-center justify-center text-muted-foreground">
-                      <Loader2 className="size-6 animate-spin text-primary mb-2" />
+                      <Loader2 className="mb-2 size-6 animate-spin text-primary" />
                       <p className="text-xs">Loading warehouse audit data...</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : loadError ? (
+                <TableRow>
+                  <TableCell colSpan={7}>
+                    <div role="alert" className="flex flex-col gap-3">
+                      <p>{loadError}</p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setReload((value) => value + 1)}
+                      >
+                        Retry
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -229,9 +273,14 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
                 <TableRow>
                   <TableCell colSpan={7} className="h-32 text-center">
                     <div className="flex flex-col items-center justify-center text-muted-foreground">
-                      <CheckCircle2 className="size-8 text-success/70 mb-2" />
-                      <p className="text-sm font-medium text-foreground">No active discrepancies</p>
-                      <p className="text-xs">All floor inventory matches recorded manifests. Scan any unit to audit.</p>
+                      <CheckCircle2 className="mb-2 size-8 text-success/70" />
+                      <p className="text-sm font-medium text-foreground">
+                        No active discrepancies
+                      </p>
+                      <p className="text-xs">
+                        All floor inventory matches recorded manifests. Scan any
+                        unit to audit.
+                      </p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -260,17 +309,21 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
                         {item.hub}
                       </TableCell>
                       <TableCell className="text-xs">
-                        <span className="text-muted-foreground line-through mr-1.5">
+                        <span className="mr-1.5 text-muted-foreground line-through">
                           {item.expectedLocation}
                         </span>
                         <span className="font-medium text-foreground">
                           {item.scannedLocation}
                         </span>
                       </TableCell>
-                      <TableCell>{getDiscrepancyBadge(item.discrepancyType)}</TableCell>
+                      <TableCell>
+                        {getDiscrepancyBadge(item.discrepancyType)}
+                      </TableCell>
                       <TableCell>
                         <Badge
-                          variant={item.status === "reconciled" ? "success" : "warning"}
+                          variant={
+                            item.status === "reconciled" ? "success" : "warning"
+                          }
                           className="text-xs capitalize"
                         >
                           {item.status}
@@ -283,14 +336,18 @@ export function WarehouseAuditTable({ newScannedAwb }: { newScannedAwb?: string 
                             variant="ghost"
                             size="sm"
                             disabled={isResolving}
-                            onClick={() => handleResolveSingle(item.id, item.awb)}
+                            onClick={() =>
+                              handleResolveSingle(item.id, item.awb)
+                            }
                             className="h-7 px-2 text-xs"
                           >
                             <CheckCircle2 className="mr-1 size-3.5 text-success" />
                             Resolve
                           </Button>
                         ) : (
-                          <span className="text-xs text-muted-foreground font-medium">Reconciled</span>
+                          <span className="text-xs font-medium text-muted-foreground">
+                            Reconciled
+                          </span>
                         )}
                       </TableCell>
                     </TableRow>

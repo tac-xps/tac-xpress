@@ -1,6 +1,5 @@
 "use client"
 import { DispatchBoardItem } from "./dispatch-board-item"
-import { useMemo, useState } from "react"
 import {
   Card,
   CardContent,
@@ -9,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/reui/badge"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -39,6 +39,8 @@ export function DispatchClientLayout({
   dispatchRuns,
   page,
   hasNext,
+  queueHasNext,
+  searchQuery,
   view,
 }: {
   pendingShipments: Shipment[]
@@ -47,16 +49,11 @@ export function DispatchClientLayout({
   dispatchRuns: Manifest[]
   page: number
   hasNext: boolean
+  queueHasNext: boolean
+  searchQuery: string
   view: string
 }) {
-  const [query, setQuery] = useState("")
-  const items = useMemo(
-    () =>
-      queueItems.filter((item) =>
-        (item.id + " " + item.route).toLowerCase().includes(query.toLowerCase())
-      ),
-    [query, queueItems]
-  )
+  const items = queueItems
   const columns = [
     {
       id: "pending",
@@ -82,24 +79,32 @@ export function DispatchClientLayout({
       </PageHeader>
       <Tabs defaultValue={view}>
         <TabsList>
-          <TabsTrigger value="board">Active shipment board</TabsTrigger>
+          <TabsTrigger value="board">Available cargo</TabsTrigger>
           <TabsTrigger value="runs">Dispatch runs</TabsTrigger>
         </TabsList>
         <TabsContent value="board" className="mt-5">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
-              Latest 100 active shipments. Status changes are recorded through
-              shipment events and manifest finalization.
+              Available pickup and delivery cargo, oldest first. Search all
+              eligible shipments or page through the queue.
             </p>
-            <div className="grid gap-2 sm:w-72">
-              <Label htmlFor="dispatch-filter">Find on this board</Label>
+            <form
+              action="/dashboard/dispatch"
+              method="get"
+              className="grid gap-2 sm:w-72"
+            >
+              <input type="hidden" name="view" value="board" />
+              <Label htmlFor="dispatch-filter">Find available cargo</Label>
               <Input
                 id="dispatch-filter"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
+                name="q"
+                defaultValue={searchQuery}
                 placeholder="AWB or route"
               />
-            </div>
+              <Button type="submit" variant="outline">
+                Search cargo
+              </Button>
+            </form>
           </div>
           <div className="grid gap-5 lg:grid-cols-2">
             {columns.map((column) => (
@@ -133,6 +138,12 @@ export function DispatchClientLayout({
               </Card>
             ))}
           </div>
+          <PageNavigation
+            page={page}
+            hasNext={queueHasNext}
+            pathname="/dashboard/dispatch"
+            query={{ view: "board", q: searchQuery }}
+          />
         </TabsContent>
         <TabsContent value="runs" className="mt-5">
           <Card>
