@@ -5,7 +5,12 @@ $profilePath = Join-Path $repositoryRoot '.env.backup.local'
 if (-not (Test-Path -LiteralPath $profilePath)) { throw 'Configure .env.backup.local first.' }
 $rootLine = Get-Content -LiteralPath $profilePath | Where-Object { $_ -match '^BACKUP_ROOT=' } | Select-Object -First 1
 if (-not $rootLine) { throw 'The backup root is missing.' }
-$backupRoot = $rootLine.Substring('BACKUP_ROOT='.Length) | ConvertFrom-Json
+$rawValue = $rootLine.Substring('BACKUP_ROOT='.Length).Trim()
+if (($rawValue.StartsWith('"') -and $rawValue.EndsWith('"')) -or ($rawValue.StartsWith("'") -and $rawValue.EndsWith("'"))) {
+  $backupRoot = $rawValue.Substring(1, $rawValue.Length - 2)
+} else {
+  $backupRoot = $rawValue
+}
 if (-not [IO.Path]::IsPathRooted($backupRoot) -or [IO.Path]::GetFileName($backupRoot) -ne 'tac-xpress-dr') { throw 'The dedicated backup root is invalid.' }
 if ($RunBackup) {
   if (-not $LogPath) { $LogPath = Join-Path $backupRoot 'scheduled-backup.log' }

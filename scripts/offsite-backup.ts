@@ -368,6 +368,7 @@ async function runBackup() {
   const backupId = `${started.toISOString().replace(/[-:.]/g, "")}-${randomBytes(8).toString("hex")}`
   const run = join(settings.BACKUP_ROOT, backupId)
   const capture = join(run, "capture")
+  const restored = join(run, "restored")
   await fs.mkdir(join(capture, "storage"), { recursive: true, mode: 0o700 })
   const local = (name: string, args: string[], environment = process.env) =>
     program(name, args, run, environment)
@@ -569,7 +570,6 @@ async function runBackup() {
     const snapshotId = hex.parse(summaries.at(-1)?.snapshot_id)
     phase = "verify"
     restic(["check", "--read-data"])
-    const restored = join(run, "restored")
     restic(["restore", snapshotId, "--target", restored, "--verify"])
     const recoveredRoot = await restoredDataRoot(restored)
     const recoveredManifest = await verifyRecoveredFiles(recoveredRoot)
@@ -633,6 +633,8 @@ async function runBackup() {
     )
     console.info(JSON.stringify(receipt))
   } catch (error) {
+    await removeOwnedDirectory(run, capture).catch(() => {})
+    await removeOwnedDirectory(run, restored).catch(() => {})
     await fs.writeFile(join(run, "failure.private.log"), String(error), {
       mode: 0o600,
     })

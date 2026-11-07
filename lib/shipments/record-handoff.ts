@@ -105,13 +105,10 @@ export async function recordManifestItemHandoff(
       if (manifest.legType !== "delivery" || input.outcome !== "received") {
         throw new Error("Signatures require a delivery receipt")
       }
-      const signed = await tx
+      await tx
         .update(invoices)
         .set({ signatureUrl: input.signatureDataUrl })
         .where(eq(invoices.shipmentId, shipment.id))
-        .returning({ id: invoices.id })
-      if (!signed.length)
-        throw new Error("A delivery signature requires an invoice")
     }
 
     let delivered = false

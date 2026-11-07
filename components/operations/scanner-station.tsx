@@ -69,9 +69,6 @@ export function ScannerStation({ initialAwb }: { initialAwb: string }) {
   const [detailOpen, setDetailOpen] = useState(false)
 
   // Update tracking form state
-  const [updateStatus, setUpdateStatus] = useState<
-    "pending" | "in-transit" | "delivered"
-  >("in-transit")
   const [location, setLocation] = useState("")
   const [description, setDescription] = useState("")
   const [isPublic, setIsPublic] = useState(true)
@@ -95,7 +92,7 @@ export function ScannerStation({ initialAwb }: { initialAwb: string }) {
       try {
         const res = await createTrackingEventAction({
           shipmentId: shipment.id,
-          status: updateStatus,
+          status: shipment.status,
           location: location.trim(),
           description: description.trim(),
           isPublic,
@@ -406,33 +403,9 @@ export function ScannerStation({ initialAwb }: { initialAwb: string }) {
                     <StatusBadge status={shipment.status} />
                   </div>
 
-                  {/* New Status Selection */}
-                  <div className="space-y-2">
-                    <Label htmlFor="update-status" className="text-xs">
-                      Update status to
-                    </Label>
-                    <div className="grid grid-cols-3 gap-1.5">
-                      {(
-                        [
-                          ["in-transit", "In Transit"],
-                          ["delivered", "Delivered"],
-                          ["pending", "Pending"],
-                        ] as const
-                      ).map(([val, label]) => (
-                        <button
-                          key={val}
-                          type="button"
-                          onClick={() => setUpdateStatus(val)}
-                          className={`rounded-none border p-2 text-center text-xs font-medium transition-colors ${
-                            updateStatus === val
-                              ? "border-primary bg-primary/10 text-primary"
-                              : "border-border bg-background text-muted-foreground hover:bg-muted"
-                          }`}
-                        >
-                          {label}
-                        </button>
-                      ))}
-                    </div>
+                  {/* Checkpoint status notice */}
+                  <div className="border border-border/80 bg-muted/30 p-2.5 text-xs text-muted-foreground">
+                    Recording checkpoint observation for active cargo status. Custody status transitions occur through dispatch manifests and delivery handovers.
                   </div>
 
                   {/* Location Field with Quick Corridor Chips */}

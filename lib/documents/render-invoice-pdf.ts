@@ -3,7 +3,7 @@ import { getAppUrl } from "@/lib/config/app-url"
 import { signDocumentToken } from "@/lib/auth/document-token"
 import { isAbsolute } from "node:path"
 import { db } from "@/lib/db"
-import { invoices } from "@/lib/db/schema"
+import { invoices, shipments } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import type { Browser } from "puppeteer-core"
 
@@ -142,11 +142,19 @@ export async function renderInvoicePdf(
       if (!modifiedTime) {
         try {
           const [inv] = await db
-            .select({ updatedAt: invoices.updatedAt })
+            .select({
+              updatedAt: invoices.updatedAt,
+              shipmentUpdatedAt: shipments.updatedAt,
+            })
             .from(invoices)
+            .leftJoin(shipments, eq(invoices.shipmentId, shipments.id))
             .where(eq(invoices.id, id))
-          if (inv?.updatedAt) {
-            modifiedTime = new Date(inv.updatedAt).getTime()
+          if (inv) {
+            const invoiceTime = inv.updatedAt ? new Date(inv.updatedAt).getTime() : 0
+            const shipmentTime = inv.shipmentUpdatedAt
+              ? new Date(inv.shipmentUpdatedAt).getTime()
+              : 0
+            modifiedTime = Math.max(invoiceTime, shipmentTime)
           }
         } catch {
           // If DB is offline, continue with timestamp check
@@ -254,11 +262,19 @@ export async function renderLabelPdf(
       if (!modifiedTime) {
         try {
           const [inv] = await db
-            .select({ updatedAt: invoices.updatedAt })
+            .select({
+              updatedAt: invoices.updatedAt,
+              shipmentUpdatedAt: shipments.updatedAt,
+            })
             .from(invoices)
+            .leftJoin(shipments, eq(invoices.shipmentId, shipments.id))
             .where(eq(invoices.id, id))
-          if (inv?.updatedAt) {
-            modifiedTime = new Date(inv.updatedAt).getTime()
+          if (inv) {
+            const invoiceTime = inv.updatedAt ? new Date(inv.updatedAt).getTime() : 0
+            const shipmentTime = inv.shipmentUpdatedAt
+              ? new Date(inv.shipmentUpdatedAt).getTime()
+              : 0
+            modifiedTime = Math.max(invoiceTime, shipmentTime)
           }
         } catch {
           // If DB is offline, continue with timestamp check

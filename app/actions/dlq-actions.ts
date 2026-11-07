@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db"
 import { deadLetterQueue, tickets } from "@/lib/db/schema"
-import { and, eq, isNull, sql } from "drizzle-orm"
+import { and, eq, isNull, lte, or, sql } from "drizzle-orm"
 import { requireDashboardAction } from "@/lib/auth/guards"
 import { logAuditInTransaction } from "@/lib/audit"
 import { z } from "zod"
@@ -244,7 +244,10 @@ export async function dismissDlqItem(
       .where(
         and(
           eq(deadLetterQueue.id, dlqId),
-          isNull(deadLetterQueue.recoveryToken),
+          or(
+            isNull(deadLetterQueue.recoveryToken),
+            lte(deadLetterQueue.lockedUntil, new Date())
+          ),
           eq(deadLetterQueue.retryCount, item.retryCount)
         )
       )

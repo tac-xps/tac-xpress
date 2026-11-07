@@ -195,7 +195,7 @@ export function LandingNav() {
             type="button"
             variant="outline"
             size="sm"
-            className="rounded-none text-xs h-8 px-2.5"
+            className="rounded-none text-xs min-h-11 h-11 px-3"
             onClick={() => setTrackingModalOpen(true)}
           >
             Track
@@ -204,7 +204,7 @@ export function LandingNav() {
             ref={mobileButtonRef}
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex size-10 items-center justify-center border border-border/80 bg-card hover:bg-muted text-foreground transition-colors rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground active:scale-[0.96] cursor-pointer"
+            className="flex size-11 items-center justify-center border border-border/80 bg-card hover:bg-muted text-foreground transition-colors rounded-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground active:scale-[0.96] cursor-pointer"
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
           >
