@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useSyncExternalStore } from "react"
 import { cn } from "@/lib/utils"
 import { Check, Mail, MapPin, Phone, Clock, ArrowUpRight, Loader2, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -10,28 +10,22 @@ import { Badge } from "@/components/reui/badge"
 import { IconTile } from "@/components/reui/icon-tile"
 import { createTicket } from "@/app/actions/tickets"
 
+const subscribeToHash = (callback: () => void) => {
+  window.addEventListener("hashchange", callback)
+  return () => window.removeEventListener("hashchange", callback)
+}
+const getHashSnapshot = () => (window.location.hash === "#feedback" ? "feedback" : "booking")
+const getServerSnapshot = () => "booking"
+
 export function ContactSection() {
   const [submitted, setSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<"customer_name" | "customer_email" | "customer_phone" | "message", string>>>({})
   const [ticketId, setTicketId] = useState<string | null>(null)
-  const [intent, setIntent] = useState<"booking" | "feedback">(() => {
-    if (typeof window !== "undefined" && window.location.hash === "#feedback") {
-      return "feedback"
-    }
-    return "booking"
-  })
-
-  useEffect(() => {
-    const handleHash = () => {
-      if (window.location.hash === "#feedback") {
-        setIntent("feedback")
-      }
-    }
-    window.addEventListener("hashchange", handleHash)
-    return () => window.removeEventListener("hashchange", handleHash)
-  }, [])
+  const hashIntent = useSyncExternalStore(subscribeToHash, getHashSnapshot, getServerSnapshot)
+  const [manualIntent, setManualIntent] = useState<"booking" | "feedback" | null>(null)
+  const intent = manualIntent ?? hashIntent
 
   const [formData, setFormData] = useState({
     name: "",
@@ -192,7 +186,7 @@ export function ContactSection() {
               <div className="flex border border-border bg-muted/40 p-1 mb-6 rounded-none">
                 <button
                   type="button"
-                  onClick={() => { setIntent("booking"); setSubmitted(false); }}
+                  onClick={() => { setManualIntent("booking"); setSubmitted(false); }}
                   className={cn(
                     "flex-1 py-1.5 text-xs font-medium transition-colors text-center rounded-none",
                     intent === "booking"
@@ -204,7 +198,7 @@ export function ContactSection() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setIntent("feedback"); setSubmitted(false); }}
+                  onClick={() => { setManualIntent("feedback"); setSubmitted(false); }}
                   className={cn(
                     "flex-1 py-1.5 text-xs font-medium transition-colors text-center rounded-none",
                     intent === "feedback"

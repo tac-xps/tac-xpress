@@ -45,12 +45,12 @@ export function CorridorCinemaSection() {
               )}
             />
             <div className="absolute inset-0 flex items-center justify-center">
-              <DialogTrigger asChild>
-                <motion.div
-                  whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
-                  whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
-                  transition={{ duration: 0.15 }}
-                >
+              <motion.div
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+              >
+                <DialogTrigger asChild>
                   <Button
                     type="button"
                     variant="outline"
@@ -60,8 +60,8 @@ export function CorridorCinemaSection() {
                   >
                     <ZoomIn aria-hidden="true" />
                   </Button>
-                </motion.div>
-              </DialogTrigger>
+                </DialogTrigger>
+              </motion.div>
             </div>
           </div>
           <DialogContent className="cargo-public">
