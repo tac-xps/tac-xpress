@@ -88,12 +88,6 @@ export async function recordManifestItemHandoff(
       throw new Error("Only active in-transit cargo can record an exception")
     }
 
-    const notesPayload = input.signatureDataUrl
-      ? input.notes
-        ? `${input.notes} [signature:${input.signatureDataUrl}]`
-        : `[signature:${input.signatureDataUrl}]`
-      : input.notes || null
-
     const [handoff] = await tx
       .insert(manifestItemHandoffs)
       .values({
@@ -103,7 +97,7 @@ export async function recordManifestItemHandoff(
         receivingParty: input.receivingParty || null,
         receivedBy: actor.id,
         eventKey: input.eventKey,
-        notes: notesPayload,
+        notes: input.notes || null,
       })
       .returning()
 
@@ -111,10 +105,14 @@ export async function recordManifestItemHandoff(
       if (manifest.legType !== "delivery" || input.outcome !== "received") {
         throw new Error("Signatures require a delivery receipt")
       }
-      await tx
+      const [signed] = await tx
         .update(invoices)
         .set({ signatureUrl: input.signatureDataUrl })
         .where(eq(invoices.shipmentId, shipment.id))
+        .returning({ id: invoices.id })
+      if (!signed) {
+        throw new Error("A delivery signature requires an existing invoice")
+      }
     }
 
     let delivered = false

@@ -309,8 +309,8 @@ export async function resolveExpiredDlqClaim(
     }
   }
 
-  await db.transaction(async (tx) => {
-    await tx
+  const resolved = await db.transaction(async (tx) => {
+    const updated = await tx
       .update(deadLetterQueue)
       .set({ recoveryToken: null, lockedUntil: null })
       .where(
@@ -319,6 +319,9 @@ export async function resolveExpiredDlqClaim(
           lte(deadLetterQueue.lockedUntil, new Date())
         )
       )
+      .returning({ id: deadLetterQueue.id })
+
+    if (!updated.length) return false
 
     await logAuditInTransaction(tx, {
       action: "dlq_claim_resolved",
@@ -331,7 +334,15 @@ export async function resolveExpiredDlqClaim(
         reason: "Lease expired and provider history verified",
       },
     })
+    return true
   })
+
+  if (!resolved) {
+    return {
+      success: false,
+      error: "The claim is no longer expired or was modified by another request.",
+    }
+  }
 
   revalidatePath("/dashboard/jobs")
   revalidatePath("/dashboard/communications")

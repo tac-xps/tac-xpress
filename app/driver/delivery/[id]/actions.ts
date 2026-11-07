@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { manifests, manifestItems, shipments } from "@/lib/db/schema"
+import { invoices, manifests, manifestItems, shipments } from "@/lib/db/schema"
 import { and, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
@@ -48,6 +48,15 @@ export const completeDeliveryAction = authActionClient
       if (!delivery)
         throw new Error(
           "Start an assigned delivery run before completing delivery"
+        )
+      const [invoice] = await db
+        .select({ id: invoices.id })
+        .from(invoices)
+        .where(eq(invoices.shipmentId, shipmentId))
+        .limit(1)
+      if (!invoice)
+        throw new Error(
+          "Generate an invoice for this shipment before completing delivery"
         )
       const result = await recordManifestItemHandoff(
         {
