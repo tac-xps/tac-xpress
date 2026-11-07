@@ -244,10 +244,7 @@ export async function dismissDlqItem(
       .where(
         and(
           eq(deadLetterQueue.id, dlqId),
-          or(
-            isNull(deadLetterQueue.recoveryToken),
-            lte(deadLetterQueue.lockedUntil, new Date())
-          ),
+          isNull(deadLetterQueue.recoveryToken),
           eq(deadLetterQueue.retryCount, item.retryCount)
         )
       )
@@ -277,4 +274,66 @@ export async function dismissDlqItem(
   revalidatePath("/dashboard/communications")
 
   return { success: true, message: "DLQ item dismissed." }
+}
+
+/**
+ * Release an expired recovery claim after staff confirms provider history.
+ * Prevents active retries from being dismissed while releasing orphaned locks.
+ */
+export async function resolveExpiredDlqClaim(
+  dlqId: string
+): Promise<DlqActionResponse> {
+  const authCheck = await requireDashboardAction(["admin", "staff"])
+  if (!authCheck.ok) {
+    return { success: false, error: authCheck.response.error }
+  }
+
+  const [item] = await db
+    .select({
+      id: deadLetterQueue.id,
+      action: deadLetterQueue.action,
+      lockedUntil: deadLetterQueue.lockedUntil,
+    })
+    .from(deadLetterQueue)
+    .where(eq(deadLetterQueue.id, dlqId))
+    .limit(1)
+
+  if (!item) {
+    return { success: false, error: "DLQ item not found." }
+  }
+
+  if (!item.lockedUntil || item.lockedUntil > new Date()) {
+    return {
+      success: false,
+      error: "Cannot resolve an active claim before its lease expires.",
+    }
+  }
+
+  await db.transaction(async (tx) => {
+    await tx
+      .update(deadLetterQueue)
+      .set({ recoveryToken: null, lockedUntil: null })
+      .where(
+        and(
+          eq(deadLetterQueue.id, dlqId),
+          lte(deadLetterQueue.lockedUntil, new Date())
+        )
+      )
+
+    await logAuditInTransaction(tx, {
+      action: "dlq_claim_resolved",
+      entity: "dead_letter_queue",
+      entityId: dlqId,
+      userId: authCheck.session.user.id,
+      userEmail: authCheck.session.user.email ?? null,
+      metadata: {
+        action: item.action,
+        reason: "Lease expired and provider history verified",
+      },
+    })
+  })
+
+  revalidatePath("/dashboard/jobs")
+  revalidatePath("/dashboard/communications")
+  return { success: true, message: "Expired claim resolved." }
 }

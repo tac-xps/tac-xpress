@@ -88,6 +88,12 @@ export async function recordManifestItemHandoff(
       throw new Error("Only active in-transit cargo can record an exception")
     }
 
+    const notesPayload = input.signatureDataUrl
+      ? input.notes
+        ? `${input.notes} [signature:${input.signatureDataUrl}]`
+        : `[signature:${input.signatureDataUrl}]`
+      : input.notes || null
+
     const [handoff] = await tx
       .insert(manifestItemHandoffs)
       .values({
@@ -97,7 +103,7 @@ export async function recordManifestItemHandoff(
         receivingParty: input.receivingParty || null,
         receivedBy: actor.id,
         eventKey: input.eventKey,
-        notes: input.notes || null,
+        notes: notesPayload,
       })
       .returning()
 

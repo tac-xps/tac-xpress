@@ -103,6 +103,7 @@ export function ScannerStation({ initialAwb }: { initialAwb: string }) {
           setDescription("")
           await station.search(shipment.awbNumber)
         } else {
+          await station.search(shipment.awbNumber)
           toast.error(
             res?.serverError || "Could not log tracking event. Check inputs."
           )
