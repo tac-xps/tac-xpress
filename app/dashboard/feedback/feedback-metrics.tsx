@@ -2,7 +2,7 @@
 
 import React from "react"
 import { useQueryState, parseAsString, parseAsInteger } from "nuqs"
-import { MessageSquare, ThumbsUp, AlertCircle, Sparkles, TrendingUp } from "lucide-react"
+import { MessageSquare, ThumbsUp, AlertCircle, Sparkles } from "lucide-react"
 import { motion, useReducedMotion } from "motion/react"
 import { staggerContainer, staggerItem, microGestures } from "@/lib/animations"
 import { AnimatedCounter } from "@/components/ui/animated-counter"
@@ -92,19 +92,8 @@ export function FeedbackMetrics({ metrics }: FeedbackMetricsProps) {
   return (
     <section
       aria-label="Feedback Metrics & Quick Filters"
-      className="overflow-hidden rounded-none border border-border/80 bg-card shadow-xs"
+      className="overflow-hidden rounded-none border border-border bg-card"
     >
-      <div className="flex items-center justify-between border-b border-border/80 bg-muted/30 px-5 py-2.5 text-xs text-muted-foreground">
-        <span className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider">
-          <TrendingUp className="size-3.5 text-primary" />
-          Feedback Signal Telemetry
-        </span>
-        <span className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground/70">
-          <span className="size-1.5 rounded-none bg-success" />
-          Live Ingestion
-        </span>
-      </div>
-
       <motion.div
         variants={staggerContainer}
         initial={shouldReduceMotion ? false : "hidden"}
@@ -124,7 +113,7 @@ export function FeedbackMetrics({ metrics }: FeedbackMetricsProps) {
               variants={staggerItem}
               whileHover={shouldReduceMotion ? {} : microGestures.hoverLift}
               onClick={() => handleSelect(item.id)}
-              className={`group flex flex-col items-start p-5 text-left transition-all ${
+              className={`group flex flex-col items-start p-5 text-left transition-colors ${
                 isActive ? item.activeColor : "bg-card hover:bg-muted/30"
               }`}
             >
@@ -132,12 +121,12 @@ export function FeedbackMetrics({ metrics }: FeedbackMetricsProps) {
                 <span className="font-medium text-foreground group-hover:text-primary transition-colors">
                   {item.label}
                 </span>
-                <Icon className={`size-4 ${item.color} transition-transform group-hover:scale-110`} />
+                <Icon className={`size-4 ${item.color}`} />
               </div>
-              <div className="mt-2 font-mono text-2xl font-bold tabular-nums text-foreground">
+              <div className="mt-2 text-2xl font-semibold tabular-nums text-foreground">
                 <AnimatedCounter value={item.value} />
               </div>
-              <span className="mt-1 font-mono text-xs text-muted-foreground">
+              <span className="mt-1 text-xs text-muted-foreground">
                 {item.subtext}
               </span>
             </motion.button>

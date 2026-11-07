@@ -51,7 +51,14 @@ export function FailedJobsTable({
     {
       accessorKey: "dedupeKey",
       header: ({ column }) => <ColumnHeader column={column} title="Dedupe Key" />,
-      cell: ({ row }) => <span className="font-mono text-xs">{row.original.dedupeKey}</span>,
+      cell: ({ row }) => {
+        const key = row.original.dedupeKey ?? ""
+        return (
+          <span className="font-mono text-xs text-muted-foreground" title={key}>
+            {key.length > 14 ? `${key.slice(0, 8)}...${key.slice(-4)}` : key}
+          </span>
+        )
+      },
     },
     {
       accessorKey: "attempts",
@@ -74,7 +81,7 @@ export function FailedJobsTable({
       accessorKey: "createdAt",
       header: ({ column }) => <ColumnHeader column={column} title="Created" />,
       cell: ({ row }) => (
-        <span className="whitespace-nowrap">{format(new Date(row.original.createdAt), "PPp")}</span>
+        <span className="whitespace-nowrap text-xs text-muted-foreground">{format(new Date(row.original.createdAt), "PPp")}</span>
       ),
     },
     {

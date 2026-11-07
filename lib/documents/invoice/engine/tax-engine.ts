@@ -162,8 +162,8 @@ export function calculateInvoiceTaxes(input: TaxEngineInput): TaxEngineOutput {
     // 50% CGST and 50% SGST with exact remainder
     const halfPaise = Math.floor(totalTax.paise / 2)
     const remainder = totalTax.paise - halfPaise * 2
-    cgst = money(halfPaise + remainder)
-    sgst = money(halfPaise)
+    cgst = money(halfPaise)
+    sgst = money(halfPaise + remainder)
   }
 
   // 6. Build Audit & Decision Record

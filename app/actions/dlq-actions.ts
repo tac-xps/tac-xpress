@@ -1,12 +1,14 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { deadLetterQueue, backgroundJobs, tickets } from "@/lib/db/schema"
-import { and, eq, sql } from "drizzle-orm"
+import { deadLetterQueue, tickets } from "@/lib/db/schema"
+import { and, eq, isNull, sql } from "drizzle-orm"
 import { requireDashboardAction } from "@/lib/auth/guards"
-import { logAudit } from "@/lib/audit"
+import { logAuditInTransaction } from "@/lib/audit"
+import { z } from "zod"
 import * as Sentry from "@sentry/nextjs"
 import { revalidatePath } from "next/cache"
+import { queryRows } from "@/lib/jobs/store"
 
 export interface DlqActionResponse {
   success: boolean
@@ -24,24 +26,39 @@ export async function retryDlqItem(dlqId: string): Promise<DlqActionResponse> {
     return { success: false, error: authCheck.response.error }
   }
 
-  // Atomic claim: increment retryCount to lock this item from concurrent execution
+  // Expired claims stay closed: a crashed sender may already have reached its provider.
+  const recoveryToken = crypto.randomUUID()
   const [claimed] = await db
     .update(deadLetterQueue)
     .set({
       retryCount: sql`${deadLetterQueue.retryCount} + 1`,
+      recoveryToken,
+      lockedUntil: new Date(Date.now() + 5 * 60 * 1000),
     })
-    .where(eq(deadLetterQueue.id, dlqId))
+    .where(
+      and(eq(deadLetterQueue.id, dlqId), isNull(deadLetterQueue.recoveryToken))
+    )
     .returning()
 
   if (!claimed) {
-    return { success: false, error: "DLQ item not found or already in recovery." }
+    return {
+      success: false,
+      error:
+        "DLQ item unavailable or claimed. Review provider history before recovering an expired claim.",
+    }
   }
 
   const item = claimed
-  const payload = (item.payload ?? {}) as Record<string, any>
+  let reprocessed = false
 
   try {
-    let reprocessed = false
+    const payload = z
+      .object({
+        ticketId: z.string().uuid().optional(),
+        category: z.string().optional(),
+        awb: z.string().optional(),
+      })
+      .parse(item.payload ?? {})
 
     // Route to the appropriate recovery handler based on the recorded action
     if (item.action === "ai_auto_reply_generation") {
@@ -55,11 +72,18 @@ export async function retryDlqItem(dlqId: string): Promise<DlqActionResponse> {
           awb = t?.relatedAwb ?? undefined
         }
         const { generateAutoReply } = await import("@/app/actions/ai-responder")
-        const replyResult = await generateAutoReply(payload.ticketId, payload.category, awb, {
-          enqueueDlqOnFailure: false,
-        })
+        const replyResult = await generateAutoReply(
+          payload.ticketId,
+          payload.category,
+          awb,
+          {
+            enqueueDlqOnFailure: false,
+          }
+        )
         if (!replyResult) {
-          throw new Error("AI auto-reply generation returned null or failed safety guardrail.")
+          throw new Error(
+            "AI auto-reply generation returned null or failed safety guardrail."
+          )
         }
         reprocessed = true
       }
@@ -86,20 +110,9 @@ export async function retryDlqItem(dlqId: string): Promise<DlqActionResponse> {
         }
       }
     } else if (item.action === "whatsapp_relay_send") {
-      if (payload.to && payload.text) {
-        const { sendWhatsAppTextMessage } = await import("@/lib/whatsapp/service")
-        const relayResult = await sendWhatsAppTextMessage({
-          to: payload.to,
-          text: payload.text,
-          relatedTicketId: payload.relatedTicketId,
-          relatedAwb: payload.relatedAwb,
-          context: "dlq_retry",
-        })
-        if (!relayResult.success) {
-          throw new Error(relayResult.error || "WhatsApp relay message failed to send.")
-        }
-        reprocessed = true
-      }
+      throw new Error(
+        "Review WhatsApp provider history before creating another delivery attempt. Automatic resend is disabled for uncertain sends."
+      )
     } else if (
       item.action === "support_email" ||
       item.action === "support_triage" ||
@@ -107,42 +120,60 @@ export async function retryDlqItem(dlqId: string): Promise<DlqActionResponse> {
       item.action === "sla_breach_email_res"
     ) {
       if (payload.ticketId) {
-        await db.execute(
-          sql`insert into background_jobs (kind, dedupe_key, payload, status) values (${item.action}, ${payload.ticketId}, ${JSON.stringify(payload)}::jsonb, 'pending') on conflict (kind, dedupe_key) do update set status = 'pending', attempts = 0, available_at = now()`
+        const slaEmail =
+          item.action === "sla_breach_email_fr" ||
+          item.action === "sla_breach_email_res"
+        const kind = slaEmail ? "support_email" : item.action
+        const dedupeKey = slaEmail
+          ? `${item.action}/${payload.ticketId}`
+          : payload.ticketId
+        const jobPayload = slaEmail
+          ? { ...payload, notificationType: "sla_breach" }
+          : payload
+        const queued = await db.execute(
+          sql`insert into background_jobs (kind, dedupe_key, payload, status) values (${kind}, ${dedupeKey}, ${JSON.stringify(jobPayload)}::jsonb, 'pending') on conflict (kind, dedupe_key) do update set status = 'pending', attempts = least(background_jobs.attempts, 4), available_at = now() where background_jobs.status = 'failed' and (background_jobs.kind = 'support_triage' or background_jobs.created_at > now() - interval '23 hours') returning id`
         )
+        if (!queryRows(queued).length)
+          throw new Error(
+            "Existing job is active, completed, or outside the safe email retry window. Review its delivery history."
+          )
         reprocessed = true
       }
-    } else if (payload.ticketId) {
-      // Generic background job re-enqueue fallback
-      await db.execute(
-        sql`insert into background_jobs (kind, dedupe_key, payload, status) values ('support_triage', ${payload.ticketId}, ${JSON.stringify(payload)}::jsonb, 'pending') on conflict (kind, dedupe_key) do update set status = 'pending', attempts = 0, available_at = now()`
-      )
-      reprocessed = true
     }
 
     if (!reprocessed) {
-      throw new Error(`No automated retry strategy available for action "${item.action}".`)
+      throw new Error(
+        `No automated retry strategy available for action "${item.action}".`
+      )
     }
 
-    // Write audit log safely before removing DLQ item
-    await logAudit({
-      action: "dlq_item_retried",
-      entity: "dead_letter_queue",
-      entityId: dlqId,
-      userId: authCheck.session.user.id,
-      userEmail: authCheck.session.user.email ?? null,
-      metadata: {
-        originalAction: item.action,
-        retryCount: item.retryCount,
-        success: true,
-      },
-    }).catch((auditErr) => {
-      console.error("[DLQ] Failed to write audit log:", auditErr)
-      Sentry.captureException(auditErr)
+    await db.transaction(async (tx) => {
+      const deleted = await tx
+        .delete(deadLetterQueue)
+        .where(
+          and(
+            eq(deadLetterQueue.id, dlqId),
+            eq(deadLetterQueue.recoveryToken, recoveryToken)
+          )
+        )
+        .returning({ id: deadLetterQueue.id })
+      if (!deleted.length)
+        throw new Error(
+          "DLQ recovery ownership was lost. Review the completed operation."
+        )
+      await logAuditInTransaction(tx, {
+        action: "dlq_item_retried",
+        entity: "dead_letter_queue",
+        entityId: dlqId,
+        userId: authCheck.session.user.id,
+        userEmail: authCheck.session.user.email ?? null,
+        metadata: {
+          originalAction: item.action,
+          retryCount: item.retryCount,
+          success: true,
+        },
+      })
     })
-
-    // On success: delete from DLQ
-    await db.delete(deadLetterQueue).where(eq(deadLetterQueue.id, dlqId))
 
     revalidatePath("/dashboard/jobs")
     revalidatePath("/dashboard/communications")
@@ -151,8 +182,9 @@ export async function retryDlqItem(dlqId: string): Promise<DlqActionResponse> {
       success: true,
       message: `Successfully reprocessed ${item.action}.`,
     }
-  } catch (error: any) {
-    const errorMessage = error?.message || "Retry attempt failed."
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Retry attempt failed."
     Sentry.captureException(error, {
       tags: { area: "dlq_retry", action: item.action },
       extra: { dlqId },
@@ -163,8 +195,14 @@ export async function retryDlqItem(dlqId: string): Promise<DlqActionResponse> {
       .update(deadLetterQueue)
       .set({
         error: errorMessage,
+        ...(reprocessed ? {} : { recoveryToken: null, lockedUntil: null }),
       })
-      .where(eq(deadLetterQueue.id, dlqId))
+      .where(
+        and(
+          eq(deadLetterQueue.id, dlqId),
+          eq(deadLetterQueue.recoveryToken, recoveryToken)
+        )
+      )
 
     revalidatePath("/dashboard/jobs")
 
@@ -178,7 +216,9 @@ export async function retryDlqItem(dlqId: string): Promise<DlqActionResponse> {
 /**
  * Dismiss a DLQ item without retrying (operator acknowledges the failure as unrecoverable).
  */
-export async function dismissDlqItem(dlqId: string): Promise<DlqActionResponse> {
+export async function dismissDlqItem(
+  dlqId: string
+): Promise<DlqActionResponse> {
   const authCheck = await requireDashboardAction(["admin", "staff"])
   if (!authCheck.ok) {
     return { success: false, error: authCheck.response.error }
@@ -198,33 +238,36 @@ export async function dismissDlqItem(dlqId: string): Promise<DlqActionResponse> 
     return { success: false, error: "DLQ item not found." }
   }
 
-  await logAudit({
-    action: "dlq_item_dismissed",
-    entity: "dead_letter_queue",
-    entityId: dlqId,
-    userId: authCheck.session.user.id,
-    userEmail: authCheck.session.user.email ?? null,
-    metadata: {
-      action: item.action,
-    },
-  }).catch((auditErr) => {
-    console.error("[DLQ] Failed to write audit log for dismissal:", auditErr)
-    Sentry.captureException(auditErr)
+  const deleted = await db.transaction(async (tx) => {
+    const rows = await tx
+      .delete(deadLetterQueue)
+      .where(
+        and(
+          eq(deadLetterQueue.id, dlqId),
+          isNull(deadLetterQueue.recoveryToken),
+          eq(deadLetterQueue.retryCount, item.retryCount)
+        )
+      )
+      .returning({ id: deadLetterQueue.id })
+    if (!rows.length) return false
+    await logAuditInTransaction(tx, {
+      action: "dlq_item_dismissed",
+      entity: "dead_letter_queue",
+      entityId: dlqId,
+      userId: authCheck.session.user.id,
+      userEmail: authCheck.session.user.email ?? null,
+      metadata: {
+        action: item.action,
+      },
+    })
+    return true
   })
 
-  // Only delete if retryCount hasn't changed (no concurrent retry claimed it)
-  const deleted = await db
-    .delete(deadLetterQueue)
-    .where(
-      and(
-        eq(deadLetterQueue.id, dlqId),
-        eq(deadLetterQueue.retryCount, item.retryCount)
-      )
-    )
-    .returning({ id: deadLetterQueue.id })
-
-  if (!deleted.length) {
-    return { success: false, error: "DLQ item is currently being retried. Please wait." }
+  if (!deleted) {
+    return {
+      success: false,
+      error: "DLQ item is currently being retried. Please wait.",
+    }
   }
 
   revalidatePath("/dashboard/jobs")

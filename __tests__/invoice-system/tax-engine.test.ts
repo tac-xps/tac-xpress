@@ -1,8 +1,16 @@
 import { describe, it, expect } from "vitest"
 import { money } from "@/lib/documents/invoice/domain/money"
 import { calculateInvoiceTaxes } from "@/lib/documents/invoice/engine/tax-engine"
+import { calculateInvoice } from "@/lib/invoices/calculations"
 
 describe("GST Tax Engine", () => {
+  it("uses the same odd-paise tax split as stored invoice totals", () => {
+    const persisted = calculateInvoice({ freightCharge: 100, pickupCharge: 0, packingCharge: 0, docketCharge: 0, insuranceCharge: 0, otherCharges: 0, gstRate: 5, interstate: false, advancePaid: 0 })
+    const printed = calculateInvoiceTaxes({ supplierStateCode: "07", placeOfSupplyStateCode: "07", rawChargeLines: [{ id: "freight", classificationCode: "996511", label: "Surface freight", taxableAmount: money(100) }], defaultGstRate: 5 })
+    expect(printed.cgst.paise).toBe(persisted.cgst)
+    expect(printed.sgst.paise).toBe(persisted.sgst)
+    expect(printed.totalTax.paise).toBe(5)
+  })
   it("determines interstate supply when supplier is Delhi (07) and recipient is Manipur (14)", () => {
     const res = calculateInvoiceTaxes({
       supplierStateCode: "07",

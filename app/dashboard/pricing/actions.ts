@@ -14,7 +14,7 @@ import {
   calculateEstimatedRateSchema,
 } from "./validations"
 import { calculateEstimatedRate } from "@/lib/pricing"
-import { logAudit } from "@/lib/audit"
+import { logAuditInTransaction } from "@/lib/audit"
 
 export const getEstimatedRateAction = authActionClient
   .schema(calculateEstimatedRateSchema)
@@ -29,40 +29,42 @@ export const createPricingRuleAction = authActionClient
     const session = ctx.session
     const { serviceType, origin, destination, basePrice, pricePerKg } = data
 
-  try {
-    const basePriceInCents = Math.round(basePrice * 100)
-    const pricePerKgInCents = Math.round(pricePerKg * 100)
+    try {
+      return await db.transaction(async (tx) => {
+        const basePriceInCents = Math.round(basePrice * 100)
+        const pricePerKgInCents = Math.round(pricePerKg * 100)
 
-    const [rule] = await db
-      .insert(pricingRules)
-      .values({
-        serviceType,
-        origin,
-        destination,
-        basePrice: basePriceInCents,
-        pricePerKg: pricePerKgInCents,
+        const [rule] = await tx
+          .insert(pricingRules)
+          .values({
+            serviceType,
+            origin,
+            destination,
+            basePrice: basePriceInCents,
+            pricePerKg: pricePerKgInCents,
+          })
+          .returning()
+
+        await logAuditInTransaction(tx, {
+          userId: session.user.id,
+          userEmail: session.user.email || "unknown",
+          action: "create",
+          entity: "pricing_rules",
+          entityId: rule.id,
+          after: rule,
+        })
+
+        revalidatePath("/dashboard/pricing")
+        return { success: true, error: undefined }
       })
-      .returning()
-
-    await logAudit({
-      userId: session.user.id,
-      userEmail: session.user.email || "unknown",
-      action: "create",
-      entity: "pricing_rules",
-      entityId: rule.id,
-      after: rule,
-    })
-
-    revalidatePath("/dashboard/pricing")
-    return { success: true, error: undefined }
-  } catch (error: any) {
-    Sentry.captureException(error)
-    return {
-      success: false,
-      error: error.message || "Failed to create pricing rule",
+    } catch (error) {
+      Sentry.captureException(error)
+      return {
+        success: false,
+        error: "Failed to create pricing rule",
+      }
     }
-  }
-})
+  })
 
 export const updatePricingRuleAction = authActionClient
   .schema(updatePricingRuleSchema)
@@ -70,42 +72,44 @@ export const updatePricingRuleAction = authActionClient
     const session = ctx.session
     const { id, serviceType, origin, destination, basePrice, pricePerKg } = data
 
-  try {
-    const before = await db.query.pricingRules.findFirst({
-      where: eq(pricingRules.id, id),
-    })
-    if (!before) return { success: false, error: "Pricing rule not found" }
-    const basePriceInCents = Math.round(basePrice * 100)
-    const pricePerKgInCents = Math.round(pricePerKg * 100)
+    try {
+      return await db.transaction(async (tx) => {
+        const before = await tx.query.pricingRules.findFirst({
+          where: eq(pricingRules.id, id),
+        })
+        if (!before) return { success: false, error: "Pricing rule not found" }
+        const basePriceInCents = Math.round(basePrice * 100)
+        const pricePerKgInCents = Math.round(pricePerKg * 100)
 
-    await db
-      .update(pricingRules)
-      .set({
-        serviceType,
-        origin,
-        destination,
-        basePrice: basePriceInCents,
-        pricePerKg: pricePerKgInCents,
+        await tx
+          .update(pricingRules)
+          .set({
+            serviceType,
+            origin,
+            destination,
+            basePrice: basePriceInCents,
+            pricePerKg: pricePerKgInCents,
+          })
+          .where(eq(pricingRules.id, id))
+
+        await logAuditInTransaction(tx, {
+          userId: session.user.id,
+          userEmail: session.user.email || "unknown",
+          action: "update",
+          entity: "pricing_rules",
+          entityId: id,
+          before,
+          after: data,
+        })
+
+        revalidatePath("/dashboard/pricing")
+        return { success: true, error: undefined }
       })
-      .where(eq(pricingRules.id, id))
-
-    await logAudit({
-      userId: session.user.id,
-      userEmail: session.user.email || "unknown",
-      action: "update",
-      entity: "pricing_rules",
-      entityId: id,
-      before,
-      after: data,
-    })
-
-    revalidatePath("/dashboard/pricing")
-    return { success: true, error: undefined }
-  } catch (error: any) {
-    Sentry.captureException(error)
-    return { success: false, error: "Failed to update pricing rule" }
-  }
-})
+    } catch (error) {
+      Sentry.captureException(error)
+      return { success: false, error: "Failed to update pricing rule" }
+    }
+  })
 
 export const deletePricingRuleAction = authActionClient
   .schema(deletePricingRuleSchema)
@@ -113,30 +117,32 @@ export const deletePricingRuleAction = authActionClient
     const session = ctx.session
     const { id } = data
 
-  try {
-    const before = await db.query.pricingRules.findFirst({
-      where: eq(pricingRules.id, id),
-    })
-    if (!before) return { success: false, error: "Pricing rule not found" }
-    await db
-      .update(pricingRules)
-      .set({ deletedAt: new Date() })
-      .where(eq(pricingRules.id, id))
+    try {
+      return await db.transaction(async (tx) => {
+        const before = await tx.query.pricingRules.findFirst({
+          where: eq(pricingRules.id, id),
+        })
+        if (!before) return { success: false, error: "Pricing rule not found" }
+        await tx
+          .update(pricingRules)
+          .set({ deletedAt: new Date() })
+          .where(eq(pricingRules.id, id))
 
-    await logAudit({
-      userId: session.user.id,
-      userEmail: session.user.email || "unknown",
-      action: "delete",
-      entity: "pricing_rules",
-      entityId: id,
-      before,
-      after: { deletedAt: new Date().toISOString() },
-    })
+        await logAuditInTransaction(tx, {
+          userId: session.user.id,
+          userEmail: session.user.email || "unknown",
+          action: "delete",
+          entity: "pricing_rules",
+          entityId: id,
+          before,
+          after: { deletedAt: new Date().toISOString() },
+        })
 
-    revalidatePath("/dashboard/pricing")
-    return { success: true, error: undefined }
-  } catch (error: any) {
-    Sentry.captureException(error)
-    return { success: false, error: "Failed to delete pricing rule" }
-  }
-})
+        revalidatePath("/dashboard/pricing")
+        return { success: true, error: undefined }
+      })
+    } catch (error) {
+      Sentry.captureException(error)
+      return { success: false, error: "Failed to delete pricing rule" }
+    }
+  })

@@ -127,6 +127,27 @@ test("reduced motion keeps service content visible and suppresses image zoom", a
   await expect(media).toHaveCSS("transition-property", "none")
 })
 
+test("homepage navigation scrolls immediately with reduced motion", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" })
+  await page.goto("/")
+  await page.getByRole("link", { name: "Features", exact: true }).first().click()
+  expect(
+    await page.locator("#features").evaluate((node) => node.getBoundingClientRect().top)
+  ).toBeLessThan(120)
+
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.getByRole("button", { name: "Open navigation" }).click()
+  await page
+    .getByRole("dialog", { name: "Mobile navigation" })
+    .getByRole("link", { name: "Book Consignment" })
+    .click()
+  expect(
+    await page.locator("#contact").evaluate((node) => node.getBoundingClientRect().top)
+  ).toBeLessThan(120)
+})
+
 for (const route of [
   "/services",
   "/services/air-cargo",

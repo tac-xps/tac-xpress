@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { eq } from "drizzle-orm"
 import { tickets } from "@/lib/db/schema"
 import { claimJob, finishJob } from "./store"
+import { z } from "zod"
 
 export interface ProcessJobsOptions {
   maxDurationMs?: number
@@ -57,18 +58,29 @@ export async function processBackgroundJobs(
         }
         const { sendTicketNotification } =
           await import("@/app/actions/email-notifications")
+        const recipient = z
+          .string()
+          .email()
+          .safeParse(ticket.customerEmail || ticket.guestEmail || "")
+        if (!recipient.success)
+          throw new Error(
+            "Ticket notification recipient is missing or invalid."
+          )
         const result = await sendTicketNotification({
-          to: ticket.customerEmail || ticket.guestEmail || "",
+          to: recipient.data,
           ticketId: ticket.id,
           subject: ticket.subject,
-          type: "ticket_created",
+          type:
+            job.payload.notificationType === "sla_breach"
+              ? "sla_breach"
+              : "ticket_created",
           idempotencyKey: `ticket-created/${job.id}`,
         })
-        if (!result.success && !result.skipped)
+        if (!result.success || result.skipped)
           throw new Error(
             result.error || "Email provider did not accept the notification."
           )
-      } else {
+      } else if (job.kind === "support_triage") {
         const { triageTicket } = await import("@/app/actions/ai-triage")
         await triageTicket(
           ticket.id,
@@ -76,6 +88,8 @@ export async function processBackgroundJobs(
           ticket.description,
           ticket.relatedAwb ?? undefined
         )
+      } else {
+        throw new Error("Unsupported background job kind.")
       }
       await finishJob(job, true)
     } catch (error) {

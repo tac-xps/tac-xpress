@@ -1,6 +1,6 @@
 "use client"
 import { z } from "zod"
-import { SearchSelect } from "./search-select"
+import { SearchSelect, type SearchSelectTriggerProps } from "./search-select"
 import { useRecordLookup } from "./use-record-lookup"
 const vehicleSchema = z.object({
   id: z.string(),
@@ -12,12 +12,13 @@ export function VehicleCombobox({
   value,
   onSelect,
   disabled,
-}: {
+  ...triggerProps
+}: SearchSelectTriggerProps & {
   value?: string
   onSelect: (id: string) => void
   disabled?: boolean
 }) {
-  const { records, loading, error, setQuery } = useRecordLookup(
+  const { records, loading, error, setQuery, retry } = useRecordLookup(
     "/api/vehicles",
     vehicleSchema,
     value,
@@ -25,6 +26,7 @@ export function VehicleCombobox({
   )
   return (
     <SearchSelect
+      {...triggerProps}
       value={value}
       options={records.map((item) => ({
         value: item.id,
@@ -37,6 +39,7 @@ export function VehicleCombobox({
       onSearch={setQuery}
       loading={loading}
       error={error}
+      onRetry={retry}
     />
   )
 }

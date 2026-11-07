@@ -16,6 +16,18 @@ import { sendWhatsAppTextMessage } from "@/lib/whatsapp/service"
 beforeEach(() => { state.writes = []; state.logFailure = false; vi.stubEnv("WHATSAPP_ENABLED", "true"); vi.stubEnv("WPBOX_API_TOKEN", "unit-only"); vi.stubEnv("WPBOX_BASE_URL", "https://example.test") })
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs() })
 describe("WhatsApp provider delivery", () => {
+  it("uses the default LeminAI relay without Meta callback credentials", async () => {
+    vi.stubEnv("WPBOX_BASE_URL", "")
+    vi.stubEnv("WPBOX_USER_ID", "unit-account")
+    vi.stubEnv("WHATSAPP_APP_SECRET", "")
+    vi.stubEnv("WHATSAPP_VERIFY_TOKEN", "")
+    const fetcher = vi.fn(async () => new Response(JSON.stringify({ status: "success", data: { id: "relay-1" } })))
+    vi.stubGlobal("fetch", fetcher)
+    expect(await sendWhatsAppTextMessage({ to: "+919876543210", text: "Fixture" })).toMatchObject({ success: true })
+    expect(fetcher).toHaveBeenCalledWith("https://chat.leminai.com/api/wpbox/sendmessage", expect.objectContaining({
+      body: JSON.stringify({ token: "unit-only", uid: "unit-account", phone: "919876543210", message: "Fixture" }),
+    }))
+  })
   it("records the attempt before sending and persists provider identifiers", async () => {
     const fetcher = vi.fn(async () => {
       expect(state.writes[0]).toMatchObject({ table: "message_outbound", operation: "insert", payload: { status: "pending" } })

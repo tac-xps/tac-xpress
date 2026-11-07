@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { LogoMark } from "@/components/logo"
 import type { TaxInvoiceDocument } from "@/lib/documents/invoice/domain/types"
 
 interface InvoiceHeaderProps {
@@ -28,11 +29,11 @@ export function InvoiceHeader({ doc }: InvoiceHeaderProps) {
       : "text-print-ink border-print-border bg-print-paper-subtle"
 
   return (
-    <header className="invoice-section flex flex-col gap-2 border-b border-print-border pb-2.5">
+    <header className="invoice-section flex flex-col gap-2 border-b border-print-border pb-3">
       {/* ── TOP IDENTITY & DOCUMENT STATUS RAIL ── */}
       <div className="flex items-center justify-between text-[8px] font-mono tracking-wider uppercase text-print-muted">
-        <span>TAX INVOICE • ORIGINAL FOR RECIPIENT</span>
-        <div className="flex items-center gap-2">
+        <span>TAX INVOICE / ORIGINAL FOR RECIPIENT</span>
+        <div className="flex items-center gap-3">
           <span>SUPPLY: {routing.isInterstate ? "INTERSTATE" : "INTRASTATE"}</span>
           <span
             className={`border px-1.5 py-0.5 font-bold tracking-widest text-[7.5px] ${statusColorClass}`}
@@ -44,25 +45,28 @@ export function InvoiceHeader({ doc }: InvoiceHeaderProps) {
 
       <div className="flex items-start justify-between">
         {/* Left: Brand Identity */}
-        <div className="flex flex-col">
-          <div className="flex items-baseline gap-2">
-            <h1 className="font-heading text-2xl font-black tracking-tight text-print-ink">
-              {commercial.supplier.brandName}
-            </h1>
-            <span className="text-[9px] font-mono font-semibold uppercase tracking-wider text-print-muted">
-              LOGISTICS &amp; SUPPLY CHAIN
-            </span>
+        <div className="flex items-start gap-3">
+          <LogoMark animated={false} className="size-8 shrink-0 text-print-ink mt-0.5" />
+          <div className="flex flex-col">
+            <div className="flex items-baseline gap-2">
+              <h1 className="font-heading text-2xl font-black tracking-tight text-print-ink">
+                {commercial.supplier.brandName}
+              </h1>
+              <span className="text-[9px] font-mono font-semibold uppercase tracking-wider text-print-muted">
+                LOGISTICS &amp; SUPPLY CHAIN
+              </span>
+            </div>
+            <p className="text-[9.5px] font-bold text-print-ink leading-tight">
+              {commercial.supplier.legalName}
+            </p>
+            <p className="text-[8px] text-print-muted leading-tight mt-0.5">
+              {commercial.supplier.addressLine1}, {commercial.supplier.addressLine2}
+            </p>
+            <p className="text-[8px] text-print-muted leading-tight font-mono mt-0.5">
+              {commercial.supplier.city}, {commercial.supplier.state} - {commercial.supplier.pinCode}
+              {commercial.supplier.phone && <span>, Desk: {commercial.supplier.phone}</span>}
+            </p>
           </div>
-          <p className="text-[9.5px] font-bold text-print-ink leading-tight">
-            {commercial.supplier.legalName}
-          </p>
-          <p className="text-[8px] text-print-muted leading-tight">
-            {commercial.supplier.addressLine1}, {commercial.supplier.addressLine2}
-          </p>
-          <p className="text-[8px] text-print-muted leading-tight font-mono">
-            {commercial.supplier.city}, {commercial.supplier.state} - {commercial.supplier.pinCode}
-            {commercial.supplier.phone && <span> • Desk: {commercial.supplier.phone}</span>}
-          </p>
         </div>
 
         {/* Right: Operational Hero Identifier (AWB) & Invoice Reference */}
@@ -76,11 +80,10 @@ export function InvoiceHeader({ doc }: InvoiceHeaderProps) {
             </span>
           </div>
 
-          <div className="flex items-center gap-3 mt-1 text-[9.5px]">
-            <span className="font-mono text-print-muted">
+          <div className="flex items-center gap-3 mt-1.5 text-[9px] font-mono">
+            <span className="text-print-muted">
               Inv: <strong className="text-print-ink">{commercial.invoiceNumber}</strong>
             </span>
-            <span className="text-print-muted">•</span>
             <span className="text-print-muted">
               Date: <strong className="text-print-ink">{commercial.invoiceDate}</strong>
             </span>

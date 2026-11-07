@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { CityCombobox } from "@/components/forms/city-combobox"
 import {
   Select,
   SelectContent,
@@ -90,7 +91,14 @@ export function EditShipmentDialog({
                               Origin
                             </FormLabel>
                             <FormControl>
-                              <Input placeholder="Mumbai" {...field} />
+                              <CityCombobox
+                                freightOnly
+                                name={field.name}
+                                onBlur={field.onBlur}
+                                ref={field.ref}
+                                value={field.value}
+                                onSelect={(city) => field.onChange(city.city)}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -105,7 +113,14 @@ export function EditShipmentDialog({
                               Destination
                             </FormLabel>
                             <FormControl>
-                              <Input placeholder="Delhi" {...field} />
+                              <CityCombobox
+                                freightOnly
+                                name={field.name}
+                                onBlur={field.onBlur}
+                                ref={field.ref}
+                                value={field.value}
+                                onSelect={(city) => field.onChange(city.city)}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -133,9 +148,6 @@ export function EditShipmentDialog({
                               <SelectContent>
                                 <SelectItem value="express_air">
                                   Express Air
-                                </SelectItem>
-                                <SelectItem value="standard_ocean">
-                                  Standard Ocean
                                 </SelectItem>
                                 <SelectItem value="road_freight">
                                   Road Freight

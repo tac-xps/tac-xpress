@@ -1,5 +1,7 @@
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { getAppUrl } from "../lib/config/app-url"
+
+afterEach(() => vi.unstubAllEnvs())
 
 describe("trusted application URL", () => {
   it("normalizes the website origin", () =>
@@ -25,17 +27,37 @@ describe("trusted application URL", () => {
   )
 
   it("falls back to Vercel production hostname when NEXT_PUBLIC_APP_URL is unset", () => {
-    const originalEnv = process.env.NEXT_PUBLIC_APP_URL
-    const originalVercel = process.env.VERCEL_PROJECT_PRODUCTION_URL
-    try {
-      delete process.env.NEXT_PUBLIC_APP_URL
-      process.env.VERCEL_PROJECT_PRODUCTION_URL = "tac-xpress-five.vercel.app"
-      expect(getAppUrl(undefined, "production")).toBe(
-        "https://tac-xpress-five.vercel.app"
-      )
-    } finally {
-      process.env.NEXT_PUBLIC_APP_URL = originalEnv
-      process.env.VERCEL_PROJECT_PRODUCTION_URL = originalVercel
-    }
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", undefined)
+    vi.stubEnv("VERCEL_ENV", "production")
+    vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "tac-xpress-five.vercel.app")
+    expect(getAppUrl(undefined, "production")).toBe(
+      "https://tac-xpress-five.vercel.app"
+    )
+  })
+
+  it("keeps preview document and callback URLs on the preview deployment", () => {
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://tac-xpress-five.vercel.app")
+    vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "tac-xpress-five.vercel.app")
+    vi.stubEnv("VERCEL_ENV", "preview")
+    vi.stubEnv("VERCEL_URL", "dashboard-acceptance.vercel.app")
+    expect(getAppUrl(undefined, "production")).toBe(
+      "https://dashboard-acceptance.vercel.app"
+    )
+  })
+
+  it("rejects an unidentified preview instead of using production", () => {
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://tac-xpress-five.vercel.app")
+    vi.stubEnv("VERCEL_ENV", "preview")
+    vi.stubEnv("VERCEL_URL", undefined)
+    expect(() => getAppUrl(undefined, "production")).toThrow()
+  })
+
+  it("keeps explicit browser origins independent of the deployment fallback", () => {
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://tac-xpress-five.vercel.app")
+    vi.stubEnv("VERCEL_ENV", "preview")
+    vi.stubEnv("VERCEL_URL", "dashboard-acceptance.vercel.app")
+    expect(getAppUrl("http://localhost:3000", "development")).toBe(
+      "http://localhost:3000"
+    )
   })
 })

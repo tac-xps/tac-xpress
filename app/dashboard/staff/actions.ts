@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
-import { and, eq, ne, or, inArray } from "drizzle-orm"
+import { and, eq, ne, or, inArray, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import { authActionClient } from "@/lib/safe-action"
@@ -11,7 +11,7 @@ import * as Sentry from "@sentry/nextjs"
 
 import { addStaffSchema, editStaffSchema } from "./validations"
 import { requireDashboardAction } from "@/lib/auth/guards"
-import { logAudit } from "@/lib/audit"
+import { logAuditInTransaction } from "@/lib/audit"
 
 export const createStaffAction = authActionClient
   .schema(addStaffSchema)
@@ -23,67 +23,95 @@ export const createStaffAction = authActionClient
     const session = ctx.session
 
     try {
-      const existingUser = await db.query.users.findFirst({
-        where: or(eq(users.email, email), eq(users.phone, phone)),
-      })
-
-      if (existingUser) {
-        if (existingUser.deletedAt) {
-          const [restoredUser] = await db
-            .update(users)
-            .set({
-              name,
-              email,
-              phone,
-              role,
-              deletedAt: null,
-            })
-            .where(eq(users.id, existingUser.id))
-            .returning()
-            
-          await logAudit({
-            userId: session.user.id,
-            userEmail: session.user.email || "unknown",
-            action: "restore",
-            entity: "users",
-            entityId: existingUser.id,
-            before: existingUser,
-            after: restoredUser,
-          })
-          revalidatePath("/dashboard/staff")
-          return { success: true, staff: restoredUser, error: undefined }
+      return await db.transaction(async (tx) => {
+        const [identity] = await tx
+          .select({ id: sql<unknown>`id` })
+          .from(sql`auth.users`)
+          .where(sql`lower(email) = lower(${email})`)
+          .limit(1)
+        const identityId = identity?.id
+        if (
+          typeof identityId !== "string" ||
+          !z.string().uuid().safeParse(identityId).success
+        ) {
+          return {
+            success: false,
+            error:
+              "Create this identity in Supabase Auth before granting workspace access.",
+          }
         }
-        
-        // If they already exist as a customer, we could upgrade them, but safer to reject
-        return {
-          success: false,
-          error: "A user with this email or phone already exists.",
-        }
-      }
-
-      const [staff] = await db
-        .insert(users)
-        .values({
-          id: crypto.randomUUID(),
-          name,
-          email,
-          phone,
-          role,
+        const existingUser = await tx.query.users.findFirst({
+          where: or(
+            sql`lower(${users.email}) = lower(${email})`,
+            eq(users.phone, phone)
+          ),
         })
-        .returning()
 
-      await logAudit({
-        userId: session.user.id,
-        userEmail: session.user.email || "unknown",
-        action: "create",
-        entity: "users",
-        entityId: staff.id,
-        after: staff,
+        if (existingUser) {
+          if (existingUser.id !== identityId) {
+            return {
+              success: false,
+              error:
+                "The staff record and Supabase Auth identity differ. Reconcile their identities before restoring access.",
+            }
+          }
+          if (existingUser.deletedAt) {
+            const [restoredUser] = await tx
+              .update(users)
+              .set({
+                name,
+                email,
+                phone,
+                role,
+                deletedAt: null,
+              })
+              .where(eq(users.id, existingUser.id))
+              .returning()
+
+            await logAuditInTransaction(tx, {
+              userId: session.user.id,
+              userEmail: session.user.email || "unknown",
+              action: "restore",
+              entity: "users",
+              entityId: existingUser.id,
+              before: existingUser,
+              after: restoredUser,
+            })
+            revalidatePath("/dashboard/staff")
+            return { success: true, staff: restoredUser, error: undefined }
+          }
+
+          // If they already exist as a customer, we could upgrade them, but safer to reject
+          return {
+            success: false,
+            error: "A user with this email or phone already exists.",
+          }
+        }
+
+        const [staff] = await tx
+          .insert(users)
+          .values({
+            id: identityId,
+            name,
+            email,
+            phone,
+            role,
+          })
+          .returning()
+
+        await logAuditInTransaction(tx, {
+          userId: session.user.id,
+          userEmail: session.user.email || "unknown",
+          action: "create",
+          entity: "users",
+          entityId: staff.id,
+          after: staff,
+        })
+
+        revalidatePath("/dashboard/staff")
+        return { success: true, staff, error: undefined }
       })
-
-      revalidatePath("/dashboard/staff")
-      return { success: true, staff, error: undefined }
-    } catch (error: any) {
+    } catch (error) {
       Sentry.captureException(error)
       return {
         success: false,
@@ -108,49 +136,68 @@ export const updateStaffAction = authActionClient
     }
 
     try {
-      const before = await db.query.users.findFirst({
-        where: and(eq(users.id, id), inArray(users.role, ["staff", "admin"])),
-      })
-      if (!before) return { success: false, error: "Staff member not found." }
-      
-      const duplicate = await db.query.users.findFirst({
-        where: and(
-          ne(users.id, id),
-          email
-            ? or(eq(users.email, email), eq(users.phone, phone || ""))
-            : eq(users.phone, phone || "")
-        ),
-      })
-      if (duplicate) {
-        return {
-          success: false,
-          error: "A user with this email or phone already exists.",
-        }
-      }
-
-      await db
-        .update(users)
-        .set({
-          name,
-          email,
-          phone,
-          role,
+      return await db.transaction(async (tx) => {
+        const before = await tx.query.users.findFirst({
+          where: and(eq(users.id, id), inArray(users.role, ["staff", "admin"])),
         })
-        .where(eq(users.id, id))
+        if (!before) return { success: false, error: "Staff member not found." }
+        if (
+          email !== undefined &&
+          email.toLowerCase() !== before.email?.toLowerCase()
+        ) {
+          const [identity] = await tx
+            .select({ id: sql<unknown>`id` })
+            .from(sql`auth.users`)
+            .where(sql`id = ${id}::uuid and lower(email) = lower(${email})`)
+            .limit(1)
+          if (!identity) {
+            return {
+              success: false,
+              error:
+                "Change the identity email in Supabase Auth before updating workspace access.",
+            }
+          }
+        }
 
-      await logAudit({
-        userId: session.user.id,
-        userEmail: session.user.email || "unknown",
-        action: "update",
-        entity: "users",
-        entityId: id,
-        before,
-        after: data,
+        const duplicate = await tx.query.users.findFirst({
+          where: and(
+            ne(users.id, id),
+            email
+              ? or(eq(users.email, email), eq(users.phone, phone || ""))
+              : eq(users.phone, phone || "")
+          ),
+        })
+        if (duplicate) {
+          return {
+            success: false,
+            error: "A user with this email or phone already exists.",
+          }
+        }
+
+        await tx
+          .update(users)
+          .set({
+            name,
+            email,
+            phone,
+            role,
+          })
+          .where(eq(users.id, id))
+
+        await logAuditInTransaction(tx, {
+          userId: session.user.id,
+          userEmail: session.user.email || "unknown",
+          action: "update",
+          entity: "users",
+          entityId: id,
+          before,
+          after: data,
+        })
+
+        revalidatePath("/dashboard/staff")
+        return { success: true, error: undefined }
       })
-
-      revalidatePath("/dashboard/staff")
-      return { success: true, error: undefined }
-    } catch (error: any) {
+    } catch (error) {
       Sentry.captureException(error)
       return { success: false, error: "Failed to update staff member." }
     }
@@ -173,30 +220,32 @@ export const deleteStaffAction = authActionClient
     }
 
     try {
-      const before = await db.query.users.findFirst({
-        where: and(eq(users.id, id), inArray(users.role, ["staff", "admin"])),
-      })
-      if (!before) return { success: false, error: "Staff member not found." }
-      
-      // Soft delete revokes access
-      await db
-        .update(users)
-        .set({ deletedAt: new Date() })
-        .where(eq(users.id, id))
+      return await db.transaction(async (tx) => {
+        const before = await tx.query.users.findFirst({
+          where: and(eq(users.id, id), inArray(users.role, ["staff", "admin"])),
+        })
+        if (!before) return { success: false, error: "Staff member not found." }
 
-      await logAudit({
-        userId: session.user.id,
-        userEmail: session.user.email || "unknown",
-        action: "delete",
-        entity: "users",
-        entityId: id,
-        before,
-        after: { deletedAt: new Date().toISOString() },
-      })
+        // Soft delete revokes access
+        await tx
+          .update(users)
+          .set({ deletedAt: new Date() })
+          .where(eq(users.id, id))
 
-      revalidatePath("/dashboard/staff")
-      return { success: true, error: undefined }
-    } catch (error: any) {
+        await logAuditInTransaction(tx, {
+          userId: session.user.id,
+          userEmail: session.user.email || "unknown",
+          action: "delete",
+          entity: "users",
+          entityId: id,
+          before,
+          after: { deletedAt: new Date().toISOString() },
+        })
+
+        revalidatePath("/dashboard/staff")
+        return { success: true, error: undefined }
+      })
+    } catch (error) {
       Sentry.captureException(error)
       return { success: false, error: "Failed to revoke access." }
     }

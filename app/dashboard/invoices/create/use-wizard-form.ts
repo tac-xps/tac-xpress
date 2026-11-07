@@ -15,6 +15,7 @@ import {
 import { createWizardInvoiceAction, lookupPincodeAction } from "../actions"
 import { resolveWizardSubmitError } from "./wizard-submit-error"
 import { captureWizardError } from "./capture-wizard-error"
+import { normalizeFreightCity } from "@/lib/schemas/freight-route"
 
 export const STEPS = [
   { id: 1, name: "Basics", description: "Consignment route" },
@@ -154,7 +155,14 @@ export function useWizardForm() {
     try {
       const res = await lookupPincodeAction({ pincode: originPinQuery })
       if (res?.data?.success && res.data.city) {
-        form.setValue("origin", res.data.city)
+        const city = normalizeFreightCity(res.data.city)
+        if (!city) {
+          toast.error(
+            "This PIN is outside the freight corridor. Choose New Delhi or Imphal manually."
+          )
+          return
+        }
+        form.setValue("origin", city, { shouldValidate: true })
         form.setValue("originState", res.data.state || "")
         form.setValue("consignorPinCode", originPinQuery)
         toast.success(`Resolved Origin: ${res.data.city}, ${res.data.state}`)
@@ -178,7 +186,14 @@ export function useWizardForm() {
     try {
       const res = await lookupPincodeAction({ pincode: destinationPinQuery })
       if (res?.data?.success && res.data.city) {
-        form.setValue("destination", res.data.city)
+        const city = normalizeFreightCity(res.data.city)
+        if (!city) {
+          toast.error(
+            "This PIN is outside the freight corridor. Choose New Delhi or Imphal manually."
+          )
+          return
+        }
+        form.setValue("destination", city, { shouldValidate: true })
         form.setValue("destinationState", res.data.state || "")
         form.setValue("consigneePinCode", destinationPinQuery)
         toast.success(

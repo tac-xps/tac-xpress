@@ -82,29 +82,29 @@ export function DeliveryHistory({
                   </TableCell>
                   <TableCell>•••• {message.phone.slice(-4)}</TableCell>
                   <TableCell>
-                    {message.templateName || "Support message"}
+                    <span className="capitalize">
+                      {message.templateName?.replaceAll("_", " ") || "Support message"}
+                    </span>
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={
-                        message.status === "failed" ? "destructive" : "outline"
-                      }
-                    >
-                      {message.status === "sent"
-                        ? "Provider accepted"
-                        : message.status}
-                    </Badge>
+                    {message.status === "failed" ? (
+                      <Badge variant="destructive">Failed</Badge>
+                    ) : (
+                      <span className="text-xs capitalize text-muted-foreground">
+                        {message.status === "sent" ? "Provider accepted" : message.status}
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell>
                     {message.relatedInvoiceId ? (
                       <Link
                         href={`/invoice/${message.relatedInvoiceId}`}
-                        className="underline"
+                        className="text-primary underline-offset-4 hover:underline"
                       >
                         View invoice
                       </Link>
                     ) : (
-                      "-"
+                      <span className="text-muted-foreground">None</span>
                     )}
                   </TableCell>
                   <TableCell className="text-right">

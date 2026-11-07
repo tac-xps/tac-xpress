@@ -33,18 +33,19 @@ export default async function AirCargoPage({
 
   return (
     <OperationsDashboardPage
+      cargoMode="air"
       page={page}
       rows={rows}
       icon={<PlaneIcon className="size-8 text-primary" />}
       iconBg="bg-primary/10"
       heading="Air Cargo Operations"
       description="Monitor high-priority express air shipments across the New Delhi and Imphal corridor (DEL ⇄ IMF) with standard 1:5000 volumetric divisor."
-      tableTitle="Active Air Shipments"
+      tableTitle="Recent air shipments"
       pathname="/dashboard/operations/air-cargo"
       kpiCards={[
-        { label: "Total Air Volume", value: totalVolume },
-        { label: "In-Transit", value: inTransit, colourClass: "text-status-pending" },
-        { label: "Delayed / At Risk", value: delayedFlights, colourClass: "text-destructive" },
+        { label: "Air shipments in sample", value: totalVolume },
+        { label: "In-transit shipments", value: inTransit, colourClass: "text-status-transit" },
+        { label: "At-risk shipments", value: delayedFlights, colourClass: "text-destructive" },
       ]}
     />
   )

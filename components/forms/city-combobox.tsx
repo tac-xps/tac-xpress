@@ -1,5 +1,5 @@
 "use client"
-import { SearchSelect } from "./search-select"
+import { SearchSelect, type SearchSelectTriggerProps } from "./search-select"
 export type CityData = {
   city: string
   state: string
@@ -33,16 +33,22 @@ export function CityCombobox({
   value,
   onSelect,
   disabled,
-}: {
+  freightOnly = false,
+  ...triggerProps
+}: SearchSelectTriggerProps & {
   value?: string
   onSelect: (data: CityData) => void
   disabled?: boolean
+  freightOnly?: boolean
 }) {
-  const cities = [...PRIORITY_CITIES, ...STANDARD_CITIES]
-  if (value && !cities.some((item) => item.city === value))
+  const cities = freightOnly
+    ? [...PRIORITY_CITIES]
+    : [...PRIORITY_CITIES, ...STANDARD_CITIES]
+  if (!freightOnly && value && !cities.some((item) => item.city === value))
     cities.push({ city: value, state: "", pinCode: "" })
   return (
     <SearchSelect
+      {...triggerProps}
       value={value}
       label="Select a city"
       disabled={disabled}

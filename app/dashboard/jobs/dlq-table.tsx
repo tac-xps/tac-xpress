@@ -120,16 +120,13 @@ export function DlqTable({
       header: ({ column }) => <ColumnHeader column={column} title="Action" />,
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="font-mono text-xs">
-            {row.original.action}
-          </Badge>
+          <span className="font-medium capitalize">{row.original.action.replaceAll("_", " ")}</span>
           {row.original.retryCount > 0 && (
-            <Badge
-              variant={row.original.retryCount >= 3 ? "destructive" : "secondary"}
-              className="text-xs tabular-nums"
+            <span
+              className={`text-xs tabular-nums ${row.original.retryCount >= 3 ? "text-destructive" : "text-muted-foreground"}`}
             >
               {row.original.retryCount} {row.original.retryCount === 1 ? "retry" : "retries"}
-            </Badge>
+            </span>
           )}
         </div>
       ),
@@ -143,13 +140,10 @@ export function DlqTable({
         <button
           type="button"
           onClick={() => setSelectedPayload({ payload: row.original.payload })}
-          className="group flex max-w-[220px] items-center gap-1.5 truncate rounded px-1.5 py-1 text-left font-mono text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
-          title="Click to view full payload"
+          className="group flex items-center gap-1.5 text-left text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
-          <Code2 className="size-3.5 shrink-0 text-muted-foreground group-hover:text-primary" />
-          <span className="truncate">
-            {JSON.stringify(row.original.payload)}
-          </span>
+          <Code2 className="size-3.5 shrink-0 group-hover:text-primary" />
+          View payload
         </button>
       ),
     },
@@ -184,7 +178,7 @@ export function DlqTable({
             <Button
               size="sm"
               variant="outline"
-              className="h-8 gap-1 text-xs"
+              className="text-xs"
               disabled={isPending}
               onClick={() => handleRetry(row.original.id, row.original.action)}
             >
@@ -196,7 +190,7 @@ export function DlqTable({
             <Button
               size="sm"
               variant="ghost"
-              className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive"
+              className="text-xs text-muted-foreground hover:text-destructive"
               disabled={isPending}
               onClick={() => handleDismiss(row.original.id)}
               title="Dismiss DLQ entry"

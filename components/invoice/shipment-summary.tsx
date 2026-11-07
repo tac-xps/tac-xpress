@@ -11,10 +11,10 @@ export function ShipmentSummary({ doc }: ShipmentSummaryProps) {
   const { metrics, serviceMode } = doc.shipment
 
   return (
-    <section className="invoice-section my-1 grid grid-cols-5 gap-2 border border-print-border bg-print-paper-subtle/60 px-2.5 py-1 text-center text-[8.5px]">
+    <section className="invoice-section my-1.5 grid grid-cols-5 gap-4 border-y border-print-border py-2 text-center text-[8.5px]">
       {/* Service Class */}
-      <div className="flex flex-col items-center justify-center border-r border-print-border pr-2">
-        <span className="text-[7.5px] font-mono font-bold uppercase tracking-wider text-print-muted">
+      <div className="flex flex-col items-center justify-center border-r border-print-border/60 pr-2">
+        <span className="text-[7.5px] font-mono uppercase tracking-wider text-print-muted">
           SERVICE MODE
         </span>
         <span className="font-heading text-[10px] font-bold uppercase text-print-ink mt-0.5">
@@ -23,8 +23,8 @@ export function ShipmentSummary({ doc }: ShipmentSummaryProps) {
       </div>
 
       {/* Pieces */}
-      <div className="flex flex-col items-center justify-center border-r border-print-border pr-2">
-        <span className="text-[7.5px] font-mono font-bold uppercase tracking-wider text-print-muted">
+      <div className="flex flex-col items-center justify-center border-r border-print-border/60 pr-2">
+        <span className="text-[7.5px] font-mono uppercase tracking-wider text-print-muted">
           PACKAGES / PIECES
         </span>
         <span className="font-mono text-[11px] font-bold text-print-ink mt-0.5">
@@ -33,8 +33,8 @@ export function ShipmentSummary({ doc }: ShipmentSummaryProps) {
       </div>
 
       {/* Actual Weight */}
-      <div className="flex flex-col items-center justify-center border-r border-print-border pr-2">
-        <span className="text-[7.5px] font-mono font-bold uppercase tracking-wider text-print-muted">
+      <div className="flex flex-col items-center justify-center border-r border-print-border/60 pr-2">
+        <span className="text-[7.5px] font-mono uppercase tracking-wider text-print-muted">
           ACTUAL WEIGHT
         </span>
         <span className="font-mono text-[11px] font-bold text-print-ink mt-0.5">
@@ -43,8 +43,8 @@ export function ShipmentSummary({ doc }: ShipmentSummaryProps) {
       </div>
 
       {/* Volumetric Weight */}
-      <div className="flex flex-col items-center justify-center border-r border-print-border pr-2">
-        <span className="text-[7.5px] font-mono font-bold uppercase tracking-wider text-print-muted">
+      <div className="flex flex-col items-center justify-center border-r border-print-border/60 pr-2">
+        <span className="text-[7.5px] font-mono uppercase tracking-wider text-print-muted">
           VOLUMETRIC WEIGHT
         </span>
         <span className="font-mono text-[11px] font-bold text-print-muted mt-0.5">
@@ -54,14 +54,14 @@ export function ShipmentSummary({ doc }: ShipmentSummaryProps) {
 
       {/* Chargeable Weight & Basis */}
       <div className="flex flex-col items-center justify-center">
-        <span className="text-[7.5px] font-mono font-bold uppercase tracking-wider text-print-muted">
+        <span className="text-[7.5px] font-mono uppercase tracking-wider text-print-muted">
           CHARGEABLE WEIGHT
         </span>
-        <div className="flex items-center gap-1 mt-0.5">
+        <div className="flex items-center gap-1.5 mt-0.5">
           <span className="font-mono text-[11px] font-black text-print-ink">
             {metrics.chargeableWeightKg.toFixed(2)} kg
           </span>
-          <span className="border border-print-border bg-print-paper px-1 py-0.2 text-[7px] font-mono font-bold uppercase tracking-wider text-print-muted">
+          <span className="border border-print-border px-1 py-0.2 text-[7px] font-mono font-bold uppercase text-print-muted">
             {metrics.weightBasis}
           </span>
         </div>

@@ -812,6 +812,8 @@ export const deadLetterQueue = pgTable(
     payload: jsonb("payload"),
     error: text("error"),
     retryCount: integer("retry_count").notNull().default(0),
+    recoveryToken: uuid("recovery_token"),
+    lockedUntil: timestamp("locked_until", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

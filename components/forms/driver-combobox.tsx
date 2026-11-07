@@ -1,6 +1,6 @@
 "use client"
 import { z } from "zod"
-import { SearchSelect } from "./search-select"
+import { SearchSelect, type SearchSelectTriggerProps } from "./search-select"
 import { useRecordLookup } from "./use-record-lookup"
 const driverSchema = z.object({
   id: z.string(),
@@ -13,12 +13,13 @@ export function DriverCombobox({
   value,
   onSelect,
   disabled,
-}: {
+  ...triggerProps
+}: SearchSelectTriggerProps & {
   value?: string
   onSelect: (id: string) => void
   disabled?: boolean
 }) {
-  const { records, loading, error, setQuery } = useRecordLookup(
+  const { records, loading, error, setQuery, retry } = useRecordLookup(
     "/api/drivers",
     driverSchema,
     value,
@@ -26,6 +27,7 @@ export function DriverCombobox({
   )
   return (
     <SearchSelect
+      {...triggerProps}
       value={value}
       options={records.map((item) => ({
         value: item.id,
@@ -38,6 +40,7 @@ export function DriverCombobox({
       onSearch={setQuery}
       loading={loading}
       error={error}
+      onRetry={retry}
     />
   )
 }

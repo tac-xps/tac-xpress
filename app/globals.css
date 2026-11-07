@@ -83,10 +83,10 @@
   --color-mn-basalt-popover: var(--mn-basalt-popover);
 
   /* Corridor Engine Tokens */
-  --color-corridor: oklch(var(--corridor-l, 0.51) var(--corridor-c, 0.075) var(--corridor-h, 278));
-  --color-corridor-foreground: oklch(var(--corridor-fg-l, 0.99) var(--corridor-fg-c, 0.005) var(--corridor-h, 278));
-  --color-corridor-subtle: oklch(var(--corridor-subtle-l, 0.945) var(--corridor-subtle-c, 0.02) var(--corridor-h, 278));
-  --color-corridor-border: oklch(var(--corridor-border-l, 0.88) var(--corridor-border-c, 0.03) var(--corridor-h, 278));
+  --color-corridor: oklch(var(--corridor-l, 0.45) var(--corridor-c, 0.165) var(--corridor-h, 255) / <alpha-value>);
+  --color-corridor-foreground: oklch(var(--corridor-fg-l, 0.99) var(--corridor-fg-c, 0.005) var(--corridor-h, 255) / <alpha-value>);
+  --color-corridor-subtle: oklch(var(--corridor-subtle-l, 0.945) var(--corridor-subtle-c, 0.02) var(--corridor-h, 255) / <alpha-value>);
+  --color-corridor-border: oklch(var(--corridor-border-l, 0.91) var(--corridor-border-c, 0.015) var(--corridor-h, 255) / <alpha-value>);
 
   /* 5-Color Categorical Mineral Chart Palette */
   --color-chart-1: var(--chart-1);
@@ -106,9 +106,9 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* Brand Colors */
-  --color-tx-brand-blue: oklch(0.48 0.15 255);
-  --color-brand-blue: oklch(0.48 0.15 255);
-  --color-invoice-navy: oklch(0.20 0.025 255);
+  --color-tx-brand-blue: oklch(0.45 0.145 240);
+  --color-brand-blue: oklch(0.45 0.145 240);
+  --color-invoice-navy: oklch(0.20 0.025 240);
 
   /* Core Brand Colors & Typographic Palette (mapped to semantic tokens) */
   --color-ink: var(--foreground);
@@ -423,16 +423,17 @@ button,
   color-scheme: light;
 
   /* ──────────────────────────────────────────────────────────────────────────
-     NORDIC MINERAL / CLOUD WHITE & BLUE BASALT — LIGHT (Cloud White / Slate H 256)
-     Airy Structural White + Radix Slate & Teal + WCAG 2.2 SC 1.4.3 & 1.4.11 Pass
+     AEROSPACE LINEHAUL / ALPINE TITANIUM & COBALT — LIGHT (H 240 & H 245)
+     Pure Architectural Paper Surfaces + Crisp Slate Canvas + Linehaul Cobalt Primary
+     WCAG 2.2 AAA & APCA Lc Preferred Body Pass
      ────────────────────────────────────────────────────────────────────────── */
-  --mn-cloud: oklch(0.982 0.002 256);        /* Canvas: Radix Slate step 2 */
-  --mn-paper: oklch(0.993 0.002 256);        /* Surface: Radix Slate step 1 */
-  --mn-mist: oklch(0.936 0.006 256);         /* Secondary / Muted: Radix Slate step 4 */
-  --mn-stone: oklch(0.889 0.010 256);        /* Structural Border: Radix Slate step 6 */
-  --mn-stone-strong: oklch(0.601 0.020 256); /* Control Border: Radix Slate step 10 (3.35:1 on cloud) */
-  --mn-ink: oklch(0.256 0.011 264);          /* Primary Text: Radix Slate step 12 ink (≥15:1 on cloud) */
-  --mn-slate: oklch(0.38 0.02 256);         /* Secondary Text: Radix Slate step 11 darkened for premium contrast */
+  --mn-cloud: oklch(0.985 0.003 240);        /* Canvas: Crisp alpine slate foundation */
+  --mn-paper: oklch(0.998 0.001 240);        /* Surface / Card: Tailored alpine paper */
+  --mn-mist: oklch(0.958 0.005 240);         /* Secondary / Muted: Header striping, sub-surfaces */
+  --mn-stone: oklch(0.895 0.007 240);        /* Structural Border: Crisp hairline divider */
+  --mn-stone-strong: oklch(0.560 0.020 240); /* Control Border: Input frames & focus boundaries (4.44:1) */
+  --mn-ink: oklch(0.180 0.010 245);          /* Primary Text: Deep asphalt carbon ink (18.0:1 on canvas, 18.7:1 on card) */
+  --mn-slate: oklch(0.420 0.018 245);        /* Secondary Text: Crisp cool-graphite metadata (8.08:1 on canvas) */
 
   /* Backwards compatibility aliases */
   --mn-bone: var(--mn-cloud);
@@ -445,51 +446,52 @@ button,
   --print-paper-subtle: var(--mn-cloud);
   --print-muted: var(--mn-slate);
 
-  /* Brand Accent — Radix Teal H 180 */
-  --mn-teal: oklch(0.461 0.146 180);         /* UI Primary: Radix Teal step 11 */
-  --mn-teal-hover: oklch(0.414 0.150 180);   /* UI Primary Hover: Darkened teal */
-  --mn-teal-wash: oklch(0.954 0.044 180);    /* UI Primary Wash: Radix Teal step 3 */
+  /* Brand Accent — Arterial Linehaul Cobalt H 240 */
+  --mn-teal: oklch(0.450 0.145 240);         /* UI Primary: Executive Linehaul Cobalt (7.00:1 on white) */
+  --mn-teal-hover: oklch(0.390 0.150 240);   /* UI Primary Hover: Deepened Cobalt */
+  --mn-teal-wash: oklch(0.955 0.022 240);    /* UI Primary Wash: Ethereal Cobalt wash */
 
   /* Minerals */
-  --mn-fjord: oklch(0.500 0.075 215);        /* Info / Transit: Quiet northern fjord (5.0:1 on wash) */
-  --mn-fjord-wash: oklch(0.945 0.018 215);   /* Fjord Wash */
-  --mn-moss: oklch(0.490 0.060 138);         /* Success / Delivered: Calming muted moss (5.1:1 on wash) */
-  --mn-moss-wash: oklch(0.940 0.016 138);    /* Moss Wash */
-  --mn-ochre: oklch(0.530 0.105 68);         /* Warning / Pending: Warm ochre amber (4.7:1 on wash) */
-  --mn-ochre-wash: oklch(0.952 0.026 78);    /* Ochre Wash */
-  --mn-clay: oklch(0.500 0.110 32);          /* Destructive / Failed: Terracotta clay (5.4:1 on wash) */
-  --mn-clay-wash: oklch(0.950 0.016 35);     /* Clay Wash */
+  --mn-fjord: oklch(0.480 0.100 215);        /* Info / Transit: Precision corridor blue (5.35:1 on wash) */
+  --mn-fjord-wash: oklch(0.950 0.020 215);   /* Fjord Wash */
+  --mn-moss: oklch(0.460 0.105 155);         /* Success / Delivered: Refined aerospace emerald (5.90:1 on wash) */
+  --mn-moss-wash: oklch(0.948 0.025 155);    /* Moss Wash */
+  --mn-ochre: oklch(0.520 0.125 72);          /* Warning / Pending: Birch kraft amber (4.93:1 on wash) */
+  --mn-ochre-wash: oklch(0.955 0.030 75);    /* Ochre Wash */
+  --mn-clay: oklch(0.500 0.140 28);          /* Destructive / Failed: Precision carmine clay (5.54:1 on wash) */
+  --mn-clay-wash: oklch(0.952 0.025 28);     /* Clay Wash */
 
   /* Dark Mineral Primitives (Layer 1 - Available across all themes for inverse panels) */
-  --mn-basalt: oklch(0.125 0.007 255);         /* Background: Nocturne Obsidian (deepest canvas) */
-  --mn-basalt-surface: oklch(0.150 0.008 255); /* Surface: Receding dark graphite chrome */
-  --mn-basalt-card: oklch(0.180 0.010 255);    /* Card: Subtle tactile elevation */
-  --mn-basalt-popover: oklch(0.220 0.012 255); /* Popover: Elevated overlays */
-  --mn-dark-fg: oklch(0.982 0.002 256);      /* Cloud White Foreground */
-  --mn-dark-muted: oklch(0.740 0.016 256);   /* Cool Slate Muted Text */
-  --mn-dark-border: oklch(0.260 0.008 255);  /* Hairline Structural Border */
-  --mn-dark-border-strong: oklch(0.500 0.015 255); /* Control Boundary (3.14:1 on card) */
-  --mn-dark-teal: oklch(0.680 0.135 178);    /* Luminous Nordic Teal Jewel */
-  --mn-dark-teal-hover: oklch(0.730 0.130 178); /* Primary Action Hover */
-  --mn-dark-teal-wash: oklch(0.220 0.025 180);  /* Deep teal wash */
-  --mn-dark-teal-fg: oklch(0.125 0.007 255);   /* Dark obsidian ink on primary button (7.57:1) */
-  --mn-dark-fjord: oklch(0.740 0.065 215);     /* Transit Status (7.2:1 on wash) */
-  --mn-dark-fjord-wash: oklch(0.230 0.020 215);
-  --mn-dark-moss: oklch(0.740 0.065 138);      /* Delivered Status (7.2:1 on wash) */
-  --mn-dark-moss-wash: oklch(0.230 0.020 138);
-  --mn-dark-ochre: oklch(0.760 0.090 72);      /* Pending Status (7.5:1 on wash) */
-  --mn-dark-ochre-wash: oklch(0.230 0.025 72);
-  --mn-dark-clay: oklch(0.730 0.095 32);       /* Failed Status (6.7:1 on wash) */
-  --mn-dark-clay-wash: oklch(0.230 0.025 32);
-  --mn-shadow-dark: oklch(0.080 0.005 255);
+  --mn-basalt: oklch(0.125 0.010 245);         /* Background: Deep tactical carbon obsidian */
+  --mn-basalt-surface: oklch(0.155 0.012 245); /* Surface: Operational titanium chrome */
+  --mn-basalt-card: oklch(0.185 0.014 245);    /* Card: Tactile console elevation (3% lift) */
+  --mn-basalt-popover: oklch(0.220 0.015 245); /* Popover: Floating overlays */
+  --mn-dark-fg: oklch(0.970 0.003 245);        /* Diamond White Foreground (16.4:1 on card, 18.1:1 on bg) */
+  --mn-dark-muted: oklch(0.720 0.014 245);     /* Cool Slate Muted Text (6.78:1 on card, 7.50:1 on bg) */
+  --mn-dark-border: oklch(0.260 0.012 245);    /* Hairline Structural Titanium Border */
+  --mn-dark-border-strong: oklch(0.520 0.018 245); /* Control Boundary (3.39:1 on card) */
+  --mn-dark-teal: oklch(0.680 0.125 240);      /* Refined Aviation Sapphire Jewel */
+  --mn-dark-teal-hover: oklch(0.730 0.120 240); /* Primary Action Hover */
+  --mn-dark-teal-wash: oklch(0.200 0.030 240);  /* Deep Sapphire wash */
+  --mn-dark-teal-fg: oklch(0.110 0.010 245);   /* Dark obsidian ink on primary jewel (7.21:1) */
+  --mn-dark-fjord: oklch(0.740 0.080 215);     /* Transit Status (7.57:1 on wash) */
+  --mn-dark-fjord-wash: oklch(0.225 0.025 215);
+  --mn-dark-moss: oklch(0.750 0.090 155);      /* Delivered Status (7.92:1 on wash) */
+  --mn-dark-moss-wash: oklch(0.225 0.028 155);
+  --mn-dark-ochre: oklch(0.780 0.110 75);      /* Pending Status (8.35:1 on wash) */
+  --mn-dark-ochre-wash: oklch(0.230 0.035 75);
+  --mn-dark-clay: oklch(0.740 0.120 28);       /* Failed Status (7.04:1 on wash) */
+  --mn-dark-clay-wash: oklch(0.225 0.032 28);
+  --mn-shadow-dark: oklch(0.065 0.010 245);
 
   /* Dark Mineral Shadow Tokens declared in Root Token Block */
-  --mn-shadow-dark-card: inset 0 1px 0 var(--card-edge-highlight), 0 1px 3px color-mix(in oklch, var(--mn-shadow-dark) 35%, transparent), 0 1px 2px color-mix(in oklch, var(--mn-shadow-dark) 20%, transparent);
+  --card-edge-highlight: transparent;
+  --mn-shadow-dark-card: var(--card-edge-highlight), 0 1px 3px color-mix(in oklch, var(--mn-shadow-dark) 40%, transparent), 0 1px 2px color-mix(in oklch, var(--mn-shadow-dark) 25%, transparent);
   --mn-shadow-dark-ambient: 0 16px 36px -16px color-mix(in oklch, var(--mn-shadow-dark) 40%, transparent);
   --mn-shadow-dark-float: 0 12px 28px -10px color-mix(in oklch, var(--mn-shadow-dark) 45%, transparent);
   --mn-shadow-dark-overlay: 0 16px 40px color-mix(in oklch, var(--mn-shadow-dark) 50%, transparent);
   --mn-shadow-dark-2xs: 0 1px 2px color-mix(in oklch, var(--mn-shadow-dark) 20%, transparent);
-  --mn-shadow-dark-xs: inset 0 1px 0 var(--card-edge-highlight), 0 1px 2px color-mix(in oklch, var(--mn-shadow-dark) 25%, transparent);
+  --mn-shadow-dark-xs: var(--card-edge-highlight), 0 1px 2px color-mix(in oklch, var(--mn-shadow-dark) 25%, transparent);
   --mn-shadow-dark-sm: 0 2px 4px color-mix(in oklch, var(--mn-shadow-dark) 30%, transparent);
   --mn-shadow-dark-md: 0 4px 8px color-mix(in oklch, var(--mn-shadow-dark) 35%, transparent);
   --mn-shadow-dark-lg: 0 8px 16px color-mix(in oklch, var(--mn-shadow-dark) 40%, transparent);
@@ -504,7 +506,7 @@ button,
   --popover: var(--mn-paper);
   --popover-foreground: var(--mn-ink);
   --primary: var(--mn-teal);
-  --primary-foreground: oklch(0.993 0.002 256);
+  --primary-foreground: oklch(0.994 0.005 255);
   --primary-hover: var(--mn-teal-hover);
   --primary-wash: var(--mn-teal-wash);
   --secondary: var(--mn-mist);
@@ -514,7 +516,7 @@ button,
   --accent: var(--mn-mist);
   --accent-foreground: var(--mn-ink);
   --destructive: var(--mn-clay);
-  --destructive-foreground: oklch(0.993 0.002 256);
+  --destructive-foreground: oklch(0.994 0.005 255);
   --destructive-wash: var(--mn-clay-wash);
   --border: var(--mn-stone);
   --border-strong: var(--mn-stone-strong);
@@ -539,29 +541,29 @@ button,
   --status-failed: var(--mn-clay);
   --status-failed-wash: var(--mn-clay-wash);
 
-  /* Dynamic Corridor Defaults (Mineral Indigo H 278) */
-  --corridor-h: 278;
-  --corridor-l: 0.51;
-  --corridor-c: 0.075;
-  --corridor-subtle-l: 0.945;
+  /* Dynamic Corridor Defaults (Tactical Cobalt H 240) */
+  --corridor-h: 240;
+  --corridor-l: 0.45;
+  --corridor-c: 0.145;
+  --corridor-subtle-l: 0.955;
   --corridor-subtle-c: 0.02;
-  --corridor-border-l: 0.88;
-  --corridor-border-c: 0.03;
-  --corridor-fg-l: 0.99;
-  --corridor-fg-c: 0.005;
+  --corridor-border-l: 0.895;
+  --corridor-border-c: 0.015;
+  --corridor-fg-l: 0.995;
+  --corridor-fg-c: 0.002;
 
   /* 5-Color Categorical Mineral Chart Palette */
-  --chart-1: oklch(0.461 0.146 180);
-  --chart-2: oklch(0.490 0.060 138);
-  --chart-3: oklch(0.530 0.105 68);
-  --chart-4: oklch(0.500 0.110 32);
-  --chart-5: oklch(0.500 0.075 215);
+  --chart-1: var(--mn-teal);
+  --chart-2: var(--mn-moss);
+  --chart-3: var(--mn-ochre);
+  --chart-4: var(--mn-clay);
+  --chart-5: var(--mn-fjord);
 
   /* Sidebar */
   --sidebar: var(--mn-paper);
   --sidebar-foreground: var(--mn-ink);
   --sidebar-primary: var(--mn-teal);
-  --sidebar-primary-foreground: oklch(0.993 0.002 256);
+  --sidebar-primary-foreground: oklch(0.994 0.005 240);
   --sidebar-accent: var(--mn-mist);
   --sidebar-accent-foreground: var(--mn-ink);
   --sidebar-border: var(--mn-stone);
@@ -584,25 +586,22 @@ button,
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
-  /* Layered Card Edge Highlight */
-  --card-edge-highlight: transparent;
-
-  /* Restrained Blue-Neutral Elevation */
-  --mn-shadow-light: oklch(0.230 0.012 250);
-  --shadow-card-val: 0 1px 3px oklch(0.230 0.012 250 / 0.04), 0 1px 2px oklch(0.230 0.012 250 / 0.02);
-  --shadow-ambient-val: 0 20px 40px -20px oklch(0.230 0.012 250 / 0.06);
-  --shadow-float-val: 0 12px 32px -12px oklch(0.230 0.012 250 / 0.08);
-  --shadow-overlay-val: 0 16px 40px oklch(0.230 0.012 250 / 0.10);
-  --shadow-2xs-val: 0 1px 2px oklch(0.230 0.012 250 / 0.03);
-  --shadow-xs-val: 0 1px 2px oklch(0.230 0.012 250 / 0.04);
-  --shadow-sm-val: 0 2px 6px oklch(0.230 0.012 250 / 0.05);
-  --shadow-md-val: 0 4px 12px oklch(0.230 0.012 250 / 0.06);
-  --shadow-lg-val: 0 12px 28px oklch(0.230 0.012 250 / 0.07);
-  --shadow-xl-val: 0 16px 40px oklch(0.230 0.012 250 / 0.08);
-  --shadow-2xl-val: 0 24px 48px oklch(0.230 0.012 250 / 0.10);
-  --success-foreground: var(--color-emerald-900);
-  --info-foreground: var(--color-violet-900);
-  --warning-foreground: var(--color-yellow-900);
+  /* Restrained Slate-Neutral Elevation */
+  --mn-shadow-light: oklch(0.180 0.010 245);
+  --shadow-card-val: 0 1px 3px oklch(0.180 0.010 245 / 0.04), 0 1px 2px oklch(0.180 0.010 245 / 0.02);
+  --shadow-ambient-val: 0 20px 40px -20px oklch(0.180 0.010 245 / 0.06);
+  --shadow-float-val: 0 12px 32px -12px oklch(0.180 0.010 245 / 0.08);
+  --shadow-overlay-val: 0 16px 40px oklch(0.180 0.010 245 / 0.10);
+  --shadow-2xs-val: 0 1px 2px oklch(0.180 0.010 245 / 0.03);
+  --shadow-xs-val: 0 1px 2px oklch(0.180 0.010 245 / 0.04);
+  --shadow-sm-val: 0 2px 6px oklch(0.180 0.010 245 / 0.05);
+  --shadow-md-val: 0 4px 12px oklch(0.180 0.010 245 / 0.06);
+  --shadow-lg-val: 0 12px 28px oklch(0.180 0.010 245 / 0.07);
+  --shadow-xl-val: 0 16px 40px oklch(0.180 0.010 245 / 0.08);
+  --shadow-2xl-val: 0 24px 48px oklch(0.180 0.010 245 / 0.10);
+  --success-foreground: var(--mn-moss);
+  --info-foreground: var(--mn-fjord);
+  --warning-foreground: var(--mn-ochre);
   --invert: var(--color-zinc-900);
   --invert-foreground: var(--color-zinc-50);
 }
@@ -620,12 +619,12 @@ button,
   --foreground: var(--mn-dark-fg);
   --muted: var(--mn-basalt-surface);
   --muted-foreground: var(--mn-dark-muted);
-  --secondary: var(--mn-basalt-surface);
+  --secondary: var(--mn-basalt-card);
   --secondary-foreground: var(--mn-dark-fg);
-  --accent: var(--mn-basalt-surface);
+  --accent: var(--mn-basalt-popover);
   --accent-foreground: var(--mn-dark-fg);
   --destructive: var(--mn-dark-clay);
-  --destructive-foreground: var(--mn-dark-teal-fg);
+  --destructive-foreground: var(--mn-dark-clay);
   --destructive-wash: var(--mn-dark-clay-wash);
   --border: var(--mn-dark-border);
   --border-strong: var(--mn-dark-border-strong);
@@ -654,14 +653,14 @@ button,
   --status-failed-wash: var(--mn-dark-clay-wash);
 
   /* Dynamic Corridor Theming Dark */
-  --corridor-h: 278;
-  --corridor-l: 0.73;
-  --corridor-c: 0.075;
-  --corridor-subtle-l: 0.24;
-  --corridor-subtle-c: 0.02;
-  --corridor-border-l: 0.38;
-  --corridor-border-c: 0.03;
-  --corridor-fg-l: 0.125;
+  --corridor-h: 240;
+  --corridor-l: 0.68;
+  --corridor-c: 0.14;
+  --corridor-subtle-l: 0.22;
+  --corridor-subtle-c: 0.035;
+  --corridor-border-l: 0.32;
+  --corridor-border-c: 0.025;
+  --corridor-fg-l: 0.11;
   --corridor-fg-c: 0.01;
 
   /* 5-Color Categorical Mineral Chart Palette Dark */
@@ -681,8 +680,8 @@ button,
   --sidebar-border: var(--mn-dark-border);
   --sidebar-ring: var(--mn-dark-teal);
 
-  /* Nocturne Obsidian Elevation mapped to declared tokens */
-  --card-edge-highlight: color-mix(in oklch, var(--foreground) 5%, transparent);
+  /* Nocturne Obsidian Elevation with Specular Top Highlight */
+  --card-edge-highlight: inset 0 1px 0 color-mix(in oklch, var(--mn-dark-fg) 8%, transparent);
   --shadow-card-val: var(--mn-shadow-dark-card);
   --shadow-ambient-val: var(--mn-shadow-dark-ambient);
   --shadow-float-val: var(--mn-shadow-dark-float);
@@ -694,9 +693,9 @@ button,
   --shadow-lg-val: var(--mn-shadow-dark-lg);
   --shadow-xl-val: var(--mn-shadow-dark-xl);
   --shadow-2xl-val: var(--mn-shadow-dark-2xl);
-  --success-foreground: var(--color-emerald-600);
-  --info-foreground: var(--color-violet-600);
-  --warning-foreground: var(--color-yellow-600);
+  --success-foreground: var(--mn-dark-moss);
+  --info-foreground: var(--mn-dark-fjord);
+  --warning-foreground: var(--mn-dark-ochre);
   --invert: var(--color-zinc-700);
   --invert-foreground: var(--color-zinc-50);
 }

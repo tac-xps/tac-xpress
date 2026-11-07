@@ -86,9 +86,11 @@ export function InvoicePreviewDialog({
   const handleDownload = async () => {
     if (!invoiceId || downloading) return
     setDownloading(true)
-    const toastId = toast.loading("Preparing invoice PDF...")
+    const isLabel = activeTab === "label"
+    const docLabel = isLabel ? "shipping label" : "invoice"
+    const toastId = toast.loading(`Preparing ${docLabel} PDF...`)
     try {
-      const response = await fetch(`/api/documents/download?id=${invoiceId}`)
+      const response = await fetch(`/api/documents/download?id=${invoiceId}&type=${activeTab}`)
       if (!response.ok) {
         throw new Error("Failed to download PDF")
       }
@@ -96,14 +98,16 @@ export function InvoicePreviewDialog({
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement("a")
       link.href = url
-      link.download = `Invoice-${shortId || invoiceId.slice(0, 8).toUpperCase()}.pdf`
+      link.download = isLabel
+        ? `Shipping-Label-${awb || shortId}.pdf`
+        : `Invoice-${shortId || invoiceId.slice(0, 8).toUpperCase()}.pdf`
       document.body.appendChild(link)
       link.click()
       link.remove()
       window.URL.revokeObjectURL(url)
-      toast.success("Invoice PDF downloaded!", { id: toastId })
+      toast.success(`${isLabel ? "Shipping label" : "Invoice"} PDF downloaded!`, { id: toastId })
     } catch {
-      toast.error("Failed to download invoice PDF", { id: toastId })
+      toast.error(`Failed to download ${docLabel} PDF`, { id: toastId })
     } finally {
       setDownloading(false)
     }
@@ -190,7 +194,7 @@ export function InvoicePreviewDialog({
               ) : (
                 <Download className="size-3.5" />
               )}
-              <span>{downloading ? "Downloading..." : "Download"}</span>
+              <span>{downloading ? "Downloading..." : `Download ${activeTab === "label" ? "Label" : "PDF"}`}</span>
             </Button>
 
             <Button

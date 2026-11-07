@@ -22,10 +22,15 @@ export function ShipmentRouteStep() {
         render={({ field }) => (
           <FormItem>
             <FormLabel>Billing customer</FormLabel>
-            <CustomerCombobox
-              value={field.value}
-              onSelect={(customer) => field.onChange(customer.id)}
-            />
+            <FormControl>
+              <CustomerCombobox
+                name={field.name}
+                onBlur={field.onBlur}
+                ref={field.ref}
+                value={field.value}
+                onSelect={(customer) => field.onChange(customer.id)}
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
@@ -41,10 +46,16 @@ export function ShipmentRouteStep() {
                 <FormLabel>
                   {name === "origin" ? "Origin city" : "Destination city"}
                 </FormLabel>
-                <CityCombobox
-                  value={field.value}
-                  onSelect={(city) => field.onChange(city.city)}
-                />
+                <FormControl>
+                  <CityCombobox
+                    freightOnly
+                    name={field.name}
+                    onBlur={field.onBlur}
+                    ref={field.ref}
+                    value={field.value}
+                    onSelect={(city) => field.onChange(city.city)}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

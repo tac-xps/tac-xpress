@@ -136,7 +136,8 @@ export const sendInvoiceViaWhatsApp = authActionClient
       )
 
       let finalPdfUrl = ""
-      const fileName = `whatsapp-invoice-${invoice.id}.pdf`
+      const revision = (invoice.updatedAt ?? invoice.createdAt).getTime()
+      const fileName = `whatsapp-invoice-${invoice.id}-${revision}.pdf`
 
       try {
         // Check if PDF is already in storage to avoid redundant Puppeteer runs

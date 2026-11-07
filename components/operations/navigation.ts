@@ -62,7 +62,7 @@ export const workspaceNavigation = [
     items: [
       { title: "Invoices", href: "/dashboard/invoices", icon: InvoicesIcon },
       { title: "Customers", href: "/dashboard/customers", icon: CustomersIcon },
-      { title: "Staff", href: "/dashboard/staff", icon: UserCog },
+      { title: "Staff", href: "/dashboard/staff", icon: UserCog, adminOnly: true },
       { title: "Pricing", href: "/dashboard/pricing", icon: PricingIcon },
       { title: "Support", href: "/dashboard/messages", icon: SupportIcon },
       { title: "Feedback", href: "/dashboard/feedback", icon: MessageCircle },
@@ -84,7 +84,7 @@ export const workspaceNavigation = [
         icon: History,
       },
       { title: "Integrations", href: "/dashboard/integrations", icon: Plug },
-      { title: "Jobs & DLQ", href: "/dashboard/jobs", icon: ServerCog },
+      { title: "Jobs & DLQ", href: "/dashboard/jobs", icon: ServerCog, adminOnly: true },
       {
         title: "Security & MFA",
         href: "/dashboard/settings/security",

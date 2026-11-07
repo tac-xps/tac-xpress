@@ -10,6 +10,8 @@ export const addStaffSchema = z.object({
     .refine(isValidLogisticsPhone, "Enter a valid phone number."),
   email: z
     .string()
+    .trim()
+    .toLowerCase()
     .email("Please enter a valid email address.")
     .min(1, "Email is required for staff access."),
   role: z.enum(["staff", "admin"], {

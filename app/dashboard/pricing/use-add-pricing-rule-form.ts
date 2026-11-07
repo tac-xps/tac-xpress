@@ -5,14 +5,9 @@ import { toast } from "sonner"
 import * as Sentry from "@sentry/nextjs"
 import { useTransition } from "react"
 import { createPricingRuleAction } from "./actions"
+import { createPricingRuleSchema } from "./validations"
 
-export const addPricingRuleSchema = z.object({
-  serviceType: z.enum(["express_air", "standard_ocean", "road_freight"]),
-  origin: z.string().min(2, "Origin must be at least 2 characters"),
-  destination: z.string().min(2, "Destination must be at least 2 characters"),
-  basePrice: z.coerce.number().min(0, "Base price cannot be negative"),
-  pricePerKg: z.coerce.number().min(0, "Price per Kg cannot be negative"),
-})
+export const addPricingRuleSchema = createPricingRuleSchema
 
 export type AddPricingRuleValues = z.infer<typeof addPricingRuleSchema>
 
@@ -34,12 +29,15 @@ export function useAddPricingRuleForm(onSuccess: () => void) {
     startTransition(async () => {
       try {
         const result = await createPricingRuleAction(values)
-        if ((result?.data?.success)) {
+        if (result?.data?.success) {
           toast.success("Pricing rule added successfully")
           form.reset()
           onSuccess()
         } else {
-          toast.error((result?.data?.error ?? result?.serverError) || "Failed to add pricing rule")
+          toast.error(
+            (result?.data?.error ?? result?.serverError) ||
+              "Failed to add pricing rule"
+          )
         }
       } catch (error) {
         Sentry.captureException(error)

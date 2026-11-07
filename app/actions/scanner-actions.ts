@@ -47,7 +47,10 @@ export async function getScannedShipmentDetails(code: string) {
     })
 
     if (!targetShipment) {
-      return { success: false as const, error: "Shipment not found for this barcode." }
+      return {
+        success: false as const,
+        error: "Shipment not found for this barcode.",
+      }
     }
 
     return { success: true as const, data: targetShipment }
@@ -91,15 +94,9 @@ export async function updateScannedShipmentStatus(
 
       if (!currentShipment) throw new Error("Shipment not found")
 
-      const validNextStatus = {
-        pending: "in-transit",
-        "in-transit": "delivered",
-        delivered: null,
-      } as const
-
-      if (validNextStatus[currentShipment.status] !== status) {
+      if (currentShipment.status !== status) {
         throw new Error(
-          `Invalid shipment transition: ${currentShipment.status} to ${status}`
+          "Use dispatch and handover controls to change cargo status"
         )
       }
 

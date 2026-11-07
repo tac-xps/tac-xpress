@@ -93,8 +93,8 @@ export function WizardForm() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] w-full bg-muted/20 p-4 pb-12 font-sans md:p-8 md:pb-16">
-      <div className="mx-auto max-w-6xl">
+    <div className="relative w-full min-w-0 font-sans pb-12">
+      <div className="flex w-full min-w-0 flex-col gap-6">
         {/* Header */}
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-4">

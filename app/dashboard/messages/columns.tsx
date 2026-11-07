@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Eye, ArrowUpDown, MoreHorizontal, Sparkles, AlertCircle, ShieldAlert } from "lucide-react"
+import { Eye, ArrowUpDown, MoreHorizontal, ShieldAlert } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -86,47 +86,27 @@ export const getColumns = (
     cell: ({ row }) => {
       const ticket = row.original
       const isUrgent = ticket.priority === "urgent" || ticket.priority === "high"
+      const notes = [
+        isUrgent ? `${ticket.priority} priority` : null,
+        ticket.needs_human_review ? "needs review" : null,
+        ticket.ai_routing
+          ? `${ticket.ai_routing}${ticket.ai_confidence ? ` ${Math.round(ticket.ai_confidence * 100)}%` : ""}`
+          : null,
+      ].filter((note): note is string => note !== null)
       return (
-        <div className="flex flex-col gap-1.5 py-1 min-w-[200px] max-w-[340px]">
+        <div className="flex min-w-[200px] max-w-[340px] flex-col gap-1 py-1">
           <span className="font-medium leading-snug line-clamp-2">{ticket.subject}</span>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {ticket.priority && (
-              <Badge
-                variant={
-                  isUrgent
-                    ? "destructive"
-                    : ticket.priority === "medium"
-                      ? "warning"
-                      : "neutral"
-                }
-                className="text-xs px-1.5 py-0 h-4 capitalize"
-              >
-                {ticket.priority}
-              </Badge>
-            )}
-            {ticket.needs_human_review && (
-              <Badge variant="warning" className="text-xs px-1.5 py-0 h-4 gap-1">
-                <AlertCircle className="size-2.5" />
-                Needs Review
-              </Badge>
-            )}
-            {ticket.ai_routing && (
-              <Badge variant="outline" className="text-xs px-1.5 py-0 h-4 gap-1 border-primary/30 text-primary">
-                <Sparkles className="size-2.5" />
-                {ticket.ai_routing}
-                {ticket.ai_confidence ? ` (${Math.round(ticket.ai_confidence * 100)}%)` : ""}
-              </Badge>
-            )}
-            {ticket.sla_at_risk && !ticket.sla_breached && (
-              <Badge variant="warning" className="text-xs px-1.5 py-0 h-4">
-                SLA At Risk
-              </Badge>
-            )}
-            {ticket.sla_breached && (
-              <Badge variant="destructive" className="text-xs px-1.5 py-0 h-4">
-                SLA Breached
-              </Badge>
-            )}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            {ticket.sla_breached ? (
+              <Badge variant="destructive">SLA breached</Badge>
+            ) : ticket.sla_at_risk ? (
+              <Badge variant="warning">SLA at risk</Badge>
+            ) : null}
+            {notes.map((note) => (
+              <span key={note} className="text-xs capitalize text-muted-foreground">
+                {note}
+              </span>
+            ))}
           </div>
         </div>
       )

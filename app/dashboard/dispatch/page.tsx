@@ -2,6 +2,19 @@ import type { Metadata } from "next"
 import { format } from "date-fns"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
+import { shipments, manifestItems, manifestItemHandoffs } from "@/lib/db/schema"
+import {
+  and,
+  asc,
+  eq,
+  exists,
+  not,
+  notExists,
+  isNull,
+  or,
+  ilike,
+} from "drizzle-orm"
+import { firstParam, containsPattern } from "@/lib/table-query"
 import { DispatchClientLayout } from "./dispatch-client-layout"
 import { DEFAULT_PAGE_SIZE, parsePage } from "@/components/ui/page-navigation"
 
@@ -12,12 +25,18 @@ export const metadata: Metadata = {
 export default async function DispatchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string | string[]; view?: string }>
+  searchParams: Promise<{
+    page?: string | string[]
+    view?: string
+    q?: string | string[]
+  }>
 }) {
   await requireStaffPage()
 
   const params = await searchParams
   const page = parsePage(params.page)
+  const q = firstParam(params.q).trim().slice(0, 100)
+  const pattern = containsPattern(q)
   const dispatchRows = await db.query.manifests.findMany({
     where: (manifests, { inArray }) =>
       inArray(manifests.legType, ["pickup", "delivery"]),
@@ -37,17 +56,54 @@ export default async function DispatchPage({
   })
   const hasNext = dispatchRows.length > DEFAULT_PAGE_SIZE
   const dbDispatchRuns = dispatchRows.slice(0, DEFAULT_PAGE_SIZE)
-  // Active shipments for Kanban (excluding delivered/cancelled)
-  const activeShipments = await db.query.shipments.findMany({
-    where: (shipments, { and, ne, isNull }) =>
-      and(ne(shipments.status, "delivered"), isNull(shipments.deletedAt)),
-    with: {
-      manifestItems: { with: { handoffs: true } },
-      legs: true,
-    },
-    orderBy: (table, { desc }) => [desc(table.createdAt), desc(table.id)],
-    limit: 100,
+  const hasReceipt = exists(
+    db
+      .select({ id: manifestItemHandoffs.id })
+      .from(manifestItemHandoffs)
+      .innerJoin(
+        manifestItems,
+        eq(manifestItems.id, manifestItemHandoffs.manifestItemId)
+      )
+      .where(
+        and(
+          eq(manifestItems.shipmentId, shipments.id),
+          eq(manifestItemHandoffs.outcome, "received")
+        )
+      )
+  )
+  const candidateRows = await db.query.shipments.findMany({
+    where: and(
+      isNull(shipments.deletedAt),
+      notExists(
+        db
+          .select({ id: manifestItems.id })
+          .from(manifestItems)
+          .where(
+            and(
+              eq(manifestItems.shipmentId, shipments.id),
+              eq(manifestItems.isActive, true)
+            )
+          )
+      ),
+      or(
+        and(eq(shipments.status, "pending"), not(hasReceipt)),
+        and(eq(shipments.status, "in-transit"), hasReceipt)
+      ),
+      q
+        ? or(
+            ilike(shipments.awbNumber, pattern),
+            ilike(shipments.origin, pattern),
+            ilike(shipments.destination, pattern)
+          )
+        : undefined
+    ),
+    with: { manifestItems: { with: { handoffs: true } } },
+    orderBy: [asc(shipments.createdAt), asc(shipments.id)],
+    limit: DEFAULT_PAGE_SIZE + 1,
+    offset: (page - 1) * DEFAULT_PAGE_SIZE,
   })
+  const queueHasNext = candidateRows.length > DEFAULT_PAGE_SIZE
+  const activeShipments = candidateRows.slice(0, DEFAULT_PAGE_SIZE)
 
   const unassignedPendingShipments = activeShipments.filter(
     (s) =>
@@ -70,22 +126,6 @@ export default async function DispatchPage({
     let columnId: string = s.status
     if (s.status === "in-transit") columnId = "in_transit"
 
-    const sortedLegs = s.legs
-      ? [...s.legs].sort((a, b) => a.legNumber - b.legNumber)
-      : []
-    const activeLeg =
-      sortedLegs.find((l) => l.status === "in_transit") ??
-      sortedLegs.find((l) => l.status === "pending")
-
-    const legInfo =
-      sortedLegs.length > 0 && activeLeg
-        ? {
-            legNumber: activeLeg.legNumber,
-            totalLegs: sortedLegs.length,
-            currentRoute: `${activeLeg.originLocation} → ${activeLeg.destinationLocation}`,
-          }
-        : undefined
-
     return {
       id: s.awbNumber,
       shipmentId: s.id,
@@ -96,7 +136,6 @@ export default async function DispatchPage({
       column: columnId,
       name: s.awbNumber,
       isAssigned: s.manifestItems.some((item) => item.isActive),
-      legInfo,
     }
   })
 
@@ -109,6 +148,8 @@ export default async function DispatchPage({
         dispatchRuns={dbDispatchRuns}
         page={page}
         hasNext={hasNext}
+        queueHasNext={queueHasNext}
+        searchQuery={q}
         view={params.view === "runs" ? "runs" : "board"}
       />
     </>
