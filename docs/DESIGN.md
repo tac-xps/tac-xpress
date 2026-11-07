@@ -1,144 +1,93 @@
-# TAC-XPRESS design system
+# TAC-XPRESS design implementation guide
 
-## Intent
+Current authority: 4 November 2026.
 
-Enough information to act confidently, with enough space to think. Nordic Lagom describes restraint, balance and usefulness. TAC-XPRESS remains an Indian cargo business; it does not borrow a Scandinavian cultural identity. Public content explains how to prepare, book, track and resolve a shipment. The operations workspace belongs only to provisioned admins and staff. Customers need no account.
+[The root design brief](../DESIGN.md) defines product identity, audience, and tone.
+[AGENTS.md](../AGENTS.md) defines repository constraints. Installed component APIs own their control styling and overlay behavior.
+`app/globals.css` owns exact token values and public type scales. `app/layout.tsx` owns font loading.
+Use these sources together. Historical mockups do not override them.
 
-## Source system
+## Product and visual identity
 
-Use Tailark Veil compositions for public sections and official shadcn Radix components for controls and dashboard layouts. Consult [UI-SOURCES.md](UI-SOURCES.md) for documentation coverage, registry snapshots and adaptations. Do not mix competing decorative UI kits into active routes.
+TAC-XPRESS serves the exclusive New Delhi and Imphal corridor in both directions (DEL ⇄ IMF).
+Use factual, direct language for shippers, dispatchers, warehouse staff, and drivers.
+Keep public editorial sections spacious and operational registers compact.
+Keep substantial service guidance, AWB tracking, support, feedback, legal pages, and provisioned staff entry.
 
-## Public cargo direction — 7 September 2026
+The current palette uses neutral light surfaces, obsidian dark surfaces, and teal primary actions.
+The previous violet/lilac direction and slate/amber/cyan action palette are superseded.
+Historical research remains in [UI-SOURCES.md](UI-SOURCES.md) and [the cargo research](../artifacts/cargo-2026/research.md).
+Those documents record provenance rather than current styling requirements.
 
-The public frontend retains the user's Cargo Home 4 composition: cinematic transport imagery, expansive typography, substantial service content and dark story sections. The subsequent Nocturne rail reference refines the colors into ivory/lilac light surfaces, near-black violet dark surfaces and restrained violet actions. The operations workspace uses the same semantic color family with Nordic Lagom density and flat functional surfaces.
+## Color and geometry
 
-- Public and staff surfaces inherit the same light/dark semantic tokens. Inverse sections and quiet lilac feature bands explicitly rebind the existing Tailwind aliases. Status colors remain distinct from the violet action accent.
-- IBM Plex Sans is the loaded interface typeface across public and operational surfaces. Public display type scales from 48 to 84px, section headings from 36 to 56px, with calibrated tracking. These are explicit public display tokens rather than operational text sizes.
-- Maximum public container: 1440px; fluid 20–64px side space. All surfaces and controls have square corners, including actions, fields, badges, avatars, overlays and chart bars.
-- Five original generated cargo render concepts supply hero, air, surface, packing and warehouse imagery. They illustrate the services; they do not document TAC-XPRESS-owned aircraft, vehicles or facilities.
-- Use Next Image with responsive sizes and fixed aspect containers. Only the homepage hero is preloaded. Other imagery is lazy-loaded. Do not add a runtime 3D engine, autoplay video, scroll hijacking or an entrance animation that hides content.
-- Hover/focus image enlargement is small and disabled under reduced motion. Sticky navigation changes its surface after scrolling; its subscription is cleaned up.
-- Preserve the real AWB GET form, public support flows and provisioned staff entry. No invented fares, sea freight, fleet claims or testimonials.
+- Use `background`, `card`, `popover`, `surface`, and `muted` for their intended surfaces.
+- Pair text with `foreground`, `muted-foreground`, or the surface's foreground token.
+- Use `primary` and `primary-foreground` for primary actions. Use `ring` for visible keyboard focus.
+- Keep semantic freight statuses distinct from the teal action accent.
+- Use installed ReUI light Badge variants or Alert variants for state messages.
+- Reserve brand blue for the logo and categorical colors for actual category identity.
+- Use straight lines and zero-radius geometry for controls, containers, badges, and overlays.
+- Let installed variants own heights, padding, shadows, and motion. Do not override them at call sites.
 
-See [the reference and research notes](../artifacts/cargo-2026/research.md), [the implementation plan](../implementation_plan.md), and [the image manifest](../artifacts/cargo-2026/image-manifest.json).
+Do not duplicate raw palette values or unsupported contrast ratios here.
+Measure actual rendered text and boundary pairs in both themes.
+Target WCAG AA: 4.5:1 body text, 3:1 large text, and 3:1 required non-text boundaries.
+A token audit or automated scan alone does not prove accessibility compliance.
 
-## Nordic Mineral — Nocturne Obsidian & Luminous Nordic Teal specification
+## Typography
 
-The visual system implements the 2026 "Nocturne Obsidian & Luminous Nordic Teal" architecture: Radix Slate (H 256) neutral structure, Radix Teal (H 180) primary brand accent in light mode, Nocturne Obsidian (H 255, C <= 0.010) deep bedrock in dark mode, and Luminous Nordic Teal (H 178, C 0.135) for high-contrast jewel actions.
+The loaded interface family is **Inter**, including headings, navigation, forms, and general copy.
+The operational data family is **IBM Plex Mono**, reserved for AWBs, IDs, DEL/IMF codes, timestamps, and financial figures.
+IBM Plex Sans is a superseded direction. Do not load another interface family to match historical examples.
 
-### Material and surface hierarchy
+- Use `text-sm` for operational body text and `text-xs` for metadata.
+- Keep active interface text at least 12px. Print documents and illustrative mini-UI have separate physical requirements.
+- Use tabular numerals for comparable numerical data.
+- Preserve public display and section scales from the existing CSS tokens.
+- Use sentence-case sans labels. Do not add tracked capitals or category eyebrows above headings.
+- Keep breadcrumbs as navigation. Do not repeat their category label above the page title.
+- Preserve installed CardTitle and FrameTitle sizes.
 
-- Light canvas uses Radix Slate Cloud (`--mn-cloud: oklch(0.982 0.002 256)`).
-- Card surfaces use Crisp Paper (`--mn-paper: oklch(0.993 0.002 256)`).
-- Secondary muted containers use Radix Slate Mist (`--mn-mist: oklch(0.936 0.006 256)`).
-- Structural borders use Hairline Stone (`--mn-stone: oklch(0.889 0.010 256)`).
-- Form and input boundaries use Stone Strong (`--mn-stone-strong: oklch(0.601 0.020 256)`), exceeding 3.0:1 non-text contrast against cloud.
-- Text primary uses dense blue-neutral Ink (`--mn-ink: oklch(0.256 0.011 264)`), exceeding 14.5:1 on cloud canvas.
-- Text secondary uses calibrated Slate (`--mn-slate: oklch(0.498 0.018 256)`), satisfying APCA |Lc| >= 75 body text on paper card.
-- Dark canvas uses Nocturne Obsidian (`--background: oklch(0.125 0.007 255)`), providing authentic depth without blue mud.
-- Dark surface containers use Graphite Surface (`--surface: oklch(0.150 0.008 255)`), receding calmly behind content.
-- Dark card containers use Tactile Basalt Card (`--card: oklch(0.180 0.010 255)`), providing clean micro-elevation without washed-out gray slabs.
-- Dark popover containers use Distinct Popover Basalt (`--popover: oklch(0.220 0.012 255)`).
-- Dark strong borders use Obsidian Stone Strong (`oklch(0.500 0.015 255)`), exceeding 3.1:1 non-text contrast against card.
-- Dark text primary uses Cloud White (`oklch(0.982 0.002 256)`), achieving >17.8:1 contrast on card.
-- Dark text secondary uses Cool Slate (`oklch(0.740 0.016 256)`), achieving >8.1:1 contrast on card.
+## Composition and responsive behavior
 
-### Color discipline and semantic separation
+- Reuse installed shadcn/Radix and ReUI components from `components/ui` and `components/reui`.
+- Retain the existing TanStack v8 DataTable contract, URL state, sorting, and server pagination.
+- Give each register one surface owner. Pass `bordered={false}` when a surrounding region owns the surface.
+- Preserve standalone table framing with the default `bordered` value.
+- Do not introduce a second grid/filter system without a separately scoped compatibility migration.
+- Keep the desktop sidebar `sticky top-0 h-svh`.
+- Use parent `gap-*`: 1–2 for rows, 3–4 between groups, and 6–8 between sections.
+- Let narrow layouts wrap actions and stack fields before they overflow.
+- Keep physical documents unchanged. Put narrow-screen previews in labeled, keyboard-focusable horizontal scroll regions.
 
-- Primary UI accent in light mode uses Radix Teal H 180 (`oklch(0.461 0.146 180)`).
-- Primary UI accent in dark mode uses Luminous Nordic Teal H 178 (`oklch(0.680 0.135 178)`), paired with deep obsidian ink text (`oklch(0.125 0.007 255)`) achieving 7.57:1 AAA contrast.
-- Neutral foundation provenance: [oklch.fyi/color-palettes/slate](https://oklch.fyi/color-palettes/slate) (H 256°).
-- Dark environment provenance: 2026 Nocturne Obsidian & Graphite standard (H 255°, C 0.007–0.010).
-- Brand Blue (`--tx-brand-blue: oklch(0.48 0.15 255)`) remains reserved strictly for the TAC-XPRESS logo.
-- Interactive highlights use Mist wash (`--accent`), separating interaction from semantic status.
-- Cargo in-transit uses Fjord H 215 (`oklch(0.500 0.075 215)` in light, `oklch(0.740 0.065 215)` in dark).
-- Delivered cargo uses Botanical Moss H 138 (`oklch(0.490 0.060 138)` in light, `oklch(0.740 0.065 138)` in dark).
-- Warning and pending reviews use Ochre H 68/72 (`oklch(0.530 0.105 68)` in light, `oklch(0.760 0.090 72)` in dark).
-- Exceptions and cancellations use Clay H 32 (`oklch(0.500 0.110 32)` in light, `oklch(0.730 0.095 32)` in dark).
+`.cargo-container` currently uses a 1440px maximum, increasing to 1680px from a 1920px viewport.
+The homepage landing composition has its own existing 1320px container.
+Preserve those distinct compositions. Do not force operational density onto public content.
 
-### Elevation and shadows
+## Information, states, and motion
 
-- Light mode uses restrained blue-neutral shadows tinted with ink (`oklch(0.230 0.012 250 / ...)`).
-- Dark mode uses Nocturne Obsidian dark shadow tokens (`--mn-shadow-dark: oklch(0.080 0.005 255)`), avoiding artificial navy-blue cast.
-- Dark hierarchy relies on subtle surface lightness stepping (0.125 -> 0.150 -> 0.180 -> 0.220) rather than heavy black cast shadows.
+- Give each public page a clear purpose and relevant next step.
+- Name metric periods, limits, units, and denominators. Label latest-100 samples explicitly.
+- Keep overlapping risk flags separate from exclusive shipment statuses.
+- Use real record labels in selectors. Do not request internal IDs from users.
+- Show loading Skeletons, actionable empty states, and inline errors with Retry for data regions.
+- Associate field errors with controls and announce asynchronous failures.
+- Retain entered values after a failed submission. Confirm only saved work.
+- Explain actual finalization and removal consequences.
+- Preserve installed overlay animation and reduced-motion handling.
+- Limit custom motion to transform and opacity. Do not animate layout dimensions or blur.
+- Use `transition-colors` for control hover states.
+- Do not add decorative entrances or stagger register rows.
 
-### Categorical data visualization palette
+Homepage imagery illustrates services rather than owned aircraft, vehicles, or facilities.
+Use Northeast Indian/Asian people when people assets are needed.
+The hero reconciles playback after mount and stays paused under reduced motion.
+Keep its explicit playback control. Do not add other automatic media.
 
-1. Series 1: Radix Teal (`oklch(0.461 0.146 180)`)
-2. Series 2: Moss (`oklch(0.490 0.060 138)`)
-3. Series 3: Ochre (`oklch(0.530 0.105 68)`)
-4. Series 4: Clay (`oklch(0.500 0.110 32)`)
-5. Series 5: Fjord (`oklch(0.500 0.075 215)`)
+## Verification
 
-### Geometry hierarchy
-
-- Every surface, control, overlay, container, and interactive element uses 0px (`rounded-none`). No exceptions.
-- All `--radius-*` tokens resolve to `0px`. Do not reintroduce any non-zero radius value.
-- All active controls use a two-tone focus ring with 4px soft bloom.
-
-### Dual-layer accessibility standards
-
-- Layer 1 (WCAG 2.2 AA): Body text contrast >= 4.5:1. Large text >= 3.0:1. UI boundaries >= 3.0:1.
-- Layer 2 (SAPC-APCA 0.0.98G): Preferred body text |Lc| >= 90. Minimum body text |Lc| >= 75. Badges and content |Lc| >= 60.
-
-### Enforcement pipeline
-
-- Stylelint rejects raw hex codes, RGB/RGBA functions, and named colors in CSS (`pnpm run stylelint`).
-- Design Token Audit scans TSX files to block Tailwind spectrum classes (`pnpm run audit:tokens`).
-
-## Typography and spatial hierarchy
-
-TAC-XPRESS uses a disciplined two-family typography system. Interface elements use IBM Plex Sans. Operational data uses IBM Plex Mono.
-
-### Typeface assignment
-
-- **Primary Interface Font (`--font-tac-sans`):** IBM Plex Sans (weights 400, 500, 600, 700). Applied to headings, body copy, navigation, buttons, forms, and service cards.
-- **Operational Data Font (`--font-tac-mono`):** IBM Plex Mono (weights 400, 500, 600, 700). Restricted strictly to AWB references, shipment IDs, route codes, timestamps, and dense audit values.
-- Prohibit monospaced styling on general UI navigation, category tags, section titles, and descriptive text.
-
-### Typographic scale and treatments
-
-| Role | Desktop Size | Weight | Line Height | Tracking | Font Family | Treatment |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Hero heading | 48–60px | 600 | 1.08–1.15 | -0.02em | IBM Plex Sans | Confident display hierarchy |
-| Section heading | 36–42px | 600 | 1.15 | -0.02em | IBM Plex Sans | Clear section delineation |
-| Service card heading | 22–24px | 600 | 1.20 | -0.01em | IBM Plex Sans | Compact, prominent |
-| Body copy | 16–17px | 400 | 1.55–1.65 | normal | IBM Plex Sans | Dark, comfortable line height |
-| Supporting copy | 14–15px | 400 | 1.45–1.55 | normal | IBM Plex Sans | Legible secondary guidance |
-| Operational labels | 12–13px | 500–600 | 1.35 | +0.06em | IBM Plex Sans | Uppercase micro-labels |
-| Dense metadata | 12px min | 400–500 | 1.40 | normal | IBM Plex Mono | Tabular numerals only |
-
-### Semantic text color tokens
-
-| Token | Hex Equivalent | Purpose | Contrast vs Canvas |
-| :--- | :--- | :--- | :--- |
-| `--color-canvas` | `#F7F9FA` | Cool-neutral page canvas | Base background |
-| `--color-ink` | `#17212B` | Headings, primary titles | 15.4:1 (WCAG AAA) |
-| `--color-body` | `#344256` | Editorial paragraphs, body copy | 9.7:1 (WCAG AAA) |
-| `--color-body-muted` | `#536477` | Supporting labels, secondary metadata | 5.8:1 (WCAG AA) |
-| `--color-line` | `#D7DEE5` | Structural hairline dividers | 1.3:1 non-text boundary |
-| `--color-accent` | `#007A68` | Action jewels, verified indicators | 5.0:1 (WCAG AA) |
-
-### Spatial standards
-
-- Four-pixel spacing scale. Action heights: extra-small 24px, small 28px, default 32px, large 36px.
-- Zero radius (`rounded-none`) across all surfaces, cards, tags, and inputs.
-- Sticky full-viewport desktop sidebar (`sticky top-0 h-svh`).
-- Maximum public layout container: 1440px with fluid side padding.
-
-## Information and interaction
-
-- A public page has one clear purpose and primary next step, supported by substantial explanatory sections.
-- A dashboard page starts with a title, useful context and relevant actions. Queues show actual work; metrics name their period and denominator.
-- Search and sorting operate on the server across matching records where offered. Exports explicitly say when they cover only the current page.
-- Use named hubs, drivers, vehicles and customers in selectors. Do not ask people to paste internal IDs.
-- File selection does not imply upload. Documents attach to a saved record and show success, failure and retry states.
-- Finalization and removal explain the actual consequence. Never show success for skipped provider work.
-
-## Accessibility and motion
-
-Visible keyboard focus, labelled controls, named dialogs, meaningful headings, text errors, AA contrast and 320px layouts are release checks. Respect reduced motion; no continuous animation is required for operational comprehension. Light and dark themes use the same hierarchy.
-
-## Evidence boundary
-
-The Storybook operations preview uses clearly marked simulated records and has no live mutations. Local public and isolated UI checks do not constitute authenticated staging or production acceptance. Consult the latest audit report for the checks actually performed and open release gates.
+Run `pnpm typecheck`, `pnpm test:unit`, `pnpm lint`, `pnpm stylelint`, `pnpm audit:tokens`, and `pnpm build`.
+Run ReUI self-checks and the Delivery Gate. Review the smallest connected diff with Ponytail Full.
+Compare relevant viewport, theme, keyboard, loading, empty, error, and populated states.
+Record unverified authenticated and hosted acceptance separately from local evidence.

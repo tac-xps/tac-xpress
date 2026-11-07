@@ -1,6 +1,6 @@
 "use client"
 // Official shadcn Combobox recipe: Popover + Command, using the installed Radix base.
-import { useState } from "react"
+import { useState, useRef, type ComponentProps } from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -16,6 +16,10 @@ import {
   CommandList,
 } from "@/components/ui/command"
 export type SelectOption = { value: string; label: string; detail?: string }
+export type SearchSelectTriggerProps = Omit<
+  ComponentProps<"button">,
+  "value" | "onSelect" | "onChange" | "children"
+>
 export function SearchSelect({
   value,
   displayValue,
@@ -26,7 +30,9 @@ export function SearchSelect({
   onSearch,
   loading,
   error,
-}: {
+  onRetry,
+  ...triggerProps
+}: SearchSelectTriggerProps & {
   value?: string
   displayValue?: string
   options: SelectOption[]
@@ -36,20 +42,27 @@ export function SearchSelect({
   onSearch?: (query: string) => void
   loading?: boolean
   error?: string
+  onRetry?: () => void
 }) {
   const [open, setOpen] = useState(false)
+  const searchRef = useRef<HTMLInputElement>(null)
   const selected = options.find((option) => option.value === value)
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          {...triggerProps}
           type="button"
           role="combobox"
-          aria-label={label}
+          aria-label={
+            triggerProps["aria-label"] ??
+            (triggerProps.id || triggerProps["aria-labelledby"] ? undefined : label)
+          }
           aria-expanded={open}
           variant="outline"
+          size="lg"
           disabled={disabled}
-          className="h-9 w-full justify-between gap-3 bg-background font-normal"
+          className="w-full justify-between gap-3 bg-background font-normal"
         >
           <span className="min-w-0 truncate text-left">
             {selected?.label ??
@@ -69,19 +82,36 @@ export function SearchSelect({
       >
         <Command shouldFilter={!onSearch}>
           <CommandInput
+            ref={searchRef}
             placeholder={label}
             onValueChange={onSearch}
             className="h-9 text-sm"
           />
+          {error && (
+            <div className="grid gap-2 p-3">
+              <p role="alert" className="text-sm text-destructive">
+                {error}
+              </p>
+              {onRetry && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={loading}
+                  onClick={() => {
+                    onRetry()
+                    searchRef.current?.focus()
+                  }}
+                >
+                  Retry
+                </Button>
+              )}
+            </div>
+          )}
           <CommandList>
             {loading && (
               <p role="status" className="p-3 text-sm text-muted-foreground">
                 Searching…
-              </p>
-            )}
-            {error && (
-              <p role="alert" className="p-3 text-sm text-destructive">
-                {error}
               </p>
             )}
             {!loading && !error && (

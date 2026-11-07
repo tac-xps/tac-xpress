@@ -9,6 +9,8 @@
     "pnpm": ">=9"
   },
   "scripts": {
+    "backup:offsite": "tsx scripts/offsite-backup.ts",
+    "backup:recover": "tsx scripts/offsite-backup.ts recover",
     "design:lint": "designmd lint docs/DESIGN.md",
     "design:diff": "designmd diff docs/DESIGN.md docs/DESIGN-v2.md",
     "preinstall": "npx only-allow pnpm",
@@ -201,6 +203,8 @@
   },
   "pnpm": {
     "overrides": {
+      "@sentry/bundler-plugins>glob": "14.0.2",
+      "glob@14.0.2>minimatch": "11.0.1",
       "source-map-js@>=1.0.0 <1.2.2": "1.2.2",
       "postcss@<8.5.23": "8.5.23",
       "undici@>=7.0.0 <7.30.1": "7.30.1",

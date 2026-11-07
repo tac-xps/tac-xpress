@@ -17,12 +17,12 @@ const descriptions: Record<CargoAsset, string> = {
 }
 
 const assetPaths: Record<CargoAsset, string> = {
-  hero: "/images/corridor-ink/hero-console.png",
-  air: "/images/corridor-ink/fleet-air.png",
-  surface: "/images/corridor-ink/fleet-surface.png",
-  packing: "/images/corridor-ink/fleet-packaging.png",
-  warehouse: "/images/corridor-ink/auth-warehouse.png",
-  about: "/images/corridor-ink/fleet-imphal-hub.png",
+  hero: "/images/new-assets/hero-console.png",
+  air: "/images/new-assets/fleet-air.png",
+  surface: "/images/new-assets/fleet-surface.png",
+  packing: "/images/new-assets/fleet-packaging.png",
+  warehouse: "/images/new-assets/auth-warehouse.png",
+  about: "/images/new-assets/fleet-imphal-hub.png",
 }
 
 interface CargoImageProps {

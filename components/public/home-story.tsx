@@ -55,7 +55,7 @@ export function HomeStory({
           />
           <WarehouseLottieDelivery />
           <p className="mt-4 font-mono text-xs text-muted-foreground/70">
-            Connecting communities / Delhi to Northeast India cargo route
+            Connecting communities / New Delhi to Imphal corridor
           </p>
         </motion.div>
 
@@ -99,7 +99,7 @@ export function HomeStory({
           </p>
           <p className="text-body-editorial mt-5">
             <strong className="font-semibold text-foreground">Dedicated arterial linehaul. </strong>
-            TAC-XPRESS coordinates scheduled cargo movement between New Delhi consolidation terminals and Northeast India regional stations, anchored at our Imphal distribution hub.
+            TAC-XPRESS coordinates scheduled cargo movement directly between New Delhi consolidation terminals and our Imphal distribution hub.
           </p>
           <p className="text-body-editorial mt-3">
             <strong className="font-semibold text-foreground">Operational accountability. </strong>

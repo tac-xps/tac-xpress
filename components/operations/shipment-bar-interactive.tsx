@@ -46,7 +46,6 @@ interface ShipmentBarInteractiveProps {
   rows: {
     status?: string | null
     createdAt?: string | Date | null
-    [key: string]: unknown
   }[]
 }
 

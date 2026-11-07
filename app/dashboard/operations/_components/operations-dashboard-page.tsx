@@ -1,4 +1,5 @@
 import React from "react"
+import type { ShipmentWithRelations } from "@/app/dashboard/shipments/shipment-actions"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { ShipmentsDataTable } from "@/app/dashboard/shipments/shipment-data-table"
 import { DEFAULT_PAGE_SIZE } from "@/components/ui/page-navigation"
@@ -9,30 +10,27 @@ export interface KpiCard {
   label: string
   /** Rendered value (number or string). */
   value: number | string
-  /** Optional Tailwind text-colour class, e.g. `"text-amber-500"`. */
+  /** Semantic text color for the metric. */
   colourClass?: string
 }
 
 export interface OperationsDashboardPageProps {
   /** Current (1-based) page number. */
   page: number
-  /** All rows for the service type, ordered by `createdAt desc`. */
-  rows: {
-    status?: string | null
-    slaAtRisk?: boolean | null
-    [key: string]: unknown
-  }[]
+  /** Latest up to 100 shipments for this service, newest first. */
+  rows: ShipmentWithRelations[]
+  cargoMode: "air" | "surface"
   /** Three KPI summary cards shown above the table. */
   kpiCards: [KpiCard, KpiCard, KpiCard]
   /** Icon rendered in the hero area header. */
   icon: React.ReactNode
-  /** Accent class applied to the icon container, e.g. `"bg-sky-500/10"`. */
+  /** Semantic accent class for the icon container. */
   iconBg: string
   /** Page heading, e.g. `"Air Cargo Operations"`. */
   heading: string
   /** Subheading description line. */
   description: string
-  /** Table section title, e.g. `"Active Air Shipments"`. */
+  /** Table section title. */
   tableTitle: string
   /** Next.js pathname used for page-navigation links. */
   pathname: string
@@ -41,6 +39,7 @@ export interface OperationsDashboardPageProps {
 export function OperationsDashboardPage({
   page,
   rows,
+  cargoMode,
   kpiCards,
   icon,
   iconBg,
@@ -54,25 +53,18 @@ export function OperationsDashboardPage({
   )
   const pageCount = Math.ceil(rows.length / DEFAULT_PAGE_SIZE) || 1
 
-  // Operational telemetry metrics
   const totalCount = rows.length
   const inTransitCount = rows.filter(
-    (r) =>
-      r.status === "in-transit" ||
-      r.status === "in_transit" ||
-      r.status === "out_for_delivery"
+    (r) => r.status === "in-transit"
   ).length
   const deliveredCount = rows.filter((r) => r.status === "delivered").length
   const atRiskCount = rows.filter((r) => Boolean(r.slaAtRisk)).length
-  const pendingCount = Math.max(
-    0,
-    totalCount - (inTransitCount + deliveredCount + atRiskCount)
-  )
+  const otherCount = totalCount - inTransitCount - deliveredCount
 
   const deliveredPct = totalCount > 0 ? Math.round((deliveredCount / totalCount) * 100) : 0
   const inTransitPct = totalCount > 0 ? Math.round((inTransitCount / totalCount) * 100) : 0
   const atRiskPct = totalCount > 0 ? Math.round((atRiskCount / totalCount) * 100) : 0
-  const pendingPct = Math.max(0, 100 - (deliveredPct + inTransitPct + atRiskPct))
+  const otherPct = totalCount > 0 ? Math.round((otherCount / totalCount) * 100) : 0
 
   const kpiIcons = [
     <Package key="kpi-0" className="size-4 text-primary" />,
@@ -81,105 +73,93 @@ export function OperationsDashboardPage({
   ]
 
   const kpiContext = [
-    "Total active bookings in network",
-    "Dispatched and moving on route",
-    "Requires immediate dispatch attention",
+    "Shipments in this latest-100 sample",
+    "In-transit shipments in this sample",
+    "Shipments flagged at risk in this sample",
   ]
 
   return (
     <div className="flex w-full flex-col gap-6 md:gap-8">
-      {/* ── Hero header ── */}
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-4">
           <div className={`shrink-0 rounded-none p-3.5 shadow-xs border border-border/80 ${iconBg}`}>
             {icon}
           </div>
-          <div className="space-y-1">
+          <div className="flex flex-col gap-1">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               {heading}
             </h1>
             <p className="text-sm text-muted-foreground">{description}</p>
+            <p className="text-xs text-muted-foreground">All counts and charts use the latest up to 100 {cargoMode} shipments, including completed shipments.</p>
           </div>
         </div>
       </div>
 
-      {/* ── KPI cards ── */}
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
         {kpiCards.map(({ label, value, colourClass }, idx) => (
-          <Card key={label} className="border border-border/80 shadow-xs">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <Card key={label} >
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-muted-foreground">
                 {label}
               </CardTitle>
               <div className="rounded-none bg-muted/60 p-1.5">
                 {kpiIcons[idx] ?? <Activity className="size-4 text-muted-foreground" />}
               </div>
             </CardHeader>
-            <CardContent className="space-y-1">
+            <CardContent className="flex flex-col gap-1">
               <div className={`text-3xl font-bold font-mono tracking-tight ${colourClass ?? ""}`}>
                 {value}
               </div>
               <p className="text-xs text-muted-foreground">
-                {kpiContext[idx] ?? "Real-time network telemetry"}
+                {kpiContext[idx] ?? "Latest shipment sample"}
               </p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* ── Daily shipment activity bar chart ── */}
       <ShipmentBarInteractive rows={rows} />
 
-      {/* ── Real-Time Transit Distribution Bar ── */}
       {totalCount > 0 && (
-        <Card className="border border-border/80 shadow-xs">
-          <CardHeader className="flex flex-row items-center justify-between pb-3">
+        <Card>
+          <CardHeader className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <CardTitle className="text-sm font-semibold tracking-tight">
-                Route Transit Distribution
+              <CardTitle>
+                Shipment status distribution
               </CardTitle>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Live delivery and status distribution across {totalCount} monitored air cargo consignments
+                Status distribution across {totalCount} {cargoMode} shipments in this sample. At-risk flags can overlap any status.
               </p>
             </div>
             <span className="font-mono text-xs font-medium text-muted-foreground">
               {totalCount} total
             </span>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {/* Segmented Progress Bar */}
+          <CardContent className="flex flex-col gap-3">
             <div className="flex h-3 w-full overflow-hidden rounded-none bg-muted/40 p-0.5 ring-1 ring-border/50">
               {deliveredPct > 0 && (
                 <div
-                  style={{ width: `${deliveredPct}%` }}
-                  className="h-full rounded-none bg-status-delivered transition-all duration-500"
+                  style={{ width: `${deliveredCount / totalCount * 100}%` }}
+                  className="h-full rounded-none bg-status-delivered"
                   title={`Delivered: ${deliveredCount} (${deliveredPct}%)`}
                 />
               )}
               {inTransitPct > 0 && (
                 <div
-                  style={{ width: `${inTransitPct}%` }}
-                  className="h-full rounded-none bg-status-transit transition-all duration-500"
+                  style={{ width: `${inTransitCount / totalCount * 100}%` }}
+                  className="h-full rounded-none bg-status-transit"
                   title={`In-Transit: ${inTransitCount} (${inTransitPct}%)`}
                 />
               )}
-              {pendingPct > 0 && (
+              {otherPct > 0 && (
                 <div
-                  style={{ width: `${pendingPct}%` }}
-                  className="h-full rounded-none bg-status-pending transition-all duration-500"
-                  title={`Pending / Hub: ${pendingCount} (${pendingPct}%)`}
-                />
-              )}
-              {atRiskPct > 0 && (
-                <div
-                  style={{ width: `${atRiskPct}%` }}
-                  className="h-full rounded-none bg-destructive transition-all duration-500"
-                  title={`SLA At Risk: ${atRiskCount} (${atRiskPct}%)`}
+                  style={{ width: `${otherCount / totalCount * 100}%` }}
+                  className="h-full rounded-none bg-status-pending"
+                  title={`Other statuses: ${otherCount} (${otherPct}%)`}
                 />
               )}
             </div>
 
-            {/* Distribution Legend */}
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
               <span className="flex items-center gap-1.5">
                 <span className="size-2.5 rounded-none bg-status-delivered" />
@@ -193,8 +173,8 @@ export function OperationsDashboardPage({
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="size-2.5 rounded-none bg-status-pending" />
-                <span className="font-medium text-foreground">Pending / Hub:</span>
-                <span className="font-mono text-muted-foreground">{pendingCount} ({pendingPct}%)</span>
+                <span className="font-medium text-foreground">Other statuses:</span>
+                <span className="font-mono text-muted-foreground">{otherCount} ({otherPct}%)</span>
               </span>
               {atRiskCount > 0 && (
                 <span className="flex items-center gap-1.5">
@@ -208,21 +188,20 @@ export function OperationsDashboardPage({
         </Card>
       )}
 
-      {/* ── Shipments table ── */}
-      <Card className="overflow-hidden border border-border/80 shadow-xs rounded-none bg-card">
-        <CardHeader className="flex flex-col gap-1 border-b border-border/80 bg-muted/20 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <Card className="overflow-hidden">
+        <CardHeader className="flex flex-col gap-1 border-b border-border/80 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <CardTitle className="text-base font-semibold tracking-tight text-foreground">
+            <CardTitle>
               {tableTitle}
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Page {page} of {pageCount} • {totalCount} active cargo consignments recorded
+              Page {page} of {pageCount}. {totalCount} shipments in the latest-100 sample.
             </p>
           </div>
         </CardHeader>
         <CardContent className="p-0">
           <ShipmentsDataTable
-            data={paginatedShipments as any}
+            data={paginatedShipments}
             pageCount={pageCount}
             bordered={false}
           />

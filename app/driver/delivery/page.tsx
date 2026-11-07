@@ -1,7 +1,9 @@
+import { z } from "zod"
+import { notFound } from "next/navigation"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
-import { manifests, shipments } from "@/lib/db/schema"
-import { desc } from "drizzle-orm"
+import { manifests } from "@/lib/db/schema"
+import { and, desc, eq } from "drizzle-orm"
 import {
   DeliveryClient,
   type ManifestSummaryItem,
@@ -25,26 +27,40 @@ export default async function DriverDeliveryPage({
   const resolvedParams = await searchParams
   const requestedManifestId = resolvedParams?.manifestId
 
-  // Fetch recent manifests with relations
-  const rawManifests = await db.query.manifests.findMany({
+  if (
+    requestedManifestId &&
+    !z.string().uuid().safeParse(requestedManifestId).success
+  )
+    notFound()
+  const deliveryScope = and(
+    eq(manifests.legType, "delivery"),
+    eq(manifests.status, "finalized")
+  )
+  const relations = {
+    originHub: true,
+    destinationHub: true,
+    driver: true,
+    vehicle: true,
+    items: { with: { shipment: { with: { invoice: true } } } },
+  } as const
+  const recentManifests = await db.query.manifests.findMany({
+    where: deliveryScope,
     limit: 20,
-    with: {
-      originHub: true,
-      destinationHub: true,
-      driver: true,
-      vehicle: true,
-      items: {
-        with: {
-          shipment: {
-            with: {
-              invoice: true,
-            },
-          },
-        },
-      },
-    },
-    orderBy: [desc(manifests.createdAt)],
+    with: relations,
+    orderBy: [desc(manifests.createdAt), desc(manifests.id)],
   })
+  const requestedManifest = requestedManifestId
+    ? await db.query.manifests.findFirst({
+        where: and(deliveryScope, eq(manifests.id, requestedManifestId)),
+        with: relations,
+      })
+    : undefined
+  if (requestedManifestId && !requestedManifest) notFound()
+  const rawManifests =
+    requestedManifest &&
+    !recentManifests.some((item) => item.id === requestedManifest.id)
+      ? [requestedManifest, ...recentManifests]
+      : recentManifests
 
   // Format manifest summaries for the switcher
   const manifestsList: ManifestSummaryItem[] = rawManifests.map((m) => ({
@@ -56,14 +72,12 @@ export default async function DriverDeliveryPage({
     driverName: m.driver?.name ?? "Unassigned Driver",
     driverPhone: m.driver?.phone ?? null,
     vehicleReg: m.vehicle?.registrationNumber ?? "No vehicle assigned",
-    createdAt: m.createdAt ? new Date(m.createdAt).toISOString() : new Date().toISOString(),
+    createdAt: m.createdAt
+      ? new Date(m.createdAt).toISOString()
+      : new Date().toISOString(),
   }))
 
-  // Resolve currently active manifest
-  const selectedRawManifest =
-    (requestedManifestId
-      ? rawManifests.find((m) => m.id === requestedManifestId)
-      : rawManifests[0]) ?? null
+  const selectedRawManifest = requestedManifest ?? rawManifests[0] ?? null
 
   const activeManifestSummary: ManifestSummaryItem | null = selectedRawManifest
     ? {
@@ -71,32 +85,23 @@ export default async function DriverDeliveryPage({
         referenceId: selectedRawManifest.referenceId,
         status: selectedRawManifest.status,
         originHub: selectedRawManifest.originHub?.name ?? "Origin Hub",
-        destinationHub: selectedRawManifest.destinationHub?.name ?? "Destination Hub",
+        destinationHub:
+          selectedRawManifest.destinationHub?.name ?? "Destination Hub",
         driverName: selectedRawManifest.driver?.name ?? "Unassigned Driver",
         driverPhone: selectedRawManifest.driver?.phone ?? null,
-        vehicleReg: selectedRawManifest.vehicle?.registrationNumber ?? "No vehicle assigned",
+        vehicleReg:
+          selectedRawManifest.vehicle?.registrationNumber ??
+          "No vehicle assigned",
         createdAt: selectedRawManifest.createdAt
           ? new Date(selectedRawManifest.createdAt).toISOString()
           : new Date().toISOString(),
       }
     : null
 
-  // Resolve assigned shipments
-  let rawShipments: any[] = []
-  if (selectedRawManifest && selectedRawManifest.items.length > 0) {
-    rawShipments = selectedRawManifest.items
+  const rawShipments =
+    selectedRawManifest?.items
       .map((item) => item.shipment)
-      .filter((s): s is NonNullable<typeof s> => Boolean(s))
-  } else if (rawManifests.length === 0) {
-    // If no manifests exist yet, fetch recent shipments so driver delivery console remains functional
-    rawShipments = await db.query.shipments.findMany({
-      limit: 15,
-      orderBy: [desc(shipments.createdAt)],
-      with: {
-        invoice: true,
-      },
-    })
-  }
+      .filter((shipment) => shipment && !shipment.deletedAt) ?? []
 
   // Map to DeliveryShipmentItem
   const mappedShipments: DeliveryShipmentItem[] = rawShipments.map((s) => ({
@@ -118,15 +123,21 @@ export default async function DriverDeliveryPage({
 
   // Calculate Route Telemetry Metrics
   const totalStops = mappedShipments.length
-  const completedStops = mappedShipments.filter((s) => s.status === "delivered").length
+  const completedStops = mappedShipments.filter(
+    (s) => s.status === "delivered"
+  ).length
   const inTransitStops = mappedShipments.filter(
     (s) => s.status === "out-for-delivery" || s.status === "in-transit"
   ).length
   const pendingStops = totalStops - completedStops
-  const totalWeightKg = Math.round(
-    mappedShipments.reduce((acc, s) => acc + (s.weightKg || 0), 0) * 10
-  ) / 10
-  const totalPieces = mappedShipments.reduce((acc, s) => acc + (s.pieces || 0), 0)
+  const totalWeightKg =
+    Math.round(
+      mappedShipments.reduce((acc, s) => acc + (s.weightKg || 0), 0) * 10
+    ) / 10
+  const totalPieces = mappedShipments.reduce(
+    (acc, s) => acc + (s.pieces || 0),
+    0
+  )
   const codPendingAmount = mappedShipments.reduce((acc, s) => {
     if (s.invoiceAmount && s.paymentStatus !== "paid") {
       return acc + s.invoiceAmount
@@ -153,4 +164,3 @@ export default async function DriverDeliveryPage({
     />
   )
 }
-

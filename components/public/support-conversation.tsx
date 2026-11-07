@@ -51,7 +51,7 @@ const CARGO_TOOLS: SearchTool[] = [
     icon: MapPin,
     activity: "Fetching corridor data",
     placeholder: "Ask about corridors, hubs, or transit times",
-    hint: "DEL, IMF, CCU and all gateways",
+    hint: "New Delhi to Imphal, and Imphal to New Delhi",
     color: "var(--color-info)",
   },
   {

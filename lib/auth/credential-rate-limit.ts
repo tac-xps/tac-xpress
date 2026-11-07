@@ -26,7 +26,10 @@ export function createRateLimitProof(email: string): string {
   return `${timestamp}.${signature}`
 }
 
-export async function verifyRateLimitProof(proof: unknown, email: string): Promise<boolean> {
+export async function verifyRateLimitProof(
+  proof: unknown,
+  email: string
+): Promise<boolean> {
   if (typeof proof !== "string") return false
   const [timestampStr, signature] = proof.split(".")
   if (!timestampStr || !signature) return false
@@ -46,7 +49,10 @@ export async function verifyRateLimitProof(proof: unknown, email: string): Promi
   try {
     const sigBuf = Buffer.from(signature, "hex")
     const expBuf = Buffer.from(expectedSignature, "hex")
-    if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
+    if (
+      sigBuf.length !== expBuf.length ||
+      !crypto.timingSafeEqual(sigBuf, expBuf)
+    ) {
       return false
     }
   } catch {
@@ -89,12 +95,15 @@ export async function allowCredentialAttempt(request: Request, email: string) {
       errorMsg.includes("timeout")
 
     if (isTransientTimeout) {
-      Sentry.captureMessage("Credential rate-limit network timed out; failing open", {
-        level: "warning",
-        tags: { area: "credential_rate_limit" },
-        extra: { error: errorMsg },
-      })
-      return true
+      Sentry.captureMessage(
+        "Credential rate-limit network timed out; sign-in unavailable",
+        {
+          level: "warning",
+          tags: { area: "credential_rate_limit" },
+          extra: { error: errorMsg },
+        }
+      )
+      throw new CredentialProtectionError()
     }
 
     Sentry.captureException(error, { tags: { area: "credential_rate_limit" } })
@@ -106,7 +115,9 @@ export async function allowCredentialAttempt(request: Request, email: string) {
     decision.results.some((result) => result.conclusion === "ERROR")
   ) {
     const reasonMessage =
-      decision.reason && typeof decision.reason === "object" && "message" in decision.reason
+      decision.reason &&
+      typeof decision.reason === "object" &&
+      "message" in decision.reason
         ? String((decision.reason as { message?: unknown }).message ?? "")
         : ""
     const isTransientTimeout =
@@ -115,12 +126,15 @@ export async function allowCredentialAttempt(request: Request, email: string) {
       reasonMessage.includes("timeout")
 
     if (isTransientTimeout) {
-      Sentry.captureMessage("Credential rate-limit check timed out; failing open", {
-        level: "warning",
-        tags: { area: "credential_rate_limit" },
-        extra: { decisionId: decision.id, reason: reasonMessage },
-      })
-      return true
+      Sentry.captureMessage(
+        "Credential rate-limit check timed out; sign-in unavailable",
+        {
+          level: "warning",
+          tags: { area: "credential_rate_limit" },
+          extra: { decisionId: decision.id, reason: reasonMessage },
+        }
+      )
+      throw new CredentialProtectionError()
     }
 
     Sentry.captureMessage("Credential rate-limit check failed", {

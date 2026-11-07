@@ -5,6 +5,7 @@ import { invoices, shipments } from "@/lib/db/schema"
 import { logAuditInTransaction } from "@/lib/audit"
 import { assertPaise, calculateInvoice, chargeKeys } from "./calculations"
 import { invalidateInvoicePdfCache } from "@/lib/documents/render-invoice-pdf"
+import { normalizeInvoiceDomain } from "@/lib/documents/invoice/engine/domain-normalizer"
 
 interface Actor {
   id: string
@@ -73,6 +74,57 @@ export async function updateStoredInvoice(
         gstRate,
         paymentMode: fields.paymentMode ?? current.paymentMode,
         remarks: fields.remarks ?? current.remarks,
+      }
+    }
+    if (!options.paymentOnly && current.documentSnapshot) {
+      if (!current.shipmentId) throw new Error("Shipment unavailable.")
+      const [shipment] = await tx
+        .select()
+        .from(shipments)
+        .where(eq(shipments.id, current.shipmentId))
+        .for("update")
+      if (!shipment || shipment.deletedAt)
+        throw new Error("Shipment unavailable.")
+      const snapshot = normalizeInvoiceDomain(current, shipment)
+      const corrected = normalizeInvoiceDomain(
+        { ...current, ...values },
+        shipment,
+        { forceFresh: true }
+      )
+      values.documentSnapshot = {
+        ...snapshot,
+        commercial: {
+          ...snapshot.commercial,
+          charges: corrected.commercial.charges,
+          taxDecision: corrected.commercial.taxDecision,
+          taxAudit: corrected.commercial.taxAudit,
+          financials: corrected.commercial.financials,
+          status: corrected.commercial.status,
+          paymentMode: corrected.commercial.paymentMode,
+          amountInWords: corrected.commercial.amountInWords,
+          upiPayload: corrected.commercial.upiPayload,
+          billTo: {
+            ...snapshot.commercial.billTo,
+            ...(options.parties?.consignorName !== undefined
+              ? { name: options.parties.consignorName ?? "" }
+              : {}),
+            ...(options.parties?.consignorPhone !== undefined
+              ? { phone: options.parties.consignorPhone ?? undefined }
+              : {}),
+          },
+        },
+        shipment: {
+          ...snapshot.shipment,
+          deliverTo: {
+            ...snapshot.shipment.deliverTo,
+            ...(options.parties?.consigneeName !== undefined
+              ? { name: options.parties.consigneeName ?? "" }
+              : {}),
+            ...(options.parties?.consigneePhone !== undefined
+              ? { phone: options.parties.consigneePhone ?? undefined }
+              : {}),
+          },
+        },
       }
     }
     const [updated] = await tx

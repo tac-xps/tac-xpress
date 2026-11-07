@@ -124,42 +124,52 @@ export async function createTicket(formData: FormData) {
     }
   }
 
-  let insertedTicket: { id: string }
-  try {
-    if (!isDatabaseConfigured) {
-      insertedTicket = { id: `TCK-DEL-${Date.now().toString(36).toUpperCase()}` }
-    } else {
-      insertedTicket = await saveContactTicket(parsed.data)
-
-      // When inquiry category is feedback, automatically sync to feedback database table
-      if (parsed.data.category === "feedback") {
-        try {
-          await db.insert(feedback).values({
-            name: parsed.data.customer_name,
-            email: parsed.data.customer_email,
-            message: parsed.data.message,
-          })
-          revalidatePath("/dashboard/feedback")
-        } catch (fbError) {
-          console.warn("Failed to persist to feedback table:", fbError)
-        }
-      }
-    }
-  } catch (error) {
-    if (!isDatabaseConfigured) {
-      insertedTicket = { id: `TCK-DEL-${Date.now().toString(36).toUpperCase()}` }
-    } else {
-      Sentry.captureException(error, { tags: { area: "create_ticket" } })
-      return { error: { _form: ["We could not save your request. Please try again or contact our team directly."] } }
+  if (!isDatabaseConfigured) {
+    Sentry.captureMessage("Contact inquiry persistence is not configured", {
+      level: "error",
+      tags: { area: "create_ticket" },
+    })
+    return {
+      error: {
+        _form: ["We could not save your request. Please try again or contact our team directly."],
+      },
     }
   }
 
-  if (isDatabaseConfigured) {
+  let insertedTicket: { id: string }
+  try {
+    insertedTicket = await saveContactTicket(parsed.data)
+  } catch (error) {
+    Sentry.captureException(error, { tags: { area: "create_ticket" } })
+    return {
+      error: {
+        _form: ["We could not save your request. Please try again or contact our team directly."],
+      },
+    }
+  }
+
+  if (parsed.data.category === "feedback") {
+    try {
+      await db.insert(feedback).values({
+        name: parsed.data.customer_name,
+        email: parsed.data.customer_email,
+        message: parsed.data.message,
+      })
+      revalidatePath("/dashboard/feedback")
+    } catch (error) {
+      Sentry.captureException(error, { tags: { area: "ticket_feedback" } })
+    }
+  }
+
+  // Durable jobs committed with the ticket; scheduling and cache failures must not invite a duplicate retry.
+  try {
     after(async () => {
       try { await processBackgroundJobs(2, insertedTicket.id) }
       catch (error) { Sentry.captureException(error, { tags: { area: "ticket_followup" } }) }
     })
     revalidatePath("/dashboard/messages")
+  } catch (error) {
+    Sentry.captureException(error, { tags: { area: "ticket_followup" } })
   }
 
   return { success: true, ticketId: insertedTicket.id }

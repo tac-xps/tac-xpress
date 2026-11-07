@@ -124,6 +124,21 @@ implementation_plan.md
 walkthrough.md
 *-report.md
 dashboard_ui_inventory.md
+MISSION-*.md
+*-AUDIT.md
+*-REVIEW.md
+*-RECOMMENDATION.md
+*-MAP.md
+*-PROPOSAL.md
+*-PLAN.md
+REPOSITORY_RECONNAISSANCE.md
+VERCEL-PRODUCTION-READINESS.md
+
+# Local Audit Evidence & Test Receipts
+docs/audit-evidence/
+
+# Playwright CLI local storage
+.playwright-cli/
 
 # ==============================================================================
 # Operating System & Temp Files

@@ -1,7 +1,7 @@
 import { format } from "date-fns"
 import { MessageSquareText } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import {
   Empty,
   EmptyDescription,
@@ -34,12 +34,7 @@ export function OutboundMessageLog({
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="border-b border-border/50 bg-muted/20 p-4">
-        <CardTitle className="text-base font-semibold tracking-tight">
-          Outbound Communications
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-4">
+      <CardContent className="p-0">
         {messages.length === 0 ? (
           <Empty className="min-h-48 border">
             <EmptyHeader>
@@ -53,14 +48,14 @@ export function OutboundMessageLog({
             </EmptyHeader>
           </Empty>
         ) : (
-          <div className="space-y-4">
+          <div className="divide-y divide-border/60">
             {[...conversations.entries()].map(([phone, thread]) => (
-              <section key={phone} className="border border-border/60">
+              <section key={phone}>
                 <div className="flex items-center justify-between border-b border-border/60 bg-muted/20 px-4 py-3">
                   <p className="font-mono text-sm font-semibold">
                     {maskPhone(phone)}
                   </p>
-                  <Badge variant="outline">{thread.length} messages</Badge>
+                  <span className="text-xs text-muted-foreground tabular-nums">{thread.length} messages</span>
                 </div>
                 <div className="divide-y divide-border/60">
                   {thread.map((message) => (
@@ -76,15 +71,13 @@ export function OutboundMessageLog({
                           {message.relatedAwb || "No related AWB"}
                         </p>
                       </div>
-                      <Badge
-                        variant={
-                          message.status === "failed"
-                            ? "destructive"
-                            : "outline"
-                        }
-                      >
-                        {message.status}
-                      </Badge>
+                      {message.status === "failed" ? (
+                        <Badge variant="destructive">Failed</Badge>
+                      ) : (
+                        <span className="text-xs capitalize text-muted-foreground">
+                          {message.status}
+                        </span>
+                      )}
                       <time className="text-xs text-muted-foreground tabular-nums">
                         {message.createdAt
                           ? format(message.createdAt, "PP p")

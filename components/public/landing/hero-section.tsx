@@ -2,34 +2,42 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { ArrowUpRight, Pause, Plane, Play, ShieldCheck } from "lucide-react"
-import { useReducedMotion } from "motion/react"
+import { ArrowUpRight, Pause, Plane, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function HeroSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const shouldReduceMotion = useReducedMotion()
-  const [isPlaying, setIsPlaying] = useState(!shouldReduceMotion)
+  const [isPlaying, setIsPlaying] = useState(true)
 
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
-    if (shouldReduceMotion) {
-      video.pause()
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const applyPreference = () => {
+      if (preference.matches) {
+        video.pause()
+        setIsPlaying(false)
+      } else {
+        void video.play().catch(() => {})
+      }
     }
-  }, [shouldReduceMotion])
+    applyPreference()
+    preference.addEventListener("change", applyPreference)
+    return () => preference.removeEventListener("change", applyPreference)
+  }, [])
 
   const togglePlayback = useCallback(() => {
     const video = videoRef.current
     if (!video) return
     if (video.paused) {
-      video.play().catch(() => {})
+      void video.play().catch(() => {})
       setIsPlaying(true)
     } else {
       video.pause()
       setIsPlaying(false)
     }
   }, [])
+
   return (
     <section
       id="hero"
@@ -46,8 +54,6 @@ export function HeroSection() {
               <span className="size-1.5 rounded-none bg-primary" aria-hidden="true" />
               <span className="font-medium text-foreground">Air Express and Highway Freight</span>
             </div>
-
-            {/* Clean Display Headline with Semantic Typographic Emphasis (20% Larger) */}
             <h1
               id="hero-heading"
               className="mt-3.5 text-4xl sm:text-5xl lg:text-[3.35rem] font-bold tracking-tight text-foreground leading-[1.08] text-balance"
@@ -58,7 +64,7 @@ export function HeroSection() {
 
             {/* Clear Concise Value Proposition Subhead */}
             <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl text-pretty">
-              Dedicated commercial logistics connecting Delhi and Imphal with verified linehaul visibility.
+              Dedicated commercial logistics connecting Delhi and Imphal in both directions.
             </p>
 
             {/* Dual Conversion Actions */}
@@ -78,12 +84,10 @@ export function HeroSection() {
                 className="h-10 px-5 rounded-none font-medium text-xs border-border bg-card text-foreground hover:bg-muted transition-colors shadow-2xs"
               >
                 <Link href="#pricing">
-                  Get an Instant Quote
+                  Estimate cargo charges
                 </Link>
               </Button>
             </div>
-
-            {/* Verified Corridor Endpoint Metadata */}
             <div className="mt-6 pt-4 border-t border-border/80 w-full grid grid-cols-2 sm:grid-cols-3 gap-3 text-left">
               <div>
                 <div className="text-xs font-sans text-muted-foreground">Origin Hub</div>
@@ -98,9 +102,9 @@ export function HeroSection() {
                 </div>
               </div>
               <div className="col-span-2 sm:col-span-1">
-                <div className="text-xs font-sans text-muted-foreground">Transit Standard</div>
+                <div className="text-xs font-sans text-muted-foreground">Delivery timing</div>
                 <div className="text-xs font-medium text-foreground mt-0.5">
-                  Air 24h, road 4 to 5 days
+                  Confirm timing before booking
                 </div>
               </div>
             </div>
@@ -109,32 +113,31 @@ export function HeroSection() {
           {/* Right Column: Deliberate Operational Canvas with Docked Corridor Overview */}
           <div className="lg:col-span-6 w-full">
             <div className="relative border border-border bg-card shadow-xs overflow-hidden rounded-none">
-              {/* Operational Video Console */}
-              <div className="relative aspect-[16/10] w-full bg-muted overflow-hidden">
+              {/* Operational Looping Video Console (Uncropped 16:9 Viewport) */}
+              <div className="relative aspect-video w-full bg-black/95 overflow-hidden flex items-center justify-center">
                 <video
                   ref={videoRef}
-                  autoPlay={!shouldReduceMotion}
+                  autoPlay
                   loop
                   muted
                   playsInline
                   preload="metadata"
-                  poster="/images/corridor-ink/hero-console.png"
-                  aria-label="TAC-XPRESS commercial aircraft and arterial mountain linehaul connecting New Delhi and Imphal"
-                  className="h-full w-full object-cover rounded-none"
+                  poster="/images/new-assets/hero-console.png"
+                  aria-label="Commercial air express and arterial highway linehaul operations connecting New Delhi and Imphal"
+                  className="h-full w-full object-contain rounded-none"
                   onPlay={() => setIsPlaying(true)}
                   onPause={() => setIsPlaying(false)}
+                  onEnded={() => setIsPlaying(false)}
+                  onError={() => setIsPlaying(false)}
                 >
-                  <source src="/video/hero-video-new.mp4" type="video/mp4" />
+                  <source src="/video/new_hero_video.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent pointer-events-none" />
-
-                {/* Ambient Play / Pause Toggle (WCAG 2.2 SC 2.2.2 Compliance) */}
                 <button
                   type="button"
                   onClick={togglePlayback}
                   aria-label={isPlaying ? "Pause linehaul video" : "Play linehaul video"}
-                  className="absolute top-3 right-3 flex size-8 items-center justify-center border border-border bg-background text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground rounded-none shadow-2xs cursor-pointer"
+                  className="absolute top-3 right-3 z-10 flex size-8 items-center justify-center border border-border bg-background/90 text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground rounded-none shadow-2xs cursor-pointer"
                 >
                   {isPlaying ? (
                     <Pause className="size-3.5 fill-current" />
@@ -143,18 +146,12 @@ export function HeroSection() {
                   )}
                 </button>
               </div>
-
-              {/* Compact Docked Corridor Overview Telemetry Card */}
               <div className="p-3.5 sm:p-4 border-t border-border bg-background">
                 <div className="flex items-center justify-between pb-2 border-b border-border/60">
                   <div className="flex items-center gap-1.5">
-                    <span className="relative flex size-1.5" aria-hidden="true">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-status-delivered opacity-75 motion-reduce:hidden" />
-                      <span className="relative inline-flex size-1.5 bg-status-delivered rounded-none" />
-                    </span>
-                    <span className="text-xs font-semibold text-foreground tracking-tight">CORRIDOR OVERVIEW</span>
+                    <span className="text-xs font-semibold text-foreground tracking-tight">Corridor illustration</span>
                   </div>
-                  <span className="text-xs text-primary font-medium">Bilateral Route Active</span>
+                  <span className="text-xs text-primary font-medium">Service corridor</span>
                 </div>
 
                 <div className="grid grid-cols-12 gap-2 pt-2.5 items-center">
@@ -162,12 +159,12 @@ export function HeroSection() {
                   <div className="col-span-4">
                     <div className="text-xs font-sans text-muted-foreground">Origin</div>
                     <div className="text-sm font-bold text-foreground">DEL</div>
-                    <div className="text-xs text-muted-foreground">New Delhi (IGI T4)</div>
+                    <div className="text-xs text-muted-foreground">New Delhi</div>
                   </div>
 
                   {/* Route Vector Distance */}
                   <div className="col-span-4 flex flex-col items-center justify-center text-center px-1">
-                    <div className="text-xs font-mono font-medium text-muted-foreground">2,410 km</div>
+                    <div className="text-xs font-medium text-muted-foreground">DEL to IMF</div>
                     <div className="relative w-full flex items-center my-0.5">
                       <div className="h-[1.5px] w-full bg-border" />
                       <Plane className="size-2.5 text-primary absolute left-1/2 -translate-x-1/2 -translate-y-[1px]" />
@@ -183,81 +180,6 @@ export function HeroSection() {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Docked Base: Enclosed Architectural Telemetry Dock + Live Gateway Status Band */}
-      <div className="mx-auto w-full max-w-[1240px] px-6 lg:px-12 mt-4 lg:mt-6">
-        <div className="border border-border bg-card/70 p-4 sm:p-5 lg:p-6 rounded-none shadow-2xs">
-          {/* 4 Architectural Milestone Metric Cells */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-border/60">
-            <div className="flex flex-col text-left sm:pr-4">
-              <div className="font-mono text-xl sm:text-2xl lg:text-[1.85rem] font-bold tracking-tight text-foreground leading-none">
-                15<span className="text-primary font-sans">+</span> Years
-              </div>
-              <div className="mt-1.5 text-xs font-semibold text-foreground">
-                Continuous Service
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Delhi and Imphal since 2011
-              </div>
-            </div>
-
-            <div className="flex flex-col text-left pt-3 sm:pt-0 sm:px-4">
-              <div className="font-mono text-xl sm:text-2xl lg:text-[1.85rem] font-bold tracking-tight text-foreground leading-none">
-                500k<span className="text-primary font-sans">+</span>
-              </div>
-              <div className="mt-1.5 text-xs font-semibold text-foreground">
-                Consignments Delivered
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Air and highway tonnage
-              </div>
-            </div>
-
-            <div className="flex flex-col text-left pt-3 sm:pt-0 sm:px-4">
-              <div className="font-mono text-xl sm:text-2xl lg:text-[1.85rem] font-bold tracking-tight text-foreground leading-none">
-                99.8<span className="text-primary font-sans">%</span>
-              </div>
-              <div className="mt-1.5 text-xs font-semibold text-foreground">
-                SLA Compliance
-              </div>
-              <div className="text-xs text-muted-foreground">
-                24h air, 4 to 5 day road
-              </div>
-            </div>
-
-            <div className="flex flex-col text-left pt-3 sm:pt-0 sm:pl-4">
-              <div className="font-mono text-xl sm:text-2xl lg:text-[1.85rem] font-bold tracking-tight text-foreground leading-none">
-                10,000<span className="text-primary font-sans">+</span>
-              </div>
-              <div className="mt-1.5 text-xs font-semibold text-foreground">
-                Commercial Shippers
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Pharma, retail, and trade
-              </div>
-            </div>
-          </div>
-
-          {/* Live Bilateral Gateway Telemetry & Custody Ticker */}
-          <div className="mt-4 pt-3.5 border-t border-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-1.5">
-                <span className="size-1.5 rounded-none bg-status-delivered" aria-hidden="true" />
-                <span className="text-xs font-semibold text-foreground">DEL ⇄ IMF Gateway Status</span>
-              </div>
-              <span className="text-xs text-muted-foreground">IGI Terminal 4 Airside Ready</span>
-              <span className="text-border/80" aria-hidden="true">/</span>
-              <span className="text-xs text-muted-foreground">Tulihal Apron Receiving</span>
-              <span className="text-border/80" aria-hidden="true">/</span>
-              <span className="text-xs text-muted-foreground">BCAS Screening Active</span>
-            </div>
-            <div className="text-xs text-muted-foreground flex items-center gap-1.5 shrink-0">
-              <ShieldCheck className="size-3.5 text-primary" />
-              <span>Continuous Chain of Custody</span>
             </div>
           </div>
         </div>

@@ -19,7 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 interface CommunicationParams {
   status?: string
 }
@@ -77,6 +76,7 @@ export default async function CommunicationsPage({
   const pending = jobResult
     .filter((job) => job.status === "pending" || job.status === "processing")
     .reduce((sum, job) => sum + job.count, 0)
+  const emailsFailed = emails.filter((email) => email.status === "failed").length
   const failed = jobResult.find((job) => job.status === "failed")?.count ?? 0
   return (
     <div className="flex min-w-0 flex-col gap-6">
@@ -120,31 +120,20 @@ export default async function CommunicationsPage({
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-start justify-between space-y-0">
-            <div>
-              <CardTitle>Dead Letter Queue</CardTitle>
-              <CardDescription>
-                Exhausted retries and unhandled events.
-              </CardDescription>
-            </div>
-            <Badge
-              variant={dlqCount > 0 ? "destructive" : "outline"}
-              className="tabular-nums"
-            >
-              {dlqCount > 0 ? `${dlqCount} issues` : "Clear"}
-            </Badge>
+          <CardHeader>
+            <CardTitle>Dead letter queue</CardTitle>
+            <CardDescription>
+              Exhausted retries and unhandled events.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold tabular-nums">{dlqCount}</span>
+              <span className={`text-2xl tabular-nums ${dlqCount > 0 ? "text-destructive" : ""}`}>{dlqCount}</span>
               <span className="text-xs text-muted-foreground">items awaiting recovery</span>
             </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Failed asynchronous tasks, broken webhooks, or failed AI responder calls.
-            </p>
             <div className="mt-4">
-              <Button asChild size="sm" variant="outline" className="w-full text-xs">
-                <Link href="/dashboard/jobs">Inspect & Retry DLQ</Link>
+              <Button asChild size="sm" variant="outline" className="w-full">
+                <Link href="/dashboard/jobs">Review queue</Link>
               </Button>
             </div>
           </CardContent>
@@ -156,23 +145,35 @@ export default async function CommunicationsPage({
           </CardHeader>
           <CardContent>
             {emails.length ? (
-              <ul className="flex flex-col gap-2">
-                {emails.map((email) => (
-                  <li
-                    key={email.id}
-                    className="flex items-center justify-between gap-3 text-sm"
-                  >
-                    <span>{email.template_name.replaceAll("_", " ")}</span>
-                    <Badge
-                      variant={
-                        email.status === "failed" ? "destructive" : "outline"
-                      }
+              <>
+                <dl className="flex gap-8">
+                  <div>
+                    <dt className="text-sm text-muted-foreground">Accepted</dt>
+                    <dd className="mt-2 text-2xl tabular-nums">{emails.length - emailsFailed}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-muted-foreground">Failed</dt>
+                    <dd className={`mt-2 text-2xl tabular-nums ${emailsFailed > 0 ? "text-destructive" : ""}`}>
+                      {emailsFailed}
+                    </dd>
+                  </div>
+                </dl>
+                <ul className="mt-4 flex flex-col gap-2 border-t pt-4">
+                  {emails.slice(0, 3).map((email) => (
+                    <li
+                      key={email.id}
+                      className="flex items-center justify-between gap-3 text-sm"
                     >
-                      {email.status === "sent" ? "Accepted" : "Failed"}
-                    </Badge>
-                  </li>
-                ))}
-              </ul>
+                      <span className="capitalize">{email.template_name.replaceAll("_", " ")}</span>
+                      <span
+                        className={`text-xs ${email.status === "failed" ? "text-destructive" : "text-muted-foreground"}`}
+                      >
+                        {email.status === "failed" ? "Failed" : "Accepted"}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </>
             ) : (
               <p className="text-sm text-muted-foreground">
                 No email attempts recorded yet.

@@ -2,43 +2,19 @@
 
 import React from "react"
 import Image from "next/image"
-import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
+import { motion, useReducedMotion } from "motion/react"
+import { cn } from "@/lib/utils"
 
 const BULLETINS = [
-  {
-    id: "bcas-upgrade",
-    date: "OCT 2026",
-    category: "AIRPORT OPERATIONS",
-    title: "BCAS Gate 4 digital screening upgrade verified.",
-    summary: "High-throughput dual-view screening operational at IGI Terminal Gate 4 for expedited belly-hold loading.",
-    image: "/images/corridor-ink/bulletin-screening.png",
-    alt: "BCAS air cargo dual-view digital screening at Delhi Gate 4",
-    href: "/shipping-guide",
-  },
-  {
-    id: "winter-manifest",
-    date: "OCT 2026",
-    category: "FLIGHT SCHEDULE",
-    title: "Winter flight linehaul capacity confirmed for DEL ⇄ IMF.",
-    summary: "Commercial airline agreements guarantee daily belly-hold freight allocation across the winter schedule.",
-    image: "/images/corridor-ink/bulletin-schedule.png",
-    alt: "Daily belly-hold air cargo allocation on Delhi-Imphal flights",
-    href: "/services/air-cargo",
-  },
-  {
-    id: "tulihal-expansion",
-    date: "SEP 2026",
-    category: "TERMINAL INFRASTRUCTURE",
-    title: "Tulihal domestic apron receiving bay expanded.",
-    summary: "New airside staging bays expedite consignment offloading and local delivery in Imphal.",
-    image: "/images/corridor-ink/bulletin-hub.png",
-    alt: "Tulihal Imphal domestic cargo hub receiving and distribution bays",
-    href: "/shipping-guide",
-  },
+  { id: "prepare", date: "Method", category: "Preparation", title: "Prepare your consignment", summary: "Review packaging, dimensions, and custody verification before handover.", image: "/images/new-assets/bulletin-screening.png", alt: "Illustration of cargo preparation", href: "#method", linkLabel: "View custody method" },
+  { id: "air", date: "Service", category: "Air cargo", title: "Commercial corridor linehaul", summary: "Priority belly-hold and arterial road transport between New Delhi and Imphal.", image: "/images/new-assets/bulletin-schedule.png", alt: "Illustration of air cargo", href: "#services", linkLabel: "Inspect linehaul services" },
+  { id: "contact", date: "Company", category: "TAC-XPRESS", title: "Corridor commitments", summary: "Direct accountability, verified optical milestones, and scheduled departures.", image: "/images/new-assets/bulletin-hub.png", alt: "Illustration of a cargo facility", href: "#about", linkLabel: "Read corridor story" },
 ]
 
 export function DispatchBulletinsSection() {
+  const shouldReduceMotion = useReducedMotion()
+
   return (
     <section
       id="company"
@@ -46,26 +22,27 @@ export function DispatchBulletinsSection() {
       className="w-full border-b border-border bg-background py-20 lg:py-28"
     >
       <div className="mx-auto w-full max-w-[1320px] px-6 lg:px-12">
-        {/* Exact Atomist Heading format */}
         <div className="text-center max-w-xl mx-auto mb-16">
           <h2
             id="bulletins-heading"
             className="text-2xl font-medium tracking-tight text-foreground sm:text-4xl"
           >
-            Read our latest articles & updates
+            Shipping resources
           </h2>
           <p className="mt-2 text-xs font-sans text-muted-foreground">
-            Operational advisories, gateway security protocols, and corridor schedules.
+            Explore service and preparation guides for the New Delhi and Imphal corridor.
           </p>
         </div>
 
-        {/* 3 Horizontal Cards */}
+        {/* 3 Horizontal Cards with Hover Micro-Lift */}
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {BULLETINS.map((item) => (
-            <Link
+            <motion.a
               key={item.id}
               href={item.href}
-              aria-label={`Read operational advisory: ${item.title}`}
+              aria-label={`View: ${item.title}`}
+              whileHover={shouldReduceMotion ? undefined : { y: -3 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="group flex flex-col border border-border bg-card hover:border-foreground/40 rounded-none transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground"
             >
               <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
@@ -74,7 +51,10 @@ export function DispatchBulletinsSection() {
                   alt={item.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, 400px"
-                  className="object-cover rounded-none"
+                  className={cn(
+                    "object-cover rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                    !shouldReduceMotion && "group-hover:scale-[1.03]"
+                  )}
                 />
               </div>
 
@@ -93,11 +73,11 @@ export function DispatchBulletinsSection() {
                 </div>
 
                 <div className="mt-6 flex items-center justify-between border-t border-border pt-4 text-xs font-sans text-foreground">
-                  <span className="font-semibold">Read article</span>
+                  <span className="font-semibold">{item.linkLabel}</span>
                   <ArrowUpRight className="size-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>
               </div>
-            </Link>
+            </motion.a>
           ))}
         </div>
       </div>

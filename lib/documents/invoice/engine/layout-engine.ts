@@ -80,8 +80,8 @@ export function calculateDocumentLayoutBudget(doc: TaxInvoiceDocument): Document
   const chargesTableHeightMm = Math.max(22, 14 + calculatedChargesRowsHeightMm)
 
   const paymentHeightMm = 14
-  const destinationHubHeightMm = 16
-  const termsHeightMm = 18
+  const destinationHubHeightMm = 8
+  const termsHeightMm = 10
   const verificationHeightMm = 20
 
   const fixedAndSemiFixedTotal =
@@ -202,14 +202,14 @@ export function calculateDocumentLayoutBudget(doc: TaxInvoiceDocument): Document
       },
       destinationHub: {
         name: "Manipur Regional Delivery Station",
-        minHeightMm: 16,
+        minHeightMm: 8,
         preferredHeightMm: destinationHubHeightMm,
         flexible: false,
         calculatedHeightMm: destinationHubHeightMm,
       },
       terms: {
         name: "Contextual Freight Conditions",
-        minHeightMm: 20,
+        minHeightMm: 10,
         preferredHeightMm: termsHeightMm,
         flexible: false,
         calculatedHeightMm: termsHeightMm,

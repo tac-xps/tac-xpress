@@ -1,9 +1,9 @@
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
-import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
-import { ThemeSwitcher } from "@/components/theme-switcher"
-import { MagneticButton } from "./magnetic-button"
+import { Badge } from "@/components/reui/badge"
+import { Logo } from "@/components/logo"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { NavHeaderShell, NavDesktopLinks, NavMobileSheet } from "./nav-client"
 
 interface SiteNavigationProps {
@@ -14,10 +14,14 @@ interface SiteNavigationProps {
 export function SiteNavigation({ overlay = false, inverse = false }: SiteNavigationProps) {
   return (
     <NavHeaderShell overlay={overlay} inverse={inverse}>
-      {/* Logo */}
+      {/* Brand logo */}
       <div className="flex items-center">
-        <Link href="/" aria-label="TAC-XPRESS home" className="flex items-center">
-          <Logo className="h-7" />
+        <Link
+          href="/"
+          aria-label="TAC-XPRESS home"
+          className="flex items-center rounded-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        >
+          <Logo className="text-foreground" />
         </Link>
       </div>
 
@@ -25,21 +29,19 @@ export function SiteNavigation({ overlay = false, inverse = false }: SiteNavigat
       <NavDesktopLinks />
 
       {/* Right-side actions */}
-      <div className="flex items-center gap-3">
-        <ThemeSwitcher />
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
 
-        {/* Magnetic CTA button for desktop */}
-        <MagneticButton strength={0.2} className="hidden sm:inline-block">
-          <Button
-            asChild
-            className="rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs font-semibold uppercase tracking-wider px-4 transition-all duration-150 active:scale-[0.97]"
-          >
-            <Link href="/contact">
-              Book a shipment
-              <ArrowUpRight data-icon="inline-end" className="size-3.5 ml-1.5" />
-            </Link>
-          </Button>
-        </MagneticButton>
+        <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex rounded-none text-xs h-9 px-3">
+          <Link href="/?tracking=open">Track a shipment</Link>
+        </Button>
+
+        <Button asChild size="sm" className="rounded-none text-xs h-9 px-3.5">
+          <Link href="/#contact">
+            <span>Book Consignment</span>
+            <ArrowUpRight className="size-3.5 ml-1" aria-hidden="true" />
+          </Link>
+        </Button>
 
         {/* Mobile menu sheet */}
         <NavMobileSheet />

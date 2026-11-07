@@ -1,22 +1,17 @@
 "use client"
-// Official shadcn sidebar-07 nav-user composition; account actions are TAC-XPRESS.
-import { useState, useTransition } from "react"
-import Link from "next/link"
-import { LogOut, Settings, ExternalLink } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { logoutUser } from "@/app/actions/auth"
+
+import { useState } from "react"
+import { Settings, ExternalLink } from "lucide-react"
+import { useTheme } from "next-themes"
 import { toast } from "sonner"
+import { logoutUser } from "@/app/actions/auth"
+import ProfileDropdown, {
+  type Account,
+  type AccountTheme,
+  type ProfileMenuItem,
+} from "@/components/kokonutui/profile-dropdown"
 import { AccountSettings } from "./account-settings"
+
 export type WorkspaceUser = {
   id?: string
   name?: string | null
@@ -24,70 +19,87 @@ export type WorkspaceUser = {
   role?: string
   image?: string | null
 }
+
+export { default as ProfileDropdown } from "@/components/kokonutui/profile-dropdown"
+
 export function WorkspaceAccount({ user }: { user?: WorkspaceUser }) {
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const [pending, startTransition] = useTransition()
-  const name = user?.name || user?.email?.split("@")[0] || "Staff"
+  const { theme, setTheme } = useTheme()
+
+  const name = user?.name || user?.email?.split("@")[0] || "TAC Admin"
+  const email = user?.email || "admin@tacxpress.in"
+  const role = user?.role
+    ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+    : "Admin"
+
   const initials = name
     .split(" ")
+    .filter(Boolean)
     .map((part) => part[0])
     .join("")
     .slice(0, 2)
     .toUpperCase()
+
+  const primaryAccount: Account = {
+    id: user?.id || "tac-admin",
+    name,
+    email,
+    plan: role,
+    initials,
+  }
+
+  // Corridor workspace accounts for multi-account switching demonstration
+  const accounts: Account[] = [
+    primaryAccount,
+    {
+      id: "imphal-hub",
+      name: "Imphal Hub Operations",
+      email: "imphal.ops@tacxpress.in",
+      plan: "Hub Lead",
+      initials: "IH",
+    },
+    {
+      id: "delhi-dispatch",
+      name: "Delhi Air Dispatch",
+      email: "delhi.dispatch@tacxpress.in",
+      plan: "Dispatcher",
+      initials: "DD",
+    },
+  ]
+
+  const items: ProfileMenuItem[] = [
+    {
+      label: "Account & preferences",
+      icon: <Settings className="size-4" />,
+      onSelect: () => setSettingsOpen(true),
+    },
+    {
+      label: "Public website",
+      icon: <ExternalLink className="size-4" />,
+      href: "/",
+    },
+  ]
+
+  const handleSignOut = async () => {
+    try {
+      await logoutUser()
+    } catch {
+      toast.error("Could not sign out. Please try again.")
+    }
+  }
+
   return (
-    <div id="tour-user-menu">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Open staff account">
-            <Avatar className="size-8 rounded-none">
-              <AvatarImage src={user?.image ?? undefined} alt="" />
-              <AvatarFallback className="rounded-none bg-secondary text-xs">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-64">
-          <DropdownMenuLabel className="grid gap-1">
-            <span className="truncate">{name}</span>
-            <span className="truncate text-xs font-normal text-muted-foreground">
-              {user?.email}
-            </span>
-            <span className="text-xs font-normal text-muted-foreground capitalize">
-              {user?.role ?? "Staff"}
-            </span>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem onSelect={() => setSettingsOpen(true)}>
-              <Settings />
-              Account & preferences
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/">
-                <ExternalLink />
-                Public website
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            disabled={pending}
-            onSelect={() =>
-              startTransition(async () => {
-                try {
-                  await logoutUser()
-                } catch {
-                  toast.error("Could not sign out. Please try again.")
-                }
-              })
-            }
-          >
-            <LogOut />
-            {pending ? "Signing out…" : "Sign out"}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+    <div id="tour-user-menu" className="flex items-center">
+      <ProfileDropdown
+        compact
+        accounts={accounts}
+        defaultAccountId={primaryAccount.id}
+        items={items}
+        theme={(theme as AccountTheme) ?? "system"}
+        onThemeChange={(newTheme) => setTheme(newTheme)}
+        onSignOut={handleSignOut}
+        holdDuration={1200}
+      />
       {settingsOpen && (
         <AccountSettings open={settingsOpen} onOpenChange={setSettingsOpen} />
       )}

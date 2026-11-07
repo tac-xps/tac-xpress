@@ -56,9 +56,6 @@ export function AddPricingRuleForm({ onSuccess }: AddPricingRuleFormProps) {
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="express_air">Express Air</SelectItem>
-                      <SelectItem value="standard_ocean">
-                        Standard Ocean
-                      </SelectItem>
                       <SelectItem value="road_freight">Road Freight</SelectItem>
                     </SelectContent>
                   </Select>

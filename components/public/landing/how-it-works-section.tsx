@@ -3,45 +3,28 @@
 import React from "react"
 import Image from "next/image"
 import { LayoutGrid, Compass, Barcode } from "lucide-react"
+import { motion, useReducedMotion } from "motion/react"
 import { Badge } from "@/components/reui/badge"
 import { IconTile } from "@/components/reui/icon-tile"
+import { cn } from "@/lib/utils"
 
 const STEPS = [
-  {
-    icon: LayoutGrid,
-    title: "Commercial Belly-Hold Space",
-    desc: "Direct guaranteed allocation across scheduled commercial flights leaving IGI Terminal Gate 4 for Tulihal Apron daily.",
-    image: "/images/corridor-ink/how-air-belly.png",
-    alt: "Commercial flight belly-hold air cargo loading at IGI Terminal Gate 4",
-    badge: "Air Express (24h SLA)",
-  },
-  {
-    icon: Compass,
-    title: "Dedicated Arterial Convoy",
-    desc: "Sealed multi-ton transport trucks operating direct express linehaul across 2,450 km with continuous electronic seal monitoring.",
-    image: "/images/corridor-ink/how-surface-convoy.png",
-    alt: "Dedicated arterial linehaul truck traversing Himalayan mountain pass to Imphal",
-    badge: "Surface Linehaul (4-5 Days)",
-  },
-  {
-    icon: Barcode,
-    title: "Statutory Barcode AWB",
-    desc: "Optical scanning reconciliation at origin, transit, and destination gates with 18% GST tax invoice integration.",
-    image: "/images/corridor-ink/how-barcode-telemetry.png",
-    alt: "Optical barcode laser scanner and milestone telemetry on sortation conveyor",
-    badge: "Live Telemetry & GST",
-  },
+  { icon: LayoutGrid, title: "Share shipment details", desc: "Send the contents, weight, dimensions, and direction of travel for review.", image: "/images/new-assets/how-air-belly.png", alt: "Illustration of cargo preparation", badge: "New Delhi and Imphal" },
+  { icon: Compass, title: "Confirm the service", desc: "Agree the accepted cargo, delivery window, and quote with our team before booking.", image: "/images/new-assets/how-surface-convoy.png", alt: "Illustration of surface cargo", badge: "Air or surface cargo" },
+  { icon: Barcode, title: "Follow shipment updates", desc: "Use your issued AWB number to view published shipment updates.", image: "/images/new-assets/how-barcode-telemetry.png", alt: "Illustration of a cargo barcode", badge: "AWB tracking" },
 ]
 
 export function HowItWorksSection() {
+  const shouldReduceMotion = useReducedMotion()
+
   return (
     <section
       id="method"
       aria-labelledby="how-heading"
       className="w-full border-b border-border bg-background py-20 lg:py-28 text-center"
     >
+      <div id="shipping-guide" className="scroll-mt-20" />
       <div className="mx-auto w-full max-w-[1320px] px-6 lg:px-12">
-        {/* Exact Atomist Heading format */}
         <div className="text-center max-w-xl mx-auto mb-16">
           <h2
             id="how-heading"
@@ -54,14 +37,16 @@ export function HowItWorksSection() {
           </p>
         </div>
 
-        {/* 3 Visual Step Columns */}
+        {/* 3 Visual Step Columns with Hover Micro-Lift */}
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3 text-left">
           {STEPS.map((step, idx) => {
             const Icon = step.icon
             return (
-              <div
+              <motion.div
                 key={step.title}
-                className="flex flex-col justify-between border border-border bg-card p-5 sm:p-6 rounded-none shadow-xs transition-colors hover:border-foreground/40"
+                whileHover={shouldReduceMotion ? undefined : { y: -3 }}
+                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                className="group flex flex-col justify-between border border-border bg-card p-5 sm:p-6 rounded-none shadow-xs transition-colors hover:border-foreground/40"
               >
                 <div>
                   {/* Step Image */}
@@ -71,15 +56,18 @@ export function HowItWorksSection() {
                       alt={step.alt}
                       fill
                       sizes="(max-width: 768px) 100vw, 400px"
-                      className="object-cover rounded-none"
+                      className={cn(
+                        "object-cover rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                        !shouldReduceMotion && "group-hover:scale-[1.03]"
+                      )}
                     />
                     <div className="absolute top-2.5 left-2.5">
-                      <Badge variant="outline" size="sm" className="bg-background/95 font-mono">
+                      <Badge variant="outline" className="bg-background/95 font-mono">
                         Stage 0{idx + 1}
                       </Badge>
                     </div>
                     <div className="absolute bottom-2.5 right-2.5">
-                      <Badge variant="primary-light" size="sm" className="font-medium">
+                      <Badge variant="primary-light" className="font-medium">
                         {step.badge}
                       </Badge>
                     </div>
@@ -105,7 +93,7 @@ export function HowItWorksSection() {
                   <span>Corridor Route: DEL ⇄ IMF</span>
                   <span className="font-semibold text-foreground">Direct Handover</span>
                 </div>
-              </div>
+              </motion.div>
             )
           })}
         </div>

@@ -6,6 +6,8 @@ Combined with the `antislop` filter, it prevents generic AI defaults and guarant
 
 ---
 
+Current authority: 4 November 2026. Preserve this identity, the repository rules, and the executed tokens.
+
 ## 1. Brand Identity & Product Brief
 
 - **Product:** Tac-Xpress (Tactical Express Logistics & Multi-modal Freight Orchestration).
@@ -20,7 +22,7 @@ Combined with the `antislop` filter, it prevents generic AI defaults and guarant
 
 Per the Antislop Liveliness Toolkit:
 - **ENERGY: 2 (Confident)**
-  High-contrast status badges, distinct card boundaries, and focused amber telemetry accents without garish glows or decorative rainbow gradients.
+  High-contrast status badges, distinct card boundaries, and restrained teal action accents without garish glows or decorative rainbow gradients.
 - **RHYTHM: 2 (Structured Multi-Density)**
   High-density data tables and telemetry strips paired with spacious, legible form layouts. Section compositions follow operational logistics workflows.
 - **MOTION: 2 (Micro-Responsive)**
@@ -28,30 +30,21 @@ Per the Antislop Liveliness Toolkit:
 
 ---
 
-## 3. Color Palette & Science
+## 3. Color system and authority
 
-All colors follow OKLCH perceptual uniformity and strict WCAG AA contrast (minimum 4.5:1 for body text, 3:1 for large text and UI boundaries). Tested via `contrast-check.py`.
+The executed system uses crisp alpine slate light surfaces, tactical carbon dark surfaces, and aviation cobalt primary actions.
+`app/globals.css` owns exact light, dark, inverse, status, and chart values.
+Use semantic tokens instead of copying palette values into components or documentation.
 
-### 3.1 Dark Mode (Primary Tactical Mode)
-- **Base Background:** Slate-950 (`#090d16` / `oklch(14% 0.02 260)`)
-- **Panel & Surface:** Slate-900 (`#0f172a` / `oklch(20% 0.03 260)`)
-- **Card Elevated:** Slate-850 (`#131e33` / `oklch(23% 0.04 260)`)
-- **Borders & Dividers:** Slate-800 (`#1e293b` / `oklch(27% 0.03 260)`)
-- **Text Primary:** Pure Crisp White (`#f8fafc` / `oklch(98% 0.01 260)`) — Contrast ratio > 15:1
-- **Text Muted:** Slate-400 (`#94a3b8` / `oklch(71% 0.02 260)`) — Contrast ratio > 5.5:1
+- Canvas and surfaces: `background`, `surface`, `card`, `popover`, `muted`.
+- Text: `foreground`, `muted-foreground`, and each surface's foreground token.
+- Actions: `primary`, `primary-foreground`, `accent`, `ring`.
+- Freight states: existing `status-*` tokens and ReUI light Badge variants.
+- Brand blue remains reserved for the logo. It is not the primary action accent.
 
-### 3.2 Light Mode (Supported Full-Fidelity Mode)
-- **Base Background:** Slate-50 (`#f8fafc` / `oklch(98% 0.01 260)`)
-- **Card Surface:** Pure White (`#ffffff`)
-- **Borders & Dividers:** Slate-200 (`#e2e8f0` / `oklch(92% 0.01 260)`)
-- **Text Primary:** Slate-900 (`#0f172a` / `oklch(20% 0.03 260)`) — Contrast ratio > 15:1
-- **Text Muted:** Slate-600 (`#475569` / `oklch(45% 0.03 260)`) — Contrast ratio > 5.8:1
-
-### 3.3 Status & Categorical Accents
-- **Primary Industrial Accent:** Safety Amber (`#f59e0b` / `oklch(75% 0.16 70)`) — Used for primary CTAs, active dispatch triggers, and warning states.
-- **Telemetry Accent:** Signal Cyan (`#06b6d4` / `oklch(78% 0.14 210)`) — Used for GPS coordinates and live transit telemetry.
-- **Success State:** Emerald (`#10b981` / `oklch(72% 0.17 160)`) — Used for `DELIVERED`, `PAID`, `VERIFIED`.
-- **Exception State:** Crimson (`#ef4444` / `oklch(63% 0.22 25)`) — Used for `FAILED`, `CANCELLED`, `DISCREPANCY`.
+The previous slate/amber/cyan direction is superseded. Do not restore it from historical notes.
+Contrast targets are WCAG AA, not blanket claims of compliance. Verify actual rendered color pairs.
+See [the implementation guide](docs/DESIGN.md) for component and responsive rules.
 
 ---
 
@@ -61,7 +54,7 @@ All colors follow OKLCH perceptual uniformity and strict WCAG AA contrast (minim
 - **STEM & Telemetry Mono:** `IBM Plex Mono`, `monospace`.
   Mandatory for:
   - Waybill numbers (e.g., `AWB-2026-90412`)
-  - GPS coordinates (e.g., `26.1445° N, 91.7362° E`)
+  - Recorded shipment coordinates
   - Cargo volumetric weight (`cm³ / 5000 = kg`)
   - Currency and tax calculations (`₹12,450.00 + 18% GST`)
 - **Tabular Figures:** Always apply `tabular-nums` / `font-mono` on numbers in data grids to prevent layout jitter during live updates.
@@ -77,7 +70,9 @@ All colors follow OKLCH perceptual uniformity and strict WCAG AA contrast (minim
 ## 5. Layout & Components
 
 - **Component Library:** ReUI built on Shadcn UI (`components/ui`, `components/reui`).
-- **Data Grids:** Use `data-grid` for shipments, invoices, and hub lists.
+- **Registers:** Reuse the installed TanStack v8 DataTable and its adapters. Preserve sorting and server pagination.
+- **Surface ownership:** Use `bordered={false}` inside an existing register surface. Keep the standalone default.
+- **Registry compatibility:** Do not replace working registers with a different grid API without a separately scoped migration.
 - **Geometry & Border Radius:** Zero border radius (`rounded-none`). Rounded corners, curved lines, and pill containers are strictly forbidden. Use precision straight lines, razor-sharp rectangular borders, and industrial technical geometry exclusively.
 - **Shadows:** Grounded matte surfaces (`shadow-xs` / `shadow-sm` on elevated flyouts). Zero floating blurred blobs.
 - **Every Data Region:**
@@ -103,4 +98,4 @@ Enforced via `node .agents/skills/hallmark/scripts/sloplint.mjs`:
 - **Floor 63 (No Template Punctuation)**: Do not join strings with middle dots (`A · B · C`). Do not glue arrows to links (`Learn more ->`).
 - **Floor 4 (Single Containment Layer)**: Never nest cards inside cards (`bg-card` inside `bg-card`).
 - **Floor 10a (No transition: all)**: Explicit transitions only (`transition-colors`, `transition-transform`, `transition-opacity`).
-- **Reflex 64 (Monospace Discipline)**: Reserve `font-mono` exclusively for AWB tracking numbers, airport IATA codes (`DEL`, `GAU`), timestamps, and financial figures. Never dress plain prose in monospace.
+- **Reflex 64 (Monospace Discipline)**: Reserve `font-mono` exclusively for AWB tracking numbers, airport IATA codes (`DEL`, `IMF`), timestamps, and financial figures. Never dress plain prose in monospace.

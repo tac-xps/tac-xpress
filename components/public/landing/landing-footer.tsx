@@ -2,38 +2,71 @@
 
 import React from "react"
 import Link from "next/link"
+import { Logo } from "@/components/logo"
 
 const FOOTER_COLUMNS = [
   {
-    title: "Product",
+    title: "Services",
     links: [
-      { label: "Features", href: "#features" },
-      { label: "Method", href: "#method" },
-      { label: "Tracked Linehaul", href: "#method" },
-      { label: "Pricing", href: "#pricing" },
+      { label: "Air cargo", href: "/#services" },
+      { label: "Surface cargo", href: "/#services" },
+      { label: "Linehaul pricing", href: "/#pricing" },
+      { label: "Request a quote", href: "/#contact" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About Us", href: "/about" },
-      { label: "Operations Desk", href: "#contact" },
-      { label: "Corridor Stations", href: "#method" },
-      { label: "Terms of Carriage", href: "/shipping-guide" },
+      { label: "About us", href: "/#about" },
+      { label: "Operations desk", href: "/#contact" },
+      { label: "Terms & conditions", href: "/terms" },
+      { label: "Shipping guide", href: "/#method" },
     ],
   },
   {
     title: "Resources",
     links: [
-      { label: "Articles & Updates", href: "#company" },
-      { label: "AWB Tracking", href: "/track" },
-      { label: "GST Tax Invoicing", href: "/dashboard/invoices" },
-      { label: "FAQs", href: "#faq" },
+      { label: "Track a shipment", href: "/track" },
+      { label: "Questions & answers", href: "/#faq" },
+      { label: "Share feedback", href: "/#feedback" },
+      { label: "Corridor method", href: "/#method" },
     ],
   },
 ]
 
 export function LandingFooter() {
+  const handleScrollClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    if (href === "/track" || href === "/?tracking=open") {
+      if (typeof window !== "undefined" && window.location.pathname === "/") {
+        e.preventDefault()
+        window.dispatchEvent(new CustomEvent("tac-track-open"))
+        return
+      }
+    }
+    if (
+      href.startsWith("/#") &&
+      typeof window !== "undefined" &&
+      window.location.pathname === "/"
+    ) {
+      const targetId = href.replace("/#", "")
+      const el = document.getElementById(targetId)
+      if (el) {
+        e.preventDefault()
+        el.scrollIntoView({
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            ? "instant"
+            : "smooth",
+        })
+        if (window.location.hash !== `#${targetId}`) {
+          window.history.pushState(null, "", `#${targetId}`)
+        }
+      }
+    }
+  }
+
   return (
     <footer
       data-slot="footer"
@@ -44,11 +77,8 @@ export function LandingFooter() {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5 pb-16 border-b border-border">
           {/* Brand Info */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="size-4 bg-primary rounded-none" />
-              <span className="font-mono text-base font-bold tracking-tight text-foreground">
-                TAC-XPRESS
-              </span>
+            <Link href="/" aria-label="TAC-XPRESS home" className="flex items-center">
+              <Logo className="text-foreground" iconClassName="size-8 text-primary" />
             </Link>
             <p className="mt-4 max-w-sm text-xs leading-relaxed text-muted-foreground font-normal">
               Direct commercial air express and arterial highway linehaul operating
@@ -71,6 +101,7 @@ export function LandingFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
+                      onClick={(e) => handleScrollClick(e, link.href)}
                       className="text-muted-foreground transition-colors hover:text-foreground"
                     >
                       {link.label}
@@ -86,13 +117,10 @@ export function LandingFooter() {
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-muted-foreground">
           <p>© 2026 TAC-XPRESS LOGISTICS LLP. New Delhi ⇄ Imphal Corridor Only.</p>
           <div className="flex items-center gap-4 text-xs">
-            <span>GST Registered</span>
-            <span>BCAS Compliant</span>
-            <Link href="/terms" className="hover:text-foreground">Privacy & Terms</Link>
+            <Link href="/terms" className="hover:text-foreground">Terms & conditions</Link>
+            <Link href="/signin" className="hover:text-foreground">Staff access</Link>
           </div>
         </div>
-
-        {/* Giant Watermark Logo Spanning Across Bottom (Exact Atomist Signature) */}
         <div
           aria-hidden="true"
           className="pointer-events-none mt-12 select-none overflow-hidden"

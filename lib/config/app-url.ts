@@ -5,12 +5,16 @@ export function getAppUrl(
 ) {
   let raw = value?.trim()
 
-  // In production (e.g. Vercel deployment), fall back to system host if NEXT_PUBLIC_APP_URL
-  // is missing or improperly set to an external backend URL (Supabase/MCP).
   const isVercel = Boolean(
     process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL
   )
   if (
+    environment === "production" &&
+    process.env.VERCEL_ENV === "preview" &&
+    value === process.env.NEXT_PUBLIC_APP_URL
+  ) {
+    raw = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : ""
+  } else if (
     (!raw || raw.includes(".supabase.co") || raw.includes("mcp.supabase.com")) &&
     environment === "production" &&
     isVercel &&

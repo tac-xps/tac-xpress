@@ -11,7 +11,7 @@ import * as Sentry from "@sentry/nextjs"
 
 import { addCustomerSchema, editCustomerSchema } from "./validations"
 import { requireDashboardSession } from "@/lib/auth/guards"
-import { logAudit } from "@/lib/audit"
+import { logAuditInTransaction } from "@/lib/audit"
 
 export const createCustomerAction = authActionClient
   .schema(addCustomerSchema)
@@ -19,19 +19,133 @@ export const createCustomerAction = authActionClient
     const { email, phone, name, address, city, state, pinCode } = data
     const session = ctx.session
 
-  try {
-    const existingUser = await db.query.users.findFirst({
-      where: and(
-        eq(users.role, "customer"),
-        email
-          ? or(eq(users.email, email), eq(users.phone, phone))
-          : eq(users.phone, phone)
-      ),
-    })
+    try {
+      return await db.transaction(async (tx) => {
+        const existingUser = await tx.query.users.findFirst({
+          where: and(
+            eq(users.role, "customer"),
+            email
+              ? or(eq(users.email, email), eq(users.phone, phone))
+              : eq(users.phone, phone)
+          ),
+        })
 
-    if (existingUser) {
-      if (existingUser.deletedAt) {
-        const [restoredCustomer] = await db
+        if (existingUser) {
+          if (existingUser.deletedAt) {
+            const [restoredCustomer] = await tx
+              .update(users)
+              .set({
+                name,
+                email: email || null,
+                phone,
+                address,
+                city,
+                state,
+                pinCode,
+                deletedAt: null,
+              })
+              .where(eq(users.id, existingUser.id))
+              .returning()
+            await logAuditInTransaction(tx, {
+              userId: session.user.id,
+              userEmail: session.user.email || "unknown",
+              action: "restore",
+              entity: "customers",
+              entityId: existingUser.id,
+              before: existingUser,
+              after: restoredCustomer,
+            })
+            revalidatePath("/dashboard/customers")
+            return {
+              success: true,
+              customer: restoredCustomer,
+              error: undefined,
+            }
+          }
+          return {
+            success: false,
+            error: "A customer with this email or phone already exists.",
+          }
+        }
+
+        const [customer] = await tx
+          .insert(users)
+          .values({
+            id: crypto.randomUUID(),
+            name,
+            email: email || null,
+            phone,
+            address,
+            city,
+            state,
+            pinCode,
+            role: "customer",
+          })
+          .returning()
+
+        await logAuditInTransaction(tx, {
+          userId: session.user.id,
+          userEmail: session.user.email || "unknown",
+          action: "create",
+          entity: "customers",
+          entityId: customer.id,
+          after: customer,
+        })
+
+        revalidatePath("/dashboard/customers")
+        return { success: true, customer, error: undefined }
+      })
+    } catch (error) {
+      Sentry.captureException(error)
+      const failure =
+        error instanceof Error && error.cause ? error.cause : error
+      const errCode =
+        typeof failure === "object" && failure !== null && "code" in failure
+          ? failure.code
+          : undefined
+      if (errCode === "23505") {
+        // Unique violation but not soft-deleted (or no email provided)
+        return {
+          success: false,
+          error: "A user with this email already exists.",
+        }
+      }
+      return {
+        success: false,
+        error: "Failed to create customer. Please try again.",
+      }
+    }
+  })
+
+export const updateCustomerAction = authActionClient
+  .schema(editCustomerSchema)
+  .action(async ({ parsedInput: data, ctx }) => {
+    const { id, email, phone, name, address, city, state, pinCode } = data
+    const session = ctx.session
+
+    try {
+      return await db.transaction(async (tx) => {
+        const before = await tx.query.users.findFirst({
+          where: and(eq(users.id, id), eq(users.role, "customer")),
+        })
+        if (!before) return { success: false, error: "Customer not found." }
+        const duplicate = await tx.query.users.findFirst({
+          where: and(
+            eq(users.role, "customer"),
+            ne(users.id, id),
+            email
+              ? or(eq(users.email, email), eq(users.phone, phone || ""))
+              : eq(users.phone, phone || "")
+          ),
+        })
+        if (duplicate) {
+          return {
+            success: false,
+            error: "A customer with this email or phone already exists.",
+          }
+        }
+
+        await tx
           .update(users)
           .set({
             name,
@@ -41,161 +155,39 @@ export const createCustomerAction = authActionClient
             city,
             state,
             pinCode,
-            deletedAt: null,
           })
-          .where(eq(users.id, existingUser.id))
-          .returning()
-        await logAudit({
+          .where(eq(users.id, id))
+
+        await logAuditInTransaction(tx, {
           userId: session.user.id,
           userEmail: session.user.email || "unknown",
-          action: "restore",
+          action: "update",
           entity: "customers",
-          entityId: existingUser.id,
-          before: existingUser,
-          after: restoredCustomer,
+          entityId: id,
+          before,
+          after: data,
         })
+
         revalidatePath("/dashboard/customers")
-        return { success: true, customer: restoredCustomer, error: undefined }
-      }
-      return {
-        success: false,
-        error: "A customer with this email or phone already exists.",
-      }
-    }
-
-    const [customer] = await db
-      .insert(users)
-      .values({
-        id: crypto.randomUUID(),
-        name,
-        email: email || null,
-        phone,
-        address,
-        city,
-        state,
-        pinCode,
-        role: "customer",
+        return { success: true, error: undefined }
       })
-      .returning()
-
-    await logAudit({
-      userId: session.user.id,
-      userEmail: session.user.email || "unknown",
-      action: "create",
-      entity: "customers",
-      entityId: customer.id,
-      after: customer,
-    })
-
-    revalidatePath("/dashboard/customers")
-    return { success: true, customer, error: undefined }
-  } catch (error: any) {
-    Sentry.captureException(error)
-    const errCode =
-      error.code || error?.cause?.code || error?.cause?.PostgresError?.code
-    if (errCode === "23505") {
-      if (email) {
-        // Check if the user is soft-deleted
-        const existingUser = await db.query.users.findFirst({
-          where: and(eq(users.email, email), eq(users.role, "customer")),
-        })
-
-        if (existingUser && existingUser.deletedAt !== null) {
-          // Restore and update the customer
-          const [restoredCustomer] = await db
-            .update(users)
-            .set({
-              name,
-              phone,
-              address,
-              city,
-              state,
-              pinCode,
-              deletedAt: null,
-            })
-            .where(eq(users.id, existingUser.id))
-            .returning()
-
-          revalidatePath("/dashboard/customers")
-          return { success: true, customer: restoredCustomer, error: undefined }
+    } catch (error) {
+      Sentry.captureException(error)
+      const failure =
+        error instanceof Error && error.cause ? error.cause : error
+      const errCode =
+        typeof failure === "object" && failure !== null && "code" in failure
+          ? failure.code
+          : undefined
+      if (errCode === "23505") {
+        return {
+          success: false,
+          error: "A user with this email already exists.",
         }
       }
-
-      // Unique violation but not soft-deleted (or no email provided)
-      return {
-        success: false,
-        error: "A user with this email already exists.",
-      }
+      return { success: false, error: "Failed to update customer." }
     }
-    return {
-      success: false,
-      error: "Failed to create customer. Please try again.",
-    }
-  }
-})
-
-export const updateCustomerAction = authActionClient
-  .schema(editCustomerSchema)
-  .action(async ({ parsedInput: data, ctx }) => {
-    const { id, email, phone, name, address, city, state, pinCode } = data
-    const session = ctx.session
-
-  try {
-    const before = await db.query.users.findFirst({
-      where: and(eq(users.id, id), eq(users.role, "customer")),
-    })
-    if (!before) return { success: false, error: "Customer not found." }
-    const duplicate = await db.query.users.findFirst({
-      where: and(
-        eq(users.role, "customer"),
-        ne(users.id, id),
-        email
-          ? or(eq(users.email, email), eq(users.phone, phone || ""))
-          : eq(users.phone, phone || "")
-      ),
-    })
-    if (duplicate) {
-      return {
-        success: false,
-        error: "A customer with this email or phone already exists.",
-      }
-    }
-
-    await db
-      .update(users)
-      .set({
-        name,
-        email: email || null,
-        phone,
-        address,
-        city,
-        state,
-        pinCode,
-      })
-      .where(eq(users.id, id))
-
-    await logAudit({
-      userId: session.user.id,
-      userEmail: session.user.email || "unknown",
-      action: "update",
-      entity: "customers",
-      entityId: id,
-      before,
-      after: data,
-    })
-
-    revalidatePath("/dashboard/customers")
-    return { success: true, error: undefined }
-  } catch (error: any) {
-    Sentry.captureException(error)
-    const errCode =
-      error.code || error?.cause?.code || error?.cause?.PostgresError?.code
-    if (errCode === "23505") {
-      return { success: false, error: "A user with this email already exists." }
-    }
-    return { success: false, error: "Failed to update customer." }
-  }
-})
+  })
 
 const deleteCustomerSchema = z.object({
   id: z.string().uuid(),
@@ -207,34 +199,36 @@ export const deleteCustomerAction = authActionClient
     const { id } = data
     const session = ctx.session
 
-  try {
-    const before = await db.query.users.findFirst({
-      where: and(eq(users.id, id), eq(users.role, "customer")),
-    })
-    if (!before) return { success: false, error: "Customer not found." }
-    // Soft delete
-    await db
-      .update(users)
-      .set({ deletedAt: new Date() })
-      .where(eq(users.id, id))
+    try {
+      return await db.transaction(async (tx) => {
+        const before = await tx.query.users.findFirst({
+          where: and(eq(users.id, id), eq(users.role, "customer")),
+        })
+        if (!before) return { success: false, error: "Customer not found." }
+        // Soft delete
+        await tx
+          .update(users)
+          .set({ deletedAt: new Date() })
+          .where(eq(users.id, id))
 
-    await logAudit({
-      userId: session.user.id,
-      userEmail: session.user.email || "unknown",
-      action: "delete",
-      entity: "customers",
-      entityId: id,
-      before,
-      after: { deletedAt: new Date().toISOString() },
-    })
+        await logAuditInTransaction(tx, {
+          userId: session.user.id,
+          userEmail: session.user.email || "unknown",
+          action: "delete",
+          entity: "customers",
+          entityId: id,
+          before,
+          after: { deletedAt: new Date().toISOString() },
+        })
 
-    revalidatePath("/dashboard/customers")
-    return { success: true, error: undefined }
-  } catch (error: any) {
-    Sentry.captureException(error)
-    return { success: false, error: "Failed to delete customer." }
-  }
-})
+        revalidatePath("/dashboard/customers")
+        return { success: true, error: undefined }
+      })
+    } catch (error) {
+      Sentry.captureException(error)
+      return { success: false, error: "Failed to delete customer." }
+    }
+  })
 
 const getCustomerLedgerSchema = z.object({
   id: z.string().uuid(),
@@ -272,9 +266,9 @@ export const getCustomerLedgerAction = authActionClient
           .limit(50),
         db
           .select({
-            totalBilled: sql<number>`sum(${invoices.amount})`,
-            totalAdvance: sql<number>`sum(${invoices.advancePaid})`,
-            totalDue: sql<number>`sum(${invoices.balanceDue})`,
+            totalBilled: sql<number>`sum(${invoices.amount}) filter (where ${invoices.status} <> 'void')`,
+            totalAdvance: sql<number>`sum(${invoices.advancePaid}) filter (where ${invoices.status} <> 'void')`,
+            totalDue: sql<number>`sum(${invoices.balanceDue}) filter (where ${invoices.status} <> 'void')`,
             totalCount: sql<number>`count(*)`,
           })
           .from(invoices)
@@ -296,9 +290,8 @@ export const getCustomerLedgerAction = authActionClient
           totalCount,
         },
       }
-    } catch (error: any) {
+    } catch (error) {
       Sentry.captureException(error)
-      throw new Error(error?.message || "Failed to retrieve customer ledger.")
+      throw new Error("Failed to retrieve customer ledger.")
     }
   })
-

@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://tac-xpress.com"),
   title: "TAC-XPRESS | Air and surface cargo",
   description:
-    "Air and surface cargo between Northeast India and New Delhi. Explore services, prepare your shipment and track with your AWB.",
+    "Air and surface cargo between New Delhi and Imphal. Explore services, prepare your shipment and track with your AWB.",
 }
 
 export default function RootLayout({

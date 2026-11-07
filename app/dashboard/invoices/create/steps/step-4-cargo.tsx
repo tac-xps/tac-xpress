@@ -182,58 +182,116 @@ export function Step4Cargo({ form, calculations }: Step4Props) {
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-4 sm:col-span-2">
-        <FormField
-          control={form.control as any}
-          name="dimensionsL"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Length (cm)</FormLabel>
-              <FormControl>
-                <Input
-                  className="bg-background text-right tabular-nums"
-                  type="number"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control as any}
-          name="dimensionsW"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Width (cm)</FormLabel>
-              <FormControl>
-                <Input
-                  className="bg-background text-right tabular-nums"
-                  type="number"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control as any}
-          name="dimensionsH"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Height (cm)</FormLabel>
-              <FormControl>
-                <Input
-                  className="bg-background text-right tabular-nums"
-                  type="number"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <div className="flex flex-col gap-3 sm:col-span-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Carton Presets
+          </FormLabel>
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                form.setValue("dimensionsL", 30, { shouldValidate: true })
+                form.setValue("dimensionsW", 20, { shouldValidate: true })
+                form.setValue("dimensionsH", 3, { shouldValidate: true })
+                form.setValue("packagingType", "bubble_wrap", { shouldValidate: true })
+              }}
+              className="border border-border/80 bg-background px-2.5 py-1 text-xs font-mono font-medium hover:bg-muted transition-colors rounded-none shadow-xs"
+            >
+              Doc Pouch (30×20×3)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                form.setValue("dimensionsL", 30, { shouldValidate: true })
+                form.setValue("dimensionsW", 25, { shouldValidate: true })
+                form.setValue("dimensionsH", 20, { shouldValidate: true })
+                form.setValue("packagingType", "corrugated_box", { shouldValidate: true })
+              }}
+              className="border border-border/80 bg-background px-2.5 py-1 text-xs font-mono font-medium hover:bg-muted transition-colors rounded-none shadow-xs"
+            >
+              Carton S (30×25×20)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                form.setValue("dimensionsL", 45, { shouldValidate: true })
+                form.setValue("dimensionsW", 35, { shouldValidate: true })
+                form.setValue("dimensionsH", 30, { shouldValidate: true })
+                form.setValue("packagingType", "corrugated_box", { shouldValidate: true })
+              }}
+              className="border border-border/80 bg-background px-2.5 py-1 text-xs font-mono font-medium hover:bg-muted transition-colors rounded-none shadow-xs"
+            >
+              Carton M (45×35×30)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                form.setValue("dimensionsL", 60, { shouldValidate: true })
+                form.setValue("dimensionsW", 45, { shouldValidate: true })
+                form.setValue("dimensionsH", 40, { shouldValidate: true })
+                form.setValue("packagingType", "corrugated_box", { shouldValidate: true })
+              }}
+              className="border border-border/80 bg-background px-2.5 py-1 text-xs font-mono font-medium hover:bg-muted transition-colors rounded-none shadow-xs"
+            >
+              Carton L (60×45×40)
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          <FormField
+            control={form.control as any}
+            name="dimensionsL"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Length (cm)</FormLabel>
+                <FormControl>
+                  <Input
+                    className="bg-background text-right tabular-nums"
+                    type="number"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control as any}
+            name="dimensionsW"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Width (cm)</FormLabel>
+                <FormControl>
+                  <Input
+                    className="bg-background text-right tabular-nums"
+                    type="number"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control as any}
+            name="dimensionsH"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Height (cm)</FormLabel>
+                <FormControl>
+                  <Input
+                    className="bg-background text-right tabular-nums"
+                    type="number"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
       </div>
 
       <div className="flex flex-col gap-4 sm:col-span-2 sm:flex-row sm:items-center">

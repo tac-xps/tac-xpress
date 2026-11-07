@@ -4,7 +4,7 @@ export const services = [
     name: "Air cargo",
     summary: "High-priority commercial cargo with 24–48 hour gateway delivery.",
     description:
-      "Scheduled belly-hold air freight connecting Delhi Central Consolidation directly to Northeast India regional airport stations.",
+      "Scheduled belly-hold air freight connecting Delhi Central Consolidation directly to Imphal airport station.",
     suitable:
       "Time-sensitive commercial cargo, electronics, medical inventory, and urgent consignments requiring verified belly-hold allocation.",
     planning:

@@ -21,7 +21,7 @@ export function PricingCalculatorClient() {
   const [weight, setWeight] = React.useState<number | "">("")
   const [origin, setOrigin] = React.useState("")
   const [destination, setDestination] = React.useState("")
-  type ServiceType = "express_air" | "standard_ocean" | "road_freight"
+  type ServiceType = "express_air" | "road_freight"
   const [service, setService] = React.useState<ServiceType>("road_freight")
   const [total, setTotal] = React.useState<number | null>(null)
   const [isPending, setIsPending] = React.useState(false)
@@ -35,8 +35,8 @@ export function PricingCalculatorClient() {
       const result = await getEstimatedRateAction({
         weightKg: Number(weight),
         serviceType: service,
-        origin: origin || undefined,
-        destination: destination || undefined,
+        origin,
+        destination,
       })
 
       if (result?.data?.rate !== undefined) {
@@ -66,7 +66,7 @@ export function PricingCalculatorClient() {
         <CardContent className="p-6">
           <form
             onSubmit={calculateRate}
-            className="-m-4 grid grid-cols-1 gap-6 p-4 transition-all duration-500 has-[:focus-visible]:bg-primary/[0.02] has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-primary/30 md:grid-cols-2"
+            className="-m-4 grid grid-cols-1 gap-6 p-4 transition-colors has-[:focus-visible]:bg-primary/[0.02] has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-primary/30 md:grid-cols-2"
           >
             <div className="space-y-2">
               <Label className="text-xs tracking-wider text-muted-foreground uppercase">
@@ -89,7 +89,7 @@ export function PricingCalculatorClient() {
               <div className="relative">
                 <MapPin className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="e.g. BOM"
+                  placeholder="e.g. IMF"
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
                   className="h-9 border-border/50 bg-background pl-9 focus-visible:ring-1 focus-visible:ring-ring/50"
@@ -102,7 +102,9 @@ export function PricingCalculatorClient() {
               </Label>
               <Select
                 value={service}
-                onValueChange={(val) => setService(val as ServiceType)}
+                onValueChange={(val) => {
+                  if (val === "express_air" || val === "road_freight") setService(val)
+                }}
               >
                 <SelectTrigger className="h-9 border-border/50 bg-background focus:ring-1 focus:ring-ring/50">
                   <SelectValue placeholder="Select service level" />
@@ -110,7 +112,6 @@ export function PricingCalculatorClient() {
                 <SelectContent className="border-border/50 bg-background">
                   <SelectItem value="express_air">Express Air</SelectItem>
                   <SelectItem value="road_freight">Standard Surface</SelectItem>
-                  <SelectItem value="standard_ocean">Sea Freight</SelectItem>
                 </SelectContent>
               </Select>
             </div>

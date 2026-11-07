@@ -2,7 +2,6 @@
 
 import { useMemo } from "react"
 import { format } from "date-fns"
-import { useQueryState, parseAsString, parseAsInteger } from "nuqs"
 import type { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@/components/ui/data-table/data-table"
 import { DataTableColumnHeader as ColumnHeader } from "@/components/ui/data-table/data-table-column-header"
@@ -10,10 +9,8 @@ import { useDataTable } from "@/hooks/use-data-table"
 import { FeedbackActions, type FeedbackData } from "./feedback-actions"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Star, MessageCircle, AlertCircle, ThumbsUp, Download } from "lucide-react"
+import { Download } from "lucide-react"
 import { toast } from "sonner"
-
-type SentimentType = "all" | "positive" | "negative" | "general"
 
 const NEGATIVE_REGEX = /\b(delay\w*|damage\w*|broken|lost|late|poor|terrible|worst)\b/i
 const POSITIVE_REGEX = /\b(great|fast|excellent|good|smooth|thank\w*|awesome)\b/i
@@ -35,28 +32,6 @@ export function FeedbackClientTable({
   data: FeedbackData[]
   pageCount: number
 }) {
-  const [filterSentiment, setFilterSentiment] = useQueryState(
-    "sentiment",
-    parseAsString
-      .withDefault("all")
-      .withOptions({ shallow: false, history: "push" })
-  )
-  const [, setPage] = useQueryState(
-    "page",
-    parseAsInteger
-      .withDefault(1)
-      .withOptions({ shallow: false, history: "push" })
-  )
-
-  const handleSentimentChange = (val: SentimentType) => {
-    if (val === "all") {
-      void setFilterSentiment(null)
-    } else {
-      void setFilterSentiment(val)
-    }
-    void setPage(1)
-  }
-
   const enrichedData = useMemo(() => {
     return data.map((item) => ({
       ...item,
@@ -172,66 +147,9 @@ export function FeedbackClientTable({
 
   return (
     <div className="space-y-3">
-      {/* Sentiment Filter Toolbar with keyboard accessible buttons and aria-pressed */}
-      <div
-        role="toolbar"
-        aria-label="Filter feedback by customer sentiment"
-        className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 bg-muted/10 px-4 py-2.5"
-      >
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mr-1">
-            Filter:
-          </span>
-          <Button
-            type="button"
-            size="sm"
-            variant={filterSentiment === "all" ? "default" : "outline"}
-            aria-pressed={filterSentiment === "all"}
-            onClick={() => handleSentimentChange("all")}
-            className="h-7 px-3 text-xs"
-          >
-            <MessageCircle className="mr-1.5 size-3" /> All
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant={filterSentiment === "positive" ? "default" : "outline"}
-            aria-pressed={filterSentiment === "positive"}
-            onClick={() => handleSentimentChange("positive")}
-            className="h-7 px-3 text-xs"
-          >
-            <ThumbsUp className="mr-1.5 size-3 text-success" /> Positive
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant={filterSentiment === "negative" ? "default" : "outline"}
-            aria-pressed={filterSentiment === "negative"}
-            onClick={() => handleSentimentChange("negative")}
-            className="h-7 px-3 text-xs"
-          >
-            <AlertCircle className="mr-1.5 size-3 text-destructive" /> Needs Attention
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant={filterSentiment === "general" ? "default" : "outline"}
-            aria-pressed={filterSentiment === "general"}
-            onClick={() => handleSentimentChange("general")}
-            className="h-7 px-3 text-xs"
-          >
-            <Star className="mr-1.5 size-3 text-info" /> General
-          </Button>
-        </div>
-
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={exportToCsv}
-          className="h-7 px-2.5 text-xs font-mono ml-auto"
-        >
-          <Download className="mr-1.5 size-3 text-muted-foreground" />
+      <div className="flex justify-end px-4 pt-3">
+        <Button type="button" size="sm" variant="outline" onClick={exportToCsv}>
+          <Download className="size-3.5 text-muted-foreground" />
           Export CSV
         </Button>
       </div>

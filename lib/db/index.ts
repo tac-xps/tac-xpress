@@ -8,15 +8,14 @@ if (EventEmitter.defaultMaxListeners < 50) {
   EventEmitter.defaultMaxListeners = 50
 }
 
-// db/index.ts
-// Connection limit workaround for serverless environments
-// SUPABASE_POOLER_URL uses PgBouncer to prevent connection exhaustion at scale
 const poolerUrl = process.env.SUPABASE_POOLER_URL
 const dbUrl = process.env.DATABASE_URL
 
 const isValid = (url?: string) => url && !url.includes("fill-in")
 
-export const isDatabaseConfigured = Boolean(isValid(poolerUrl) || isValid(dbUrl))
+export const isDatabaseConfigured = Boolean(
+  isValid(poolerUrl) || isValid(dbUrl)
+)
 
 const connectionString =
   (isValid(poolerUrl) ? poolerUrl : undefined) ||
@@ -40,25 +39,13 @@ declare global {
   var _postgresClient: postgres.Sql | undefined
 }
 
-// Serverless runtimes (Vercel, AWS Lambda) connect via Supabase PgBouncer (transaction mode, port 6543).
-// Allow up to 6 concurrent sockets per lambda instance so Promise.all can execute in parallel.
+// Bound each serverless instance to one socket; route fan-out otherwise multiplies pooler connections.
 const isServerless = Boolean(
   process.env.VERCEL ||
-    process.env.AWS_LAMBDA_FUNCTION_NAME ||
-    process.env.NETLIFY ||
-    process.env.NODE_ENV === "production"
+  process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  process.env.NETLIFY ||
+  process.env.NODE_ENV === "production"
 )
-
-function normalizeConnectionString(raw: string): string {
-  // If connection points to Supabase pooler on port 5432 (session mode limit: 15),
-  // route to port 6543 (transaction mode) which supports high concurrency in serverless.
-  if (raw.includes("pooler.supabase.com")) {
-    return raw.replace(/(:5432)(\b|\/|\?)/, ":6543$2")
-  }
-  return raw
-}
-
-const resolvedConnectionString = normalizeConnectionString(connectionString)
 
 // Defer the production guard to first actual use so that Storybook/Chromatic
 // can import this module without crashing (they never execute queries).
@@ -75,13 +62,10 @@ function createDb(): DbInstance {
 
   const client =
     globalThis._postgresClient ||
-    postgres(resolvedConnectionString, {
+    postgres(connectionString, {
       prepare: false,
       ssl: isLocalhost ? false : "require",
-      max: isServerless ? 6 : 10,
-      // Bound every wait so a stalled database can never hang a request forever.
-      // Without these, a connect or query that never returns leaves server
-      // components awaiting indefinitely and the page never finishes rendering.
+      max: isServerless ? 1 : 10,
       connect_timeout: 10,
       idle_timeout: isServerless ? 5 : 20,
       // In development (Turbopack HMR), abandoned sockets are never closed by the

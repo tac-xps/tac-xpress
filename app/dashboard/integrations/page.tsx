@@ -1,13 +1,20 @@
 import type { Metadata } from "next"
 import { requireStaffPage } from "@/lib/auth/page-access"
 import { PageHeader } from "@/components/operations/page-header"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getWhatsAppConfig } from "@/lib/whatsapp/config"
 
 export const metadata: Metadata = {
   title: "Integrations & Webhooks | TAC-XPRESS",
-  description: "External messaging relays, WhatsApp Meta API, and inbound webhook endpoints.",
+  description:
+    "LeminAI messaging, service configuration, and inbound webhook endpoints.",
 }
 import { getAppUrl } from "@/lib/config/app-url"
 import { ScannerTest } from "./scanner-test"
@@ -16,19 +23,18 @@ import { WebhookEndpointsCard } from "./webhook-endpoints-card"
 export default async function IntegrationsPage() {
   await requireStaffPage()
   const whatsapp = getWhatsAppConfig()
-  const configured = Boolean(whatsapp.relayToken && whatsapp.appSecret && whatsapp.verifyToken)
   const baseUrl = getAppUrl()
 
   const integrations = [
     {
-      title: "WhatsApp delivery",
+      title: "WhatsApp delivery via LeminAI",
       status: !whatsapp.enabled
         ? "Disabled"
-        : configured
+        : whatsapp.outboundConfigured
           ? "Configuration present"
           : "Configuration incomplete",
       description:
-        "Invoice and shipment messaging through the configured relay. Configuration does not confirm successful delivery; review outbound message results in Support.",
+        "Invoice and shipment messaging through LeminAI's WPBox relay. Configuration does not confirm delivery; review outbound message results in Support.",
     },
     {
       title: "Support email",
@@ -50,15 +56,13 @@ export default async function IntegrationsPage() {
     {
       name: "WhatsApp Meta Webhook",
       url: `${baseUrl}/api/webhooks/whatsapp`,
-      secretName: "Verify Token",
-      secretValue: whatsapp.verifyToken,
-      isConfigured: Boolean(whatsapp.verifyToken),
+      secretName: "Meta app secret and verification token",
+      isConfigured: whatsapp.metaWebhookConfigured,
     },
     {
       name: "Carrier Telemetry Relay",
       url: `${baseUrl}/api/webhooks/carrier`,
       secretName: "Signing Secret",
-      secretValue: null,
       isConfigured: Boolean(process.env.CARRIER_WEBHOOK_SECRET?.trim()),
     },
   ]
@@ -93,9 +97,12 @@ export default async function IntegrationsPage() {
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <CardTitle className="text-base font-bold">Barcode & QR Hardware Scanner</CardTitle>
+                <CardTitle className="text-base font-bold">
+                  Barcode & QR Hardware Scanner
+                </CardTitle>
                 <CardDescription className="mt-1 text-xs">
-                  Test camera permissions, evaluate mobile iOS & Android scanning, and verify consignment AWB barcodes.
+                  Test camera permissions, evaluate mobile iOS & Android
+                  scanning, and verify consignment AWB barcodes.
                 </CardDescription>
               </div>
               <Badge variant="outline" className="font-mono text-xs">

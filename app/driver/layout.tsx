@@ -1,6 +1,5 @@
 import { AppShell } from "@/components/app-shell"
-import { redirect } from "next/navigation"
-import { requireDashboardSession } from "@/lib/auth/guards"
+import { requireStaffPage } from "@/lib/auth/page-access"
 import { ScannerProvider } from "@/components/scanner/scanner-provider"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -13,8 +12,8 @@ function AppShellSkeleton() {
         <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
           <Skeleton className="h-8 w-8 rounded-none" />
         </header>
-        <main className="flex flex-1 flex-col p-4 md:p-6">
-          <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 md:gap-8">
+        <main className="isolate relative min-w-0 flex-1 p-5 sm:p-6 lg:p-8 xl:p-10">
+          <div className="relative mx-auto flex w-full max-w-[1536px] min-w-0 flex-col gap-6 md:gap-8">
             <Skeleton className="h-8 w-64" />
             <Skeleton className="h-32 w-full rounded-none" />
           </div>
@@ -28,7 +27,7 @@ function DriverShellWrapper({
   session,
   children,
 }: {
-  session: Awaited<ReturnType<typeof requireDashboardSession>>
+  session: Awaited<ReturnType<typeof requireStaffPage>>
   children: React.ReactNode
 }) {
   return (
@@ -52,7 +51,7 @@ export default async function DriverLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await requireDashboardSession().catch(() => redirect("/signin"))
+  const session = await requireStaffPage()
 
   return (
     <AuthProvider session={session as any}>

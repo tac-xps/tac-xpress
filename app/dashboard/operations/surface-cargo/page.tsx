@@ -36,18 +36,19 @@ export default async function SurfaceCargoPage({
 
   return (
     <OperationsDashboardPage
+      cargoMode="surface"
       page={page}
       rows={rows}
       icon={<TruckIcon className="size-8 text-status-delivered" />}
       iconBg="bg-status-delivered/10"
       heading="Surface Cargo Operations"
-      description="Monitor linehaul road movements, highway corridor transit (NH-27, NH-29, AH-1), and arterial truck consignments on the DEL ⇄ IMF corridor."
-      tableTitle="Active Surface Shipments"
+      description="Review surface shipments between New Delhi and Imphal (DEL ⇄ IMF)."
+      tableTitle="Recent surface shipments"
       pathname="/dashboard/operations/surface-cargo"
       kpiCards={[
-        { label: "Total Dispatches", value: totalDispatches },
-        { label: "Fleet En Route", value: fleetEnRoute, colourClass: "text-status-pending" },
-        { label: "Border Delays / At Risk", value: borderDelays, colourClass: "text-destructive" },
+        { label: "Surface shipments in sample", value: totalDispatches },
+        { label: "In-transit shipments", value: fleetEnRoute, colourClass: "text-status-transit" },
+        { label: "At-risk shipments", value: borderDelays, colourClass: "text-destructive" },
       ]}
     />
   )

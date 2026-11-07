@@ -14,6 +14,7 @@ import { PageHeader } from "@/components/operations/page-header"
 import { TableToolbar } from "@/components/operations/table-toolbar"
 import { containsPattern, parseRecordQuery, recordOrder, type RecordSearchParams } from "@/lib/table-query"
 import { CreateTicketDialog } from "./create-ticket-dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 const statuses = [
   { value: "open", label: "Open" },
   { value: "in_progress", label: "In progress" },
@@ -121,31 +122,40 @@ export default async function MessagesPage({
       >
         <CreateTicketDialog />
       </PageHeader>
-      <section
-        aria-label="Support requests"
-        className="min-w-0 overflow-hidden rounded-none border bg-card"
-      >
-        <TableToolbar
-          pathname="/dashboard/messages"
-          query={query.q}
-          status={query.status}
-          statuses={statuses}
-          sort={query.sort}
-          order={query.order}
-          placeholder="Subject, contact or AWB"
-        />
-        <TicketsClient
-          initialTickets={tickets}
-          pageCount={pageCount}
-        />
-      </section>
-      <section aria-label="Latest outbound messages" className="space-y-3">
-        <p className="text-sm text-muted-foreground">
-          Latest 25 outbound delivery attempts. Provider status may arrive after
-          sending.
-        </p>
-        <OutboundMessageLog messages={outboundMessages} />
-      </section>
+      <Tabs defaultValue="tickets">
+        <TabsList variant="line">
+          <TabsTrigger value="tickets">Tickets</TabsTrigger>
+          <TabsTrigger value="outbound">Outbound messages</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tickets">
+          <section
+            aria-label="Support requests"
+            className="min-w-0 overflow-hidden rounded-none border bg-card"
+          >
+            <TableToolbar
+              pathname="/dashboard/messages"
+              query={query.q}
+              status={query.status}
+              statuses={statuses}
+              sort={query.sort}
+              order={query.order}
+              placeholder="Subject, contact or AWB"
+            />
+            <TicketsClient
+              initialTickets={tickets}
+              pageCount={pageCount}
+            />
+          </section>
+        </TabsContent>
+        <TabsContent value="outbound">
+          <section aria-label="Latest outbound messages" className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Latest 25 delivery attempts. Provider status may arrive after sending.
+            </p>
+            <OutboundMessageLog messages={outboundMessages} />
+          </section>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

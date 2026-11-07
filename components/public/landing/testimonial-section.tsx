@@ -1,66 +1,59 @@
 "use client"
 
-import React from "react"
 import Image from "next/image"
+import { motion, useReducedMotion } from "motion/react"
+import { cn } from "@/lib/utils"
 
 export function TestimonialSection() {
+  const shouldReduceMotion = useReducedMotion()
+
   return (
     <section
       id="customers"
-      aria-labelledby="testimonials-heading"
+      aria-labelledby="customers-heading"
       className="w-full border-b border-border bg-background py-20 lg:py-28"
     >
       <div className="mx-auto w-full max-w-[1320px] px-6 lg:px-12">
-        {/* Exact Atomist Heading format */}
-        <div className="text-center max-w-xl mx-auto mb-16">
+        <div className="mx-auto mb-16 max-w-xl text-center">
           <h2
-            id="testimonials-heading"
-            className="text-2xl font-medium tracking-tight text-foreground sm:text-4xl"
+            id="customers-heading"
+            className="text-2xl font-medium tracking-tight sm:text-4xl"
           >
-            Customers see the direct result
+            Prepare your consignment
           </h2>
-          <p className="mt-2 text-xs font-sans text-muted-foreground">
-            Verified freight operators moving commercial consignments between New Delhi and Imphal.
+          <p className="mt-2 text-sm text-muted-foreground">
+            Share the practical details before requesting a booking.
           </p>
         </div>
-
-        {/* 2-Column Split Testimonial Card */}
-        <div className="mx-auto max-w-4xl border border-border bg-card p-6 sm:p-10 rounded-none shadow-2xs">
-          <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-12 md:gap-10">
-            {/* Left: Square Customer Photo */}
-            <div className="relative aspect-square w-full max-w-[280px] mx-auto md:col-span-5 overflow-hidden border border-border bg-muted">
-              <Image
-                src="/images/corridor-ink/testimonial-director.png"
-                alt="Rajesh K., Operations Director with manifest headset and scanner"
-                fill
-                sizes="(max-width: 768px) 100vw, 300px"
-                className="object-cover rounded-none"
-              />
-            </div>
-
-            {/* Right: Quote Content */}
-            <div className="md:col-span-7 flex flex-col justify-between">
-              <div>
-                <p className="text-lg sm:text-xl font-medium text-foreground leading-relaxed">
-                  &ldquo;Under 24 hours from Delhi to Imphal. Reliable gate milestone tracking,
-                  consistent belly-hold capacity, and complete barcode reconciliation for our medical consignments.&rdquo;
-                </p>
-              </div>
-
-              <div className="mt-8 border-t border-border pt-4 flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-semibold text-foreground">Rajesh K.</div>
-                  <div className="text-xs text-muted-foreground font-sans">
-                    Logistics Director, LogiPrime Express
-                  </div>
-                </div>
-                <div className="border border-border bg-muted/40 px-2.5 py-1 text-xs font-sans font-medium text-foreground">
-                  DEL ⇄ IMF Route
-                </div>
-              </div>
-            </div>
+        <motion.div
+          whileHover={shouldReduceMotion ? undefined : { y: -2 }}
+          transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className="group mx-auto grid max-w-4xl items-center gap-8 border bg-card p-6 sm:p-10 md:grid-cols-2 shadow-xs transition-colors hover:border-foreground/40"
+        >
+          <div className="relative aspect-square overflow-hidden border bg-muted">
+            <Image
+              src="/images/new-assets/testimonial-director.png"
+              alt="Illustration of corridor logistics operations and director oversight"
+              fill
+              sizes="(max-width: 768px) 100vw, 400px"
+              className={cn(
+                "object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                !shouldReduceMotion && "group-hover:scale-[1.03]"
+              )}
+            />
           </div>
-        </div>
+          <div className="flex flex-col gap-4 text-sm">
+            <h3 className="text-lg font-medium">Details for your quote</h3>
+            <p className="text-muted-foreground">
+              Tell our team what you plan to send between New Delhi and Imphal.
+            </p>
+            <ul className="flex list-disc flex-col gap-2 pl-5">
+              <li>Contents, piece count, weight, and external dimensions</li>
+              <li>Collection and delivery details in either direction</li>
+              <li>Required delivery window and special handling needs</li>
+            </ul>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

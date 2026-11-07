@@ -19,7 +19,7 @@ export default async function SecuritySettingsPage() {
         description="Protect your staff workspace account with hardware-grade biometrics and one-time passcodes."
       />
 
-      <div className="max-w-3xl">
+      <div className="w-full">
         <Card className="border-border shadow-xs">
           <CardHeader>
             <div className="flex items-center gap-2 text-primary">

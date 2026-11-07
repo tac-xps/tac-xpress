@@ -40,18 +40,15 @@ const DEFAULT_NAV_ITEMS: Record<string, NavItem> = {
   "#company": { name: "Company" },
 };
 
-const ACTIVE_SPRING = {
+const REUI_LAYOUT_SPRING = {
   type: "spring",
-  stiffness: 420,
-  damping: 32,
-  mass: 0.8,
+  visualDuration: 0.22,
+  bounce: 0,
 } as const;
 
-const HOVER_SPRING = {
-  type: "spring",
-  stiffness: 450,
-  damping: 35,
-  mass: 0.7,
+const REUI_HOVER_TRANSITION = {
+  duration: 0.15,
+  ease: [0.22, 1, 0.36, 1],
 } as const;
 
 const matchesPath = (path: string, current: string) =>
@@ -86,7 +83,11 @@ const followHash = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     const targetId = decodeURIComponent(href.replace(/^#/, ""));
     const target = document.getElementById(targetId);
     if (target) {
-      target.scrollIntoView({ behavior: "smooth" });
+      target.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+      });
       if (window.location.hash !== href) {
         window.history.pushState(null, "", href);
       }
@@ -158,7 +159,7 @@ export function MorphicNavbar({
   return (
     <nav
       className={cn(
-        "relative inline-flex items-center gap-1 border border-border/70 bg-muted/60 dark:bg-card/60 p-1 rounded-none shadow-2xs transition-colors duration-200",
+        "relative inline-flex items-center gap-1 border border-border/80 bg-background/80 dark:bg-card/75 backdrop-blur-md p-1 rounded-none shadow-2xs transition-all",
         className
       )}
       role="navigation"
@@ -181,29 +182,29 @@ export function MorphicNavbar({
             {isHovered && !isActive && (
               <motion.div
                 layoutId="hoverNavIndicator"
-                className="absolute inset-0 bg-muted/80 dark:bg-muted/40 rounded-none z-0"
+                className="absolute inset-0 bg-muted/70 dark:bg-muted/40 rounded-none z-0"
                 transition={
                   prefersReduced
                     ? { duration: 0 }
-                    : HOVER_SPRING
+                    : REUI_HOVER_TRANSITION
                 }
                 aria-hidden="true"
               />
             )}
 
-            {/* Active Shared Layout Indicator with Micro-Animation Spring */}
+            {/* Active Shared Layout Indicator with Zero-Bounce Spring */}
             {isActive && (
               <motion.div
                 layoutId="activeNavIndicator"
-                className="absolute inset-0 bg-background dark:bg-card border border-border/80 dark:border-border shadow-xs rounded-none z-10"
+                className="absolute inset-0 bg-background dark:bg-secondary/90 border border-border/90 dark:border-border rounded-none z-10 shadow-xs"
                 transition={
                   prefersReduced
                     ? { duration: 0 }
-                    : ACTIVE_SPRING
+                    : REUI_LAYOUT_SPRING
                 }
                 aria-hidden="true"
               >
-                <span className="absolute bottom-0 inset-x-2.5 h-[2px] bg-primary rounded-none transition-colors duration-200" />
+                <span className="absolute bottom-0 inset-x-2 h-[2px] bg-primary rounded-none transition-colors" />
               </motion.div>
             )}
 
@@ -214,9 +215,9 @@ export function MorphicNavbar({
               }}
               href={href}
               draggable={false}
-              aria-current={isActive ? "page" : undefined}
+              aria-current={isActive ? (isHash ? "location" : "page") : undefined}
               className={cn(
-                "relative z-20 flex h-8 items-center px-3.5 text-xs font-medium tracking-tight rounded-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring select-none",
+                "relative z-20 flex h-8 items-center px-4 text-xs font-medium tracking-tight rounded-none transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring select-none",
                 isActive
                   ? "text-foreground font-semibold"
                   : "text-muted-foreground hover:text-foreground active:scale-[0.98]"

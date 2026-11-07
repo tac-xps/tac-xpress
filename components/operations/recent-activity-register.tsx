@@ -181,13 +181,13 @@ export function RecentActivityRegister({
         <Tabs defaultValue="invoices" className="w-full">
           <div className="border-b border-border px-5 pt-3">
             <TabsList variant="line" className="h-9">
-              <TabsTrigger value="invoices" className="text-xs">
+              <TabsTrigger value="invoices" className="text-xs text-foreground">
                 Invoices ({invoiceRows.length})
               </TabsTrigger>
-              <TabsTrigger value="enquiries" className="text-xs">
+              <TabsTrigger value="enquiries" className="text-xs text-foreground">
                 Enquiries ({contactRows.length})
               </TabsTrigger>
-              <TabsTrigger value="messages" className="text-xs">
+              <TabsTrigger value="messages" className="text-xs text-foreground">
                 WhatsApp ({messageRows.length})
               </TabsTrigger>
             </TabsList>

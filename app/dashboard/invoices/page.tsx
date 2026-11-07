@@ -122,7 +122,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
 
       <section
         aria-label="Financial summary"
-        className="overflow-hidden rounded-none border border-border/80 bg-card shadow-xs transition-shadow duration-200 hover:shadow-sm"
+        className="overflow-hidden rounded-none border border-border/80 bg-card shadow-xs"
       >
         <div className="flex items-center justify-between border-b border-border/80 bg-muted/30 px-5 py-2.5 text-xs text-muted-foreground">
           <span>Financial summary · aggregate invoice balances</span>
@@ -171,7 +171,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
           order={query.order}
           placeholder="Invoice ID, customer or AWB"
         />
-        <InvoiceDataTable canVoid={session.user.role === "admin"} data={data} pageCount={pageCount} />
+        <InvoiceDataTable canVoid={session.user.role === "admin"} data={data} pageCount={pageCount} bordered={false} />
       </section>
     </div>
   )

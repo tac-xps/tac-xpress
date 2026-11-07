@@ -12,92 +12,36 @@ export function FreightConditions({ doc }: FreightConditionsProps) {
   const isAir = serviceMode === "express_air"
 
   return (
-    <section className="invoice-section my-1.5 flex flex-col border-t border-print-border pt-1.5 text-[7.5px] leading-tight text-print-muted">
-      <div className="flex items-center justify-between mb-1">
-        <span className="font-heading text-[8px] font-bold uppercase tracking-wider text-print-ink">
-          CONDITIONS OF CARRIAGE &amp; STATUTORY DECLARATION (AIR &amp; SURFACE)
+    <section className="invoice-section my-1.5 pt-1 text-[7px] leading-tight text-print-muted">
+      <div className="flex items-center justify-between border-b border-print-border pb-0.5 mb-1">
+        <span className="font-heading text-[7.5px] font-bold uppercase tracking-wider text-print-ink">
+          CONDITIONS OF CARRIAGE &amp; STATUTORY DECLARATION ({isAir ? "EXPRESS AIR" : "SURFACE ROAD"})
         </span>
-        <span className="font-mono text-[7px] text-print-muted">
-          Statutory GTA Framework • Updated Oct 2026
+        <span className="font-mono text-[6.5px] text-print-muted">
+          Statutory GTA Framework / SAC 9965 / GST Reverse Charge: No
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5">
-        {/* Left Column: Air Logistics Framework */}
-        <div
-          className={`p-1.5 rounded-none border transition-colors ${
-            isAir
-              ? "border-print-ink bg-print-paper-subtle text-print-ink"
-              : "border-print-border bg-print-paper text-print-muted opacity-80"
-          }`}
-        >
-          <div className="flex items-center justify-between mb-0.5">
-            <span className="font-heading font-bold text-[8px] uppercase tracking-wide text-print-ink">
-              1. EXPRESS AIR CARGO (IATA / CARRIAGE BY AIR ACT)
-            </span>
-            {isAir && (
-              <span className="border border-print-ink bg-print-ink px-1 py-0.2 font-mono text-[6.5px] font-bold uppercase text-print-paper">
-                ACTIVE SERVICE
-              </span>
-            )}
-          </div>
-          <p>
-            Governed by the Carriage by Air Act, 1972 &amp; Montreal Convention. Chargeable weight
-            evaluated on higher of gross weight or volumetric factor (L×W×H cm ÷ 5000). Hazardous,
-            explosive, inflammable, perishable without dry ice, and contraband goods strictly
-            prohibited under DGCA &amp; BCAS civil aviation security regulations. Maximum carrier
-            liability limited to statutory SDR limits unless value declared &amp; transit insurance
-            levied.
-          </p>
+      <div className="flex items-start justify-between gap-4">
+        <p className="flex-1">
+          {isAir
+            ? "Consignment booked under Carriage by Air Act, 1972 & Montreal Convention. Chargeable weight evaluated on higher of gross or volumetric weight (L×W×H cm ÷ 5000). Hazardous/contraband cargo prohibited. Carrier liability restricted to statutory SDR limits unless value declared & insurance levied."
+            : "Consignment booked under Carriage by Road Act, 2007. Chargeable weight evaluated on higher of gross or volumetric weight (L×W×H cm ÷ 4500). Consignor certifies packaging sufficiency for mountain transit. Damage endorsement required within 24 hours of delivery."}
+        </p>
+        <div className="shrink-0 flex flex-col items-end text-right font-mono text-[6.5px] text-print-muted">
+          <span>Jurisdiction: Delhi / Imphal Courts</span>
+          <span>
+            Full Terms:{" "}
+            <a
+              href="https://tacservice.in/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-print-ink font-bold"
+            >
+              tacservice.in/terms
+            </a>
+          </span>
         </div>
-
-        {/* Right Column: Surface Logistics Framework */}
-        <div
-          className={`p-1.5 rounded-none border transition-colors ${
-            !isAir
-              ? "border-print-ink bg-print-paper-subtle text-print-ink"
-              : "border-print-border bg-print-paper text-print-muted opacity-80"
-          }`}
-        >
-          <div className="flex items-center justify-between mb-0.5">
-            <span className="font-heading font-bold text-[8px] uppercase tracking-wide text-print-ink">
-              2. SURFACE LINEHAUL FREIGHT (CARRIAGE BY ROAD ACT, 2007)
-            </span>
-            {!isAir && (
-              <span className="border border-print-ink bg-print-ink px-1 py-0.2 font-mono text-[6.5px] font-bold uppercase text-print-paper">
-                ACTIVE SERVICE
-              </span>
-            )}
-          </div>
-          <p>
-            Subject to the Carriage by Road Act, 2007. Volumetric density calculated at L×W×H cm ÷
-            4500. Consignor guarantees packaging sufficiency for overland mountain terrain transit.
-            Consignee must inspect parcel seals at destination prior to acknowledgment; damage or
-            pilferage must be endorsed on delivery challan within 24 hours of delivery.
-          </p>
-        </div>
-      </div>
-
-      {/* General Terms Footer */}
-      <div className="mt-1 flex flex-wrap items-center justify-between gap-1 border-t border-print-border pt-1 text-[7px] text-print-muted">
-        <span>
-          <strong>General:</strong> GTA service under SAC 9965. GST reverse charge:{" "}
-          <strong className="text-print-ink">No</strong>. E-way bill compliance verified.
-        </span>
-        <span>
-          <strong>Jurisdiction:</strong> Disputes subject exclusively to competent courts in Delhi / Imphal.
-        </span>
-        <span>
-          Full Terms:{" "}
-          <a
-            href="https://tacservice.in/terms"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline font-mono text-print-muted"
-          >
-            tacservice.in/terms
-          </a>
-        </span>
       </div>
     </section>
   )
