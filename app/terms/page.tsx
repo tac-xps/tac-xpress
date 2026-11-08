@@ -1,5 +1,4 @@
 import { PublicPage } from "@/components/public/public-page"
-import { PageIntro } from "@/components/public/page-intro"
 import {
   ShieldCheck,
   Scale,
@@ -21,11 +20,17 @@ export const metadata = {
 export default function TermsAndConditionsPage() {
   return (
     <PublicPage>
-      <PageIntro
-        eyebrow="Legal"
-        title="Terms & Conditions"
-        description="Please read these terms carefully before booking your shipment. By using TAC-XPRESS services, you agree to the following policies."
-      />
+      <section className="container mx-auto max-w-5xl px-4 pt-12 pb-6 md:px-8 lg:pt-16">
+        <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-wider text-primary mb-2">
+          <span>TAC-XPRESS • STATUTORY COMPLIANCE</span>
+        </div>
+        <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+          Terms & Conditions
+        </h1>
+        <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
+          Operational conditions of carriage, bilateral liability limits, and consignment declaration standards for the New Delhi ⇄ Imphal corridor.
+        </p>
+      </section>
 
       <section className="container mx-auto max-w-5xl px-4 pb-16 md:px-8 lg:pb-24">
         <div className="border border-border/80 bg-card divide-y divide-border/70 shadow-xs">

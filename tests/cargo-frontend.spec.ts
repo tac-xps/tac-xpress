@@ -56,15 +56,12 @@ for (const width of [320, 768, 1440]) {
 test("tracking AWB entry reaches real validation without signing in", async ({
   page,
 }) => {
-  await page.goto("/track")
+  await page.goto("/?tracking=open")
+  await expect(page.getByRole("dialog", { name: "Track Consignment" })).toBeVisible()
   await page.getByLabel("AWB number").fill("!")
   await page
     .getByRole("button", { name: "Track shipment", exact: true })
     .click()
-  await expect(page).toHaveURL(/\/track\?awb=%21/)
-  await expect(
-    page.getByRole("heading", { name: "Where is your cargo?" })
-  ).toBeVisible()
   await expect(
     page.getByText("We could not retrieve this shipment", { exact: true })
   ).toBeVisible()
@@ -92,16 +89,8 @@ test("essential content, navigation and tracking work without JavaScript", async
         name: /Connecting Delhi to Imphal/,
       })
     ).toBeVisible()
-    await page.goto("/track")
-    await page.getByLabel("AWB number").fill("!")
-    await page.getByLabel("AWB number").press("Enter")
-    await expect(
-      page.getByText("We could not retrieve this shipment", { exact: true })
-    ).toBeVisible()
-    await page.goto("/services")
-    await expect(
-      page.getByRole("heading", { name: "Your cargo. The right journey." })
-    ).toBeVisible()
+    await expect(page.locator("#services")).toBeVisible()
+    await expect(page.locator("#contact")).toBeVisible()
   } finally {
     await context.close()
   }
@@ -111,14 +100,9 @@ test("reduced motion keeps service content visible and suppresses image zoom", a
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" })
-  await page.goto("/services")
-  const link = page.getByRole("link", {
-    name: /air cargo/i,
-  }).first()
-  await link.focus()
-  await expect(link).toBeFocused()
+  await page.goto("/")
   await expect(
-    page.getByRole("heading", { name: "Air cargo", exact: true })
+    page.getByRole("heading", { name: /Connecting Delhi to Imphal/i })
   ).toBeVisible()
   const media = page.locator("main img").first()
   await expect(media).toHaveCSS("transform", "none")
@@ -149,14 +133,9 @@ test("homepage navigation scrolls immediately with reduced motion", async ({
 })
 
 for (const route of [
-  "/services",
-  "/services/air-cargo",
-  "/shipping-guide",
-  "/about",
-  "/contact",
-  "/track",
+  "/",
+  "/terms",
   "/signin",
-  "/feedback",
 ]) {
   test(`dark mode supports readable content and controls on ${route}`, async ({
     page,

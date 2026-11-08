@@ -89,9 +89,11 @@ export function TrackShipmentModal({
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" aria-hidden="true" />
               <Input
+                id="awb-modal"
+                aria-label="AWB number"
                 value={awb}
                 onChange={(e) => setAwb(e.target.value.toUpperCase())}
-                placeholder="Enter AWB number (e.g. TAC-948210)..."
+                placeholder="Enter AWB number (e.g. TAC-DEL-948210)..."
                 className="pl-9 font-mono text-xs uppercase rounded-none h-10 border-border"
                 maxLength={40}
                 required
@@ -100,23 +102,43 @@ export function TrackShipmentModal({
             <Button
               type="submit"
               disabled={isPending}
-              className="h-10 px-4 rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary-hover transition-colors"
+              className="h-10 px-4 rounded-none font-medium text-xs bg-primary text-primary-foreground hover:bg-primary-hover transition-colors cursor-pointer"
             >
               {isPending ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
                 <>
-                  Track <ArrowUpRight className="ml-1 size-3.5" />
+                  Track shipment <ArrowUpRight className="ml-1 size-3.5" />
                 </>
               )}
             </Button>
           </form>
+
+          {/* Quick Sample AWBs */}
+          <div className="mt-3 flex flex-wrap items-center gap-1.5 pt-1">
+            <span className="font-mono text-[10px] text-muted-foreground uppercase">Sample AWBs:</span>
+            {["TAC-DEL-948210", "TAC-IMF-102948", "TAC-DEL-839201"].map((sample) => (
+              <button
+                key={sample}
+                type="button"
+                onClick={() => {
+                  setAwb(sample)
+                  performSearch(sample)
+                }}
+                className="border border-border/80 bg-muted/40 hover:bg-muted px-2 py-0.5 font-mono text-[10px] text-foreground transition-colors rounded-none cursor-pointer"
+              >
+                {sample}
+              </button>
+            ))}
+          </div>
         </DialogHeader>
 
         {error && (
-          <div className="p-6 text-sm">
-            <p className="font-semibold text-destructive">Consignment not found</p>
-            <p className="text-muted-foreground mt-1 text-xs">{error}</p>
+          <div role="alert" className="p-6 border-b border-border/80 bg-destructive/5 text-sm">
+            <p className="font-semibold text-destructive">We could not retrieve this shipment</p>
+            <p className="text-muted-foreground mt-1 text-xs">
+              Check the number on your receipt or contact our operations team for active consignments.
+            </p>
           </div>
         )}
 
