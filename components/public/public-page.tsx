@@ -1,6 +1,8 @@
 import type { ReactNode } from "react"
 import { SiteNavigation } from "./site-navigation"
 import { SiteFooter } from "./site-footer"
+import { SupportChat } from "./support-chat"
+import { BackToTop } from "./landing/back-to-top"
 
 export function PublicPage({ children }: { children: ReactNode }) {
   return (
@@ -14,6 +16,8 @@ export function PublicPage({ children }: { children: ReactNode }) {
       <SiteNavigation />
       <main id="main-content" className="flex-1 flex flex-col">{children}</main>
       <SiteFooter />
+      <SupportChat />
+      <BackToTop />
     </div>
   )
 }
