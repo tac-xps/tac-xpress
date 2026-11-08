@@ -42,9 +42,12 @@ function SquareChatIcon({ className }: { className?: string }) {
 const Conversation = dynamic(() => import("./support-conversation"), {
   ssr: false,
   loading: () => (
-    <p className="p-6 font-mono text-xs text-muted-foreground" role="status">
-      Opening assistant…
-    </p>
+    <div className="flex flex-1 flex-col items-center justify-center p-8 gap-3">
+      <div className="size-4 rounded-none border-2 border-primary border-t-transparent animate-spin" />
+      <p className="font-mono text-xs text-muted-foreground" role="status">
+        Connecting to corridor assistant…
+      </p>
+    </div>
   ),
 })
 
@@ -83,23 +86,33 @@ export function SupportChat() {
             <TooltipContent
               side="left"
               sideOffset={12}
-              className="rounded-none bg-popover text-popover-foreground border px-3 py-1.5 font-sans text-xs font-medium shadow-md"
+              className="rounded-none bg-popover text-popover-foreground border border-border/80 px-3 py-1.5 font-sans text-xs font-medium shadow-md"
             >
-              Ask a question
+              <div className="flex flex-col gap-0.5">
+                <span className="font-semibold text-foreground">Operations Assistant</span>
+                <span className="font-mono text-[10px] text-muted-foreground">DEL ⇄ IMF Corridor AI</span>
+              </div>
             </TooltipContent>
           </MagneticButton>
         </Tooltip>
       </TooltipProvider>
 
-      <SheetContent className="cargo-public gap-0 bg-card data-[side=right]:w-full sm:max-w-md">
-        <SheetHeader className="border-b p-6 pr-14">
-          <SheetTitle className="font-sans text-lg font-semibold tracking-tight">How can we help?</SheetTitle>
-          <SheetDescription className="text-xs text-muted-foreground">
-            AI answers about our services. Use shipment tracking for recorded
-            delivery updates.
+      <SheetContent className="cargo-public flex flex-col gap-0 bg-card data-[side=right]:w-full sm:max-w-md p-0 rounded-none border-l border-border">
+        <SheetHeader className="border-b border-border/80 bg-muted/20 px-6 py-4 pr-14 text-left">
+          <div className="flex items-center gap-2">
+            <span className="size-2 rounded-none bg-success animate-pulse" aria-hidden="true" />
+            <SheetTitle className="font-sans text-base font-bold tracking-tight text-foreground">
+              Operations Assistant
+            </SheetTitle>
+            <span className="border border-border/80 bg-background px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-muted-foreground rounded-none">
+              DEL ⇄ IMF
+            </span>
+          </div>
+          <SheetDescription className="text-xs text-muted-foreground mt-1">
+            Real-time guidance on corridor tariffs, transit SLA windows, and packaging protocols.
           </SheetDescription>
         </SheetHeader>
-        {open && <Conversation />}
+        {open && <Conversation onDismiss={() => setOpen(false)} />}
       </SheetContent>
     </Sheet>
   )
