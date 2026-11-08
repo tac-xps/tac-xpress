@@ -127,6 +127,9 @@ export function LandingNav() {
       if (window.location.hash !== href) {
         window.history.pushState(null, "", href)
       }
+    } else if (typeof window !== "undefined") {
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.href = `/${href}`
     }
   }
 

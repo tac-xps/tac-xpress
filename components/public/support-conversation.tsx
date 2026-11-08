@@ -219,7 +219,7 @@ function MessageCopyButton({ content }: { content: string }) {
 }
 
 export default function SupportConversation({
-  onDismiss: _onDismiss,
+  onDismiss,
 }: {
   onDismiss?: () => void
 } = {}) {
@@ -229,6 +229,27 @@ export default function SupportConversation({
   const containerRef = useRef<HTMLDivElement>(null)
   const [showScrollBottom, setShowScrollBottom] = useState(false)
   const busy = status === "submitted" || status === "streaming"
+
+  const handleOpenTracking = () => {
+    onDismiss?.()
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("tac-track-open"))
+    }
+  }
+
+  const handleOpenContact = (e: React.MouseEvent) => {
+    const contactSection = document.getElementById("contact")
+    if (contactSection) {
+      e.preventDefault()
+      onDismiss?.()
+      contactSection.scrollIntoView({
+        behavior: shouldReduceMotion ? "instant" : "smooth",
+      })
+      if (window.location.hash !== "#contact") {
+        window.history.pushState(null, "", "#contact")
+      }
+    }
+  }
 
   const scrollToBottom = useCallback((smooth = true) => {
     bottomRef.current?.scrollIntoView({
@@ -286,16 +307,18 @@ export default function SupportConversation({
                 Direct answers for bilateral freight rates, departure schedules, packaging protocols, and gate custody milestones.
               </p>
               <div className="mt-3 flex items-center gap-2">
-                <Link
-                  href="/track"
-                  className="inline-flex items-center gap-1.5 border border-border/80 bg-background hover:bg-muted px-2.5 py-1 font-mono text-[11px] font-medium text-foreground transition-colors rounded-none"
+                <button
+                  type="button"
+                  onClick={handleOpenTracking}
+                  className="inline-flex items-center gap-1.5 border border-border/80 bg-background hover:bg-muted px-2.5 py-1 font-mono text-[11px] font-medium text-foreground transition-colors rounded-none cursor-pointer"
                 >
                   <Package className="size-3 text-primary" />
                   Track Live Shipment
-                </Link>
+                </button>
                 <Link
-                  href="/contact"
-                  className="inline-flex items-center gap-1.5 border border-border/80 bg-background hover:bg-muted px-2.5 py-1 font-mono text-[11px] font-medium text-foreground transition-colors rounded-none"
+                  href="/#contact"
+                  onClick={handleOpenContact}
+                  className="inline-flex items-center gap-1.5 border border-border/80 bg-background hover:bg-muted px-2.5 py-1 font-mono text-[11px] font-medium text-foreground transition-colors rounded-none cursor-pointer"
                 >
                   <Phone className="size-3 text-muted-foreground" />
                   Hub Contact
@@ -404,7 +427,7 @@ export default function SupportConversation({
           <div role="alert" className="flex flex-col gap-3 border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive rounded-none">
             <p>
               The assistant couldn&rsquo;t reply. Try again shortly or{" "}
-              <Link href="/contact" className="underline font-medium">
+              <Link href="/#contact" onClick={handleOpenContact} className="underline font-medium cursor-pointer">
                 contact our team
               </Link>
               .
