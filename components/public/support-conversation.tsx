@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import {
@@ -107,7 +108,20 @@ function CodeSnippet({
   )
 }
 
-function renderInlineText(text: string, onAction?: () => void) {
+/**
+ * Parses markdown links from raw assistant text into secure in-app controls.
+ * Rejects external, empty, or malicious schemes and supports in-place actions.
+ *
+ * @param text - Raw message string from the assistant.
+ * @param onAction - Optional callback fired when an in-place modal or scroll action is triggered.
+ * @param router - Optional router instance for client navigation fallbacks.
+ * @returns Array of rendered React nodes or raw string.
+ */
+function renderInlineText(
+  text: string,
+  onAction?: () => void,
+  router?: { push: (url: string) => void }
+) {
   const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
   const elements: React.ReactNode[] = []
   let lastIndex = 0
@@ -118,31 +132,44 @@ function renderInlineText(text: string, onAction?: () => void) {
       elements.push(text.slice(lastIndex, match.index))
     }
     const label = match[1]
-    const href = match[2]
+    const href = match[2]?.trim() || ""
 
-    if (href.startsWith("#") || href.startsWith("/#")) {
+    if (href === "#" || href === "/#" || href === "") {
+      elements.push(label)
+    } else if (href.startsWith("#") || href.startsWith("/#")) {
       const anchor = href.replace(/^\/?#/, "")
-      elements.push(
-        <a
-          key={match.index}
-          href={`/#${anchor}`}
-          onClick={(e) => {
-            e.preventDefault()
-            onAction?.()
-            const el = document.getElementById(anchor)
-            if (el) {
-              el.scrollIntoView({ behavior: "smooth" })
-              if (window.location.hash !== `#${anchor}`) {
-                window.history.pushState(null, "", `#${anchor}`)
+      if (!anchor) {
+        elements.push(label)
+      } else {
+        elements.push(
+          <a
+            key={match.index}
+            href={`/#${anchor}`}
+            onClick={(e) => {
+              e.preventDefault()
+              onAction?.()
+              const el = document.getElementById(anchor)
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth" })
+                if (window.location.hash !== `#${anchor}`) {
+                  window.history.pushState(null, "", `#${anchor}`)
+                }
+              } else if (router) {
+                router.push(`/#${anchor}`)
               }
-            }
-          }}
-          className="font-medium text-primary underline underline-offset-2 hover:text-primary/80 transition-colors cursor-pointer"
-        >
-          {label}
-        </a>
-      )
-    } else if (href.includes("track")) {
+            }}
+            className="font-medium text-primary underline underline-offset-2 hover:text-primary/80 transition-colors cursor-pointer"
+          >
+            {label}
+          </a>
+        )
+      }
+    } else if (
+      href === "/track" ||
+      href === "#track" ||
+      href === "/?tracking=open" ||
+      href === "?tracking=open"
+    ) {
       elements.push(
         <button
           key={match.index}
@@ -156,16 +183,19 @@ function renderInlineText(text: string, onAction?: () => void) {
           {label}
         </button>
       )
-    } else {
+    } else if (href.startsWith("/") && !href.startsWith("//")) {
       elements.push(
         <Link
           key={match.index}
           href={href}
+          onClick={() => onAction?.()}
           className="font-medium text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
         >
           {label}
         </Link>
       )
+    } else {
+      elements.push(label)
     }
     lastIndex = linkRegex.lastIndex
   }
@@ -178,10 +208,12 @@ function renderInlineText(text: string, onAction?: () => void) {
 }
 
 function FormattedMessage({ text, onAction }: { text: string; onAction?: () => void }) {
+  const router = useRouter()
+
   if (!text.includes("```")) {
     return (
       <p className="text-sm leading-relaxed break-words whitespace-pre-wrap font-sans">
-        {renderInlineText(text, onAction)}
+        {renderInlineText(text, onAction, router)}
       </p>
     )
   }
@@ -218,7 +250,7 @@ function FormattedMessage({ text, onAction }: { text: string; onAction?: () => v
 
         return (
           <p key={index} className="whitespace-pre-wrap">
-            {renderInlineText(part, onAction)}
+            {renderInlineText(part, onAction, router)}
           </p>
         )
       })}
@@ -330,8 +362,18 @@ export default function SupportConversation({
     await sendMessage({ text: trimmed })
   }
 
+  /**
+   * Submits prompt on Enter keydown while ignoring IME composition confirmation.
+   *
+   * @param e - Keyboard event from the chat textarea.
+   */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (
+      e.key === "Enter" &&
+      !e.shiftKey &&
+      !e.nativeEvent.isComposing &&
+      e.keyCode !== 229
+    ) {
       e.preventDefault()
       void handleInputSubmit()
     }
@@ -570,7 +612,7 @@ export default function SupportConversation({
                 onKeyDown={handleKeyDown}
                 placeholder="Ask about corridor rates, transit SLA, or packaging…"
                 rows={2}
-                maxLength={1000}
+                maxLength={4000}
                 className="w-full resize-none bg-transparent p-3 text-xs leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-hidden"
                 aria-label="Your question"
               />

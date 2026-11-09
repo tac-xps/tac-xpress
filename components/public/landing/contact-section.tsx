@@ -38,6 +38,30 @@ export function ContactSection() {
     website: "", // Honeypot field
   })
 
+  React.useEffect(() => {
+    if (typeof window === "undefined") return
+    const params = new URLSearchParams(window.location.search)
+    const qMode = params.get("mode")?.toUpperCase()
+    const qOrigin = params.get("origin")?.toUpperCase()
+    const qAwb = params.get("awb")
+    const qSubject = params.get("subject")
+
+    if (qMode || qOrigin || qAwb || qSubject) {
+      queueMicrotask(() => {
+        setFormData((prev) => ({
+          ...prev,
+          mode: qMode === "SURFACE" || qMode === "AIR" ? qMode : prev.mode,
+          origin: qOrigin === "IMF" || qOrigin === "DEL" ? qOrigin : prev.origin,
+          message: qAwb
+            ? `Inquiry regarding AWB ${qAwb}: ${prev.message || ""}`.trim()
+            : qSubject
+            ? `${qSubject}: ${prev.message || ""}`.trim()
+            : prev.message,
+        }))
+      })
+    }
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)

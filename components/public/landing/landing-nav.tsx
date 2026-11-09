@@ -110,6 +110,12 @@ export function LandingNav() {
     return () => observer.disconnect()
   }, [])
 
+  /**
+   * Scrolls to the target in-page section or navigates to the landing page destination.
+   *
+   * @param event - Mouse click event on the section link.
+   * @param href - Section hash or destination URL.
+   */
   const scrollToSection = (
     event: MouseEvent<HTMLAnchorElement>,
     href: string

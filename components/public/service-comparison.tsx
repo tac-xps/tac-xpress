@@ -42,7 +42,6 @@ export function ServiceComparison() {
   return (
     <section
       id="comparison"
-      suppressHydrationWarning
       className="w-full border-b border-border bg-background py-16 lg:py-24"
       aria-labelledby="comparison-title"
     >

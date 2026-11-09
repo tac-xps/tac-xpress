@@ -46,6 +46,12 @@ const faqItems = [
     answer:
       "Ask our team which invoice, identification, and transport documents your consignment needs before handover.",
   },
+  {
+    id: "item-7",
+    question: "How do I report damage or file a consignment claim?",
+    answer:
+      "Report damage immediately with your AWB reference. Retain all original packaging materials, box seals, and photographs of the cargo condition before intake or handover. Contact our operations desk directly to initiate claim review.",
+  },
 ]
 
 export function FaqSection() {

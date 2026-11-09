@@ -32,6 +32,11 @@ export function TrackShipmentModal({
   const [result, setResult] = useState<TrackingResult | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  /**
+   * Executes public shipment lookup for the given AWB identifier.
+   *
+   * @param awbToSearch - Normalized AWB string to query against the telemetry ledger.
+   */
   const performSearch = (awbToSearch: string) => {
     const clean = awbToSearch.trim().toUpperCase()
     if (!clean) return
@@ -117,7 +122,7 @@ export function TrackShipmentModal({
           {/* Quick Sample AWBs */}
           <div className="mt-3 flex flex-wrap items-center gap-1.5 pt-1">
             <span className="font-mono text-[10px] text-muted-foreground uppercase">Sample AWBs:</span>
-            {["TAC-DEL-948210", "TAC-IMF-102948", "TAC-DEL-839201"].map((sample) => (
+            {["AWB-100200300", "AWB-500600700", "AWB-12345"].map((sample) => (
               <button
                 key={sample}
                 type="button"
@@ -137,7 +142,7 @@ export function TrackShipmentModal({
           <div role="alert" className="p-6 border-b border-border/80 bg-destructive/5 text-sm">
             <p className="font-semibold text-destructive">We could not retrieve this shipment</p>
             <p className="text-muted-foreground mt-1 text-xs">
-              Check the number on your receipt or contact our operations team for active consignments.
+              {error}. Check the number on your receipt or contact our operations team for active consignments.
             </p>
           </div>
         )}

@@ -47,12 +47,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/feedback",
-        destination: "/#contact",
-        permanent: true,
-      },
-      {
-        source: "/track",
-        destination: "/?tracking=open",
+        destination: "/#feedback",
         permanent: true,
       },
       {

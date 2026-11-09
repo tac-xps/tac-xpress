@@ -6,6 +6,7 @@ const evidenceDir =
 for (const width of [320, 768, 1440]) {
   for (const route of [
     "/",
+    "/track",
     "/signin",
     "/terms",
   ]) {

@@ -56,6 +56,27 @@ for (const width of [320, 768, 1440]) {
 test("tracking AWB entry reaches real validation without signing in", async ({
   page,
 }) => {
+  await page.goto("/track")
+  await page.getByLabel("AWB number").fill("!")
+  await page
+    .getByRole("button", { name: "Track shipment", exact: true })
+    .click()
+  await expect(page).toHaveURL(/\/track\?awb=%21/)
+  await expect(
+    page.getByRole("heading", { name: "Where is your cargo?" })
+  ).toBeVisible()
+  await expect(
+    page.getByText("We could not retrieve this shipment", { exact: true })
+  ).toBeVisible()
+  await expect(
+    page.getByRole("alert").filter({ hasText: "Check the number" })
+  ).toBeVisible()
+  await expect(page.getByLabel("AWB number", { exact: true })).toHaveValue("!")
+})
+
+test("homepage tracking modal validates AWB entry", async ({
+  page,
+}) => {
   await page.goto("/?tracking=open")
   await expect(page.getByRole("dialog", { name: "Track Consignment" })).toBeVisible()
   await page.getByLabel("AWB number").fill("!")
@@ -91,6 +112,13 @@ test("essential content, navigation and tracking work without JavaScript", async
     ).toBeVisible()
     await expect(page.locator("#services")).toBeVisible()
     await expect(page.locator("#contact")).toBeVisible()
+
+    await page.goto("/track")
+    await page.getByLabel("AWB number").fill("!")
+    await page.getByLabel("AWB number").press("Enter")
+    await expect(
+      page.getByText("We could not retrieve this shipment", { exact: true })
+    ).toBeVisible()
   } finally {
     await context.close()
   }
@@ -134,6 +162,7 @@ test("homepage navigation scrolls immediately with reduced motion", async ({
 
 for (const route of [
   "/",
+  "/track",
   "/terms",
   "/signin",
 ]) {
