@@ -110,6 +110,12 @@ export function LandingNav() {
     return () => observer.disconnect()
   }, [])
 
+  /**
+   * Scrolls to the target in-page section or navigates to the landing page destination.
+   *
+   * @param event - Mouse click event on the section link.
+   * @param href - Section hash or destination URL.
+   */
   const scrollToSection = (
     event: MouseEvent<HTMLAnchorElement>,
     href: string
@@ -127,6 +133,9 @@ export function LandingNav() {
       if (window.location.hash !== href) {
         window.history.pushState(null, "", href)
       }
+    } else if (typeof window !== "undefined") {
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.href = `/${href}`
     }
   }
 

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,13 +26,13 @@ import {
 } from "@/components/ui/code-block"
 import { useHighlightedCode } from "@/hooks/use-highlighted-code"
 import { bubblePopVariant } from "@/lib/animations"
-import AIInputSearch, { type SearchTool } from "@/components/kokonutui/ai-input-search"
 import {
   Package,
-  MapPin,
   Phone,
   RotateCcw,
   ArrowDown,
+  ArrowRight,
+  CornerDownLeft,
   Copy,
   Check,
   ShieldAlert,
@@ -47,59 +48,29 @@ const transport = new DefaultChatTransport({
   }),
 })
 
-const CARGO_TOOLS: SearchTool[] = [
-  {
-    id: "tracking",
-    label: "Track shipment",
-    icon: Package,
-    activity: "Querying custody ledger",
-    placeholder: "Enter AWB number or consignment ID",
-    hint: "Real-time gate audit trail",
-    color: "var(--color-primary)",
-  },
-  {
-    id: "routes",
-    label: "Route inquiry",
-    icon: MapPin,
-    activity: "Fetching corridor data",
-    placeholder: "Ask about corridors, hubs, or transit times",
-    hint: "New Delhi to Imphal, and Imphal to New Delhi",
-    color: "var(--color-info)",
-  },
-  {
-    id: "support",
-    label: "Operations desk",
-    icon: Phone,
-    activity: "Routing to operations",
-    placeholder: "Ask anything about cargo, packaging, or billing",
-    hint: "Mon-Sat 08:00-20:00 IST",
-    color: "var(--color-status-delivered)",
-  },
-]
-
 const QUICK_PROMPTS = [
   {
     icon: Clock,
     title: "Transit SLA Windows",
-    desc: "DEL ⇄ IMF Air (24-48h) vs Road (4-7d)",
+    desc: "DEL ⇄ IMF Air (24-48h) vs Highway Express (4-7d) transit benchmarks",
     prompt: "What are the departure schedules and transit SLA windows between New Delhi and Imphal?",
   },
   {
     icon: Calculator,
     title: "Freight Rate Formula",
-    desc: "Dimensional weight & statutory 18% GST",
+    desc: "Dimensional chargeable weight calculation and statutory 18% GST breakdown",
     prompt: "How are dimensional freight rates and statutory GST calculated for cargo?",
   },
   {
     icon: ShieldAlert,
-    title: "Packaging Protocol",
-    desc: "Guidelines for fragile cargo and electronics",
+    title: "Packaging Protocols",
+    desc: "Standards for fragile freight, tamper-evident seals, and moisture barriers",
     prompt: "How should I pack fragile cargo and electronics for air transit?",
   },
   {
     icon: Compass,
     title: "Consignment Telemetry",
-    desc: "Verifying live gate custody and AWB status",
+    desc: "Optical gate scan audit trail and real-time custody verification",
     prompt: "How do I track a consignment by AWB number and verify custody handovers?",
   },
 ]
@@ -137,11 +108,112 @@ function CodeSnippet({
   )
 }
 
-function FormattedMessage({ text }: { text: string }) {
+/**
+ * Parses markdown links from raw assistant text into secure in-app controls.
+ * Rejects external, empty, or malicious schemes and supports in-place actions.
+ *
+ * @param text - Raw message string from the assistant.
+ * @param onAction - Optional callback fired when an in-place modal or scroll action is triggered.
+ * @param router - Optional router instance for client navigation fallbacks.
+ * @returns Array of rendered React nodes or raw string.
+ */
+function renderInlineText(
+  text: string,
+  onAction?: () => void,
+  router?: { push: (url: string) => void }
+) {
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
+  const elements: React.ReactNode[] = []
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+
+  while ((match = linkRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      elements.push(text.slice(lastIndex, match.index))
+    }
+    const label = match[1]
+    const href = match[2]?.trim() || ""
+
+    if (href === "#" || href === "/#" || href === "") {
+      elements.push(label)
+    } else if (href.startsWith("#") || href.startsWith("/#")) {
+      const anchor = href.replace(/^\/?#/, "")
+      if (!anchor) {
+        elements.push(label)
+      } else {
+        elements.push(
+          <a
+            key={match.index}
+            href={`/#${anchor}`}
+            onClick={(e) => {
+              e.preventDefault()
+              onAction?.()
+              const el = document.getElementById(anchor)
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth" })
+                if (window.location.hash !== `#${anchor}`) {
+                  window.history.pushState(null, "", `#${anchor}`)
+                }
+              } else if (router) {
+                router.push(`/#${anchor}`)
+              }
+            }}
+            className="font-medium text-primary underline underline-offset-2 hover:text-primary/80 transition-colors cursor-pointer"
+          >
+            {label}
+          </a>
+        )
+      }
+    } else if (
+      href === "/track" ||
+      href === "#track" ||
+      href === "/?tracking=open" ||
+      href === "?tracking=open"
+    ) {
+      elements.push(
+        <button
+          key={match.index}
+          type="button"
+          onClick={() => {
+            onAction?.()
+            window.dispatchEvent(new CustomEvent("tac-track-open"))
+          }}
+          className="font-medium text-primary underline underline-offset-2 hover:text-primary/80 transition-colors cursor-pointer"
+        >
+          {label}
+        </button>
+      )
+    } else if (href.startsWith("/") && !href.startsWith("//")) {
+      elements.push(
+        <Link
+          key={match.index}
+          href={href}
+          onClick={() => onAction?.()}
+          className="font-medium text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+        >
+          {label}
+        </Link>
+      )
+    } else {
+      elements.push(label)
+    }
+    lastIndex = linkRegex.lastIndex
+  }
+
+  if (lastIndex < text.length) {
+    elements.push(text.slice(lastIndex))
+  }
+
+  return elements.length > 0 ? elements : text
+}
+
+function FormattedMessage({ text, onAction }: { text: string; onAction?: () => void }) {
+  const router = useRouter()
+
   if (!text.includes("```")) {
     return (
       <p className="text-sm leading-relaxed break-words whitespace-pre-wrap font-sans">
-        {text}
+        {renderInlineText(text, onAction, router)}
       </p>
     )
   }
@@ -178,7 +250,7 @@ function FormattedMessage({ text }: { text: string }) {
 
         return (
           <p key={index} className="whitespace-pre-wrap">
-            {part}
+            {renderInlineText(part, onAction, router)}
           </p>
         )
       })}
@@ -219,7 +291,7 @@ function MessageCopyButton({ content }: { content: string }) {
 }
 
 export default function SupportConversation({
-  onDismiss: _onDismiss,
+  onDismiss,
 }: {
   onDismiss?: () => void
 } = {}) {
@@ -227,8 +299,31 @@ export default function SupportConversation({
   const { messages, sendMessage, status, error, stop, regenerate, setMessages } = useChat({ transport })
   const bottomRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [inputQuery, setInputQuery] = useState("")
   const [showScrollBottom, setShowScrollBottom] = useState(false)
   const busy = status === "submitted" || status === "streaming"
+
+  const handleOpenTracking = () => {
+    onDismiss?.()
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("tac-track-open"))
+    }
+  }
+
+  const handleOpenContact = (e: React.MouseEvent) => {
+    const contactSection = document.getElementById("contact")
+    if (contactSection) {
+      e.preventDefault()
+      onDismiss?.()
+      contactSection.scrollIntoView({
+        behavior: shouldReduceMotion ? "instant" : "smooth",
+      })
+      if (window.location.hash !== "#contact") {
+        window.history.pushState(null, "", "#contact")
+      }
+    }
+  }
 
   const scrollToBottom = useCallback((smooth = true) => {
     bottomRef.current?.scrollIntoView({
@@ -259,6 +354,31 @@ export default function SupportConversation({
     setMessages([])
   }
 
+  const handleInputSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault()
+    const trimmed = inputQuery.trim()
+    if (!trimmed || busy) return
+    setInputQuery("")
+    await sendMessage({ text: trimmed })
+  }
+
+  /**
+   * Submits prompt on Enter keydown while ignoring IME composition confirmation.
+   *
+   * @param e - Keyboard event from the chat textarea.
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (
+      e.key === "Enter" &&
+      !e.shiftKey &&
+      !e.nativeEvent.isComposing &&
+      e.keyCode !== 229
+    ) {
+      e.preventDefault()
+      void handleInputSubmit()
+    }
+  }
+
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-card">
       {/* Messages Scroll Area */}
@@ -268,11 +388,11 @@ export default function SupportConversation({
         role="log"
         aria-label="Assistant conversation"
         aria-live="polite"
-        className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6"
+        className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-5"
       >
         {/* Zero-Messages Welcome & Quick Prompt Hub */}
         {!messages.length && (
-          <div className="flex flex-col gap-5 py-2">
+          <div className="flex flex-col gap-4 py-1">
             <div className="border border-border/80 bg-muted/20 p-4 rounded-none">
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-primary">
@@ -286,16 +406,18 @@ export default function SupportConversation({
                 Direct answers for bilateral freight rates, departure schedules, packaging protocols, and gate custody milestones.
               </p>
               <div className="mt-3 flex items-center gap-2">
-                <Link
-                  href="/track"
-                  className="inline-flex items-center gap-1.5 border border-border/80 bg-background hover:bg-muted px-2.5 py-1 font-mono text-[11px] font-medium text-foreground transition-colors rounded-none"
+                <button
+                  type="button"
+                  onClick={handleOpenTracking}
+                  className="inline-flex items-center gap-1.5 border border-border/80 bg-background hover:bg-muted px-2.5 py-1 font-mono text-[11px] font-medium text-foreground transition-colors rounded-none cursor-pointer"
                 >
                   <Package className="size-3 text-primary" />
                   Track Live Shipment
-                </Link>
+                </button>
                 <Link
-                  href="/contact"
-                  className="inline-flex items-center gap-1.5 border border-border/80 bg-background hover:bg-muted px-2.5 py-1 font-mono text-[11px] font-medium text-foreground transition-colors rounded-none"
+                  href="/#contact"
+                  onClick={handleOpenContact}
+                  className="inline-flex items-center gap-1.5 border border-border/80 bg-background hover:bg-muted px-2.5 py-1 font-mono text-[11px] font-medium text-foreground transition-colors rounded-none cursor-pointer"
                 >
                   <Phone className="size-3 text-muted-foreground" />
                   Hub Contact
@@ -303,8 +425,11 @@ export default function SupportConversation({
               </div>
             </div>
 
-            {/* Quick Prompt Cards */}
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {/* Quick Prompt Cards - Vertical Stack */}
+            <div className="flex flex-col gap-2">
+              <span className="font-mono text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
+                FREQUENT OPERATIONS INQUIRIES
+              </span>
               {QUICK_PROMPTS.map((item) => {
                 const Icon = item.icon
                 return (
@@ -313,17 +438,22 @@ export default function SupportConversation({
                     type="button"
                     onClick={() => handlePromptSelect(item.prompt)}
                     disabled={busy}
-                    className="group flex flex-col text-left p-3 border border-border/80 bg-background hover:bg-muted/50 hover:border-primary/50 transition-colors rounded-none cursor-pointer disabled:opacity-50"
+                    className="group flex items-start gap-3 p-3 border border-border/80 bg-background hover:bg-muted/40 hover:border-primary/50 text-left transition-colors rounded-none cursor-pointer disabled:opacity-50"
                   >
-                    <div className="flex items-center gap-2 mb-1">
-                      <Icon className="size-3.5 text-primary shrink-0" />
-                      <span className="font-mono text-xs font-semibold text-foreground tracking-tight group-hover:text-primary transition-colors">
-                        {item.title}
-                      </span>
+                    <div className="size-8 shrink-0 flex items-center justify-center border border-border/80 bg-muted/40 text-primary group-hover:border-primary/50 group-hover:bg-primary/10 transition-colors">
+                      <Icon className="size-4 shrink-0" />
                     </div>
-                    <span className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
-                      {item.desc}
-                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-mono text-xs font-semibold text-foreground tracking-tight group-hover:text-primary transition-colors">
+                          {item.title}
+                        </span>
+                        <ArrowRight className="size-3 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-transform shrink-0" />
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
+                        {item.desc}
+                      </p>
+                    </div>
                   </button>
                 )
               })}
@@ -376,7 +506,7 @@ export default function SupportConversation({
                 ))}
 
                 {textParts.map((part, idx) => (
-                  <FormattedMessage key={idx} text={part.text} />
+                  <FormattedMessage key={idx} text={part.text} onAction={onDismiss} />
                 ))}
               </motion.div>
             )
@@ -404,7 +534,7 @@ export default function SupportConversation({
           <div role="alert" className="flex flex-col gap-3 border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive rounded-none">
             <p>
               The assistant couldn&rsquo;t reply. Try again shortly or{" "}
-              <Link href="/contact" className="underline font-medium">
+              <Link href="/#contact" onClick={handleOpenContact} className="underline font-medium cursor-pointer">
                 contact our team
               </Link>
               .
@@ -429,17 +559,17 @@ export default function SupportConversation({
         <button
           type="button"
           onClick={() => scrollToBottom(true)}
-          className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 border border-border/80 bg-background/95 px-3 py-1 font-mono text-[11px] font-semibold text-foreground shadow-md backdrop-blur-xs transition-colors hover:border-primary hover:text-primary rounded-none cursor-pointer"
+          className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 border border-border/80 bg-background/95 px-3 py-1 font-mono text-[11px] font-semibold text-foreground shadow-md backdrop-blur-xs transition-colors hover:border-primary hover:text-primary rounded-none cursor-pointer"
         >
           <ArrowDown className="size-3" />
           <span>Jump to latest</span>
         </button>
       )}
 
-      {/* Input Tray & Toolbar */}
+      {/* Input Tray & Industrial Form */}
       <div className="border-t border-border/80 bg-muted/10 p-3 sm:p-4">
         {busy ? (
-          <div className="flex items-center justify-between px-2 py-3">
+          <div className="flex items-center justify-between px-2 py-2">
             <Trace className="w-auto">
               <TraceLine status="running">
                 <TraceTitle className="font-mono text-xs text-muted-foreground">
@@ -458,9 +588,9 @@ export default function SupportConversation({
             </Button>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
+          <form onSubmit={handleInputSubmit} className="flex flex-col gap-2">
             {messages.length > 0 && (
-              <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1">
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground px-0.5">
                 <span className="font-mono text-[10px]">DEL ⇄ IMF Active Session</span>
                 <button
                   type="button"
@@ -474,22 +604,36 @@ export default function SupportConversation({
               </div>
             )}
 
-            <AIInputSearch
-              placeholder="Ask about cargo, routes, or packaging…"
-              tools={CARGO_TOOLS}
-              defaultTool="support"
-              models={["TAC Express AI"]}
-              defaultModel="TAC Express AI"
-              maxLength={4000}
-              showAttachments={false}
-              showModelSelector={false}
-              onSearch={async (query) => {
-                if (!query.trim()) return
-                await sendMessage({ text: query.trim() })
-              }}
-              className="w-full rounded-none border-0 shadow-none p-0"
-            />
-          </div>
+            <div className="border border-border/80 bg-background focus-within:border-primary transition-colors">
+              <textarea
+                ref={textareaRef}
+                value={inputQuery}
+                onChange={(e) => setInputQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask about corridor rates, transit SLA, or packaging…"
+                rows={2}
+                maxLength={4000}
+                className="w-full resize-none bg-transparent p-3 text-xs leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-hidden"
+                aria-label="Your question"
+              />
+              <div className="flex items-center justify-between border-t border-border/40 bg-muted/20 px-2.5 py-1.5">
+                <div className="flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground">
+                  <span className="size-1.5 rounded-none bg-success" aria-hidden="true" />
+                  <span>DEL ⇄ IMF Operations</span>
+                </div>
+                <Button
+                  type="submit"
+                  size="xs"
+                  disabled={!inputQuery.trim() || busy}
+                  aria-label="Send question"
+                  className="h-7 rounded-none px-3 font-mono text-[11px] font-semibold tracking-tight cursor-pointer"
+                >
+                  <span>Ask</span>
+                  <CornerDownLeft className="size-3 ml-1" />
+                </Button>
+              </div>
+            </div>
+          </form>
         )}
       </div>
     </div>

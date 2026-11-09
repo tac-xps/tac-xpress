@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   type KeyboardEvent,
   type MouseEvent,
@@ -68,30 +68,45 @@ const findItemPath = (paths: string[], current: string | null) => {
   return match;
 };
 
-const followHash = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+/**
+ * Smoothly scrolls to in-page hash targets or falls back to landing route navigation.
+ *
+ * @param event - Click mouse event on the anchor link.
+ * @param href - Target hash or path string.
+ * @param router - Optional router instance for route transitions when target is missing on the current page.
+ */
+const followHash = (
+  event: MouseEvent<HTMLAnchorElement>,
+  href: string,
+  router?: { push: (url: string) => void }
+) => {
   if (
     event.defaultPrevented ||
     event.metaKey ||
     event.ctrlKey ||
     event.shiftKey ||
-    event.altKey
+    event.altKey ||
+    typeof window === "undefined"
   ) {
     return;
   }
-  if (href.startsWith("#")) {
+  const targetId = decodeURIComponent(href.replace(/^\/?#/, ""));
+  const target = document.getElementById(targetId);
+  if (target) {
     event.preventDefault();
-    const targetId = decodeURIComponent(href.replace(/^#/, ""));
-    const target = document.getElementById(targetId);
-    if (target) {
-      target.scrollIntoView({
-        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-          ? "instant"
-          : "smooth",
-      });
-      if (window.location.hash !== href) {
-        window.history.pushState(null, "", href);
-      }
+    target.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+    });
+    const hash = `#${targetId}`;
+    if (window.location.hash !== hash) {
+      window.history.pushState(null, "", hash);
     }
+  } else if (router) {
+    event.preventDefault();
+    const cleanHash = href.startsWith("#") ? href : `#${href}`;
+    router.push(`/${cleanHash}`);
   }
 };
 
@@ -103,6 +118,7 @@ export function MorphicNavbar({
   const entries = useMemo(() => Object.entries(items), [items]);
   const paths = useMemo(() => entries.map(([path]) => path), [entries]);
   const pathname = usePathname();
+  const router = useRouter();
 
   const [activePath, setActivePath] = useState(
     () => findItemPath(paths, pathname) ?? defaultPath ?? paths[0] ?? "/"
@@ -225,7 +241,7 @@ export function MorphicNavbar({
               onClick={(e: MouseEvent<HTMLAnchorElement>) => {
                 setActivePath(href);
                 if (isHash) {
-                  followHash(e, href);
+                  followHash(e, href, router);
                 }
               }}
               onKeyDown={(e) => handleKeyDown(e, index)}

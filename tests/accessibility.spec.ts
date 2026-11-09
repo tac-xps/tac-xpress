@@ -6,16 +6,9 @@ const evidenceDir =
 for (const width of [320, 768, 1440]) {
   for (const route of [
     "/",
-    "/signin",
     "/track",
+    "/signin",
     "/terms",
-    "/feedback",
-    "/services",
-    "/services/air-cargo",
-    "/services/surface-cargo",
-    "/shipping-guide",
-    "/about",
-    "/contact",
   ]) {
     test(`${route} is accessible at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 })

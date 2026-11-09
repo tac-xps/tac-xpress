@@ -21,6 +21,36 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/services",
+        destination: "/#services",
+        permanent: true,
+      },
+      {
+        source: "/services/:path*",
+        destination: "/#services",
+        permanent: true,
+      },
+      {
+        source: "/shipping-guide",
+        destination: "/#method",
+        permanent: true,
+      },
+      {
+        source: "/about",
+        destination: "/#about",
+        permanent: true,
+      },
+      {
+        source: "/contact",
+        destination: "/#contact",
+        permanent: true,
+      },
+      {
+        source: "/feedback",
+        destination: "/#feedback",
+        permanent: true,
+      },
+      {
         source: "/dashboard/onboarding",
         destination: "/dashboard",
         permanent: true,
