@@ -67,6 +67,7 @@ chromatic-report.xml
 # Logs & Debug Artifacts
 # ==============================================================================
 *.log
+/.ci_log.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -133,6 +134,7 @@ MISSION-*.md
 *-PLAN.md
 REPOSITORY_RECONNAISSANCE.md
 VERCEL-PRODUCTION-READINESS.md
+!/docs/engineering/*.md
 
 # Local Audit Evidence & Test Receipts
 docs/audit-evidence/

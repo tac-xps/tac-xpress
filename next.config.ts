@@ -76,6 +76,10 @@ const nextConfig: NextConfig = {
         source: "/ingest/decide",
         destination: "https://eu.i.posthog.com/decide",
       },
+      {
+        source: "/images/corridor-ink/:file",
+        destination: "/images/new-assets/:file",
+      },
     ]
   },
   experimental: {
@@ -137,7 +141,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname:
-          process.env.NEXT_PUBLIC_VERCEL_BLOB_HOSTNAME ??
+          process.env.NEXT_PUBLIC_VERCEL_BLOB_HOSTNAME?.trim() ||
           "your-project.public.blob.vercel-storage.com",
       },
     ],
