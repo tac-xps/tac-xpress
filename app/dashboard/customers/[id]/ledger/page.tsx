@@ -3,6 +3,7 @@ import { requireStaffPage } from "@/lib/auth/page-access"
 import { db } from "@/lib/db"
 import { invoices, users, shipments } from "@/lib/db/schema"
 import { eq, desc, sql } from "drizzle-orm"
+import { z } from "zod"
 
 export const metadata: Metadata = {
   title: "Customer Ledger | TAC-XPRESS",
@@ -25,6 +26,7 @@ export default async function CustomerLedgerPage(props: {
   const params = await props.params
   const searchParams = await props.searchParams
   const customerId = params.id
+  if (!z.guid().safeParse(customerId).success) notFound()
   const { page, pageSize } = parseRecordQuery(searchParams, [])
 
   const customer = await db.query.users.findFirst({

@@ -1,11 +1,11 @@
 import { NextRequest } from "next/server"
 import { db } from "@/lib/db"
-import { trackingEvents } from "@/lib/db/schema"
+import { shipments, trackingEvents } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 
 import { requireDashboardApi } from "@/lib/auth/guards"
 import * as Sentry from "@sentry/nextjs"
-import { shipments } from "@/lib/db/schema"
+import { z } from "zod"
 
 export const dynamic = "force-dynamic"
 
@@ -21,6 +21,9 @@ export async function GET(req: NextRequest) {
 
   if (!shipmentId) {
     return new Response("Missing shipmentId", { status: 400 })
+  }
+  if (!z.guid().safeParse(shipmentId).success) {
+    return new Response("Invalid shipmentId", { status: 400 })
   }
 
   const shipment = await db.query.shipments.findFirst({

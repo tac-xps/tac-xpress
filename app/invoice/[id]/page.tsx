@@ -1,5 +1,6 @@
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
+import { z } from "zod"
 import { InvoiceView } from "./invoice-view"
 import { requireDocumentPage } from "@/lib/auth/page-access"
 import { getAppUrl } from "@/lib/config/app-url"
@@ -13,6 +14,7 @@ export default async function InvoicePrintPage({
 }) {
   const { id: paramId } = await params
   await requireDocumentPage(paramId)
+  if (!z.guid().safeParse(paramId).success) notFound()
   const resolvedSearchParams = searchParams ? await searchParams : {}
   const isPreview = resolvedSearchParams.preview === "true"
 

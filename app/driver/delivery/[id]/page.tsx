@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { shipments, invoices } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { notFound } from "next/navigation"
+import { z } from "zod"
 // @ts-ignore - TS language server phantom error for dynamic route brackets
 import { DeliveryDetails } from "./delivery-details"
 
@@ -16,6 +17,7 @@ export default async function DriverShipmentPage({
   await requireStaffPage()
 
   const { id } = await params
+  if (!z.guid().safeParse(id).success) notFound()
 
   const shipmentData = await db
     .select({

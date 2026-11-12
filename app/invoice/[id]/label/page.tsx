@@ -1,5 +1,6 @@
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
+import { z } from "zod"
 import { requireDocumentPage } from "@/lib/auth/page-access"
 import { ShippingLabel } from "@/components/documents/shipping-label"
 import { PrintButton } from "../print-button"
@@ -7,16 +8,22 @@ import { PrintButton } from "../print-button"
 export default async function ShippingLabelPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   await requireDocumentPage(id)
-  const invoice = await db.query.invoices.findFirst({
-    where: (table, { eq, or }) => or(eq(table.id, id), eq(table.shipmentId, id)),
-    with: { shipment: true },
-  })
+  const isUuid = z.guid().safeParse(id).success
+  const invoice = isUuid
+    ? await db.query.invoices.findFirst({
+        where: (table, { eq, or }) =>
+          or(eq(table.id, id), eq(table.shipmentId, id)),
+        with: { shipment: true },
+      })
+    : undefined
   let shipment = invoice?.shipment
   if (!shipment) {
     shipment = await db.query.shipments.findFirst({
       where: (table, { eq, or, and, isNull }) =>
         and(
-          or(eq(table.id, id), eq(table.awbNumber, id)),
+          isUuid
+            ? or(eq(table.id, id), eq(table.awbNumber, id))
+            : eq(table.awbNumber, id),
           isNull(table.deletedAt)
         ),
     })
