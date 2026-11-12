@@ -1,7 +1,8 @@
 "use server"
 
 import * as Sentry from "@sentry/nextjs"
-import { auth, signIn } from "@/auth"
+import { signIn } from "@/auth"
+import { requireDashboardAction } from "@/lib/auth/guards"
 import { db } from "@/lib/db"
 import { userMfa, userPasskeys, users } from "@/lib/db/schema"
 import { eq, and, sql } from "drizzle-orm"
@@ -34,10 +35,11 @@ import type {
 // --- Staff User MFA Management Actions ---
 
 export async function getMfaSettingsAction() {
-  const session = await auth()
-  if (!session?.user?.id) {
+  const access = await requireDashboardAction()
+  if (!access.ok) {
     return { error: "Unauthorized access." }
   }
+  const { session } = access
 
   try {
     const mfa = await db.query.userMfa.findFirst({
@@ -133,17 +135,18 @@ async function clearMfaAttempts(userId: string): Promise<void> {
 }
 
 export async function startTotpSetupAction() {
-  const session = await auth()
-  if (!session?.user?.id || !session.user.email) {
+  const access = await requireDashboardAction()
+  if (!access.ok || !access.session.user.email) {
     return { error: "Unauthorized access." }
   }
+  const { id, email } = access.session.user
 
-  const setup = generateTotpSetup(session.user.email)
+  const setup = generateTotpSetup(email)
 
   await db
     .insert(userMfa)
     .values({
-      userId: session.user.id,
+      userId: id,
       totpPendingSecretEncrypted: setup.encryptedSecret,
       totpEnabled: false,
       updatedAt: new Date(),
@@ -163,10 +166,11 @@ export async function startTotpSetupAction() {
 }
 
 export async function confirmTotpSetupAction({ code }: { code: string }) {
-  const session = await auth()
-  if (!session?.user?.id) {
+  const access = await requireDashboardAction()
+  if (!access.ok) {
     return { error: "Unauthorized access." }
   }
+  const { session } = access
 
   const mfa = await db.query.userMfa.findFirst({
     where: eq(userMfa.userId, session.user.id),
@@ -217,10 +221,11 @@ export async function confirmTotpSetupAction({ code }: { code: string }) {
 }
 
 export async function disableTotpAction() {
-  const session = await auth()
-  if (!session?.user?.id) {
+  const access = await requireDashboardAction()
+  if (!access.ok) {
     return { error: "Unauthorized access." }
   }
+  const { session } = access
 
   await db
     .update(userMfa)
@@ -237,10 +242,11 @@ export async function disableTotpAction() {
 }
 
 export async function startPasskeyRegistrationAction(name?: string) {
-  const session = await auth()
-  if (!session?.user?.id || !session.user.email) {
+  const access = await requireDashboardAction()
+  if (!access.ok || !access.session.user.email) {
     return { error: "Unauthorized access." }
   }
+  const { id, email } = access.session.user
 
   const headerList = await headers()
   const hostHeader = headerList.get("host")
@@ -248,16 +254,16 @@ export async function startPasskeyRegistrationAction(name?: string) {
   const existingPasskeys = await db
     .select()
     .from(userPasskeys)
-    .where(eq(userPasskeys.userId, session.user.id))
+    .where(eq(userPasskeys.userId, id))
 
   const options = await createPasskeyRegistrationOptions(
-    { id: session.user.id, email: session.user.email },
+    { id, email },
     existingPasskeys,
     hostHeader
   )
 
   const registrationToken = await createRegistrationChallengeToken({
-    userId: session.user.id,
+    userId: id,
     expectedChallenge: options.challenge,
   })
 
@@ -273,10 +279,11 @@ export async function finishPasskeyRegistrationAction({
   response: RegistrationResponseJSON
   name?: string
 }) {
-  const session = await auth()
-  if (!session?.user?.id) {
+  const access = await requireDashboardAction()
+  if (!access.ok) {
     return { error: "Unauthorized access." }
   }
+  const { session } = access
 
   const tokenPayload = await verifyRegistrationChallengeToken(registrationToken)
   if (!tokenPayload || tokenPayload.userId !== session.user.id) {
@@ -318,10 +325,11 @@ export async function finishPasskeyRegistrationAction({
 }
 
 export async function deletePasskeyAction({ passkeyId }: { passkeyId: string }) {
-  const session = await auth()
-  if (!session?.user?.id) {
+  const access = await requireDashboardAction()
+  if (!access.ok) {
     return { error: "Unauthorized access." }
   }
+  const { session } = access
 
   await db
     .delete(userPasskeys)

@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   captureException: vi.fn(),
 }))
 
+vi.mock("server-only", () => ({}))
 vi.mock("@/auth", () => ({ auth: mocks.auth }))
 vi.mock("@sentry/nextjs", () => ({ captureException: mocks.captureException }))
 vi.mock("@/lib/db", async () => {
@@ -28,6 +29,16 @@ vi.mock("@/lib/db", async () => {
 
 const { requireDashboardSession, requireDashboardAction, requireDashboardApi } =
   await import("@/lib/auth/guards")
+
+const {
+  confirmTotpSetupAction,
+  deletePasskeyAction,
+  disableTotpAction,
+  finishPasskeyRegistrationAction,
+  getMfaSettingsAction,
+  startPasskeyRegistrationAction,
+  startTotpSetupAction,
+} = await import("@/app/actions/mfa-actions")
 
 const userId = "11111111-1111-4111-8111-111111111111"
 const staleAdminSession = {
@@ -80,6 +91,32 @@ describe("current database role authorization", () => {
       expect(query.sql).toContain('"users"."deleted_at" is null')
       expect(query.params).toEqual([userId])
     }
+  })
+
+  it.each([
+    ["load security settings", () => getMfaSettingsAction()],
+    ["start TOTP setup", () => startTotpSetupAction()],
+    ["confirm TOTP setup", () => confirmTotpSetupAction({ code: "000000" })],
+    ["disable TOTP", () => disableTotpAction()],
+    ["start passkey enrollment", () => startPasskeyRegistrationAction()],
+    [
+      "finish passkey enrollment",
+      () => finishPasskeyRegistrationAction({
+        registrationToken: "",
+        response: {
+          id: "test-credential",
+          rawId: "test-credential",
+          type: "public-key",
+          clientExtensionResults: {},
+          response: { attestationObject: "", clientDataJSON: "" },
+        },
+      }),
+    ],
+    ["remove a passkey", () => deletePasskeyAction({ passkeyId: "test-credential" })],
+  ])("denies revoked staff when they attempt to %s", async (_label, action) => {
+    mocks.lookup.mockResolvedValue([])
+    await expect(action()).resolves.toEqual({ error: "Unauthorized access." })
+    expect(mocks.lookup).toHaveBeenCalledTimes(1)
   })
 
   it("fails closed and reports database failures in all three guards", async () => {

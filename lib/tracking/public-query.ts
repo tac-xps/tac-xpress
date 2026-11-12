@@ -25,7 +25,7 @@ export function publicTrackingQuery(awb: string) {
       },
     })
     .from(shipments)
-    .leftJoin(
+    .innerJoin(
       trackingEvents,
       and(
         eq(trackingEvents.shipmentId, shipments.id),

@@ -13,6 +13,7 @@ const { shipmentOwnerFilter, invoiceOwnerFilter } =
 describe("public and customer data boundaries", () => {
   it("public tracking requires a published event and excludes personal fields", () => {
     const query = publicTrackingQuery("AWB-12345").toSQL()
+    expect(query.sql).toContain('inner join "tracking_events"')
     expect(query.sql).toContain('"tracking_events"."is_public" = $1')
     expect(query.sql).toContain('"shipments"."deleted_at" is null')
     expect(query.params).toEqual([true, "AWB-12345", 100])
