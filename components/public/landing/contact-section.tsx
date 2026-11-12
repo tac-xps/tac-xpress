@@ -12,7 +12,11 @@ import { createTicket } from "@/app/actions/tickets"
 
 const subscribeToHash = (callback: () => void) => {
   window.addEventListener("hashchange", callback)
-  return () => window.removeEventListener("hashchange", callback)
+  window.addEventListener("tac-feedback-open", callback)
+  return () => {
+    window.removeEventListener("hashchange", callback)
+    window.removeEventListener("tac-feedback-open", callback)
+  }
 }
 const getHashSnapshot = () => (window.location.hash === "#feedback" ? "feedback" : "booking")
 const getServerSnapshot = () => "booking"
@@ -26,6 +30,18 @@ export function ContactSection() {
   const hashIntent = useSyncExternalStore(subscribeToHash, getHashSnapshot, getServerSnapshot)
   const [manualIntent, setManualIntent] = useState<"booking" | "feedback" | null>(null)
   const intent = manualIntent ?? hashIntent
+
+  React.useEffect(() => {
+    const openFeedback = () => {
+      setManualIntent(null)
+      setSubmitted(false)
+      setSubmitError(null)
+      setFieldErrors({})
+    }
+
+    window.addEventListener("tac-feedback-open", openFeedback)
+    return () => window.removeEventListener("tac-feedback-open", openFeedback)
+  }, [])
 
   const [formData, setFormData] = useState({
     name: "",

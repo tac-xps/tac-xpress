@@ -2,7 +2,6 @@
 
 import Image from "next/image"
 import { ZoomIn } from "lucide-react"
-import { motion, useReducedMotion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -12,11 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { cn } from "@/lib/utils"
 
 export function CorridorCinemaSection() {
-  const shouldReduceMotion = useReducedMotion()
-
   return (
     <section
       aria-labelledby="cinema-heading"
@@ -39,17 +35,10 @@ export function CorridorCinemaSection() {
               alt="Illustration of air and surface cargo between New Delhi and Imphal"
               fill
               sizes="(max-width: 1200px) 100vw, 1100px"
-              className={cn(
-                "object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                !shouldReduceMotion && "group-hover:scale-[1.02]"
-              )}
+              className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.02] motion-reduce:transition-none"
             />
             <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div
-                whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
-                whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
-                transition={{ duration: 0.15 }}
-              >
+              <div className="motion-safe:transition-transform motion-safe:duration-150 motion-safe:hover:scale-105 motion-safe:active:scale-95">
                 <DialogTrigger asChild>
                   <Button
                     type="button"
@@ -61,7 +50,7 @@ export function CorridorCinemaSection() {
                     <ZoomIn aria-hidden="true" />
                   </Button>
                 </DialogTrigger>
-              </motion.div>
+              </div>
             </div>
           </div>
           <DialogContent className="cargo-public">

@@ -2,7 +2,6 @@
 
 import Image from "next/image"
 import { motion, useReducedMotion } from "motion/react"
-import { cn } from "@/lib/utils"
 
 export function TestimonialSection() {
   const shouldReduceMotion = useReducedMotion()
@@ -36,10 +35,7 @@ export function TestimonialSection() {
               alt="Illustration of corridor logistics operations and director oversight"
               fill
               sizes="(max-width: 768px) 100vw, 400px"
-              className={cn(
-                "object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                !shouldReduceMotion && "group-hover:scale-[1.03]"
-              )}
+              className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.03] motion-reduce:transition-none"
             />
           </div>
           <div className="flex flex-col gap-4 text-sm">

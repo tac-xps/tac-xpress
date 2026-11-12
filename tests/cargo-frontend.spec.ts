@@ -139,6 +139,27 @@ test("reduced motion keeps service content visible and suppresses image zoom", a
   await expect(media).toHaveCSS("transition-property", "none")
 })
 
+test("footer feedback link selects the feedback form", async ({ page }) => {
+  await page.goto("/")
+  const feedbackLink = page.getByRole("link", { name: "Share feedback", exact: true })
+  const bookingSubmit = page.getByRole("button", { name: "Submit Booking Request" })
+  const feedbackSubmit = page.getByRole("button", { name: "Submit Feedback" })
+
+  await expect(bookingSubmit).toBeVisible()
+  await feedbackLink.click()
+  await expect(page).toHaveURL(/\/#feedback$/)
+  await expect(feedbackSubmit).toBeVisible()
+
+  await page.getByRole("button", { name: "Consignment Booking", exact: true }).click()
+  await expect(bookingSubmit).toBeVisible()
+  await feedbackLink.focus()
+  await page.keyboard.press("Enter")
+  await expect(feedbackSubmit).toBeVisible()
+
+  await page.reload()
+  await expect(feedbackSubmit).toBeVisible()
+})
+
 test("homepage navigation scrolls immediately with reduced motion", async ({
   page,
 }) => {

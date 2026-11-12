@@ -6,7 +6,6 @@ import { LayoutGrid, Compass, Barcode } from "lucide-react"
 import { motion, useReducedMotion } from "motion/react"
 import { Badge } from "@/components/reui/badge"
 import { IconTile } from "@/components/reui/icon-tile"
-import { cn } from "@/lib/utils"
 
 const STEPS = [
   { icon: LayoutGrid, title: "Share shipment details", desc: "Send the contents, weight, dimensions, and direction of travel for review.", image: "/images/new-assets/how-air-belly.png", alt: "Illustration of cargo preparation", badge: "New Delhi and Imphal" },
@@ -56,10 +55,7 @@ export function HowItWorksSection() {
                       alt={step.alt}
                       fill
                       sizes="(max-width: 768px) 100vw, 400px"
-                      className={cn(
-                        "object-cover rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                        !shouldReduceMotion && "group-hover:scale-[1.03]"
-                      )}
+                      className="object-cover rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.03] motion-reduce:transition-none"
                     />
                     <div className="absolute top-2.5 left-2.5">
                       <Badge variant="outline" className="bg-background/95 font-mono">

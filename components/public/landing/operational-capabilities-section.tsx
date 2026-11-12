@@ -176,10 +176,7 @@ export function OperationalCapabilitiesSection() {
                   alt={currentTab.alt}
                   fill
                   sizes="(max-width: 1200px) 100vw, 1100px"
-                  className={cn(
-                    "object-cover rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                    !shouldReduceMotion && "group-hover:scale-[1.02]"
-                  )}
+                  className="object-cover rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.02] motion-reduce:transition-none"
                 />
               </motion.div>
             </AnimatePresence>

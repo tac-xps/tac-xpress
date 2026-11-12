@@ -85,10 +85,7 @@ export function FleetShowcaseSection() {
                       alt={activeFeature.alt}
                       fill
                       sizes="(max-width: 1024px) 100vw, 680px"
-                      className={cn(
-                        "object-cover rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                        !shouldReduceMotion && "group-hover:scale-[1.02]"
-                      )}
+                      className="object-cover rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.02] motion-reduce:transition-none"
                     />
                   </motion.div>
                 </AnimatePresence>
@@ -197,10 +194,7 @@ export function FleetShowcaseSection() {
                       alt={vehicle.alt}
                       fill
                       sizes="(max-width: 768px) 100vw, 400px"
-                      className={cn(
-                        "object-contain p-2 rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                        !shouldReduceMotion && "group-hover:scale-[1.04]"
-                      )}
+                      className="object-contain p-2 rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.04] motion-reduce:transition-none"
                     />
                   </div>
                   <div className="flex items-center justify-between text-xs font-sans text-muted-foreground mb-1">

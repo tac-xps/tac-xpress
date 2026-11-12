@@ -63,6 +63,9 @@ export function LandingFooter() {
         if (window.location.hash !== `#${targetId}`) {
           window.history.pushState(null, "", `#${targetId}`)
         }
+        if (targetId === "feedback") {
+          window.dispatchEvent(new Event("tac-feedback-open"))
+        }
       }
     }
   }

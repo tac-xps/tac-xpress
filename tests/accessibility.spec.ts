@@ -107,3 +107,30 @@ test("assistant opens accessibly on a small screen without sending a message", a
     page.getByRole("button", { name: "Open AI assistant" })
   ).toBeFocused()
 })
+
+
+test("landing hydrates and opens the corridor dialog with reduced motion", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" })
+  const warnings: string[] = []
+  page.on("console", (message) => {
+    if (/hydration mismatch|tree hydrated/i.test(message.text())) {
+      warnings.push(message.text())
+    }
+  })
+
+  await page.goto("/")
+  const serviceImage = page.locator("#services img").first()
+  await expect(serviceImage).toHaveCSS("transition-property", "none")
+  await serviceImage.hover()
+  await expect(serviceImage).toHaveCSS("scale", "none")
+  const trigger = page.getByRole("button", { name: "View corridor illustration" })
+  await trigger.press("Enter")
+  const dialog = page.getByRole("dialog", { name: "Corridor illustration" })
+  await expect(dialog).toBeVisible()
+  await page.keyboard.press("Escape")
+  await expect(dialog).toBeHidden()
+  await expect(trigger).toBeFocused()
+  expect(warnings).toEqual([])
+})

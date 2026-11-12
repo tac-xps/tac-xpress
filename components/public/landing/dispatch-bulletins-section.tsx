@@ -4,7 +4,6 @@ import React from "react"
 import Image from "next/image"
 import { ArrowUpRight } from "lucide-react"
 import { motion, useReducedMotion } from "motion/react"
-import { cn } from "@/lib/utils"
 
 const BULLETINS = [
   { id: "prepare", date: "Method", category: "Preparation", title: "Prepare your consignment", summary: "Review packaging, dimensions, and custody verification before handover.", image: "/images/new-assets/bulletin-screening.png", alt: "Illustration of cargo preparation", href: "#method", linkLabel: "View custody method" },
@@ -51,10 +50,7 @@ export function DispatchBulletinsSection() {
                   alt={item.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, 400px"
-                  className={cn(
-                    "object-cover rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                    !shouldReduceMotion && "group-hover:scale-[1.03]"
-                  )}
+                  className="object-cover rounded-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.03] motion-reduce:transition-none"
                 />
               </div>
 
