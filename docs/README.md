@@ -6,10 +6,11 @@ This directory documents the code that exists in this repository. When code and 
 
 | Guide | Purpose |
 | --- | --- |
-| [Current control-center audit](./control-center-audit-2026-09-07.md) | Latest invoice, communications, fleet, UI and deployment evidence; open release gates. |
+| [Engineering and release evidence](./engineering/production-readiness.md) | Current release gates, engineering findings, and verification. |
+| [September control-center audit](./control-center-audit-2026-09-07.md) | Historical invoice, communications, fleet, UI, and deployment evidence. |
 | [Earlier Nordic production audit](./nordic-lagom-audit-2026-09-07.md) | Earlier access, transaction and redesign evidence, retained as history. |
-| [Route source inventory](../artifacts/route-source-audit.json) | Indexed application routes and runtime coverage boundaries. |
-| [Architecture](./ARCHITECTURE.md) | Request perimeter, identity, data access, support, WhatsApp, and route surfaces. |
+| [Route map](./engineering/route-map.md) | Registered routes, access requirements, and runtime coverage. |
+| [Architecture](./engineering/architecture.md) | Current application boundaries, integrations, and data flow. |
 | [Getting started](./02-getting-started.md) | Local setup, environment variables, and verification. |
 | [Data model](./03-database-schema.md) | Drizzle and Supabase ownership boundaries. |
 | [Authentication](./04-authentication-and-authorization.md) | Current staff roles and retired customer access. |

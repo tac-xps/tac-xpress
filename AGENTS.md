@@ -77,6 +77,7 @@ A task is complete only when all criteria pass:
 - When blocked by missing environment variables, verify `.env.local` against `.env.example`.
 - When database migrations conflict, inspect the hosted migration ledger before renaming migration files.
 - When architecture is ambiguous, consult `docs/ARCHITECTURE.md` before modifying service routing or queue logic.
+- Use [current engineering documentation](docs/engineering/architecture.md) for the source map and [release gates](docs/engineering/production-readiness.md) for current verification and operational blockers.
 
 ## 7. Ponytail & Total TypeScript Standards
 - Operating standard: all agents must operate in `ponytail: full` mode by default.
