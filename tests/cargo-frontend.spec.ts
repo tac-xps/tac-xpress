@@ -172,6 +172,10 @@ for (const route of [
     await page.goto(route)
     await page.getByRole("button", { name: "Toggle color theme" }).click()
     await expect(page.locator("html")).toHaveClass(/dark/)
+    await page.waitForFunction(
+      () => !document.documentElement.dataset.magicuiThemeVt
+    )
+    await page.evaluate(() => document.fonts.ready)
     const result = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
       .analyze()
