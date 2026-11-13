@@ -24,6 +24,8 @@ On `b20a888`, the standalone production build passed TypeScript and generated al
 
 The database-free Chromium suite on `b20a888` finished with 39 passed, nine failed and 15 expected skips. Eight failures hit 30-second limits during navigation or image handling. The tracking dialog visibility assertion failed on the full run. A warmed browser check opened the dialog at the same URL with no page errors. A new background server command for a follow-up failed-only run was rejected by the execution policy. The browser gate remains open.
 
+The full unit rerun on `b20a888` took 1,410 seconds and finished with 509 passed, 20 failed and 12 skipped. Failures included 10-second hooks in the DLQ and SLA suites, validator subprocesses that returned no exit status within their deadline, and a PostHog test timeout. The earlier 541-pass result applies to `74c7723`. Repeat the full unit gate on an isolated runner before release.
+
 ## Audit baseline and prior candidates
 
 Local checks began from `98f3e42ac19b3680d329415d61be716058d600cd` on Windows, Node 24.13.1 and pnpm 9.4.0. The isolated worktree uses the CI synthetic environment in `.github/workflows/quality.yml`. It contains no copied environment files, hosted service credentials, or E2E authorization bypasses.
