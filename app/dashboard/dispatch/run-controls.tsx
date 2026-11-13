@@ -109,6 +109,9 @@ export function RunControls({ run }: { run: HandoffRun }) {
         )
         setSelectedItemId("")
         setEventKey("")
+        if (outcome === "received" && activeItems.length === 1) {
+          setHandoffOpen(false)
+        }
         router.refresh()
       } else {
         setError(
