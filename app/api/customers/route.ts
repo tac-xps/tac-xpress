@@ -67,7 +67,18 @@ async function lookupCustomers(request: Request) {
         .limit(15)
         .as("matches")
 
-      return db.select({ customer: matches })
+      return db.select({
+        customer: {
+          id: matches.id,
+          name: matches.name,
+          email: matches.email,
+          phone: matches.phone,
+          address: matches.address,
+          pinCode: matches.pinCode,
+          city: matches.city,
+          state: matches.state,
+        },
+      })
         .from(staff)
         .leftJoinLateral(matches, sql`true`)
         .where(annotate(and(

@@ -5,6 +5,9 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
 const { auth } = vi.hoisted(() => ({ auth: vi.fn() }))
 vi.mock("@/auth", () => ({ auth }))
 vi.mock("@/lib/db", () => ({ get db() { return db } }))
+vi.mock("@sentry/nextjs", () => ({
+  captureException: (error: Error) => { throw error },
+}))
 
 const require = createRequire(import.meta.url)
 const { PGlite } = createRequire(require.resolve("gbrain"))("@electric-sql/pglite")
