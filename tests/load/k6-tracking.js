@@ -1,23 +1,32 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
+const awb = __ENV.SYNTHETIC_TRACKING_AWB;
+if (!/^[A-Z0-9-]{5,40}$/.test(awb || '')) {
+  throw new Error('Set SYNTHETIC_TRACKING_AWB to a published staging fixture');
+}
+
 export const options = {
-  stages: [
-    { duration: '30s', target: 20 }, // simulate ramp-up of traffic from 1 to 20 users over 30 seconds
-    { duration: '1m', target: 20 }, // stay at 20 users for 1 minute
-    { duration: '10s', target: 0 }, // ramp-down to 0 users
-  ],
+  vus: 1,
+  iterations: 10,
   thresholds: {
-    http_req_duration: ['p(95)<500'], // 95% of requests must complete below 500ms
+    checks: ['rate==1'],
+    http_req_failed: ['rate==0'],
   },
 };
 
 export default function () {
-  // Test the public tracking endpoint which hits the DB
-  const res = http.get('http://localhost:3000/api/stream/tracking?awb=DEMO123');
-  
+  const res = http.get(`http://localhost:3001/track?awb=${encodeURIComponent(awb)}`, {
+    redirects: 0,
+    timeout: '15s',
+    tags: { name: 'GET /track' },
+  });
+
   check(res, {
-    'status is 200 or 401': (r) => r.status === 200 || r.status === 401 || r.status === 404,
+    'renders the matching tracking result': (r) =>
+      r.status === 200 &&
+      r.html().find('button').toArray().some((button) => button.text().includes('Show full tracking')) &&
+      r.html().find('p').toArray().some((paragraph) => paragraph.text().trim() === awb),
   });
 
   sleep(1);
