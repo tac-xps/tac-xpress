@@ -2,15 +2,15 @@
 
 **Decision on November 13, 2026: NO-GO.**
 
-The application candidate is `b20a88878a14a710f512f71b4934aaa702b8e649` on `codex/release-remediation-2026-11-13`. Vercel's live alias serves `98f3e42`. The November 4 hosted acceptance covers runtime `8676eaa`.
+The application candidate is `00b77cd5bcd6f9eaee93be701bba865d4a6f9e13` on `codex/release-remediation-2026-11-13`. Vercel's live alias serves `98f3e42`. The November 4 hosted acceptance covers runtime `8676eaa`.
 
 | Gate | Status | Evidence and release requirement |
 | --- | --- | --- |
-| A. Functional correctness | BLOCKED | Staging resumed. The candidate's loopback public tracking checks passed. Protected preview and hosted workflow acceptance are pending. |
-| B. Security | BLOCKED | Four active staff/admin records match confirmed Auth accounts. Production signup remains enabled. Fresh production admin sign-in, secure password handoff, and hosted session, role and telemetry acceptance remain open. |
+| A. Functional correctness | BLOCKED | Staging resumed and the current candidate passed synthetic invoice, document, role and custody checks over loopback. Protected preview workflow acceptance is pending. |
+| B. Security | BLOCKED | Four active staff/admin records match confirmed Auth accounts. Production signup remains enabled and relay credential rotation is pending. Fresh production admin sign-in, secure password handoff, and hosted session, role and telemetry acceptance remain open. |
 | C. Database integrity | BLOCKED | Eight production migration versions and names match. Staging has both baseline migrations and 28 public tables with RLS. Anonymous and authenticated synthetic requests returned zero shipment rows through the direct Data API. Staging has no private Storage bucket. |
-| D. Engineering quality | BLOCKED | Candidate `b20a888` passed the standalone production build and focused cargo render. Unit rerun reported 509 passed, 20 failed and 12 skipped. Chromium reported 39 passed, nine failed and 15 expected skips. The warmed tracking dialog check passed separately. Production dependency audit passed and the full audit found zero high or critical advisories. See [current test results](test-results.md). |
-| E. Reliability and performance | BLOCKED | The corrected k6 workload targets public tracking and checks that the expected shipment rendered. Hosted load, the enabled provider path, and recovery timing remain open. |
+| D. Engineering quality | PASS | Candidate `00b77cd` passed `pnpm verify`, including 541 unit tests, type checking, lint and a 56-page production build. Local Chromium passed 48 cases with 15 expected hosted skips. See [current test results](test-results.md). |
+| E. Reliability and performance | BLOCKED | The eight-read loopback burst missed its 15-second client deadline twice. Next.js logged eight HTTP 200 responses at 14.8 s on the timed retry. Hosted load, the enabled provider path, and recovery timing remain open. |
 | F. Operational readiness | BLOCKED | The workstation backup exited 0 and independent offsite file verification passed. Windows Application Control prevented the new database import. Managed Auth and Storage replacement, always-on scheduling, complete Vercel environment verification, and rollback rehearsal remain open. |
 
 ## Evidence and remaining release work
