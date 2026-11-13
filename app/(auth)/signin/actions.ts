@@ -103,13 +103,7 @@ export async function loginAction(
 
     // 3. Verify user exists in database and has staff authorization
     const dbUsers = await db.select().from(users).where(eq(users.id, userId))
-    let dbUser = dbUsers[0]
-
-    if (!dbUser) {
-      const byEmail = await db.select().from(users).where(eq(users.email, email))
-      dbUser = byEmail[0]
-    }
-
+    const dbUser = dbUsers[0]
     if (!dbUser || dbUser.deletedAt || !isStaffRole(dbUser.role)) {
       return { error: "Staff workspace access not provisioned for this account." }
     }

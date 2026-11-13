@@ -1,13 +1,17 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest"
+import { PgDialect } from "drizzle-orm/pg-core"
 
 vi.mock("server-only", () => ({}))
 
 const mocks = vi.hoisted(() => ({
   rows: [] as { id: string; email: string; role: string }[],
+  where: vi.fn(),
   insert: vi.fn(),
+  update: vi.fn(),
   signIn: vi.fn(),
   allow: vi.fn(),
   verifyProof: vi.fn(),
+  verifyMfa: vi.fn(),
   authorize: undefined as
     | undefined
     | ((credentials: Record<string, unknown>) => Promise<unknown>),
@@ -25,8 +29,9 @@ vi.mock("next-auth/providers/credentials", () => ({
 vi.mock("@/auth.config", () => ({ authConfig: {} }))
 vi.mock("@/lib/db", () => ({
   db: {
-    select: () => ({ from: () => ({ where: async () => mocks.rows }) }),
+    select: () => ({ from: () => ({ where: mocks.where }) }),
     insert: mocks.insert,
+    update: mocks.update,
   },
 }))
 vi.mock("@supabase/supabase-js", () => ({
@@ -37,6 +42,9 @@ vi.mock("@/lib/auth/credential-rate-limit", () => ({
   allowCredentialAttempt: mocks.allow,
   verifyRateLimitProof: mocks.verifyProof,
 }))
+vi.mock("@/lib/auth/mfa/challenge-token", () => ({
+  verifyMfaVerifiedToken: mocks.verifyMfa,
+}))
 
 await import("@/auth")
 
@@ -44,9 +52,12 @@ describe("staff authentication", () => {
   beforeEach(() => {
     vi.stubEnv("E2E_TEST_BYPASS_ENABLED", "false")
     mocks.rows = []
+    mocks.where.mockReset().mockImplementation(async () => mocks.rows)
     mocks.allow.mockResolvedValue(true)
     mocks.verifyProof.mockReturnValue(false)
+    mocks.verifyMfa.mockReset()
     mocks.insert.mockClear()
+    mocks.update.mockClear()
     mocks.signIn.mockResolvedValue({
       data: { user: { id: "user-1", email: "person@example.com" } },
       error: null,
@@ -62,6 +73,30 @@ describe("staff authentication", () => {
       })
     ).toBeNull()
     expect(mocks.insert).not.toHaveBeenCalled()
+  })
+
+  it("rejects an identity without an ID match without reassigning an existing staff record", async () => {
+    mocks.rows = [{ id: "legacy-id", email: "person@example.com", role: "staff" }]
+    mocks.where.mockResolvedValueOnce([])
+
+    expect(
+      await mocks.authorize!({ email: "person@example.com", password: "test-password" })
+    ).toBeNull()
+    expect(mocks.where).toHaveBeenCalledOnce()
+    expect(mocks.update).not.toHaveBeenCalled()
+  })
+
+  it("requires a matching Auth account when finishing MFA or passkey sign-in", async () => {
+    mocks.verifyMfa.mockResolvedValue({ userId: "user-1" })
+    mocks.where.mockResolvedValueOnce([])
+
+    expect(await mocks.authorize!({ mfaToken: "verified-token" })).toBeNull()
+    const query = new PgDialect().sqlToQuery(mocks.where.mock.calls[0][0])
+    expect(query.sql).toContain('exists (select 1 from auth.users as identity where identity.id = "users"."id")')
+    expect(query.params).toEqual(["user-1"])
+
+    mocks.rows = [{ id: "user-1", email: "person@example.com", role: "staff" }]
+    expect(await mocks.authorize!({ mfaToken: "verified-token" })).toEqual(mocks.rows[0])
   })
   it.each(["customer", "viewer", "", "owner"])(
     "does not elevate role %s",

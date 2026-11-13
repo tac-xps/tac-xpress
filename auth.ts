@@ -2,7 +2,7 @@ import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { db } from "@/lib/db"
 import { users, userMfa, userPasskeys } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
+import { and, eq, sql } from "drizzle-orm"
 import { createClient } from "@supabase/supabase-js"
 import * as Sentry from "@sentry/nextjs"
 import { authConfig } from "./auth.config"
@@ -32,7 +32,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const verified = await verifyMfaVerifiedToken(credentials.mfaToken)
           if (!verified) return null
 
-          const dbUsers = await db.select().from(users).where(eq(users.id, verified.userId))
+          const dbUsers = await db
+            .select()
+            .from(users)
+            .where(
+              and(
+                eq(users.id, verified.userId),
+                sql`exists (select 1 from auth.users as identity where identity.id = ${users.id})`
+              )
+            )
           const dbUser = dbUsers[0]
           if (!dbUser || dbUser.deletedAt || !isStaffRole(dbUser.role)) return null
 
@@ -121,33 +129,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const id = data.user.id
         const userEmail = data.user.email as string
 
-        // Authentication proves identity; only a provisioned record grants staff access.
+        // Staff Directory links the workspace record to the Supabase Auth ID.
         const dbUsers = await db.select().from(users).where(eq(users.id, id))
-        let dbUser = dbUsers[0]
-
-        // Auto-reconcile if user was provisioned by email before Supabase Auth ID was assigned
-        if (!dbUser) {
-          const dbUsersByEmail = await db
-            .select()
-            .from(users)
-            .where(eq(users.email, userEmail))
-          const userByEmail = dbUsersByEmail[0]
-
-          if (userByEmail && !userByEmail.deletedAt && isStaffRole(userByEmail.role)) {
-            try {
-              // Synchronize the public.users record ID to the canonical Supabase Auth user ID
-              await db
-                .update(users)
-                .set({ id })
-                .where(eq(users.email, userEmail))
-              dbUser = { ...userByEmail, id }
-            } catch {
-              // If foreign key constraint prevents updating old id, accept user identity with existing dbUser
-              dbUser = userByEmail
-            }
-          }
-        }
-
+        const dbUser = dbUsers[0]
         if (!dbUser || dbUser.deletedAt || !isStaffRole(dbUser.role)) return null
 
         // Enforce MFA: If user has TOTP or Passkey enrolled, direct password sign-in is forbidden

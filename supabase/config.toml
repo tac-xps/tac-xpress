@@ -1,4 +1,7 @@
 
+[auth]
+enable_signup = false
+
 [functions.generate-invoice-pdf]
 enabled = true
 verify_jwt = false

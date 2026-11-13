@@ -45,6 +45,8 @@ The baseline and final full audits each reported four high advisories, twelve mo
 
 ## Final candidate
 
+The subsequent manual staff provisioning change passed all 539 unit tests across 82 files, including three new regressions. Typecheck, ESLint, Stylelint, the token and migration audits, contract validation, and the production build passed. A synthetic embedded PostgreSQL check also verified the MFA lookup with linked and unlinked IDs. The approved hosted staging preflight still returned `XX000`, so authenticated browser acceptance remains open.
+
 Application and test changes are recorded through commit `02e1646`. Documentation follows separately.
 
 | Command or check | Candidate outcome |

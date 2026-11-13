@@ -10,7 +10,7 @@
 | Production identity | Vercel reports a READY production-target deployment for `98f3e42` with the project’s Vercel aliases. The custom-domain mapping and rollback eligibility still require release-operator verification. The local candidate is newer. |
 | Recovery | Windows Task Scheduler still reports exit 1 for the November 12 backup. The configured recovery volume remains unavailable in this session. Snapshot freshness and the failure cause are unknown. |
 | Synthetic staging | The existing Playwright suite discovers 11 cases and accepts the saved staging profile’s isolation checks. A read-only connection to the configured pooler returned `XX000`, and the staging Auth hostname was unreachable. Project status could not be established through the available management connector. No staging cases ran. |
-| Staff accounts | The owner confirmed manual Supabase Auth provisioning with any valid email domain. Workspace access requires a separate role grant tied to the Auth user ID. Validate the manual process and public self-registration settings on staging. |
+| Staff accounts | The local implementation requires the Auth ID for new staff sessions. A read-only production inventory found four active staff/admin records. Three lack an Auth ID or email match, including two admins. One admin has a canonical ID match. Hosted self-registration still reports enabled. |
 | Provider scope | Resend sender verification concerns outbound application mail. The November 4 release record deferred it, email delivery acceptance, and LeminAI callbacks. The current production environment validator still checks the configured outbound sender. Resolve the scope and validator discrepancy at the provider gate. |
 
 ## Sequence and owners
@@ -33,3 +33,5 @@ Role assignments below are proposed. Assign one named owner and one backup opera
 - **Rollback application traffic** to the verified compatible Vercel deployment and re-run critical smoke checks. If data integrity is affected, preserve evidence and use the separately approved incident and recovery runbook. A Vercel rollback changes the served deployment. Database and Storage recovery are separate operations. [Vercel rollback](https://vercel.com/docs/instant-rollback), [Supabase backups](https://supabase.com/docs/guides/platform/backups)
 
 The next executable handoff is access to the backup host and volume, plus restoration of the approved synthetic staging connection. Deployment and hosted changes retain the authorization boundaries of the audit.
+
+Before promoting strict staff sign-in, classify the three unmatched records. Reconcile legitimate staff through the approved provisioning workflow and preserve operational references. Verify the matched admin can sign in. Confirm the hosted signup setting on each intended target.

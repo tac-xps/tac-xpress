@@ -6,7 +6,9 @@ NextAuth credentials verify Supabase Auth identity and require a provisioned, no
 
 Workspace accounts are provisioned manually. An authorized operator creates the identity in Supabase Auth using an email address controlled by the staff member. Any valid email domain is permitted. An existing workspace admin then assigns `staff` or `admin` access in Staff Directory. The action links the workspace record to the canonical Supabase Auth user ID. For first-admin bootstrap, the platform owner provisions the matching role record through the controlled setup process.
 
-The intended Auth configuration disables public self-registration. Verify that setting and the manual onboarding, password recovery, and revocation workflows on approved staging. Resend sender-domain verification applies to outbound application mail. The staff sign-in address has its own provisioning policy.
+New password, MFA, and passkey sessions require a workspace record keyed to an existing Supabase Auth user ID. Sign-in does not reconcile staff records by email. Preserve operational references when resolving unmatched records and verify a matched admin can sign in before promotion.
+
+The local Supabase config disables public self-registration. Apply the corresponding hosted Auth setting through the approved release process. Verify manual onboarding, password recovery, and revocation on approved staging. Deactivate the app role as part of offboarding. Resend sender-domain verification applies to outbound application mail.
 
 Use `lib/auth/guards.ts` at every protected data/action boundary. The guard reads the current database role; stale JWT claims cannot retain permissions after role changes or deletion. Database failures deny access and reach Sentry. Admin-only actions explicitly restrict the allowed roles; the staff directory is admin-only.
 

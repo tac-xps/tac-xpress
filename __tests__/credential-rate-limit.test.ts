@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   captureException: vi.fn(),
   captureMessage: vi.fn(),
   signIn: vi.fn(),
+  findStaff: vi.fn(),
 }))
 
 vi.mock("server-only", () => ({}))
@@ -37,7 +38,7 @@ vi.mock("@/lib/db", () => ({
         where: async () => {
           const tableName = table?.[Symbol.for("drizzle:Name")] || table?._?.name
           if (tableName === "user_passkeys") return []
-          return [{ id: "test-user-id", email: "operator@example.com", role: "staff" }]
+          return mocks.findStaff()
         },
       }),
     }),
@@ -101,6 +102,9 @@ function submitLogin() {
 describe("credential attempt protection", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mocks.findStaff.mockReset().mockResolvedValue([
+      { id: "test-user-id", email: "operator@example.com", role: "staff" },
+    ])
     mocks.decide.mockResolvedValue(
       new ArcjetAllowDecision({
         ttl: 0,
@@ -199,6 +203,21 @@ describe("credential attempt protection", () => {
     await expect(submitLogin()).resolves.toEqual({
       error: "Invalid email or password.",
     })
+  })
+
+  it("requires the same Auth ID before issuing a session or an MFA challenge", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://quality.supabase.co")
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "ci-public-placeholder")
+    mocks.findStaff.mockResolvedValueOnce([])
+    try {
+      await expect(submitLogin()).resolves.toEqual({
+        error: "Staff workspace access not provisioned for this account.",
+      })
+      expect(mocks.findStaff).toHaveBeenCalledOnce()
+      expect(mocks.signIn).not.toHaveBeenCalled()
+    } finally {
+      vi.unstubAllEnvs()
+    }
   })
 
   it("preserves the successful Next.js redirect", async () => {
