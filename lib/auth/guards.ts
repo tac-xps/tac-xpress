@@ -6,10 +6,7 @@ import { users } from "@/lib/db/schema"
 import { and, eq, isNull } from "drizzle-orm"
 import * as Sentry from "@sentry/nextjs"
 import { cache } from "react"
-import {
-  customerLookupTiming,
-  timeCustomerQuery,
-} from "@/lib/server/customer-lookup-timing"
+import { customerLookupTiming } from "@/lib/server/customer-lookup-timing"
 
 export const DASHBOARD_ROLES = ["admin", "staff"] as const
 
@@ -22,14 +19,18 @@ type AuthSession = Session | null
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
+export function isWorkspaceUserId(id: string) {
+  return UUID_REGEX.test(id)
+}
+
 const currentAllowedRole = cache(
   async (
     session: AuthSession,
     allowedRoles: readonly DashboardRole[] = DASHBOARD_ROLES
   ) => {
-    if (!session?.user?.id || !UUID_REGEX.test(session.user.id)) return null
+    if (!session?.user?.id || !isWorkspaceUserId(session.user.id)) return null
     try {
-      const [currentUser] = await timeCustomerQuery("role", (annotate) => db
+      const [currentUser] = await db
         .select({
           role: users.role,
           name: users.name,
@@ -37,8 +38,8 @@ const currentAllowedRole = cache(
           isOnboarded: users.isOnboarded,
         })
         .from(users)
-        .where(annotate(and(eq(users.id, session.user.id), isNull(users.deletedAt))))
-        .limit(1))
+        .where(and(eq(users.id, session.user.id), isNull(users.deletedAt)))
+        .limit(1)
 
       return currentUser &&
         allowedRoles.includes(currentUser.role as DashboardRole)
@@ -121,14 +122,18 @@ export async function requireDashboardAction(
   }
 }
 
-export async function requireDashboardApi(
-  allowedRoles: readonly DashboardRole[] = DASHBOARD_ROLES
-) {
+export async function readDashboardApiSession() {
   const timing = customerLookupTiming.getStore()
   const sessionStarted = timing ? performance.now() : 0
   const session = await auth()
   if (timing) timing.durations.session = performance.now() - sessionStarted
+  return session
+}
 
+export async function requireDashboardApi(
+  allowedRoles: readonly DashboardRole[] = DASHBOARD_ROLES
+) {
+  const session = await readDashboardApiSession()
   if (!session?.user?.id) {
     return {
       ok: false as const,
