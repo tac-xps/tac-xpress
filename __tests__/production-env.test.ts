@@ -25,10 +25,10 @@ const productionEnv: NodeJS.ProcessEnv = {
   WPBOX_USER_ID: "fixture-private-account",
 }
 
-function verify(overrides: Record<string, string> = {}) {
+function verify(overrides: Record<string, string> = {}, args: string[] = []) {
   return spawnSync(
     process.execPath,
-    ["--import", "tsx", "scripts/verify-production-env.ts"],
+    ["--import", "tsx", "scripts/verify-production-env.ts", ...args],
     {
       cwd: process.cwd(),
       env: { ...productionEnv, ...overrides },
@@ -39,6 +39,23 @@ function verify(overrides: Record<string, string> = {}) {
 }
 
 describe("production messaging environment", { timeout: 12_000 }, () => {
+  it("allows the approved Resend deferral without requiring sender settings", () => {
+    const result = verify({
+      RESEND_API_KEY: "",
+      FROM_EMAIL: "",
+      OPS_NOTIFICATION_EMAIL: "",
+    }, ["--defer-resend"])
+    expect(result.status).toBe(0)
+    expect(result.stderr).toContain("Resend validation is deferred")
+  })
+
+  it("keeps core and active provider checks enforced during the deferral", () => {
+    const result = verify({ AUTH_SECRET: "", WPBOX_API_TOKEN: "" }, ["--defer-resend"])
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain("AUTH_SECRET")
+    expect(result.stderr).toContain("WPBOX_API_TOKEN")
+  })
+
   it("accepts an explicit session pooler with a separate capacity warning", () => {
     const result = verify({
       DATABASE_URL:

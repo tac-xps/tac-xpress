@@ -4,6 +4,7 @@ import { z } from "zod"
 
 // Run in the deployment environment; never log secret values.
 const errors: string[] = []
+const deferResend = process.argv.includes("--defer-resend")
 try {
   getAppUrl(process.env.NEXT_PUBLIC_APP_URL, "production")
 } catch (error) {
@@ -16,8 +17,7 @@ for (const name of [
   "SUPABASE_SERVICE_ROLE_KEY",
   "ARCJET_KEY",
   "CRON_SECRET",
-  "RESEND_API_KEY",
-  "FROM_EMAIL",
+  ...(!deferResend ? ["RESEND_API_KEY", "FROM_EMAIL"] : []),
   "INVOICE_PDF_SIGNING_SECRET",
   "SENTRY_DSN",
   "OPENROUTER_API",
@@ -88,12 +88,12 @@ if (!whatsapp.metaWebhookConfigured) {
 }
 const operationsEmail =
   process.env.OPS_NOTIFICATION_EMAIL?.trim() || process.env.ADMIN_EMAIL?.trim()
-if (!operationsEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(operationsEmail)) {
+if (!deferResend && (!operationsEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(operationsEmail))) {
   errors.push(
     "OPS_NOTIFICATION_EMAIL or ADMIN_EMAIL must identify the operations notification recipient."
   )
 }
-for (const name of ["FROM_EMAIL", "RESEND_FROM_EMAIL"]) {
+for (const name of deferResend ? [] : ["FROM_EMAIL", "RESEND_FROM_EMAIL"]) {
   const sender = process.env[name]?.trim() ?? ""
   if (name === "RESEND_FROM_EMAIL" && !sender) continue
   const senderAddress = /[<>]/.test(sender)
@@ -119,6 +119,11 @@ for (const name of ["FROM_EMAIL", "RESEND_FROM_EMAIL"]) {
       )
     }
   }
+}
+if (deferResend) {
+  process.stderr.write(
+    "Resend validation is deferred for this release. This does not change runtime delivery settings.\n"
+  )
 }
 if (errors.length) {
   errors.forEach((error) => process.stderr.write(`${error}\n`))

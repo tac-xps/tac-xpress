@@ -8,6 +8,8 @@ Set production values for staff auth, Supabase/database access, Arcjet, cron/mob
 
 `pnpm verify:production-env` loads `.env.local` when present; already supplied environment values take precedence. In deployment CI, run it with the platform's production variables and without a local development env file. A local pass is configuration validation only. Actual sender-domain, WhatsApp template/callback, PDF rendering and database restore acceptance remain separate.
 
+For the release with approved outbound email deferral, run `pnpm verify:production-env --defer-resend`. It skips Resend credentials, sender, and email recipient validation for that invocation. The default command still checks them. The flag does not control runtime sends. Keep the candidate's Resend credentials unset if outbound email is outside the release scope. Outbound LeminAI checks remain required. Meta callback credentials may both be absent during the callback deferral. A partial pair still fails.
+
 The communications worker is scheduled daily (`0 1 * * *`) in `vercel.json` for Vercel Hobby tier compatibility. High-frequency sweeps (e.g. every 5 minutes) require Vercel Pro/Enterprise or an external scheduler calling the authenticated `/api/cron/communications` endpoint. Monitor pending and failed jobs in the communications workspace and verify throughput before launch.
 
 The Operations Recovery GitHub workflow schedules recovery every fifteen minutes. Its reviewed working copy calls communications and SLA endpoints.
