@@ -48,7 +48,7 @@ The subsequent exact-candidate `pnpm verify` passed. Typecheck, ESLint (49 warni
 
 Loopback staging on `b20a888` passed the admin sweep and customer denial before a cold staff API request timed out. After warming the protected APIs, six further cases passed, including staff restrictions, revocation, invoice totals and the audit row, mobile navigation, warehouse observation and private PDF. Line-haul failed at the final dialog visibility assertion. Read-only staging SQL confirmed one exception, one receipt, an inactive assignment and shipment status `in-transit`. The remaining two cases were skipped by the serial suite. The application fix is in `00b77cd5bcd6f9eaee93be701bba865d4a6f9e13`. The earlier unit and browser passes belong to `b20a888`.
 
-### Current candidate `00b77cd`
+### Prior candidate `00b77cd`
 
 Exact application commit `00b77cd5bcd6f9eaee93be701bba865d4a6f9e13` passed `pnpm verify` in the detached Windows checkout. It used Node `24.13.1`, pnpm `9.4.0`, the frozen lockfile and synthetic CI configuration. Typecheck, ESLint, Stylelint and the token audit passed. ESLint reported zero errors and 55 warnings, including six from the temporary browser harness. All 541 unit tests passed across 82 files in 215.09 s. The production build generated 56 pages. `pnpm validate:contracts` passed with seven warnings, and `pnpm audit:supabase-migration-history` passed with eight unique versions.
 
@@ -66,6 +66,40 @@ Loopback used the existing synthetic Supabase project on PostgreSQL 17.11, the 5
 | Concurrent lookup with server timings | 1 failed at the original 15-second client deadline. Next.js logged HTTP 200 for all eight requests at 14.8 s each. It attributed roughly 14.5–14.6 s per request to application code. That time includes authorization, query execution and connection waits. The run did not measure those individually. |
 
 Ten distinct cases passed on this candidate across the attempts above. The line-haul departure stall did not recur in the focused run. Its cause remains unresolved. The earlier readback showed zero current lock waits after the stall. Repeat all 11 cases on a protected preview. For the lookup burst, measure request time, role-check time, query time and pool waits together. The original timeouts remained in effect.
+
+### CTO release follow-up
+
+Application candidate `852f17cfcfd3fa98783ae4d82c42b9a9d281d6fe` is local. Evidence commit `51d451fef280247044fe476f7925e4af35f94771` changed four engineering Markdown files relative to `00b77cd`. The Vercel release branch query returned zero deployments. The production alias still serves `98f3e42ac19b3680d329415d61be716058d600cd` at deployment `dpl_J3GQjo4rGfGMHowqBdifkE2nV1xR`.
+
+The measurement baseline was the instrumented commit `a4b84315841057c80a2f74ab9e290a435ce5918c`. The corrected candidate uses the same isolated loopback Next.js runner and one Postgres.js socket to synthetic Supabase PostgreSQL 17.11 over port 5432. Each cold wave started a fresh application process with an existing synthetic session and a cold route and database socket. Each warm wave followed immediately. Client time includes receiving and validating the response. The diagnostic driver uses the original 15 s client deadline and records correlation IDs, timings and status only. A timed-out client has no response ID. The server logs generated IDs without exposing cookies, SQL parameters or rows. The optional timing flag is off by default.
+
+| Requests | Baseline cold | Candidate cold | Baseline warm | Candidate warm |
+| --- | --- | --- | --- | --- |
+| 1 | 1/1 in 10.52 s | 1/1 in 8.45 s | 1/1 in 1.71 s | 1/1 in 0.94 s |
+| 2 | 2/2 in 10.82 s | 2/2 in 8.64 s | 2/2 in 3.20 s | 2/2 in 1.60 s |
+| 4 | 3/4 by deadline | 4/4 in 10.52 s | 4/4 in 6.56 s | 4/4 in 3.28 s |
+| 8 | 0/8 by deadline | 8/8 in 14.30 s | 7/8 by deadline, then 8/8 in 12.57 s | 8/8 in 6.35 s, then 8/8 in 6.34 s |
+| 16 | 0/16 by deadline | 9/16 by deadline | 0/16 by deadline | 16/16 in 14.20 s |
+
+Two sequential database round trips per request amplified queue time on the single socket. The role and search SQL took approximately 0.78 s each from dispatch to receipt over the staging pooler. The SQL engine plans executed in 2.571 ms and 0.120 ms. The combined staging plan executed in 0.975 ms. Baseline session verification took 13–220 ms and response construction took at most 1.6 ms in the captured samples. The driver marks dispatch before wire execution, so its SQL round-trip metric includes network and pooler time. A catalog sample saw no lock wait.
+
+The correction joins an active staff or admin record to the customer search in one statement. Every lookup checks current authorization and returns 403 for a revoked or non-staff workspace record. Focused verification covered empty results, invalid input, selected-customer ordering, deleted rows and private cache headers. Two focused suites passed 19 tests. The original eight-request Playwright case passed on the corrected candidate with its 15 s client deadline and all original assertions. Cold 16-request capacity and a production latency budget remain open.
+
+On `852f17c`, `pnpm verify` exited 0 in the detached Windows checkout with synthetic CI values. Type checking, ESLint, Stylelint and the token audit passed. ESLint reported zero errors and 57 warnings, including temporary runner and optional diagnostic logging warnings. Vitest passed 543 tests in 83 files in 206.62 s. The production build generated all 56 pages.
+
+The warmed local Chromium run passed 48 cases in 4.1 minutes and skipped 15 by configuration. Four of those cases passed separately against the exact candidate's local Storybook preview in 47.2 s, covering three viewport widths and dark mode command search. The protected Vercel application preview remains pending.
+
+The complete synthetic loopback suite stopped at `/dashboard/hubs` during the admin sweep. Navigation returned an acceptable status and the expected URL. The `main` assertion saw zero elements before its 30 s deadline, and the serial suite skipped the other ten cases. The failure snapshot did not establish whether the request was waiting for compilation, rendering or database access. The separate concurrency case had already passed on this SHA.
+
+The November 14 authenticated warmup rendered Hubs successfully. Next.js reported 16.5 s overall, including 5.7 s in Next.js and 10.6 s in application code. During the subsequent sweep, the development server logged fatal memory allocation failures and the browser received HTML where Auth.js expected a session JSON response on Fleet. The admin case failed and the ten serial successors did not run. These logs establish resource exhaustion in the warm retry. The cause of the earlier Hubs timeout remains unresolved.
+
+The isolated three-case role group passed customer sign-in denial, staff lookup access with administration denied, and revocation with an existing cookie. This run used the original assertions and a fresh loopback server.
+
+The billing and custody group passed invoice creation with exact totals and the private PDF test. Line-haul stopped before departure because the creation dialog stayed visible at the 25 s deadline. Read-only staging SQL confirmed that a draft manifest and an active assignment had committed for the new invoice shipment, which stayed pending with zero handoffs. The snapshot showed the submit button enabled again. The cause of the dialog remaining open after creation is unconfirmed. This failure occurred earlier than the prior final-receipt dialog defect.
+
+The three-case field group passed mobile workspace navigation, warehouse observation without a custody change, and pickup through signed final delivery. The delivery case checked both receipts, the stored signature, the original invoice amount and zero active assignments.
+
+A fresh invoice and line-haul retry captured manifest POSTs at 27.3 s and 30.8 s. Creation and departure completed, then the original 15 s click deadline expired waiting for Record handover. The snapshot showed the affected row still offering Start run. SQL readback showed the manifest finalized, the shipment in transit, one active assignment and zero handoffs. A manifest reload was logged at 16.1 s. This establishes delayed UI convergence after committed departure on this runner. It leaves the post-commit response and refresh path open for profiling. Across the independent runs, nine distinct staging cases passed on `852f17c`. The full admin sweep and line-haul remain failed on loopback.
 
 ## Audit baseline and prior candidates
 

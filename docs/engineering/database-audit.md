@@ -40,3 +40,9 @@ Schema and workflow sources are [Drizzle definitions](../../lib/db/schema.ts), [
 | DB-03 · P1 | **UNVERIFIED** for the candidate. The November 4 staging receipt passed a bounded concurrent staff lookup workload on runtime `8676eaa`. Production-like sustained capacity, pooler behavior under current traffic, and release-candidate restore remain open. | Re-run the bounded role/custody suite and restore on isolated staging for the candidate. Measure sustained capacity against the release traffic profile. The original checkout retains `hosted-release-acceptance-2026-11-04.json`. |
 
 Hosted schema, grants, policies, storage, extensions, and history were inspected on November 13. The audit made no database or infrastructure changes.
+
+## November 13 release follow-up
+
+Compared production `ujyellrhwhqjmfponhuz` with synthetic staging `zuevgwqmphbvgnwhvvnq` using read-only catalog fingerprints. Public and Storage matched on 38 table RLS settings, two policy definitions, 539 table grants, 4,039 column grants, 109 constraints, 136 indexes, 28 non-extension routines with effective API-role execute privileges, and 12 table triggers. Seven database event triggers also matched. Staging runs PostgreSQL 17.11. Its Storage catalog has zero buckets, so the metadata comparison leaves the private document workflow open.
+
+Staging `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` measured 2.571 ms for a role lookup using the user primary key and 0.120 ms for the four-match synthetic customer search. Correlated application traces measured roughly 0.78 s per query round trip over the staging pooler from the workstation. The one-socket application pool serialized two round trips per authenticated request and amplified the queue wait during bursts. These timings cover the synthetic staging data and local network path.
