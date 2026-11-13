@@ -45,6 +45,8 @@ The baseline and final full audits each reported four high advisories, twelve mo
 
 ## Final candidate
 
+Release remediation application candidate `4d768b6` passed all 541 unit tests across 82 files, plus typecheck, ESLint, Stylelint, token and migration audits, contract validation, and production build. Local Chromium passed 48 and skipped 15. The 11 approved staging cases remain unrun because the configured backend is unreachable. The two additional unit cases cover the explicit Resend deferral and continued enforcement of core and active provider settings.
+
 The subsequent manual staff provisioning change passed all 539 unit tests across 82 files, including three new regressions. Typecheck, ESLint, Stylelint, the token and migration audits, contract validation, and the production build passed. A synthetic embedded PostgreSQL check also verified the MFA lookup with linked and unlinked IDs. The approved hosted staging preflight still returned `XX000`, so authenticated browser acceptance remains open.
 
 Application and test changes are recorded through commit `02e1646`. Documentation follows separately.

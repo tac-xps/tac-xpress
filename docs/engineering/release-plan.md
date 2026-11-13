@@ -1,17 +1,17 @@
 # TAC-XPRESS production release plan
 
-**Decision on 2026-11-13: NO-GO for promotion.** The audited local candidate is `e13a27f1dd97764ba1dd1a33a34adc437d2d5a44` on `codex/engineering-audit-2026-11-13`. Keep this revision as the candidate until a required fix changes its source. Carry forward the local test evidence and regenerate any evidence affected by a source or configuration change.
+**Decision on 2026-11-13: NO-GO for promotion.** The verified application candidate is `4d768b6ad15d000bbacdaf589cae32351de7586e` on `codex/engineering-audit-2026-11-13`, descended from audit candidate `e13a27f1dd97764ba1dd1a33a34adc437d2d5a44`. Hosted signup and current-candidate staging acceptance remain open.
 
 ## Current evidence
 
 | Area | Evidence |
 | --- | --- |
-| Candidate quality | The audit branch is clean. The previous engineering cycle passed 536 unit tests, 48 local browser tests, the production build, and the production dependency audit. Fifteen preview or staging cases were skipped. |
+| Candidate quality | 541 unit tests, 48 local Chromium tests, typecheck, lint, Stylelint, token audit, contract validation, migration filename audit, and the production build passed. Fifteen preview or staging cases were skipped. A production readback matched all eight local migration versions and names. No SQL migration was applied. |
 | Production identity | Vercel reports a READY production-target deployment for `98f3e42` with the project’s Vercel aliases. The custom-domain mapping and rollback eligibility still require release-operator verification. The local candidate is newer. |
-| Recovery | Windows Task Scheduler still reports exit 1 for the November 12 backup. The configured recovery volume remains unavailable in this session. Snapshot freshness and the failure cause are unknown. |
-| Synthetic staging | The existing Playwright suite discovers 11 cases and accepts the saved staging profile’s isolation checks. A read-only connection to the configured pooler returned `XX000`, and the staging Auth hostname was unreachable. Project status could not be established through the available management connector. No staging cases ran. |
-| Staff accounts | The local implementation requires the Auth ID for new staff sessions. A read-only production inventory found four active staff/admin records. Three lack an Auth ID or email match, including two admins. One admin has a canonical ID match. Hosted self-registration still reports enabled. |
-| Provider scope | Resend sender verification concerns outbound application mail. The November 4 release record deferred it, email delivery acceptance, and LeminAI callbacks. The current production environment validator still checks the configured outbound sender. Resolve the scope and validator discrepancy at the provider gate. |
+| Recovery | Replaced unavailable G: paths with a restricted D: backup directory and verified Restic and PostgreSQL binaries. Re-registered the workstation task. The pre- and post-provisioning on-demand runs exited 0. The latest source snapshot is 06:37:39 IST. At 06:39:36 IST, the receipt verified the offsite restore, file checksums, and retention. It covers 55 database/Auth tables and seven Storage objects. Managed service replacement and a full rollback drill remain open. |
+| Synthetic staging | The existing suite discovers 11 cases. The approved pooler returned `XX000` and the staging Auth hostname was unreachable. Supabase MCP returned Unknown tool for project lookup, SQL, and restore. Windows Application Control blocked the Supabase CLI, and browser automation could not initialize. The 11 cases remain unrun. |
+| Staff accounts | Provisioned three confirmed accounts through the production Supabase Auth Admin API. Used the existing workspace UUIDs to preserve shipment and profile references. Readback verified four of four active staff/admin records match by UUID and email. The original canonical admin has a recent successful Supabase sign-in on record. A fresh credentialed check and first-password handoff remain open. Public signup still reports enabled. |
+| Provider scope | `pnpm verify:production-env --defer-resend` implements the approved Resend deferral. Core and outbound LeminAI checks still run. The configured local production-shaped profile still fails the HTTPS origin check. The actual Vercel production settings require separate verification. |
 
 ## Sequence and owners
 
@@ -32,6 +32,4 @@ Role assignments below are proposed. Assign one named owner and one backup opera
 - **Stop promotion** for any access-control failure, custody or billing discrepancy, unavailable verified backup, failed critical smoke check, or breached agreed reliability threshold. An outage or data-integrity finding after promotion triggers incident handling and the rehearsed rollback. Pause affected sends and scheduled recovery if retrying could duplicate messages.
 - **Rollback application traffic** to the verified compatible Vercel deployment and re-run critical smoke checks. If data integrity is affected, preserve evidence and use the separately approved incident and recovery runbook. A Vercel rollback changes the served deployment. Database and Storage recovery are separate operations. [Vercel rollback](https://vercel.com/docs/instant-rollback), [Supabase backups](https://supabase.com/docs/guides/platform/backups)
 
-The next executable handoff is access to the backup host and volume, plus restoration of the approved synthetic staging connection. Deployment and hosted changes retain the authorization boundaries of the audit.
-
-Before promoting strict staff sign-in, classify the three unmatched records. Reconcile legitimate staff through the approved provisioning workflow and preserve operational references. Verify the matched admin can sign in. Confirm the hosted signup setting on each intended target.
+Restore the approved staging project and disable production public signup through Supabase project management. Verify both changes by readback. Run a fresh matched-admin sign-in with the account holder. New staff accounts have undistributed server-generated credentials and require secure password setup before first sign-in.
