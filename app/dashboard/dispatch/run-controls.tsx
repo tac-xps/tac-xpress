@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAction } from "next-safe-action/hooks"
 import { toast } from "sonner"
@@ -39,6 +39,7 @@ import {
   recordManifestItemHandoffAction,
   updateManifestAction,
 } from "@/app/dashboard/manifests/actions"
+import { logManifestClientTiming } from "@/app/dashboard/manifests/client-timing"
 
 type HandoffRun = {
   id: string
@@ -64,18 +65,65 @@ export function RunControls({ run }: { run: HandoffRun }) {
   const [error, setError] = useState("")
   const start = useAction(startDispatchRunAction)
   const handoff = useAction(recordManifestItemHandoffAction)
-  const finalizeManifest = useAction(updateManifestAction)
-  const pending =
-    start.isExecuting || finalizeManifest.isExecuting || handoff.isExecuting
-  const isStart = run.status === "draft"
+  const starting = useRef(false)
+  const [startPending, setStartPending] = useState(false)
+  const [departure, setDeparture] = useState<{ id: string; activeItemIds: string[] }>()
+  const committed = departure?.id === run.id && run.status === "draft" ? departure : undefined
+  const pending = startPending || handoff.isExecuting
+  const isStart = run.status === "draft" && !committed
   const activeItems = (run.items ?? []).filter(
-    (item) => item.isActive && item.shipment?.status === "in-transit"
+    (item) => committed
+      ? committed.activeItemIds.includes(item.id) && item.shipment
+      : item.isActive && item.shipment?.status === "in-transit"
   )
   const allReceived =
     Boolean(run.items?.length) &&
     run.items!.every((item) =>
       item.handoffs?.some((handoff) => handoff.outcome === "received")
     )
+
+  async function confirmDeparture() {
+    if (starting.current) return
+    starting.current = true
+    setStartPending(true)
+    const lineHaul = run.legType === "line_haul"
+    const requestId = lineHaul ? crypto.randomUUID() : undefined
+    const started = performance.now()
+    if (requestId) logManifestClientTiming(requestId, "submit", started)
+    try {
+      const result = requestId
+        ? await updateManifestAction({ id: run.id, status: "finalized", requestId })
+        : await start.executeAsync({ id: run.id })
+      if (requestId) logManifestClientTiming(requestId, "response", started)
+      if (result?.data?.success) {
+        if ("activeItemIds" in result.data && result.data.activeItemIds) {
+          setDeparture({ id: run.id, activeItemIds: result.data.activeItemIds })
+        }
+        toast.success(lineHaul ? "Manifest finalized" : "Dispatch started")
+        setConfirmingStart(false)
+        if (requestId) {
+          logManifestClientTiming(requestId, "committed-ui", started)
+          logManifestClientTiming(requestId, "refresh", started)
+        }
+        router.refresh()
+      } else {
+        toast.error(result?.data?.error || result?.serverError || "The run could not be started")
+      }
+    } catch (caught) {
+      if (requestId) {
+        logManifestClientTiming(requestId, "interrupted", started)
+        logManifestClientTiming(requestId, "refresh", started)
+        router.refresh()
+      }
+      Sentry.captureException(caught)
+      toast.error(lineHaul
+        ? "The response was interrupted. Confirm departure again to check the recorded state."
+        : "The request was interrupted. Refresh the run before retrying.")
+    } finally {
+      starting.current = false
+      setStartPending(false)
+    }
+  }
 
   const selectItem = (itemId: string) => {
     setSelectedItemId(itemId)
@@ -163,37 +211,9 @@ export function RunControls({ run }: { run: HandoffRun }) {
               <AlertDialogAction
                 type="button"
                 disabled={pending}
-                onClick={async (event) => {
+                onClick={(event) => {
                   event.preventDefault()
-                  try {
-                    const result =
-                      run.legType === "line_haul"
-                        ? await finalizeManifest.executeAsync({
-                            id: run.id,
-                            status: "finalized",
-                          })
-                        : await start.executeAsync({ id: run.id })
-                    if (result?.data?.success) {
-                      toast.success(
-                        run.legType === "line_haul"
-                          ? "Manifest finalized"
-                          : "Dispatch started"
-                      )
-                      setConfirmingStart(false)
-                      router.refresh()
-                    } else {
-                      toast.error(
-                        result?.data?.error ||
-                          result?.serverError ||
-                          "The run could not be started"
-                      )
-                    }
-                  } catch (caught) {
-                    Sentry.captureException(caught)
-                    toast.error(
-                      "The request was interrupted. Refresh the run before retrying."
-                    )
-                  }
+                  void confirmDeparture()
                 }}
               >
                 {pending ? "Saving…" : "Confirm departure"}

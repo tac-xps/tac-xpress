@@ -93,7 +93,7 @@ const columns: ColumnDef<ManifestRow>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         {row.original.legType === "line_haul" && (
-          <RunControls run={row.original} />
+          <RunControls key={row.original.id} run={row.original} />
         )}
         <ManifestActions manifest={row.original} />
       </div>

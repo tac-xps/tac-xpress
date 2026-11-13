@@ -2,11 +2,12 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { useAction } from "next-safe-action/hooks"
+import { useRouter } from "next/navigation"
 import { createManifestAction } from "./actions"
 import { createManifestSchema, type CreateManifestValues } from "./validations"
 import { useScannerContext } from "@/components/scanner/scanner-provider"
 import type { ManifestShipmentItem } from "./manifest-telemetry-card"
+import { logManifestClientTiming } from "./client-timing"
 
 export function useCreateManifestForm(
   shipments: ManifestShipmentItem[],
@@ -24,26 +25,43 @@ export function useCreateManifestForm(
     },
   })
 
-  const { executeAsync, isExecuting } = useAction(createManifestAction, {
-    onSuccess: ({ data }) => {
-      if (!data?.success) {
-        toast.error(data?.error || "Failed to create manifest")
-        return
-      }
-      if (data?.whatsAppDispatched) {
-        toast.success("Manifest created & WhatsApp dispatched to driver")
-      } else {
-        toast.success("Manifest created successfully")
-      }
-      onSuccess()
-    },
-    onError: ({ error }) => {
-      toast.error(error.serverError || "An unexpected error occurred")
-    },
-  })
+  const router = useRouter()
+  const submitting = useRef(false)
+  const submission = useRef<{ signature: string; id: string }>(null)
+  const [isExecuting, setIsExecuting] = useState(false)
 
   async function onSubmit(values: CreateManifestValues) {
-    await executeAsync(values)
+    if (submitting.current) return
+    submitting.current = true
+    setIsExecuting(true)
+    const signature = JSON.stringify({ ...values, shipmentIds: [...values.shipmentIds].sort() })
+    if (submission.current?.signature !== signature) {
+      submission.current = { signature, id: crypto.randomUUID() }
+    }
+    const requestId = submission.current.id
+    const started = performance.now()
+    logManifestClientTiming(requestId, "submit", started)
+    try {
+      const result = await createManifestAction({ ...values, requestId })
+      logManifestClientTiming(requestId, "response", started)
+      if (!result?.data?.success) {
+        toast.error(result?.data?.error || result?.serverError || "Failed to create manifest")
+        return
+      }
+      toast.success(result.data.whatsAppDispatched
+        ? "Manifest created & WhatsApp dispatched to driver"
+        : "Manifest created successfully")
+      onSuccess()
+      logManifestClientTiming(requestId, "committed-ui", started)
+      logManifestClientTiming(requestId, "refresh", started)
+      router.refresh()
+    } catch {
+      logManifestClientTiming(requestId, "interrupted", started)
+      toast.error("The response was interrupted. Submit the same details again to confirm the manifest.")
+    } finally {
+      submitting.current = false
+      setIsExecuting(false)
+    }
   }
 
   const [scanInput, setScanInput] = useState("")

@@ -831,6 +831,45 @@ describe("cargo transactions against embedded PostgreSQL", () => {
     ).toMatchObject({ success: false })
     expect(await database.select().from(schema.trackingEvents)).toHaveLength(1)
   })
+  it("replays matching creation and departure without duplicate custody records", async () => {
+    const shipment = await seedShipment()
+    const requestId = crypto.randomUUID()
+    const input = {
+      requestId,
+      originHubId,
+      destinationHubId,
+      driverId,
+      vehicleId,
+      shipmentIds: [shipment.id],
+      sendWhatsAppNotification: false,
+    }
+    const creations = await Promise.all([createManifestAction(input), createManifestAction(input)])
+    for (const result of creations) {
+      expect(result).toMatchObject({ success: true, manifest: { id: requestId } })
+    }
+    expect(await createManifestAction({ ...input, originHubId: destinationHubId }))
+      .toMatchObject({ success: false })
+    const [item] = await database.select().from(schema.manifestItems)
+    expect(await database.select().from(schema.manifestItems)).toHaveLength(1)
+    const departure = { id: requestId, status: "finalized", requestId: crypto.randomUUID() }
+    const departures = await Promise.all([
+      updateManifestAction(departure), updateManifestAction(departure),
+    ])
+    for (const result of departures) {
+      expect(result).toMatchObject({
+        success: true,
+        manifest: { id: requestId, status: "finalized" },
+        activeItemIds: [item.id],
+      })
+    }
+    expect(await updateManifestAction({ ...departure, destinationHubId: originHubId }))
+      .toMatchObject({ success: false })
+    expect((await shipmentState(shipment.id))?.status).toBe("in-transit")
+    expect(await database.select().from(schema.trackingEvents)).toHaveLength(1)
+    expect((await client.query("select action from audit_log order by created_at")).rows)
+      .toEqual([{ action: "create" }, { action: "finalize" }])
+  })
+
   it("rejects reversed cargo directions and overloaded manifests", async () => {
     const shipment = await seedShipment()
     await database

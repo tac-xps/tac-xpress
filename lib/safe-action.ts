@@ -14,9 +14,12 @@ export const actionClient = createSafeActionClient({
 })
 
 export const authActionClient = actionClient.use(async ({ next }) => {
+  const started = performance.now()
   const authResult = await requireDashboardAction()
   if (!authResult.ok) {
     throw new Error(authResult.response.error)
   }
-  return next({ ctx: { session: authResult.session } })
+  return next({
+    ctx: { session: authResult.session, authorizationMs: performance.now() - started },
+  })
 })

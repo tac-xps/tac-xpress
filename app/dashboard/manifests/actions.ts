@@ -42,11 +42,34 @@ export const createManifestAction = authActionClient
       vehicleId,
       driverId,
       sendWhatsAppNotification,
+      requestId,
     } = parsedInput
     const createdBy = ctx.session.user.id
 
+    const started = performance.now()
     try {
       const createdManifest = await db.transaction(async (tx) => {
+        if (requestId) {
+          await tx.execute(sql`select pg_advisory_xact_lock(hashtext('manifest-create'), hashtext(${requestId}))`)
+          const previous = await tx.query.manifests.findFirst({
+            where: eq(manifests.id, requestId),
+            with: { items: { columns: { shipmentId: true } } },
+          })
+          if (previous) {
+            const priorShipments = new Set(previous.items.map((item) => item.shipmentId))
+            if (
+              previous.createdBy !== createdBy ||
+              previous.legType !== "line_haul" ||
+              previous.originHubId !== originHubId ||
+              previous.destinationHubId !== destinationHubId ||
+              previous.vehicleId !== vehicleId ||
+              previous.driverId !== driverId ||
+              priorShipments.size !== shipmentIds.length ||
+              shipmentIds.some((id) => !priorShipments.has(id))
+            ) throw new Error("This submission no longer matches its manifest")
+            return { id: previous.id, referenceId: previous.referenceId, replay: true }
+          }
+        }
         await tx
           .select({ id: vehicles.id })
           .from(vehicles)
@@ -183,6 +206,7 @@ export const createManifestAction = authActionClient
         const [newManifest] = await tx
           .insert(manifests)
           .values({
+            id: requestId,
             referenceId,
             createdBy,
             originHubId,
@@ -210,11 +234,12 @@ export const createManifestAction = authActionClient
           entityId: newManifest.id,
           after: { ...parsedInput, referenceId },
         })
-        return { id: newManifest.id, referenceId }
+        return { id: newManifest.id, referenceId, replay: false }
       })
 
       let whatsAppDispatched = false
-      if (sendWhatsAppNotification && driverId) {
+      const committed = performance.now()
+      if (!createdManifest.replay && sendWhatsAppNotification && driverId) {
         const assignedDriver = await db.query.drivers.findFirst({
           where: eq(drivers.id, driverId),
         })
@@ -242,10 +267,11 @@ export const createManifestAction = authActionClient
         }
       }
 
-      revalidatePath("/dashboard/manifests")
+      if (!requestId) revalidatePath("/dashboard/manifests")
+      logManifestTiming(requestId, "create", started, committed, ctx.authorizationMs)
       return {
         success: true,
-        manifest: createdManifest,
+        manifest: { id: createdManifest.id, referenceId: createdManifest.referenceId },
         whatsAppDispatched,
         error: undefined,
       }
@@ -389,9 +415,11 @@ export const scanShipmentAction = authActionClient
 export const updateManifestAction = authActionClient
   .schema(updateManifestSchema)
   .action(async ({ parsedInput, ctx }) => {
+    const started = performance.now()
+    const { id, requestId, ...updateData } = parsedInput
+    const departureOnly = updateData.status === "finalized" && Object.keys(updateData).length === 1
     try {
-      const { id, ...updateData } = parsedInput
-      const manifest = await db.transaction(async (tx) => {
+      const { manifest, activeItemIds } = await db.transaction(async (tx) => {
         // Serialize edits, scans, finalization and deletion of this load.
         await tx
           .select({ id: manifests.id })
@@ -409,13 +437,19 @@ export const updateManifestAction = authActionClient
           updateData.referenceId !== current.referenceId
         )
           throw new Error("Manifest references cannot be changed")
-        if (current.status === "finalized") {
-          throw new Error("A finalized manifest cannot be changed")
-        }
         if (current.legType !== "line_haul") {
           throw new Error(
             "Use the dispatch workflow for pickup and delivery legs"
           )
+        }
+        if (current.status === "finalized") {
+          if (!departureOnly) throw new Error("A finalized manifest cannot be changed")
+          return {
+            manifest: current,
+            activeItemIds: current.items
+              .filter((item) => item.isActive && item.shipment?.status === "in-transit")
+              .map((item) => item.id),
+          }
         }
         const assignments = { ...current, ...updateData }
         if (assignments.vehicleId)
@@ -467,12 +501,14 @@ export const updateManifestAction = authActionClient
         if (origin.id === destination.id)
           throw new Error("Origin and destination hubs must be different")
 
-        const cargoIds = current.items
-          .filter((item) => item.isActive)
-          .map((item) => item.shipmentId)
+        const activeItems = current.items.filter((item) => item.isActive)
+        const cargoIds = activeItems.map((item) => item.shipmentId)
         const loadCargo = cargoIds.length
           ? await tx
               .select({
+                id: shipments.id,
+                status: shipments.status,
+                deletedAt: shipments.deletedAt,
                 origin: shipments.origin,
                 destination: shipments.destination,
                 weightKg: shipments.weightKg,
@@ -493,22 +529,12 @@ export const updateManifestAction = authActionClient
           ) {
             throw new Error("Complete all assignments before finalizing")
           }
-          const activeItems = current.items.filter((item) => item.isActive)
           if (activeItems.length === 0) {
             throw new Error("A manifest must contain at least one shipment")
           }
 
-          const shipmentIds = activeItems.map((item) => item.shipmentId)
-          const lockedShipments = await tx
-            .select({
-              id: shipments.id,
-              status: shipments.status,
-              deletedAt: shipments.deletedAt,
-            })
-            .from(shipments)
-            .where(inArray(shipments.id, shipmentIds))
-            .orderBy(shipments.id)
-            .for("update")
+          const shipmentIds = cargoIds
+          const lockedShipments = loadCargo
           if (
             lockedShipments.length !== shipmentIds.length ||
             lockedShipments.some((item) => item.deletedAt)
@@ -583,11 +609,16 @@ export const updateManifestAction = authActionClient
           before: current,
           after: updated,
         })
-        return updated
+        return {
+          manifest: updated,
+          activeItemIds: departureOnly ? activeItems.map((item) => item.id) : [],
+        }
       })
 
-      revalidatePath("/dashboard/manifests")
-      return { success: true, manifest, error: undefined }
+      const committed = performance.now()
+      if (!departureOnly || !requestId) revalidatePath("/dashboard/manifests")
+      logManifestTiming(requestId, "update", started, committed, ctx.authorizationMs)
+      return { success: true, manifest, activeItemIds, error: undefined }
     } catch (error) {
       Sentry.captureException(error)
       return {
@@ -597,6 +628,24 @@ export const updateManifestAction = authActionClient
       }
     }
   })
+
+function logManifestTiming(
+  requestId: string | undefined,
+  operation: "create" | "update",
+  started: number,
+  committed: number,
+  authorizationMs: number
+) {
+  if (process.env.MANIFEST_TIMING !== "true" || !requestId) return
+  console.info(JSON.stringify({
+    event: "manifest-server",
+    requestId,
+    operation,
+    authorizationMs: Math.round(authorizationMs),
+    transactionMs: Math.round(committed - started),
+    afterCommitMs: Math.round(performance.now() - committed),
+  }))
+}
 
 export const recordManifestItemHandoffAction = authActionClient
   .schema(recordManifestHandoffSchema)

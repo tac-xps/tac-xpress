@@ -1,6 +1,7 @@
 import { z } from "zod"
 
 export const createManifestSchema = z.object({
+  requestId: z.string().uuid().optional(),
   originHubId: z.string().uuid("Select an origin hub"),
   destinationHubId: z.string().uuid("Select a destination hub"),
   vehicleId: z.string().uuid("Select a vehicle"),
@@ -43,6 +44,7 @@ export const recordManifestHandoffSchema = z
 
 export const updateManifestSchema = z.object({
   id: z.string().uuid(),
+  requestId: z.string().uuid().optional(),
   referenceId: z
     .string()
     .min(3, "Reference ID must be at least 3 characters")
