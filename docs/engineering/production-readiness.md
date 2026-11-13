@@ -15,6 +15,8 @@ November 13, 2026. The audit began at `98f3e42ac19b3680d329415d61be716058d600cd`
 
 ## Evidence and remaining release work
 
+Use the [production release plan](release-plan.md) for sequencing, owners, staging evidence, and the go/no-go checklist.
+
 1. Inspect the failed backup on the host with access to its configured volume. Restore a current encrypted snapshot independently, verify signed private Storage access, and validate managed Auth recovery and scheduling against the operating targets. [Backup runbook](../OFFSITE-BACKUPS.md), [restore acceptance](../restore-acceptance.md)
 2. Review the candidate and run authenticated synthetic acceptance for staff/admin and revoked sessions, the cargo lifecycle, invoices, documents, and database policies. Record the tested revision and reproduce a bounded load test with the intended routes and credentials. [Feature inventory](feature-inventory.md), [database audit](database-audit.md), [security audit](security-audit.md)
 3. Validate the approved origin, sender configuration, and enabled integration paths in the release environment. Confirm the rollback procedure and operator access before promotion. [Operations guide](../OPERATIONS.md), [engineering backlog](task-backlog.md)

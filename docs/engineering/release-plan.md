@@ -1,0 +1,34 @@
+# TAC-XPRESS production release plan
+
+**Decision on 2026-11-13: NO-GO for promotion.** The audited local candidate is `e13a27f1dd97764ba1dd1a33a34adc437d2d5a44` on `codex/engineering-audit-2026-11-13`. Keep this revision as the candidate until a required fix changes its source. Carry forward the local test evidence and regenerate any evidence affected by a source or configuration change.
+
+## Current evidence
+
+| Area | Evidence |
+| --- | --- |
+| Candidate quality | The audit branch is clean. The previous engineering cycle passed 536 unit tests, 48 local browser tests, the production build, and the production dependency audit. Fifteen preview or staging cases were skipped. |
+| Production identity | Vercel reports a READY production-target deployment for `98f3e42` with the project’s Vercel aliases. The custom-domain mapping and rollback eligibility still require release-operator verification. The local candidate is newer. |
+| Recovery | Windows Task Scheduler still reports exit 1 for the November 12 backup. The configured recovery volume remains unavailable in this session. Snapshot freshness and the failure cause are unknown. |
+| Synthetic staging | The existing Playwright suite discovers 11 cases and accepts the saved staging profile’s isolation checks. A read-only connection to the configured pooler returned `XX000`, and the staging Auth hostname was unreachable. Project status could not be established through the available management connector. No staging cases ran. |
+| Provider scope | The November 4 release record deferred Resend sender verification and email acceptance, and deferred LeminAI callbacks. The current production environment validator requires a valid email sender and other provider settings. Resolve this discrepancy before the release gate. |
+
+## Sequence and owners
+
+Role assignments below are proposed. Assign one named owner and one backup operator before starting the release window.
+
+| Order | Accountable owner | Work and exit evidence |
+| --- | --- | --- |
+| 1. Recoverability | Platform/DBA | Diagnose the failed scheduled run from the original log and snapshot inventory. Verify snapshot age and checksums from the offsite copy. Move the verified job to an always-on runner with missed-run alerts. Independently restore PostgreSQL and private Storage into a restricted recovery target. Verify invoice totals and snapshots, active assignments, migration history, RLS, restored object checksums, signed access, and managed Auth recovery. Record data loss of at most 24 hours, full replacement within 8 hours, and application rollback within 4 hours. Confirm seven daily and four weekly encrypted copies and independent access to the keys. |
+| 2. Restore synthetic staging access | Platform/DBA | Confirm the approved staging project is active and validate its pooler and Auth endpoint. Update the isolated credential store if needed. Verify staging origin, database identity, disabled outbound sends and jobs, and availability of synthetic admin, staff, and customer accounts. Keep shared staging synthetic. This work can run alongside recovery. |
+| 3. Accept the exact candidate | Engineering and QA | Run the existing 11 staging cases against the candidate on isolated loopback and a protected Vercel preview using the approved synthetic backend. Record the tested SHA and preview ID. Cover staff and admin boundaries, revoked sessions, custody, exact invoice amounts, private PDFs, and concurrency. Add explicit positive and negative acceptance for MFA management, published and unpublished AWBs, and Storage signed access. Verify both public corridor directions. Confirm printer and scanner operation on the equipment staff will use. |
+| 4. Validate operations and provider scope | Operations and platform | Confirm which provider flows are required for this release. If email remains deferred, document the approved behavior and align the environment validator before treating the gate as green. Outbound WhatsApp acceptance and receipt/callback acceptance are separate. Exercise enabled providers with approved test recipients, and prove queue recovery preserves idempotency. Keep AI auto-reply deferred under the existing operations guidance. Verify the release environment's HTTPS origin, sender policy, request protection, secrets, and health checks. |
+| 5. Prove capacity and review supply chain | Engineering and platform | Replace the misleading tracking load scenario with a valid synthetic public AWB lookup and a separately authorized staff workload. Agree on expected peak volume before setting latency and error budgets. Record p95 latency, error rate, DB connection pressure, queue age, and successful custody/document operations. Review the four high dev-tool advisories and record fixes or a scoped disposition before release. |
+| 6. Rehearse and promote | Release owner | Verify the actual production alias, current deployment ID, a supported rollback target, and compatibility with the current database. Build from the accepted SHA with production configuration and keep it off the public alias while validating configuration and read-only smoke checks. Promote only after the owner authorizes the release. Verify the public origin, sign-in entry, and staff access. Watch request failures, connection pressure, custody and billing alerts, and outbound queues through the first operating window. |
+
+## Go/no-go and rollback
+
+- **Go** when all six gates in [production readiness](production-readiness.md) have evidence for the accepted revision and environment. Record reviewer names, candidate SHA, preview and production deployment IDs, backup timestamp, recovery timings, provider scope, and the rollback target in the release record.
+- **Stop promotion** for any access-control failure, custody or billing discrepancy, unavailable verified backup, failed critical smoke check, or breached agreed reliability threshold. An outage or data-integrity finding after promotion triggers incident handling and the rehearsed rollback. Pause affected sends and scheduled recovery if retrying could duplicate messages.
+- **Rollback application traffic** to the verified compatible Vercel deployment and re-run critical smoke checks. If data integrity is affected, preserve evidence and use the separately approved incident and recovery runbook. A Vercel rollback changes the served deployment. Database and Storage recovery are separate operations. [Vercel rollback](https://vercel.com/docs/instant-rollback), [Supabase backups](https://supabase.com/docs/guides/platform/backups)
+
+The next executable handoff is access to the backup host and volume, plus restoration of the approved synthetic staging connection. Deployment and hosted changes retain the authorization boundaries of the audit.
