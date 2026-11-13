@@ -1,5 +1,6 @@
 "use client"
 
+import { useId } from "react"
 import {
   FormControl,
   FormField,
@@ -26,6 +27,8 @@ interface Step4Props {
 }
 
 export function Step4Cargo({ form, calculations }: Step4Props) {
+  const cartonPresetsLabelId = useId()
+
   return (
     <div className="grid gap-6 sm:grid-cols-2">
       <FormField
@@ -184,10 +187,10 @@ export function Step4Cargo({ form, calculations }: Step4Props) {
 
       <div className="flex flex-col gap-3 sm:col-span-2">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <span id={cartonPresetsLabelId} className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Carton Presets
-          </FormLabel>
-          <div className="flex flex-wrap gap-1.5">
+          </span>
+          <div role="group" aria-labelledby={cartonPresetsLabelId} className="flex flex-wrap gap-1.5">
             <button
               type="button"
               onClick={() => {

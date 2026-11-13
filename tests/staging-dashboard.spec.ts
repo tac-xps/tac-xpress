@@ -297,6 +297,7 @@ test("invoice wizard commits exact totals and a private document", async ({
       .fill("Synthetic acceptance fixture, Imphal")
     await page.getByLabel(/^PIN Code/).fill("795001")
     await page.getByRole("button", { name: "Next", exact: true }).click()
+    await expect(page.getByRole("group", { name: "Carton Presets" })).toBeVisible()
     await page.getByLabel(/Content Description/).fill(marker)
     await page.getByLabel("Weight (Kg)", { exact: true }).fill("2")
     await page.getByRole("button", { name: "Next", exact: true }).click()
