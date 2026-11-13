@@ -1,5 +1,31 @@
 # Engineering verification
 
+## November 13 remediation candidate
+
+Application commit `74c772302ddbaed8e27b4b15a844b9a0809ff34e` was tested in a detached checkout. The build and unit tests used synthetic CI values. Loopback staging used only the reviewed staging configuration for `zuevgwqmphbvgnwhvvnq`. Provider sends, scheduled jobs and test authorization bypasses were disabled in that runner.
+
+| Check | Result |
+| --- | --- |
+| Frozen pnpm install and unit tests | PASS. 541 tests across 82 files. GBrain still resolves to the same Git revision and its CLI reports version `0.42.52.0`. |
+| TypeScript, ESLint, Stylelint, token audit and contract validation | PASS. ESLint reported zero errors and 62 warnings in the main working checkout, which includes ignored scratch files. Redocly reported seven warnings. Zero token violations. |
+| Production build | PASS with synthetic values. 56 pages generated. |
+| Dependencies | Production-only audit passed. Full audit reported zero high, zero critical, 12 moderate and four low findings. The four original high advisories on Vite, MCP SDK and body-parser cleared. |
+| Edge Function | Capabilities runtime graph locked. Deno 2.9.8 passed the cached frozen application check. `--all` fails on dependency declaration types for WebAuthn and Node globals. |
+| Staging preflight | PASS for `ACTIVE_HEALTHY`, session pooler port 5432, two baseline migrations, 28 RLS-enabled public tables and three synthetic password grants. Each test grant was followed by local-scope logout. Staging had zero Storage buckets. |
+| Staging tracking and Data API | Published fixture rendered and unpublished fixture showed the unavailable state on loopback. Anonymous and authenticated synthetic staff Data API requests returned empty shipment results. |
+| Public tracking smoke | k6 v1.8.2 passed ten out of ten rendered tracking checks with one virtual user and zero request errors. The measured p95 was 4.92 s on the Windows development runner. Its localhost listener is IPv6, so the successful run used `K6_DNS=ttl=5m,select=first,policy=preferIPv6`. The first run selected IPv4 and could not connect. |
+| Offsite recovery | Restic verified 13 files independently from the 06:37:39 IST snapshot. The manifest covers 55 database/Auth tables and seven Storage objects. `pg_restore --list` found 55 table data entries. Application Control blocked `dict_snowball.dll` during local `initdb`. No database import occurred. |
+| Candidate history scan | Zero matches against known local credential values and common token signatures in added lines. Zero sensitive filenames in the unpublished commit range. Raw logs and screenshots remain ignored. |
+| Vercel baseline | Public homepage and sign-in returned 200. Anonymous dashboard returned 307 to `/signin`. The credentials callback uses the verified HTTPS alias. The alias points to `dpl_J3GQjo4rGfGMHowqBdifkE2nV1xR` at `98f3e42`. Candidate preview ID pending. |
+
+The first recorded staging browser run timed out on the cold `/api/auth/session` request after successful admin sign-in. Its serial test group skipped the following ten cases. The warmed run passed the 24-route admin sweep, customer denial, staff restrictions and revoked session. The invoice case failed and six were skipped. A focused browser run reproduced the `FormLabel` field-context exception in the invoice cargo step. Commit `b20a88878a14a710f512f71b4934aaa702b8e649` replaces the static field label with an accessible button group and extends the staging regression.
+
+On `b20a888`, the standalone production build passed TypeScript and generated all 56 pages. A focused React render passed and exposed the named preset group. The first post-fix browser retry failed before opening the wizard while dashboard queries logged `CONNECT_TIMEOUT`. Another retry timed out waiting for the local dev server to compile sign-in. Full invoice, custody and private PDF browser evidence remains pending for this candidate.
+
+The database-free Chromium suite on `b20a888` finished with 39 passed, nine failed and 15 expected skips. Eight failures hit 30-second limits during navigation or image handling. The tracking dialog visibility assertion failed on the full run. A warmed browser check opened the dialog at the same URL with no page errors. A new background server command for a follow-up failed-only run was rejected by the execution policy. The browser gate remains open.
+
+## Audit baseline and prior candidates
+
 Local checks began from `98f3e42ac19b3680d329415d61be716058d600cd` on Windows, Node 24.13.1 and pnpm 9.4.0. The isolated worktree uses the CI synthetic environment in `.github/workflows/quality.yml`. It contains no copied environment files, hosted service credentials, or E2E authorization bypasses.
 
 ## Baseline
