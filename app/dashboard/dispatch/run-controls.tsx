@@ -91,13 +91,14 @@ export function RunControls({ run }: { run: HandoffRun }) {
     const started = performance.now()
     if (requestId) logManifestClientTiming(requestId, "submit", started)
     try {
-      const result = requestId
+      const departureResult = requestId
         ? await updateManifestAction({ id: run.id, status: "finalized", requestId })
-        : await start.executeAsync({ id: run.id })
+        : undefined
+      const result = requestId ? departureResult : await start.executeAsync({ id: run.id })
       if (requestId) logManifestClientTiming(requestId, "response", started)
       if (result?.data?.success) {
-        if ("activeItemIds" in result.data && result.data.activeItemIds) {
-          setDeparture({ id: run.id, activeItemIds: result.data.activeItemIds })
+        if (departureResult?.data?.activeItemIds) {
+          setDeparture({ id: run.id, activeItemIds: departureResult.data.activeItemIds })
         }
         toast.success(lineHaul ? "Manifest finalized" : "Dispatch started")
         setConfirmingStart(false)

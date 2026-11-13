@@ -851,7 +851,7 @@ describe("cargo transactions against embedded PostgreSQL", () => {
       .toMatchObject({ success: false })
     const [item] = await database.select().from(schema.manifestItems)
     expect(await database.select().from(schema.manifestItems)).toHaveLength(1)
-    const departure = { id: requestId, status: "finalized", requestId: crypto.randomUUID() }
+    const departure = { id: requestId, status: "finalized" as const, requestId: crypto.randomUUID() }
     const departures = await Promise.all([
       updateManifestAction(departure), updateManifestAction(departure),
     ])
