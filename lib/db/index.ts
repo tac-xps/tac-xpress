@@ -2,6 +2,10 @@ import "server-only"
 import { EventEmitter } from "events"
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
+import {
+  customerLookupTimingEnabled,
+  markCustomerQueryDispatched,
+} from "@/lib/server/customer-lookup-timing"
 import * as schema from "./schema"
 
 if (EventEmitter.defaultMaxListeners < 50) {
@@ -64,6 +68,7 @@ function createDb(): DbInstance {
     globalThis._postgresClient ||
     postgres(connectionString, {
       prepare: false,
+      debug: customerLookupTimingEnabled ? markCustomerQueryDispatched : false,
       ssl: isLocalhost ? false : "require",
       max: isServerless ? 1 : 10,
       connect_timeout: 10,

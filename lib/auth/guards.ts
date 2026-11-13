@@ -6,6 +6,10 @@ import { users } from "@/lib/db/schema"
 import { and, eq, isNull } from "drizzle-orm"
 import * as Sentry from "@sentry/nextjs"
 import { cache } from "react"
+import {
+  customerLookupTiming,
+  timeCustomerQuery,
+} from "@/lib/server/customer-lookup-timing"
 
 export const DASHBOARD_ROLES = ["admin", "staff"] as const
 
@@ -25,7 +29,7 @@ const currentAllowedRole = cache(
   ) => {
     if (!session?.user?.id || !UUID_REGEX.test(session.user.id)) return null
     try {
-      const [currentUser] = await db
+      const [currentUser] = await timeCustomerQuery("role", (annotate) => db
         .select({
           role: users.role,
           name: users.name,
@@ -33,8 +37,8 @@ const currentAllowedRole = cache(
           isOnboarded: users.isOnboarded,
         })
         .from(users)
-        .where(and(eq(users.id, session.user.id), isNull(users.deletedAt)))
-        .limit(1)
+        .where(annotate(and(eq(users.id, session.user.id), isNull(users.deletedAt))))
+        .limit(1))
 
       return currentUser &&
         allowedRoles.includes(currentUser.role as DashboardRole)
@@ -120,7 +124,10 @@ export async function requireDashboardAction(
 export async function requireDashboardApi(
   allowedRoles: readonly DashboardRole[] = DASHBOARD_ROLES
 ) {
+  const timing = customerLookupTiming.getStore()
+  const sessionStarted = timing ? performance.now() : 0
   const session = await auth()
+  if (timing) timing.durations.session = performance.now() - sessionStarted
 
   if (!session?.user?.id) {
     return {

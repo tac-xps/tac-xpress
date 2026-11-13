@@ -2,7 +2,7 @@ import {
   NextResponse,
   type NextFetchEvent,
   type NextMiddleware,
-  type NextRequest,
+  NextRequest,
 } from "next/server"
 import NextAuth, { type Session } from "next-auth"
 import { authConfig } from "@/auth.config"
@@ -217,7 +217,11 @@ async function enforceRequestProtection(request: NextRequest) {
   }
 }
 
-export async function proxy(request: NextRequest, event: NextFetchEvent) {
+async function handleProxy(
+  request: NextRequest,
+  event: NextFetchEvent,
+  customerLookupHeaders?: Headers
+) {
   // Edge redirect: Invalid sign-in callbacks provide immediate recovery
   if (
     request.nextUrl.pathname === "/auth/callback" &&
@@ -278,7 +282,9 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
       )
 
     if (!isPerimeterRoute) {
-      return NextResponse.next()
+      return NextResponse.next(
+        customerLookupHeaders ? { request: { headers: customerLookupHeaders } } : undefined
+      )
     }
 
     return authMiddleware(request, event)
@@ -297,6 +303,26 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
 
   const protectionResponse = await enforceRequestProtection(request)
   return protectionResponse ?? authMiddleware(request, event)
+}
+
+export async function proxy(request: NextRequest, event: NextFetchEvent) {
+  if (
+    process.env.CUSTOMER_LOOKUP_TIMING !== "true" ||
+    request.nextUrl.pathname !== "/api/customers" ||
+    request.method !== "GET"
+  ) return handleProxy(request, event)
+
+  const id = crypto.randomUUID()
+  const started = Date.now()
+  const headers = new Headers(request.headers)
+  headers.set("x-customer-lookup-id", id)
+  const response = await handleProxy(
+    new NextRequest(request, { headers }), event, headers
+  )
+  const middlewareMs = Date.now() - started
+  response?.headers.set("x-customer-lookup-id", id)
+  console.info(JSON.stringify({ event: "customer-lookup-proxy", id, middlewareMs }))
+  return response
 }
 
 export const config = {
