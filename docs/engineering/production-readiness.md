@@ -2,13 +2,13 @@
 
 **Decision on November 14, 2026: NO-GO.**
 
-The application candidate is `868946e4818c8b0fe9db1acffe37485b5192dfe8` on `codex/release-remediation-2026-11-13`. Vercel's live alias serves `98f3e42` at `dpl_KfBTeZLvkXACtGowH9SWHP5yBQrP`. The release branch has zero deployments.
+Application `868946e4818c8b0fe9db1acffe37485b5192dfe8` is READY on protected Preview `dpl_3pCH4xXb1Ah4GqNty1W4o5GNbSqE` from `codex/hosted-acceptance-868946e`. Vercel's production alias serves `98f3e42` at `dpl_KfBTeZLvkXACtGowH9SWHP5yBQrP`.
 
 | Gate | Status | Evidence and release requirement |
 | --- | --- | --- |
-| A. Functional correctness | BLOCKED | Synthetic loopback invoice and line-haul passed. With a distinct staging Arcjet key, the production-mode login page returned 200. The admin case failed to reach the dashboard, direct protected probes returned the perimeter's fail-closed 503, and ten serial cases did not run. Hosted acceptance remains untested. |
+| A. Functional correctness | BLOCKED | The exact Preview is READY and returns a Vercel Authentication challenge for unauthenticated requests. The browser could not reuse a Vercel team session. Runtime identity and all 11 hosted staging scenarios remain untested. |
 | B. Security | BLOCKED | Four active staff/admin records match confirmed Auth accounts. Production signup remains enabled and relay credential rotation is pending. Fresh production admin sign-in, secure password handoff, and hosted session, role and telemetry acceptance remain open. |
-| C. Database integrity | BLOCKED | Production and staging catalog fingerprints match for the inspected public and Storage security controls. Staging has no private Storage bucket. Signed URL expiry, application revocation and document audit acceptance are pending. |
+| C. Database integrity | BLOCKED | The private synthetic `cargo-documents` bucket exists with zero objects and zero direct object policies. Authorized access, revocation, signed expiry and the upload audit are pending. |
 | D. Engineering quality | PASS | `pnpm verify` passed with 547 unit tests and 56 generated pages. The full local Chromium rerun passed all 48 applicable cases, and the four separate Storybook cases passed. |
 | E. Reliability and performance | FAIL | The current candidate passed the unchanged eight-request loopback test. The cold 16-request profile missed seven requests at 15 s. Hosted performance and an agreed latency and throughput budget remain open. |
 | F. Operational readiness | BLOCKED | The November 14 workstation backup exited 0 and verified offsite recovery checksums for the 02:30:16 IST snapshot. Managed Auth and Storage replacement, always-on scheduling, complete Vercel environment verification, and rollback rehearsal remain open. |

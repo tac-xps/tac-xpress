@@ -143,6 +143,20 @@ A one-socket Postgres.js probe used `sql.reserve()` against the staging session 
 
 Production Supabase Auth settings returned HTTP 200 with `disable_signup=false`. Aggregate SQL found four active staff records and four confirmed canonical Auth matches. The November 14 workstation backup exited 0. The 02:32:06 IST receipt verified the 02:30:16 IST snapshot and file checksums. Auth lockdown, relay rotation, and managed application recovery remain blocked.
 
+### Approved staging deployment
+
+| Check | Status | Outcome |
+| --- | --- | --- |
+| Isolated publication | PASS | `git ls-remote --heads origin` verified `codex/hosted-acceptance-868946e` at `868946e4818c8b0fe9db1acffe37485b5192dfe8` and `main` at `98f3e42ac19b3680d329415d61be716058d600cd`. The evidence branch was preserved. Vercel rejected settings for a nonexistent branch, so the isolated ref was seeded with a single configuration file that disabled its automatic deployment. The seed was replaced under an explicit lease after the initial 17 overrides read back. |
+| Initial Vercel Preview | FAIL | `dpl_FUbXETzLtmnRmZVwwngczTKUtJjC` identified the approved SHA, but its build reported a completed Sentry source-map upload. The source and destination credential scope were unverified. The deployment was canceled before authenticated checks. |
+| Replacement Vercel Preview | PASS | `create_deployment` selected the isolated Git ref and approved SHA. `get_deployment` verified `dpl_3pCH4xXb1Ah4GqNty1W4o5GNbSqE` READY at `tac-xpress-2eahub3xf-tac-xps.vercel.app`. The build completed in about 3 minutes. The captured build log did not report a Sentry upload. Unauthenticated GET requests to sign-in, Hubs and health each returned HTTP 302 and the Vercel Authentication challenge. |
+| Branch scope and runtime isolation | BLOCKED | `filter_project_envs` with decryption off verified all 38 entries target only the isolated Preview branch. Seven secret categories were supplied from the synthetic profile, plus staging `DATABASE_URL` as a distinct key. Twenty empty entries suppress inherited outbound, bypass, Auth0 and telemetry credentials. The browser kernel failed to initialize on Windows. A Vercel team session could not be reused. Authenticated runtime identity, callbacks, Arcjet and outbound settings remain unverified. |
+| Hosted staging scenarios and performance | NOT TESTED | 0 of 11 executed. The Preview stayed protected. No share link was created. No write-based tests ran. Hosted SQL-phase, client, and request timings remain unmeasured. |
+| Synthetic private Storage | PASS for provisioning | Supabase Storage API created and read back `cargo-documents` on `zuevgwqmphbvgnwhvvnq`, private with a 5 MiB limit and PDF/JPEG/PNG types. MCP SQL confirmed zero direct object policies and zero objects. An anonymous list returned zero entries and a nonexistent public object path returned 400. Authorized upload, download, revocation, signed expiry and audit acceptance are NOT TESTED. |
+| Separate Storybook cases | PASS | Exact application SHA in the detached checkout. `pnpm exec playwright test tests/workspace-design.spec.ts --config playwright.release-storybook.config.ts --workers=1 --retries=0 --reporter=line` passed all four against the local Storybook iframe in 56.2 s. This run used no Vercel deployment. |
+
+Vercel build logs reported Node 26 due to the candidate's `engines.node` range. The preceding local receipt used Node 24. Capture hosted runtime version and test the deployed runtime before using the local results as operational evidence. [Vercel Node.js version selection](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions)
+
 ## Audit baseline and prior candidates
 
 Local checks began from `98f3e42ac19b3680d329415d61be716058d600cd` on Windows, Node 24.13.1 and pnpm 9.4.0. The isolated worktree uses the CI synthetic environment in `.github/workflows/quality.yml`. It contains no copied environment files, hosted service credentials, or E2E authorization bypasses.
