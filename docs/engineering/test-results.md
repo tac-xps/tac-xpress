@@ -157,6 +157,21 @@ Production Supabase Auth settings returned HTTP 200 with `disable_signup=false`.
 
 Vercel build logs reported Node 26 due to the candidate's `engines.node` range. The preceding local receipt used Node 24. Capture hosted runtime version and test the deployed runtime before using the local results as operational evidence. [Vercel Node.js version selection](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions)
 
+### Protected Preview acceptance attempt on November 14
+
+Application `868946e4818c8b0fe9db1acffe37485b5192dfe8`, deployment `dpl_3pCH4xXb1Ah4GqNty1W4o5GNbSqE`, environment Preview, isolated branch `codex/hosted-acceptance-868946e`. The client ran on the Windows workstation. Link, browser state and response headers containing credentials were omitted from evidence.
+
+| Gate and command | Status | Observed result |
+| --- | --- | --- |
+| Deployment and settings via `get_deployment` and `filter_project_envs` with decryption off | PASS | Exact SHA and generated Preview URL matched. All 38 entries were scoped exclusively to the isolated Preview branch. |
+| Temporary access lifecycle via `patch_url_protection_bypass` and `node verify-protected-link-revoked.cjs` | PASS | Applied a 3,600 s TTL to one deployment-specific link. Link exchange returned 307 and set the Vercel access cookie. Revoked via `regenerate:false` within two minutes. The old link and a fresh anonymous request both returned 302 to Vercel Authentication. |
+| Application origin via `node protected-hosted-preflight.cjs` | PASS | GET `/api/auth/providers` returned 200. Credentials sign-in and callback URLs matched the generated Preview origin. |
+| Application request protection via the same Playwright probe | FAIL | Both headless Chromium and headed Chrome received 403 with `Request denied.` on `/signin`. Requests to health, Hubs, customer lookup and tracking also returned 403. `proxy.ts` emits this response on an Arcjet deny that is classified as non-rate-limit. Browser request IDs for sign-in at 10:09:22 and 10:10:07 IST are `bom1::pfccd-1794631162172-3380ae693446` and `bom1::p9n9d-1794631207616-3f06dd59b6ef`. `get_runtime_logs` on the deployment showed no Arcjet reason or decision ID in the available logs. The triggering rule remains unknown. |
+| Staging data, outbound settings and application authorization | BLOCKED | Supabase MCP confirmed a published synthetic tracking fixture in `zuevgwqmphbvgnwhvvnq`. The Preview's tracking and health requests were denied before confirming database identity or provider states. The app-anonymous customer read could not reach the expected 401; `/e2e-auth` returned 200 under the route rewrite, which did not provide the planned 404 evidence. No sign-in submission or fixture writes were attempted. |
+| `pnpm exec playwright test tests/staging-dashboard.spec.ts --workers=1 --retries=0 --reporter=line` | NOT TESTED | 0 of 11 executed. The preflight stopped at the isolation and security gate. Private Storage acceptance, eight-read hosted acceptance, load diagnostics, server memory and database timing remain unmeasured. |
+
+The protection rules and application SHA remain unchanged. The next diagnostic is to correlate the failed requests with the staging Arcjet site's decision records and identify the exact deny rule before retrying hosted acceptance. [Arcjet Next.js decision reference](https://docs.arcjet.com/reference/nextjs#decision)
+
 ## Audit baseline and prior candidates
 
 Local checks began from `98f3e42ac19b3680d329415d61be716058d600cd` on Windows, Node 24.13.1 and pnpm 9.4.0. The isolated worktree uses the CI synthetic environment in `.github/workflows/quality.yml`. It contains no copied environment files, hosted service credentials, or E2E authorization bypasses.
