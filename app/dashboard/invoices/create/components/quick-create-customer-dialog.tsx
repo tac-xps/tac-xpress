@@ -119,7 +119,12 @@ export function QuickCreateCustomerDialog({
           (res?.data?.error ?? res?.serverError) ||
           firstValidationMessage(res?.validationErrors) ||
           "Failed to create customer."
-        captureWizardError("customer_create", msg, { customer_role: role })
+        // A duplicate customer or invalid input is expected, so only server errors go to error tracking.
+        if (res?.serverError) {
+          captureWizardError("customer_create", res.serverError, {
+            customer_role: role,
+          })
+        }
         setError(typeof msg === "string" ? msg : "Failed to create customer.")
       }
     } catch (err: any) {
