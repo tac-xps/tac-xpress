@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -184,9 +185,9 @@ export function Step4Cargo({ form, calculations }: Step4Props) {
 
       <div className="flex flex-col gap-3 sm:col-span-2">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <Label className="text-xs font-semibold text-muted-foreground">
             Carton Presets
-          </FormLabel>
+          </Label>
           <div className="flex flex-wrap gap-1.5">
             <button
               type="button"
