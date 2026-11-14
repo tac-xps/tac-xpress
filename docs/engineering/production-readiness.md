@@ -6,11 +6,11 @@ Application `868946e4818c8b0fe9db1acffe37485b5192dfe8` is READY on protected Pre
 
 | Gate | Status | Evidence and release requirement |
 | --- | --- | --- |
-| A. Functional correctness | BLOCKED | Arcjet confirmed a fresh headless denial and a cached denial on headed Chrome. Vercel still challenges anonymous access on the exact Preview. The next protected access window requires approval. Runtime staging identity remains unverified and all 11 hosted staging scenarios remain unrun. |
-| B. Security | BLOCKED | Four active staff/admin records match confirmed Auth accounts. Production signup remains enabled and relay credential rotation is pending. Fresh production admin sign-in, secure password handoff, and hosted session, role and telemetry acceptance remain open. |
-| C. Database integrity | BLOCKED | The private synthetic `cargo-documents` bucket exists with zero objects and zero direct object policies. Authorized access, revocation, signed expiry and the upload audit are pending. |
+| A. Functional correctness | FAIL | Hosted preflight and admin/Hubs/Fleet passed. The full serial suite finished 9 pass, 1 fail, 1 unrun. Focused signed delivery and eight-request lookup passed. The original signature interaction failure remains unresolved. |
+| B. Security | BLOCKED | Hosted Arcjet LIVE, Vercel protection, app authorization and revoked sessions passed. Production public signup and relay credential rotation remain open. Fresh production admin sign-in, secure password handoff, and telemetry acceptance remain open. |
+| C. Database integrity | PASS on staging | Verified the synthetic database via a published fixture. Line-haul custody and private cargo Storage passed, including staff upload, download, signed expiry, revoked-session denial and audit. Managed replacement remains under Gate F. |
 | D. Engineering quality | PASS | `pnpm verify` passed with 547 unit tests and 56 generated pages. The full local Chromium rerun passed all 48 applicable cases, and the four separate Storybook cases passed. |
-| E. Reliability and performance | FAIL | The current candidate passed the unchanged eight-request loopback test. The cold 16-request profile missed seven requests at 15 s. Hosted performance and an agreed latency and throughput budget remain open. |
+| E. Reliability and performance | BLOCKED | Eight-request hosted lookup passed and all 30 bounded diagnostic reads succeeded. Manifest application timing was recorded. Hosted cold-start classification, peak function memory, sustained capacity and an agreed latency and throughput budget remain open. |
 | F. Operational readiness | BLOCKED | The November 14 workstation backup exited 0 and verified offsite recovery checksums for the 02:30:16 IST snapshot. Managed Auth and Storage replacement, always-on scheduling, complete Vercel environment verification, and rollback rehearsal remain open. |
 
 ## Evidence and remaining release work

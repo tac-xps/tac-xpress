@@ -212,6 +212,49 @@ Vercel readback confirmed the exact SHA and READY state. An anonymous GET to `/s
 
 The next protected window requires operator approval. No access link was created for this attempt. No hosted scenarios, Storage authorization tests, or performance measurements ran. Production remains NO-GO.
 
+### Controlled hosted acceptance on November 14
+
+Environment was protected Vercel Preview `dpl_3pCH4xXb1Ah4GqNty1W4o5GNbSqE`, exact application `868946e4818c8b0fe9db1acffe37485b5192dfe8`, isolated branch `codex/hosted-acceptance-868946e`. The Windows runner used installed headed Chrome `157.0.8103.51` and Playwright `1.64.1`. Vercel created one 3,600 s deployment-specific link at approximately 10:50:57 IST. It was revoked at 11:06:08 IST, after 15.2 minutes. Both the revoked link and a fresh anonymous request returned HTTP 302 to Vercel Authentication. Temporary browser state and copied staging profiles were removed.
+
+| Preflight gate | Status | Evidence |
+| --- | --- | --- |
+| Deployment and isolation | PASS | `get_deployment` matched the SHA and generated host. `filter_project_envs` with decryption off returned all 38 overrides scoped to the isolated Preview branch. `node controlled-preview-preflight.cjs` rendered a known published staging-only shipment and matched it to Supabase `zuevgwqmphbvgnwhvvnq`. Health reported database up. Auth callbacks used the exact Preview origin. |
+| Request protection and app authorization | PASS | Stock headed and suite-headed sign-in rendered with HTTP 200 in 4.84 s and 2.83 s. Browser-context and standalone API reads returned application 401 in 2.37 s and 0.53 s. Signed-out Hubs redirected to application sign-in with HTTP 307. Arcjet on `tac-xpress-staging` recorded Shield, rate limiting and bot `RUN`/`ALLOW` for `/signin` (`req_01m7c83dhqe47b518jpbjtz7d9`) and `/api/customers` (`req_01m7c81a0kem8ahy7zq3gvxnr4`). The sign-in action recorded rate limit `RUN`/`ALLOW` (`req_01m7c83faqe92bc6ak2dphmpte`). |
+| Outbound and test bypass | PASS | Health returned 503 with database up and WhatsApp, Meta webhook, OpenRouter and Resend unconfigured. WhatsApp was disabled. Both test-bypass flags were scoped to false and `/e2e-auth` rendered the not-found page without creating a session. Deployment metadata identified Preview, outside the production-only `vercel.json` cron schedule. No cron routes were invoked. [Vercel cron configuration](https://vercel.com/docs/project-configuration/vercel-json#crons) |
+
+The post-window Arcjet MCP query paginated all staging DENY records and found zero for the exact Preview hostname during 05:20:56–05:36:09 UTC. The seven historical local denials it returned fell outside the window.
+
+The exact checkout ran `playwright test tests/staging-dashboard.spec.ts --headed --workers=1 --retries=0 --global-timeout=3000000 --reporter=line` using the installed Playwright CLI and `PLAYWRIGHT_CHANNEL=chrome`. The serial run finished in 9.3 minutes with nine passes, one failure and one unrun. Focused commands used the same flags and original assertions with `--grep`.
+
+| Scenario | Serial result | Follow-up evidence |
+| --- | --- | --- |
+| Admin operations sweep | PASS | All 24 requested routes, including Hubs and Fleet. No browser error or NextAuth client error in the sweep assertions. Peak function memory was not captured. |
+| Customer workspace denial | PASS | Customer credentials did not create a workspace session. |
+| Staff role boundaries | PASS | Staff workflow access and administration denial. |
+| Revoked staff | PASS | Existing staff cookie lost API and page access. The synthetic role was restored. |
+| Invoice wizard | PASS | Exact amount, tax, advance and balance. Verified local staging row, audit entry and private document authorization. |
+| Staff mobile navigation | PASS | Existing mobile workspace coverage. |
+| Warehouse scan | PASS | Private observation without changing custody. |
+| Private invoice PDF | PASS | Authorized PDF and signed-out denial. |
+| Line-haul custody | PASS | Departure, exception, receipt and persisted custody assertions. |
+| Pickup and signed delivery | FAIL | Pickup and delivery dispatch committed. The first signature gesture left Complete Delivery disabled. Staging readback confirmed in-transit state, no saved signature and one active assignment on that synthetic fixture. A separate headed diagnostic reproduced an enabled button after drawing on the same page. The unchanged focused rerun with a new fixture passed in 50.6 s. The initial timing or interaction failure remains unresolved. |
+| Eight concurrent lookups | NOT TESTED | Skipped by the serial interruption. The unchanged focused case passed in 24.4 s total including setup and pacing, with all eight requests meeting their original 15 s deadline. |
+
+**Private cargo Storage passed.** `node controlled-storage.cjs` attached one generated 873-byte PDF to an existing synthetic shipment. Hosted staff upload/list/download returned 201/200/200 in 1,296/569/788 ms. Download hash matched and exactly one upload audit row was present. Signed-out and customer app downloads returned 401. Direct public access returned 400. Unprivileged direct download and signing failed. A 10 s staging signed URL returned 200 before expiry and 400 after. The revoked staff cookie returned 403 for list and download. The synthetic staff role was restored and verified. The synthetic fixture and audit remain in staging.
+
+**Hosted performance.** Vercel `get_runtime_logs` recorded manifest creation at 8 ms authorization, 109 ms transaction through commit and 530 ms post-commit. Departure recorded 9 ms authorization, 106 ms transaction through commit and 0 ms post-commit. `pg_stat_statements` deltas across the custody tests showed three manifest inserts totaling 15.294 ms and three manifest updates totaling 0.197 ms. These are aggregate execution times. The manifest span combines acquisition, SQL round trips and commit acknowledgment, which remain unmeasured individually.
+
+`node controlled-lookup-profile.cjs` used authenticated synthetic staff with at most eight simultaneous requests. All 30 responses succeeded. Values are client p50/p95 in ms using nearest rank. First waves followed a 6.2 s idle interval. No platform cold-start classification was available.
+
+| Concurrency | First wave p50/p95 | Repeat wave p50/p95 |
+| --- | --- | --- |
+| 1 | 871 / 871 | 467 / 467 |
+| 2 | 595 / 675 | 446 / 623 |
+| 4 | 623 / 697 | 558 / 668 |
+| 8 | 555 / 616 | 485 / 1,712 |
+
+Matched lookup logs across 30 requests recorded p50/p95 of 80/127 ms for Arcjet plus proxy, 49.7/168.8 ms for the application route, 40.8/95.1 ms from query start to dispatch, and 6.4/22.7 ms from dispatch to SQL result. The dispatch interval includes connection acquisition and queue time. The SQL interval includes the network and pooler. `pg_stat_statements` reported 0.344 ms mean engine time across 200 cumulative lookup calls. Staging catalog samples found eight and 17 idle client backends with no observed lock wait. Those samples do not establish Supavisor capacity. Sixteen-request hosted capacity, sustained-load limits, and agreed latency and throughput budgets remain open.
+
 ## Audit baseline and prior candidates
 
 Local checks began from `98f3e42ac19b3680d329415d61be716058d600cd` on Windows, Node 24.13.1 and pnpm 9.4.0. The isolated worktree uses the CI synthetic environment in `.github/workflows/quality.yml`. It contains no copied environment files, hosted service credentials, or E2E authorization bypasses.
