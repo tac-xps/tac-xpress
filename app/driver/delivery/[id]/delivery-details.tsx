@@ -4,6 +4,8 @@ import { useRef, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useHydrated } from "@/hooks/use-hydrated"
 import { completeDeliveryAction } from "./actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -17,6 +19,7 @@ export function DeliveryDetails({
   invoice: any
 }) {
   const router = useRouter()
+  const signatureReady = useHydrated()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [hasDrawn, setHasDrawn] = useState(false)
@@ -150,26 +153,36 @@ export function DeliveryDetails({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="relative overflow-hidden rounded-none border bg-background">
-            <canvas
-              aria-label="Consignee signature"
-              ref={canvasRef}
-              width={400}
-              height={200}
-              className="h-48 w-full touch-none"
-              onMouseDown={startDrawing}
-              onMouseMove={draw}
-              onMouseUp={stopDrawing}
-              onMouseOut={stopDrawing}
-              onTouchStart={startDrawing}
-              onTouchMove={draw}
-              onTouchEnd={stopDrawing}
-            />
+            {signatureReady ? (
+              <canvas
+                aria-label="Consignee signature"
+                ref={canvasRef}
+                width={400}
+                height={200}
+                className="h-48 w-full touch-none"
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseOut={stopDrawing}
+                onTouchStart={startDrawing}
+                onTouchMove={draw}
+                onTouchEnd={stopDrawing}
+              />
+            ) : (
+              <div role="status" className="relative">
+                <Skeleton className="h-48 w-full" />
+                <span className="absolute inset-0 grid place-items-center text-sm text-muted-foreground">
+                  Loading signature pad
+                </span>
+              </div>
+            )}
             <div className="absolute top-2 right-2 flex gap-2">
               <Button
                 size="sm"
                 variant="outline"
                 onClick={clearSignature}
                 type="button"
+                disabled={!signatureReady}
               >
                 Clear
               </Button>

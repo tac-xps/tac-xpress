@@ -767,6 +767,7 @@ test("pickup receipt and signed final delivery preserve custody", async ({
         })
         await expect(complete).toBeDisabled()
         const signatureCanvas = page.getByLabel("Consignee signature")
+        await expect(signatureCanvas).toBeVisible()
         await signatureCanvas.scrollIntoViewIfNeeded()
         const signature = await signatureCanvas.boundingBox()
         if (!signature) throw new Error("The signature canvas is unavailable")
