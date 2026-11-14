@@ -123,6 +123,26 @@ Creation authorization took 3.90 s, the transaction and commit 15.30 s, and post
 
 The same runner with `--grep 'concurrent staff lookups'` passed the unchanged eight-request test in a 1.1-minute run, including startup, preflight and login. The application still authorizes each request against the current staff record within the lookup statement. The isolated profile driver `node profile-customer-lookup.cjs 8 16` then recorded all eight cold requests in 13.40 s and all eight warm requests in 6.29 s, repeated in 6.30 s. At 16 requests, nine cold responses arrived by the original 15 s deadline, while all 16 warm responses completed in 14.76 s. The one-socket pool was unchanged. This is synthetic loopback evidence. Hosted cold and warm performance remain untested.
 
+### Hosted acceptance preflight
+
+Application SHA `868946e4818c8b0fe9db1acffe37485b5192dfe8` was tested in the detached Windows checkout. The release branch and exact SHA had no Vercel deployment. The production alias read back READY deployment `dpl_KfBTeZLvkXACtGowH9SWHP5yBQrP` at `98f3e42ac19b3680d329415d61be716058d600cd`.
+
+| Check | Status | Outcome |
+| --- | --- | --- |
+| Vercel Preview metadata | BLOCKED | `filter_project_envs` with decryption off found zero branch entries and one unverified shared Preview `ARCJET_KEY`. Project protection reported `all_except_custom_domains`. No deployment or configuration change was made. |
+| Synthetic connection and profile | PASS | Supabase `zuevgwqmphbvgnwhvvnq` was `ACTIVE_HEALTHY` on PostgreSQL 17.11. Three active synthetic identities and zero Storage buckets. The local profile identifies the staging host, role and session pooler on 5432. Stage Auth, cron, PDF, mobile and Supabase keys differ from the local production entries. A distinct local Arcjet key is present. |
+| Production-mode build and public sign-in route | PASS | `node hosted-acceptance-local-prod.cjs` built the exact SHA with the isolated staging profile, using `next build`. Exit 0, compilation 22.7 s, 56 pages generated. `next start` returned sign-in HTTP 200 in 1.49–1.92 s, with listener working-set samples of 271–360 MB after initial navigation. |
+| Production-mode authenticated acceptance | FAIL | `pnpm exec playwright test tests/staging-dashboard.spec.ts --config playwright.release-hosted-preflight.config.ts --workers=1 --retries=0` failed the admin case waiting for a dashboard redirect after form submission. Ten serial successors did not run. A focused retry reproduced the result. Direct HTTP probes returned the configured perimeter's fail-closed 503 response from Hubs, health and customer lookup. The key-missing response was absent. Six memory samples during the first failed login were 204.91–204.97 MB. Authenticated route memory growth remains unmeasured. |
+| Hosted workflows, Storage and load | NOT TESTED | No candidate deployment or private staging bucket. The local production-mode run reached the request perimeter. It produced no evidence on authenticated application route performance. |
+
+The installed Arcjet SDK requires client IP attribution outside development. The loopback result confirms a perimeter error and leaves the underlying Arcjet decision unclassified. A protected Vercel run must preserve the fail-closed rules and use platform-provided client IP attribution. [Arcjet IP attribution](https://docs.arcjet.com/reference/nodejs#client-ip-address-detection)
+
+Read-only Supabase MCP SQL sampled four client backends against PostgreSQL `max_connections=60` and zero lock waits. This is a database snapshot and does not measure Supavisor client utilization. `extensions.pg_stat_statements` reported mean execution of 5.31 ms for manifest inserts, 1.37 ms for assignment inserts, 0.31 ms for manifest updates, 1.15 ms for tracking inserts, 0.47 ms for advisory locks and 0.22 ms for staff lookup. These counters aggregate staging history. Read-only `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` measured 1.18 ms for the manifest reference lookup and 10.12 ms for a receipt join on synthetic fixtures.
+
+A one-socket Postgres.js probe used `sql.reserve()` against the staging session pooler. Initial acquisition and connection setup took 3.78 s. Across three `BEGIN READ ONLY`, `SELECT 1` and `COMMIT` cycles on the same socket, each command returned in 389–390 ms. These durations include network and acknowledgement. They support investigating connection setup and round-trip count before changing indexes or pool limits. They provide no write-commit timing or hosted performance certification.
+
+Production Supabase Auth settings returned HTTP 200 with `disable_signup=false`. Aggregate SQL found four active staff records and four confirmed canonical Auth matches. The November 14 workstation backup exited 0. The 02:32:06 IST receipt verified the 02:30:16 IST snapshot and file checksums. Auth lockdown, relay rotation, and managed application recovery remain blocked.
+
 ## Audit baseline and prior candidates
 
 Local checks began from `98f3e42ac19b3680d329415d61be716058d600cd` on Windows, Node 24.13.1 and pnpm 9.4.0. The isolated worktree uses the CI synthetic environment in `.github/workflows/quality.yml`. It contains no copied environment files, hosted service credentials, or E2E authorization bypasses.
