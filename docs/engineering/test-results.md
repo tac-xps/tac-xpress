@@ -172,6 +172,30 @@ Application `868946e4818c8b0fe9db1acffe37485b5192dfe8`, deployment `dpl_3pCH4xXb
 
 The protection rules and application SHA remain unchanged. The next diagnostic is to correlate the failed requests with the staging Arcjet site's decision records and identify the exact deny rule before retrying hosted acceptance. [Arcjet Next.js decision reference](https://docs.arcjet.com/reference/nextjs#decision)
 
+### Arcjet denial correlation
+
+The staging Arcjet dashboard operator reported `BOT` denials for the same sign-in windows. The following are Vercel response request IDs on `dpl_3pCH4xXb1Ah4GqNty1W4o5GNbSqE`, application `868946e4818c8b0fe9db1acffe37485b5192dfe8`. Time, path, and outcome correlate the observations. A match on an Arcjet decision ID remains pending OAuth access to the staging site.
+
+| November 14 time (IST) | Request | Vercel response request ID |
+| --- | --- | --- |
+| 10:09:22.172 | GET `/signin`, headless Chromium | `bom1::pfccd-1794631162172-3380ae693446` |
+| 10:10:07.616 | GET `/signin`, headed Chrome | `bom1::p9n9d-1794631207616-3f06dd59b6ef` |
+| 10:10:41.145 | GET `/signin`, headless Chromium | `bom1::p9n9d-1794631241145-ac1a3cc70e58` |
+| 10:10:41.567 | GET `/dashboard/hubs`, Playwright API client | `bom1::jqv2m-1794631241567-2e974b4bda35` |
+| 10:10:41.574 | GET `/api/health`, Playwright API client | `bom1::59k8r-1794631241574-37cf2daf453a` |
+| 10:10:41.577 | GET `/api/customers`, Playwright API client | `bom1::prsfp-1794631241577-ea315437370d` |
+| 10:10:41.574 | GET `/track`, Playwright API client | `bom1::k8956-1794631241574-63d9565b78d` |
+
+The deployed `proxy.ts` uses `detectBot({ mode: "LIVE", allow: ["CATEGORY:SEARCH_ENGINE"] })` for these GET routes. The lockfile pins `@arcjet/next` to `1.5.0`. A local `node --input-type=module` probe captured client headers on a loopback HTTP server and called the installed SDK rule. The local rule ID was `42dd768aa43c22cc37a63e97c1b57eab3fe7fc0e70f27f032f1703e30f2e937a`.
+
+| Local client | Sanitized capture | Uncached rule result |
+| --- | --- | --- |
+| Playwright headless Chromium | `HeadlessChrome/156.0.8078.4`, browser fetch metadata and client hints present | `RUN`, `DENY`, `HEADLESS_CHROME`, `CATEGORY:TOOL`, `verified=false`, `spoofed=false`, TTL 60 s |
+| Playwright headed Chrome | `Chrome/157.0.0.0`, browser fetch metadata and client hints present | `RUN`, `ALLOW`, no bot identified |
+| Playwright API request context | `Playwright/1.64.1`, browser fetch metadata and client hints absent | `RUN`, `ALLOW`, no bot identified |
+
+Supplying the headless denial as the cached result for the same fingerprint reproduced `CACHED` `DENY` for headed Chrome and the API client. The headed hosted request followed the first headless denial by 45.444 s. The later API probes followed another headless denial. This supports a shared-fingerprint cache hypothesis. Hosted rule IDs, verification flags, cache state, and the attributes of requests allowed around 10:03 IST still require the staging Arcjet records. `get_runtime_logs` for the Preview did not supply Arcjet decision IDs. [Arcjet fingerprint and cache behavior](https://docs.arcjet.com/fingerprints/)
+
 ## Audit baseline and prior candidates
 
 Local checks began from `98f3e42ac19b3680d329415d61be716058d600cd` on Windows, Node 24.13.1 and pnpm 9.4.0. The isolated worktree uses the CI synthetic environment in `.github/workflows/quality.yml`. It contains no copied environment files, hosted service credentials, or E2E authorization bypasses.
