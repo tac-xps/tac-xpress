@@ -174,7 +174,7 @@ The protection rules and application SHA remain unchanged. The next diagnostic i
 
 ### Arcjet denial correlation
 
-The staging Arcjet dashboard operator reported `BOT` denials for the same sign-in windows. The following are Vercel response request IDs on `dpl_3pCH4xXb1Ah4GqNty1W4o5GNbSqE`, application `868946e4818c8b0fe9db1acffe37485b5192dfe8`. Time, path, and outcome correlate the observations. A match on an Arcjet decision ID remains pending OAuth access to the staging site.
+The authenticated staging Arcjet MCP lookup used `list-requests`, `get-request-details` and `explain-decision`. It matched both sign-in denials by exact Vercel response request ID on `dpl_3pCH4xXb1Ah4GqNty1W4o5GNbSqE`, application `868946e4818c8b0fe9db1acffe37485b5192dfe8`.
 
 | November 14 time (IST) | Request | Vercel response request ID |
 | --- | --- | --- |
@@ -194,7 +194,23 @@ The deployed `proxy.ts` uses `detectBot({ mode: "LIVE", allow: ["CATEGORY:SEARCH
 | Playwright headed Chrome | `Chrome/157.0.0.0`, browser fetch metadata and client hints present | `RUN`, `ALLOW`, no bot identified |
 | Playwright API request context | `Playwright/1.64.1`, browser fetch metadata and client hints absent | `RUN`, `ALLOW`, no bot identified |
 
-Supplying the headless denial as the cached result for the same fingerprint reproduced `CACHED` `DENY` for headed Chrome and the API client. The headed hosted request followed the first headless denial by 45.444 s. The later API probes followed another headless denial. This supports a shared-fingerprint cache hypothesis. Hosted rule IDs, verification flags, cache state, and the attributes of requests allowed around 10:03 IST still require the staging Arcjet records. `get_runtime_logs` for the Preview did not supply Arcjet decision IDs. [Arcjet fingerprint and cache behavior](https://docs.arcjet.com/fingerprints/)
+#### Hosted decision records
+
+| Arcjet receipt (IST) | Arcjet decision ID | Client | Provider result |
+| --- | --- | --- | --- |
+| 10:09:22 | `lreq_01m7c5mpfaej1sjb07ffr8x3rn` | Headless Chrome 156.0.8078.4 | `DENY`, `BOT_V2`, bot `RUN`, `HEADLESS_CHROME` |
+| 10:10:07 | `lreq_01m7c5p2t1ev7vh0gcqp8fvx67` | Chrome 157.0.0.0 | `DENY`, `BOT_V2`, bot `CACHED`, `HEADLESS_CHROME` |
+| 10:03:56 | `req_01m7c5arcnf4jv8r42ffhd7gdf` | Edge 157.0.0.0 | `ALLOW`, `RATE_LIMIT`, rate limit `RUN`. Matched by host, route, method and time for comparison. |
+
+Both denials name the same `LIVE` rule as the local probe. Shield and rate limiting report `NOT_RUN` on those decisions. The records show no independent denying rule. All three requests had browser metadata and shared egress. The provider response did not expose fingerprints, the source decision reference for the cache entry, the category, verification or spoofing flags, network class, or the hosted deny TTL and expiration. The headed request received a cached headless classification. The evidence cannot identify the exact cache entry it reused. The pinned SDK catalog places `HEADLESS_CHROME` in `CATEGORY:TOOL`; the local rule returns a 60 s TTL with `verified=false` and `spoofed=false` for the captured headless headers. [Arcjet fingerprint and cache behavior](https://docs.arcjet.com/fingerprints/)
+
+#### Unchanged-rule acceptance preparation
+
+Vercel readback confirmed the exact SHA and READY state. An anonymous GET to `/signin` returned 302 to Vercel Authentication. Read-only Supabase catalog checks found RLS enabled on all 28 public tables and all 10 Storage tables in `zuevgwqmphbvgnwhvvnq`. The hosted app's connection still requires runtime proof. Source confirms the ordinary GET perimeter uses LIVE bot detection, Shield and rate limits. Server Action POSTs use the existing separate LIVE rate limiter. Application Auth and role checks were unchanged.
+
+`PLAYWRIGHT_CHANNEL=chrome` and `pnpm exec playwright test tests/staging-dashboard.spec.ts --headed --workers=1 --retries=0 --list` collected all 11 tests in the detached exact-SHA checkout. List-only mode used `RUN_STAGING_ACCEPTANCE=false` and read no synthetic credentials. A loopback launch confirmed installed branded Chrome 157.0.8103.51 in headed mode. The checked-in `Desktop Chrome` device descriptor sets a Chrome 156 user-agent. `page.request` carries that agent without browser fetch metadata. The standalone API fixture sends `Playwright/1.64.1` without browser fetch metadata. Verify those clients separately in the Preview before starting the suite.
+
+The next protected window requires operator approval. No access link was created for this attempt. No hosted scenarios, Storage authorization tests, or performance measurements ran. Production remains NO-GO.
 
 ## Audit baseline and prior candidates
 

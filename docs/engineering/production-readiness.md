@@ -6,7 +6,7 @@ Application `868946e4818c8b0fe9db1acffe37485b5192dfe8` is READY on protected Pre
 
 | Gate | Status | Evidence and release requirement |
 | --- | --- | --- |
-| A. Functional correctness | BLOCKED | The temporary link reached the exact Preview and verified the credentials callback origin. Arcjet denied sign-in and the isolation probes with 403. The link was revoked and the Vercel Authentication challenge verified again. Runtime staging identity remains unverified and all 11 hosted staging scenarios remain unrun. |
+| A. Functional correctness | BLOCKED | Arcjet confirmed a fresh headless denial and a cached denial on headed Chrome. Vercel still challenges anonymous access on the exact Preview. The next protected access window requires approval. Runtime staging identity remains unverified and all 11 hosted staging scenarios remain unrun. |
 | B. Security | BLOCKED | Four active staff/admin records match confirmed Auth accounts. Production signup remains enabled and relay credential rotation is pending. Fresh production admin sign-in, secure password handoff, and hosted session, role and telemetry acceptance remain open. |
 | C. Database integrity | BLOCKED | The private synthetic `cargo-documents` bucket exists with zero objects and zero direct object policies. Authorized access, revocation, signed expiry and the upload audit are pending. |
 | D. Engineering quality | PASS | `pnpm verify` passed with 547 unit tests and 56 generated pages. The full local Chromium rerun passed all 48 applicable cases, and the four separate Storybook cases passed. |
